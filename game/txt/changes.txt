@@ -1,4 +1,14 @@
 & help
+& 0.72p1
+CobraMUSH Version 0.72p1
+
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.72p1 is a bugfix/maintenance release of version 0.72.
+  It is the first bugfix/maintenance release in that series.
+
 & 0.72
 CobraMUSH Version 0.72
   This is a list of changes in CobraMUSH that could be of
@@ -644,13 +654,14 @@ See 'help 1.7.5p4' for penn based off of.
 
 & Entries
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- 0.5b                      0.65b                     0.66b                    
- 0.67                      0.6b                      0.70                     
- 0.70-1                    0.70-2                    0.70-3                   
- 0.71                      0.71p1                    0.71p2                   
- 0.71p3                    0.72                      help                     
- kv0.0.1a                  kv0.0.2a                  kv0.0.3b                 
- kv0.0.4b                  kv0.0.5b                  pennincorp.1             
+ 0.5b                      0.65b                     0.66b
+ 0.67                      0.6b                      0.70
+ 0.70-1                    0.70-2                    0.70-3
+ 0.71                      0.71p1                    0.71p2
+ 0.71p3                    0.72                      0.72p1
+ help                      kv0.0.1a                  kv0.0.2a
+ kv0.0.3b                  kv0.0.4b                  kv0.0.5b
+ pennincorp.1
 
 & &Entries
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
