@@ -1,0 +1,1 @@
+ccflags="-DOLD_ANSI"

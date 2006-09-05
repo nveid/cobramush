@@ -1,0 +1,95 @@
+& ATTRIBUTE TREES
+& ATTR TREES
+Attributes can be arranged in a hierarchical tree; these are called
+"attribute trees", and a conceptually similar to the way that
+files and directories/folders are organized on computer filesystems.
+Attribute trees can be used to reduce spam when examining and to
+provide organized control over permissions for related attributes.
+
+Attribute trees use the backtick (`) character to separate their
+components (much as filesystems use / or \). For example, the
+following attribute name would be a couple levels down in its tree:
+
+	CHAR`SKILLS`PHYSICAL
+
+Attribute names may not start or end with the backtick, and may not
+contain two backticks in a row.
+
+All attributes are either branch attributes or leaf attributes.
+A branch attribute is an attribute that has other branches or leaves
+beneath it; a leaf attribute is one that does not. Any attribute may
+act as a branch. If you try to create an unsupported leaf, branch
+attributes will be created as needed to support it.
+
+See help attribute trees2 for more information and examples.
+
+& ATTRIBUTE TREES2
+& ATTR TREES2
+Attribute trees provide two immediate benefits. First, they reduce
+spam when examining objects. The usual * and ? wildcards for attributes
+do not match the ` character; the new ** wildcard does. Some
+examples of using examine:
+   examine obj              displays top-level attributes (plus object header)
+   examine obj/*            displays top-level attributes
+   examine obj/BRANCH`      displays only attributes immediately under BRANCH
+   examine obj/BRANCH`*     displays only attributes immediately under BRANCH
+   examine obj/BRANCH`**    displays entire tree under BRANCH
+   examine obj/**           displays all attributes of object
+
+The same principles apply to lattr(). @decompile obj is a special case,
+and displays all attributes.
+
+Branch attributes will be displayed with a ` in the attribute flags
+on examine. 
+
+See help attribute trees3 for more information and examples.
+
+& ATTRIBUTE TREES3
+& ATTR TREES3
+The second benefit of attributes trees is convenient access control.
+Attribute flags that restrict attribute access or execution
+(no_inherit, no_command, mortal_dark, wizard) propagate down
+attribute trees, so if a branch is set mortal_dark, mortals can
+not read any of its leaves or subbranches either.
+
+Attribute flags that grant access (e.g. visual) do NOT propagate down
+trees.
+
+These properties make attribute trees ideal for data attributes:
+  &DATA bank = Data for each depositor is stored here, by dbref
+  @set bank/DATA = no_command
+  &DATA`#30 bank = $2000 savings:$1000 loan @ 5%
+  ...
+
+They're also handy for things like character attributes:
+  @attribute/access CHAR = wizard mortal_dark no_clone no_inherit
+  &CHAR #30 = Character data
+  &CHAR`SKILLS #30 = coding:3 documentation:1 obfuscation:5
+  ...
+
+See help attribute trees4 for information about @parent and attribute trees.
+& ATTRIBUTE TREES4
+& ATTR TREES4
+Attribute trees interact with @parent in several ways.
+
+As usual, children inherit attributes from their parent unless the
+child has its own overriding attribute. However, children that wish
+to override a leaf attribute must also have their own (overriding)
+copy of all branches leading to that leaf. This means that when you do:
+
+  &BRANCH parent = a branch
+  &BRANCH`LEAF parent = a leaf
+  &BRANCH`LEAF child = a new leaf
+
+In this case, a new BRANCH attribute will be created on the child,
+so '-[get(child/BRANCH)]-' will return '--'. This may not be what
+you actually want.
+
+If a branch on the parent is set no_inherit, it will not be inherited,
+regardless of any other flags that may be present. If a branch is
+inherited, the child object can not loosen any access restrictions to
+inherited attributes that are set by the parent (although it may loosen
+access restrictions to its own attributes on the same branch). The child
+object may impose stricter restrictions, however, and these may prevent
+access to inherited parent data.
+

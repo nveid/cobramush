@@ -1,0 +1,657 @@
+& help
+& 0.72
+CobraMUSH Version 0.72
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Attributes:
+     * New 'AAHEAR' and 'AMHEAR' attribute flags, when set
+       on a ^listen attribute, cause it to behave like
+       @aahear or @amhear instead of like @ahear. [AEJ]
+  Locks:
+     * New DBREFLIST^<attrib> lock key checks if the enactor is listed
+       in the attribute by dbref or objid [AEJ]
+  Flags:
+     * LIGHT now overrides DARK consistently [AEJ]
+     * TRACK_MONEY flag on players causes the player to be
+       informed when his objects spend money [AEJ]
+  Powers:
+     * Pueblo_Send allows you to send Pueblo tags [AEJ]
+     * Many_Attribs allows an object to have more than the configured
+       maximum number of attributes [AEJ]
+     * Nuke is now used to limit who may destroy players. [RLB]
+     * CQuota Power Renamed to SetQuotas. [RLB]
+  Commands:
+     * @program now warns owner on attempting to use prompts within
+       the command. [RLB]
+     * lock_command to offers an optional fail message in the configuration
+       directive similar to restrict_command. [RLB]
+     * @list/powers works to list powers again. [RLB]
+     * @config/powers works to list powers again. [RLB]
+     * Command switches can now be individually locked
+       using the SWITCH^ lock key. [RLB]
+     * Wildcards can now be used in listing powers via:
+       @power/list, @list/powers, & @config/powers. [RLB]
+     * @newpassword can now be used to set passwords on
+       division objects. [RLB]
+     * @SD command added which allows switching between 
+       divisions. [RLB]
+     * @edit/check will display the results of an edit without
+       actually modifying the attribute [AEJ]
+     * @chan/recall now takes a <start line> parameter [AEJ]
+     * UNIMPLEMENTED_COMMAND allows hooks to disabled commands [AEJ]
+     * @power DEBUG switch removed. Due to its reason existed for 
+       original power system development. [RLB]
+  Functions:
+     * PrimaryDivision() Added to reference the primary division of a player
+       no matter where they are @sd'd to. [RLB]
+  Channels:
+     * Channels now ignore interaction rules by default, unless the
+       'interact' channel flag is set on them [AEJ]
+     * Default permissions for new channels are set by the channel_flags
+       configuration directive [AEJ]
+  Attributes:
+     * @SDIN, @OSDIN, @ASDIN added to be processed upon using @sd to 
+       switch into a division. [RLB]
+     * @SDOUT, @OSDOUT, @ASDOUT added to be processed upon exiting a division
+       when using @sd. [RLB]
+  Mail:
+     * @mailfilter attribute filters new mail into a folder if it returns
+       a folder name or number [AEJ]
+     * @mailforwardlist forwards mail to the list of dbrefs specified in
+       it, if you pass the MailForward lock on the target [AEJ]
+  Major changes:
+     * Chat.db now begins with +F for CobraMUSH databases; the reader
+       checks for +V to do a PennMUSH chat.db conversion [AEJ]
+     * New executable: 'console' will run the full CobraMUSH minus
+       networking, interacting with the user on stdin/stdout [AEJ]
+  Minor changes:
+     * All verbs, and generally anything that utilizes queue_base_attribute()
+       now acknowledges powinherit attribute flag.
+     * @program now saves Q registers through out the program.
+     * VTS removed from distribution. [RLB]
+     * LFAIL/OLFAIL/ALFAIL messages are activated whenever a @lock/leave
+       is checked and failed, not just when a leave command fails (so they
+       work for failed attempts to leave via exits and @tel) [AEJ]
+     * adjust_divisions() internal function, now only adjusts divisions
+       of a player's objects that were of their division that is being
+       changed. [RLB]
+     * Added conversion table for chat.db channel flags [AEJ]
+     * %u evaluates to the evaluated $command [AEJ]
+     * %i[0-9] give the same as itext(0)-itext(9) [AEJ]
+     * Rooms are considered connected in @dbck if they are connected to
+       the base room -or- to a room that is set FLOATING [AEJ]
+     * @invformat no longer receives the penny count as %0 and
+       its former %1 is now %0, the list of inventory items [AEJ]
+     * @conformat and @invformat now receive a |-separated list of names
+       as %1 [AEJ]
+     * Moved chat and mail function help from cobra_func.hlp to
+       cobra_chat.hlp and cobra_mail.hlp [AEJ]
+     * Removed vestiges of the previous attempt at a new chat system [AEJ]
+  Fixes:
+     * All fixes and additions from 0.71 maintenance release
+       patches.
+     * PennMUSH version numbers are no longer reported. [AEJ]
+     * cflags() now reports the N (nonames), T (notitles), and
+       C (nocemit) flags for channels [AEJ]
+     * If A can't hear from B (due to interactions), then A's puppet
+       would send a null line when it heard B; now the puppet doesn't
+       send at all [AEJ]
+     * Bug in reading dbs with no chatdb present [AEJ]
+     * playermem() and objectmem() now return #-1 NO MATCH consistently [AEJ]
+     * @list/list() now work with flags and powers [AEJ]
+     * @attribute NAME and @attribute @NAME now both show information about
+       attributes and @attribute/delete @NAME now also works [AEJ]
+     * Setting a password ending in a % is now possible [AEJ]
+     * @attribute did not check for valid attribute names before
+       adding them [AEJ]
+     * access.cnf checks now check for ipv6 addresses, too [AEJ]
+     * more consistent use of #defined telnet codes [AEJ]
+     * Renamed CONFGROUP to COBRA_CONFGROUP, just in case that interferes
+       with SSL the way that CONF did [AEJ]
+     * Fixed crash bug in pcreate() [AEJ]
+     * Fixed crash bug in setunion() [AEJ]
+     * Defunct internal function reverse_exits() existed to no use, for what 
+       reverse() served. [RLB]
+  Helpfiles:
+     * %q0-9 and %qa-z are now raliased to help r() [RLB]
+     * Help for grab() now references graball() [AEJ]
+     * Help for substitutions{2,3,4} aliased to %2, %3, and %4 [AEJ]
+     * Help for ulocal() clarified [AEJ]
+     * Help for strreplace() touched up [AEJ]
+
+& 0.71p3
+CobraMUSH Version 0.71p3
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.71p3 is a bugfix/maintenance release of version 0.71.
+  It is the third bugfix/maintenance release in that series.
+
+  Bugfixes:
+     * Fedora Core systems caused crashes within @chown and
+       @powergroup. Reported by Apollo@New Republic. [RLB]
+     * CobraMUSH Configuration type 'CONF' conflicts with openssl,
+       CONF type.  Reported by lice. [RLB]
+     * pgpower(powergroup,max) was not returning max powers. [RLB]
+     * Game would crash upon a @pcreate in a newly created 
+       database before a @shutdown/reboot
+
+& 0.71p2
+CobraMUSH Version 0.71p2
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.71p2 is a bugfix/maintenance release of version 0.71.
+  It is the second bugfix/maintenance release in that series.
+
+  Distribution changes:
+     * MANIFEST updated to point to restart.dst instead of restart
+     * 'make install' will generate game/restart, as will 'make update'
+
+  Helpfile Changes:
+     * Grammar and spelling corrections in 'help @powergroup2'
+     * Defunct know system existed in helpfiles, removed.
+     * @program helpfile clarified
+     * Example added to help @prompt
+
+  Bugfixes:
+     * adjust_divisions() could crash when adjusting powergroups
+     * @su remembers the exit path across a @shutdown/reboot
+     * Warnings are now issued if you @parent an object to something
+       whose owner is different and which is not set AUTH_PARENT
+
+& 0.71p1
+CobraMUSH Version 0.71p1
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.71p1 is a bugfix/maintenance release of version 0.71.
+
+  Helpfiles:
+     * @cron helpfile being cleaned up for corrections to actual
+       behavior. [RLB]
+  Bugfixes:
+     * Multiple powergroups can now be added to an object, and
+       powergroups are added by way of an insertion sort so that
+       they are kept in alphanumeric order on each object.
+     * Cleaned up removal of powergroups from objects.
+     * Invalid cron specs could crash the game.  [RLB]
+
+& 0.71
+CobraMUSH Version 0.71
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list all versions.)
+
+  Minor Change:
+     * Version numbering changed, '-' will no longer preceed
+       maintenance patches, they will be preceeded by p.
+       This will allow easier migration of CobraMUSH to
+       debian packages.
+     * Began using vim folding on certain source files
+     * Jeremy Ritter's MUSHCron is now being used in replacement
+       of @hourly & @daily.  However hourly & daily,  still work 
+       as default global crontab entries.
+     * MUSH now auto-detects your connection for what type of
+       @prompt your connection can handle.  'WeirdPrompt's flag
+       no longer used as an affect of this.
+     * Global Attribute Locks are now possible as well as a catchall
+       attribute for any non-standard attribute.
+  Commands:
+     * @program now accepts the the format of @program obj=atr
+       to default to the executing object the attribute  is on.
+     * @program no longer handles a prompt, @prompt must be used
+       instead.
+     * @attribute/lock, @attribute/write, added todo apart of global
+       attribuet locking.
+  Configuration:
+     * Guest prefix moved to a config file option
+     * Option to use roman numeral numbering of guests 
+       given.
+     * Default Player Powergroup configuration option added.
+  Functions:
+     * program() no longer handles prompts, prompt() must be used.
+     * arabic2roman() converts arabic numbers to roman numerals.
+     * roman2arabic() converts roman numeral characters to
+       arabic characters.
+     * pghaspower(), and pgpowers() functions added.
+     * powergroups() with no arguments now gives the equivalent of
+       @powergroups/list
+  Helpfiles:
+     * documented @prompt, prompt(), pghaspower(), and pgpowers()
+     * modified @program, and powergroups() helpfiles for new syntaxes
+  Fixes:
+     * ooref overwrite bug in process_expressoin
+     * Deleting a powergroup that exists on a player would
+       crash the game.
+     * Newly created databases would create the master division
+       twice.
+     * Attributes weren't being cloned correctly.
+     * Deleting powers when a powergroup had no powers would crash
+       the game.
+
+& 0.70-3
+CobraMUSH Version 0.70-3
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list all versions.)
+
+  Release Date: Fri Nov 04 15:41:54 2005
+
+  Minor Changes:
+     * Patchlevel file in rootlevel CobraMUSH directory
+       changed to reflect CobraMUSH version and maintenance
+       release information.
+     * Created changes.sh for easy compilation of changes
+       index file for development purposes.
+  Helpfile Changes:
+     * WeirdPrompts found undocumented, documented in
+       'help flag list', 'help @program', and created
+       WeirdPrompts helpfile entry.
+     * AUnidle referenced from 'help attributes' now.
+  Fixes:
+     * free_object made unstatic to not allow certain third-party
+       packages work with CobraMUSH.
+
+& 0.70-2
+CobraMUSH Version 0.70-2
+  This is a list of changes in CobraMUSH that could be of 
+  interest to the user.
+  (changes entries for list all versions.)
+
+  Release Date: Tue Oct 25 20:42:05 2005
+
+  Fixes:
+    * Clean up on left over #ifdefs
+    * Helpfile grammatical, clarifications, and general helpfile
+      updates
+    * Chat Token Alias wasn't defaulty defined to '=', which
+      broke make update.
+    * Reverted VTS back to a usable stage.
+
+& 0.70-1
+CobraMUSH Version 0.70-1
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Release Date: Mon Oct 10 20:51:00 2005
+
+  Fixes:
+     * Master Division Couldn't keep powers or a level through
+       a @dbck.
+     * @shutdown was required localhost, fixed to require
+       Site power
+
+& 0.70
+CobraMUSH Version 0.7
+  This is a list of changes in CobraMUSH that could be of 
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Release Date: Sun Oct 09 17:24:10 2005
+
+  Major Changes:
+       * Power System rewritten to allow for database
+         dumpable type powers.
+       * PowerLevels removed
+       * PowerGroups Introduced
+  Minor Changes:
+       * @AtrLock Rewrite - Read & Write locks
+       * Seperate database now used for flags
+       * @command restrict permissions based on lock
+         boolexps*
+       * Added lock_command config parameter to config
+         loading.
+       * Fixed cobramush to properely handle win32 
+         support
+       * Know System Removed from source
+       * look <exit> is now recursively searched upwards
+         through the parent tree to find an exit to 
+	 look at just like going through an exit is.
+       * Added some extra @dbck'ing checks. 
+       * When destroying a division, all sub-divisions
+         now get passed up the divtree while everything
+	 else in the division itself gets thrown to 
+	 No division.
+       * Sub-Divisions on a division object now listed
+         under 'Sub-Divisions' in an examine or brief
+	 of the object instead of combining with
+	 Contents.
+       * Hacked Thorvald Natvig's VTS from '98 in using
+         the VTS #define to enable or disable it.
+  Attribute Changes:
+       * Added INVFORMAT attribute to specify a custom
+         inventory report.
+  Command Changes:
+       * @empower now sets multiple powers at a time
+       * @powergroup and @power command introduced as part of 
+         the new db power system
+       * @su commands introduced
+  Function Changes:
+       * ldivisions() function added to list all divisions
+         within an object.
+       * Power Related Functions Added: powergroups() and  
+         haspowergroup() added.
+  Fixes:
+       * Global Ufuns weren't default the Originating
+         Object Reference Right.
+& 0.67
+CobraMUSH Version 0.67
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Functions:
+      * Idle_Average(<player>) Reports players Average
+        Idle time for their current session.
+  Attributes:
+      * LASTACTIVITY - Keeps track of players last session
+        activity
+  Fixes:
+      * lsearch eplayer, erooms, ethings, was bringing up
+        every object in the database.  Fixed to only bring
+        up corresponding types. [AEJ]
+
+& 0.66b
+CobraMUSH Version 0.66 
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Minor Changes:
+      * Creation & Implementation of SWMP
+        Sql Web<->MUSH Protocol
+      * Sql_Mroom config addition
+      * TwinCheck Optimizations
+      * Inherit Behavior changed
+      * Modified: block kept on non players objects now.
+        Shows what the last modification on an object was.
+	Only owner or Director can see this.
+  Commands:
+      * Customizeable huh message code
+      * @ZCLONE - Copy a whole zone with the touch
+                  of a button.
+  Functions:
+      * Idle_Average(<player>) Reports players Average
+        Idle time for their current session.
+  Attributes:
+      * LASTACTIVITY - Keeps track of players last session
+        activity
+  Fixes:
+      * Fixed Inheritable Controls bug
+      * Flag Setting fixes 
+      * Help Updates
+      * @function updates now update function flags
+  RP Systems:
+      * Must have a valid TrueRace set before you can go IC now
+      * Combat RPLog System added. 
+      * Paralyzed/Blind flags added
+  PennMUSH Incorporations: (view with changes)
+      * pennincorp.1 
+
+& pennincorp.1
+      * Ported everything from penn patch 1.7.7p39 & p40
+        except:
+           - buy command and assosciated parts
+	   - simplified @version code.
+	   - @ps/all label patch
+	   - INFO Command and PennMUSH stuff
+      * @assert command
+      * @break/@assert default nosuccess action list
+      * Penn Related Fixes upto 1.8.0p6 
+
+& 0.65b
+CobraMUSH Version 0.65b
+ This is a list of changes in CobraMUSH that could be
+ of interest to the user.
+    (changes entries for list of all versions.)
+ Minor Changes:
+   * mortal WHO now shows Empire Abbreviation for players.
+   * Servercode is now also aimed at supporting a RP environment.
+   * New Queue Signal System inspired from Rhost Thaw & Freeze System.
+   * Helpfile updates
+   * Compile Warning Optimization 
+ Flags:
+   * MUTE flag added, settable on a player or room. On player MUTES
+     them individually, on a room it mutes everyone in the room.
+ Powers:
+   * RPTEL power now exists, which is required to move someone
+     in RPMODE.
+ Functions:
+   * new wait(), trigger(), and signal() functions
+   * version() reported pennmush version info when
+     it should show cobra specific version info.
+ Fixes: 
+   * Guest description wasn't being set when created, now it is.
+   * powerlevel setting bug fixed
+   * program prompting finally fixed.
+      - Fixes reported from pennmush changes files -
+   * @command/delete of a non-existing command is crash worthy.
+   * Crash bug in is_objid crashes with no string argument.
+   * string sub parser buffer overflow bug fixed.
+   * pennies overflow integer fixed.
+   * replace_string2 overflow fixed
+& 0.6b
+CobraMUSH Version 0.6b
+ This is a list of changes in CobraMUSH that could be 
+ of interest to the user.
+    (changes entries for list of all versions.)
+ PennMUSH Update:
+   * Updated to base penn version 1.7.7-p32
+ Minor Changes:
+   * pow_inherit attribute flag now supports @CONFORMAT
+     and @EXITFORMAT code. (help pow_inherit added)
+   * PrivCheck improvements
+   * Know System Improvements
+ Flags:
+   * AUTH_PARENT flag added.  Special authorization for parents
+     in use with twinchecks to override twincheck attribute
+     queue behavior off the parent.
+   * RPMODE Flag has been incorporated as a central function
+     in CobraMUSH. Players now need RPCHAT power to chat while
+     in RPMODE, & RPEMIT power to emit while in RPMODE. And
+     paging is restricted unles one of the parties is level 24
+     or greater.
+ Commands:
+   * Hidden players no longer appear connected when paged by
+     someone that can't see them.
+   * @ATRCHOWN is now restricted to God if in secondary queue
+     or owner in primary.
+ Functions:
+   * Global functions can now be made to be executed ulocal style
+     via throwing ulocal in the restriction field of @function
+ Locks:
+   * DIVISION boolexp in locks had the '+' key added to lock
+     to a division and & all its children.
+ Fixes:
+   * @sweep showed objects that had commands & were set halt
+     or no_command as listening for commands.. Fixed
+   * @search me required search:lte. Fixed, you can now
+     search yourself.
+   * Security Hole that allowed people forcing another object
+     with a power they don't have to perform 'X' task, has been
+     resolved. As well as $-commands set by someone on someone
+     else to perform 'X' task that they can't do has been resolved.
+        New config options exist:
+		twinchecks  <bool> (enable this type of check or not)
+		powerless   <dbref> (a powerless object at level: 1(1))
+   * @DEBUGFORWARDLIST wouldn't forward to someone if they
+     were higher prived than them, even if attribute set by
+     a guy that was prived as such.  Now checks old check 
+     in combination with attribute ownership.
+   * ok_tag_attribute was breaking with new gcc
+   * div_t struct was changed to div_tab to allow for stdlib.h
+     include
+   * PrivWho didn't work correctly.  Works again.
+& 0.5b
+& kv0.0.5b
+CobraMUSH Version 0.5b
+  This is a list of changes in CobraMUSH that could be
+  of interest to the user.
+    (changes entries for list of all versions.)
+  Minor Changes:
+    * New auto-guest system implemented.  'help guests'
+    * Incorporated Division, Level, PowerLevel, & Power checks to the 
+      lock boolexp parser.
+    * Added optional Know System. 'help know system'
+    * God level now bypasses command restrictions
+    * Documented full list of powers under 'help powers'
+    * Documented @program
+    * Re-defined CMD_T's bit locations.
+    * Removed wizmotd.txt from MANIFEST
+    * Pass_Locks power changed to enable passing locks of all types
+      except Use-Lock.
+    * Changed Version Scheme.
+  Flags:
+    * Level 28 with privileged power can now set themselves Dark.
+  Powers:
+    * Broken Announce up into 3 different powers. Previously Announce
+      had 3 bits, but was only a self-checking power so it was pointless
+      to be of that magnitude, so it was split up as should be.
+      - Announce
+      - EAnnounce
+      - DAnnounce
+  Functions:
+    * Added kname(), check_know() as part of the know system
+    * name() behavior changes when ran on a object or room that
+      has the 'ICFUNC's flag
+    * Added break() to escape iter() loops.
+    * Added loctree() to feed a complete string tree list of an object's location.
+  Fixes:
+    * Minimal DB creation didn't set master division object's Home & Location
+      correctly.  Causing a crash when a subdivision was made.
+    * Channel Admin channel setting didn't work correctly. Fixed.
+
+& kv0.0.4b 
+CobraMUSH Version 0.0.4b
+  This is a list of changes in CobraMUSH that could be 
+  of interest to the user.
+    (changes entries for list of all versions.)
+
+  Minor Changes:
+    * Mods to how powers info is accessed for future plans of DB dumpabe
+      powers. 
+    * Added @AUNIDLE
+    * Added pow_inherit attribute flag.
+    * Re-Implemented @hourly
+    * Re-Implemented Pass_Locks power. Passes Locktypes: Basic, Enter, Page
+      Tport, Speech, Parent, Leave, Give, Mail, Follow, Forward_lock,
+      and Dropto.
+    * Added a divisions dbck check
+  Standard PennMUSH Incorporation:
+    * Added Can_NsPemit power
+  Fixes:
+    * Restricting Commands by flags was broken.  Rewrote the code. 
+    * Fixed a possible problem in @parent.
+    * If no 3rd argument was supplied to powerlevel() the game would crash.
+      Third argument defaults to 0 now if not supplied.
+    * @channel's switches got disabled somehow...  re-enabled them. 
+    * Sometimes master division object's would get set to themselves
+      sending the game in loops.  Fixed origin of error & added
+      auto-detection of this bug & fix.
+    * @mail/stat, dstat, & fstat wasn't working properely with no argument 
+      supplied.  Works now. 
+    * Privilege power didn't allow setting of privilege flags.  Fixed Problem.
+
+& kv0.0.3b
+CobraMUSH Version 0.0.3b
+This is a list of changes in CobraMUSH that could be 
+of interest to the user.
+ (changes entries for list of all versions.)
+
+  Major Changes:
+	* Ported kickass code to 1.7.7p16 from 1.7.5p6 [AEJ]
+	* Patched to 1.7.7p26 [RLB]
+	* Completed Wiz/Roy compatability.
+	    - Wiz/Roy now marker flags to designated powerlevels
+	* DB Conversion improved.
+	    - Powers now converted to new powers
+	    - Wiz/Roy converted over properely
+	    - Master Division auto created & all except unregistered flagged players assigned
+	    - All Wiz, Roy, Guest, Unregistered, & Normal player levels set accordingly.
+  Minor Changes:
+  	* Completed Wiz/Roy compataibility.
+	    - Wiz/Roy re-implemented as marker flags 
+	    - Wiz Powerlevel & Level are both 29(default)
+	    - Roy Powerlevel is 25 & Level is 28(default)
+  	* DB Creation modified to create a division format database.
+	* @showlog taken out for redesign
+	* The following taken out temporarily due to drastic
+	  upgrade in base penn version.
+	    - AutoCreated Guests
+	    - @hourly
+	    - Pass_Locks Power
+& kv0.0.2a
+CobraMUSH Version 0.0.2a
+This is a list of changes in CobraMUSH that could be
+of interest to the user.  
+
+(changes entries for list of all versions.)
+ 
+  Minor Changes:
+  * DB Byte code reworked to allow the max-num of powerz to be upped on the fly
+  * Much of the division code rewritten to be easier to understand & more efficient
+  		-Commands-
+  * @division broken up into @powerlevel @empower @level & @division is now just
+    used for setting & creating divisions.
+  * Platform base name changed to CobraMUSH
+ Fixes:
+  * command power checking fixed.. Previously it checked AND powers, changed it to be
+    OR powers as was intended.
+
+& kv0.0.1a
+KickAss Version 0.0.1a
+Major changes:
+  * Division system - Replaced Old Power System with DivPower System
+		    - Use dpowers.cnf for powerlevel definitions
+  * Replaced Old WizRoy Priv System with Div/Level/Power Priv System
+Commands:
+  * @division main interface to division system
+  * @showlog implemented to view logs in MUSH
+  * Many commands usability has changed with div/powerz system
+  * @program Added
+  * @Hourly Added [AEJ]
+Functions:
+  * Added division functions divscope(), level(), powerlevel(), division(),
+    hasdivpower() updiv(), downdiv(), indiv(), powover()
+  * Added cansee() function used for checking if a player can examine another
+    player
+  * haspower() now aliased to hasdivpower() to maintain compatibility
+  * baseconv() added [AEJ]
+Minor changes:
+  * Guests redid: - Guest Level replaces Guest Power
+		  - Guests AutoCreated at login now 
+  * Unregistered level replaces Unregistered Flag
+  * Division Object Type added
+  * Forcing of your own objects not logged
+  * Unkillable power ripped out along with kill command
+  * WizMOTD Removed along with @wizwall @rwall & friends
+  * Added AriSpace Option [AEJ]
+  * '%z' Ansi substitution
+See 'help 1.7.5p4' for penn based off of.
+
+
+
+
+
+
+
+& Entries
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ 0.5b                      0.65b                     0.66b                    
+ 0.67                      0.6b                      0.70                     
+ 0.70-1                    0.70-2                    0.70-3                   
+ 0.71                      0.71p1                    0.71p2                   
+ 0.71p3                    0.72                      help                     
+ kv0.0.1a                  kv0.0.2a                  kv0.0.3b                 
+ kv0.0.4b                  kv0.0.5b                  pennincorp.1             
+
+& &Entries
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

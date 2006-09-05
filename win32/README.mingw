@@ -1,0 +1,66 @@
+How to compile PennMUSH 1.7.x under Windows (MinGW32 and MSys)
+--------------------------------------------------------------
+by Ervin Hearn III <noltar@korongil.net>
+
+Last update: Saturday, 28 February 2004
+
+ 1. Download and install the MinGW GNU Toolsets for Windows
+    from http://www.mingw.org/
+
+ 2. Download and install ActiveState Perl for Windows from
+    http://www.activestate.com/ActivePerl/
+
+ 3. Download and install the MSys package for Windows from
+    http://www.mingw.org/ This should be installed after
+    you have installed MinGW and ActivePerl
+
+ 4. Make certain that your MinGW and Perl locations are
+    properly moutned in your MSys /etc/fstab
+
+    An example fstab content is:
+
+    #Win32_Path		Mount_Point
+    c:/Progra~1/mingw	/mingw
+    c:/Progra~1/perl	/perl
+
+ 5. `cd' to the desired install location with the .tar.gz file
+    and unpack the downloaded <version> with:
+
+    tar xzf pennmush-<version>.tar.gz
+
+ 6. cd pennmush then type:
+
+    ./Configure -d
+
+    *** Note: This should configure the mush appropriately
+    *** if it fails to, you can attempt ./Configure
+    *** alone and use the mingw32 hints option when asked
+
+ 7. Now type:
+
+    cp options.h.dist options.h
+
+    and edit options.h as desired, keeping the following
+    suggestions in mind:
+
+    a. Do *NOT* define NT_TCP
+    b. Use MALLOC_PACKE 0
+    c. Do *NOT* define INFO_SLAVE 
+
+    Hopefully the last be changed in the future.
+
+ 8. Also, cp game/mushcnf.dist game/mush.cnf and edit.
+
+ 9. Do a `make install' This will build the necessary files and
+    install the necessary symbolic links. You can ignore the
+    warnings regarding the redefinition of BYTE and LONG which
+    are given for funcrypt.c mycrypt.c and/or shs.c.
+
+10. Read game/README and follow those instructions. For MinGW
+    you will also need to edit game/restart and explicitly
+    set the GAMEDIR variable to your installation path, an
+    example is:
+    
+    /home/noltar/pennmush/game
+
+

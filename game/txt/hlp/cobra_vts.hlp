@@ -1,0 +1,145 @@
+
+& VTS
+  The Virtual Thing System (VTS) is designed to handle things which are 
+  required in any great amount (basically, any item which would otherwise 
+  be @cloned multiple times). All Virtual Things (vings) are instances of 
+  a Master Virtual Thing (VTM), and may be countable, or non-countable; the
+  former will stack in inventory lists (for instance, "You have twelve vings"
+  rather than "ving" repeated twelve times), while the latter behave as per
+  normal objects in this respect.
+
+  The following flags can be set on VTMs:
+  VTM       -  Makes the Thing a VTM.
+  VTCOUNT   -  Makes vings using this VTM countable
+
+  These can be (re)set via the @vts command.
+
+See also:  @vts, VTS functions, @vtplural, VTREF
+
+& VTREF
+  Any Ving in a given location can be referred to by its VTREF, which is 
+  returned by the token %&.
+
+See also: VTS
+
+& VTM
+  This flag is used to denote a Thing as being a VTS Master Thing (VTM), and 
+  can be set with the @vts command.
+
+See also: VTS, @vts
+
+& VTCOUNT
+  This flag is set on a VTM in order to make all the Vings which are connected 
+  to that VTM 'countable'. Countable Vings will stack in inventory lists, 
+  giving 'You have twelve vings' instead of 'ving' being listed twelve times.
+  It can be set via the @vts command.
+
+See also: VTS, @vts
+
+& VTS functions
+  The following functions exist within the VTS:
+
+  vtattr()         vtcount()          vtcreate()
+  vtdestroy()      vtlcon()           vtloc()
+  vtlocate()       vtmaster()         vtname()
+  vttel()          vtref()
+
+& VTATTR()
+  vtattr(<ving>, <attrib>[, <value>])
+
+  This can only be used on non-countable vings.
+
+  Without <value> specified, this returns the value of the local 
+  attribute <attrib> on <ving>.
+  When <value> is given, <attrib> is set to <value>.  
+
+& VTLOC()
+  vtloc(<ving>)
+
+  This function returns the dbref of <ving>'s location.
+
+& VTCOUNT()
+  vtcount(<ving>)
+
+  This returns the count of <ving>, in other words, the number of Vings which
+  are represented by that object.
+  For non-countable vings it returns 0.
+
+& VTCREATE()
+  vtcreate(<master>, <location>[, <number>])
+
+  This creates a new ving, using <master> as its VTM, at <location>, and if
+  the optional third argument is passed, with count <number>. The count 
+  denotes how many objects are represented by this Ving, for instance, a
+  coin Ving with a count of 10 would represent ten coins.
+
+See also:  vtdestroy()
+
+& VTDESTROY
+  vtdestroy(<vtref>)
+
+  This destroys the Ving with the corresponding vtref.
+
+See also:  vtcreate(), vtref()
+
+& VTLCON()
+  vtlcon(<object>)
+
+  This returns a list of the vtrefs of all Vings within <object>.
+
+& VTLOCATE()
+  vtlocate(<looker>, <name>[, <parameters>])
+
+  This function will attempt to find the Ving <name> relative to <looker>, 
+  modifying the search based upon the <parameters> which are specified (if 
+  any).
+
+  Valid parameters are:
+    r   -   Match by vtref
+    i   -   Match those vings in inventory
+    l   -   Match all vings at the same location
+    o   -   Match other vings in above location
+
+  This function returns the vtref of the matched Ving.
+
+& VTMASTER()
+  vtmaster(<ving>)
+
+  This returns the VTM of <ving>.
+
+& VTNAME()
+  vtname(<ving>)
+
+  This returns the name of <ving>, including the count value, if <ving> is 
+  countable.
+
+See also:  @vtplural
+ 
+& VTTEL()
+  vttel(<ving>, <destination>[, <number>])
+
+  This teleports <number> of <ving> to <destination>. By default, <number> is
+  equal to 1, and the function will return the new vtref.
+
+& VTREF()
+  vtref(<master>, <location>[, <which one>])
+
+  This returns the vtref of Vings at <location> with VTM <master>, and 
+  optionally <which one>, which is a number specifying which one you want,
+  in case you don't want the first one.
+
+& @VTPLURAL
+  @vtplural <master> = <plural>
+
+  Sets the VTPLURAL attribute of a VTM.
+
+See also: VTS
+
+& @VTS
+  @vts/set/wipe <thing> = <normal|count|none>
+  @vts/wipe <thing>
+
+  Only wizards may use this command. It sets/unsets the VTS and/or 
+  VTCOUNT flag and wipes out any instances of the given VTM that may exist.
+
+See also:  VTS

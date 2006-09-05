@@ -1,0 +1,443 @@
+& cobramush
+& kickass
+CobraMUSH main topics
+---------------------------------------------
+AGENDA		CREDITS
+DIVISION
+
+FYI: CobraMUSH changes is under the 'changes' 
+command NOT 'help changes'.
+
+& pow_inherit
+pow_inherit(t) attribute flag
+Use with caution, setting this on a object used as
+an object parent will allow children to execute this
+attribute with powers of the parent object.
+
+Currently only works with the following:
+	$-commands
+	^-Listen Patterns
+	@CONFORMAT
+	@EXITFORMAT
+POW_INHERIT attribute flag code will execute as if
+it is running off the exact object that holds the attribute
+the object that actually called it will be referenced via %@
+%! -> The Object that actually has the code.
+%@ -> Object that is parented to the object that has the code.
+
+This is a dangerous way of coding, know what your doing before
+using this method.
+
+& wait()
+wait(<time>,<functions>)
+wait(<object>,<functions>)
+wait(<object>/<time>,<functions>)
+
+  1st argument is evaluated.
+  2nd argument is evaluated upon execution.
+
+  The basic form of this function puts the function list into the wait
+  queue to execute in <time> seconds.
+
+  The second form puts the the functions into the semaphore wait queue on
+  <object>. The executor will execute <functions> when <object> is notified.
+
+  The third form combines the first two: the enactor will execute
+  <functions> when <object> is notified or when <time> passes,
+  whichever happens first.
+
+  Any form you do returns a 'QID' to be used in a signal().
+
+  More forms that support semaphores on arbitrary attributes are described in
+  help @wait2
+
+  See also the help for: SEMAPHORES, @drain, @notify, signal()
+
+& trigger()
+Trigger(<object>/<attribute>,<val1>,<val2>,...,<val10>)
+
+  Works just like @trigger that fills in those fields.
+
+  See also the help for: @trigger
+
+& signal()
+  signal(<queue id>, <signal>[,<wait arg with time signal>])
+
+  Signals a specific QID directly in the MUSH queue.
+  All signals require you control the executor of the QID, except
+  Kill signal also takes halt power of the executor.
+
+  Defined Queue Signals:
+    KILL	- Kills a Queue ID out of the queue.
+    FREEZE	- Freezes a Countdown QID in the MUSH Queue.
+    CONTINUE	- Continue contdown of a QID in the MUSH Queue.
+    TIME	- Re-Adjust time of a QID in the MUSH Queue.
+    QUERY_T	- Query The Amount of time left on a qid wait process.
+
+  Returns 1 if signal goes through, otherwise returns #-1 Error Message
+
+& @AUNIDLE
+Actions to be performed when a player un-idles after a given period of time.
+First the player's @AUNIDLE will be executed & if there is a @AUNIDLE
+on their division object that will be executed as well.
+
+& AGENDA
+This is the agenda for the CobraMUSH developers
+
+Items that might be of interest:
+
+* Write new chat system to be more modifiable & customizable
+  as well as work more inline with the DivSystem.
+* Move function restricting to a lock based simpler to commands
+* Rewrite @wall
+* Sharing of BBS/Mail/Chat systems with a web interface.
+* Implement MUD eXtension Protocol
+	    
+& @LASTACTIVITY
+  Game attribute, upon disconnect writes session activity stats for
+  player.
+
+  Format: 
+   <OnTime> <Total IdleTime for Session>  <Times_Unidled> <Commands Enacted for Session>
+
+  See Also: Idle_Total(), Idle_Average(), Unidle_Times()
+
+& Idle_Average()
+ Syntax: Idle_Average(<Player>)
+ 
+ Returns average idle time for players current session.
+
+ See Also: @LASTACTIVITY
+
+& Idle_Total()
+ Syntax: Idle_Total(<Player>)
+
+ Returns total time spent idle for current session.
+
+ See Also: Idle_Average(), Idle_Time()
+
+& UnIdle_Times()
+
+ Syntax: Unidle_Times(<player>)
+
+ Returns the Unidle_Times counter for player
+
+
+& @su
+  Syntax: @su <player name>
+
+     This command will place you into player name given under
+     the following conditions:
+       1) You have '@SU' power over the player name given
+                        or
+       2) You will be placed into a prompt and required to give
+          a password if you do not have @SU power over player.
+
+     To exit an '@su session' simply type LOGOUT and you will
+     be placed back into the previous character you were logged
+     into.
+
+    Example:
+      > @su Jimmy
+        -> Password:
+      > JimmyBuffetPass
+        -> ----Login Success Screen---
+
+     All @SU attempts successes & failed are logged.
+
+  See Also: @SD
+
+& @sd
+  Syntax: @sd <division>
+          @sd/logout
+
+  This command allows the enacting player to temporarily switch
+  into divisions under the following conditions:
+  1) You control the selected division your trying to switch into.
+  2) The division your attempting to switch into is in your secondary
+     divisions list.
+                            or
+  3) You will be placed into a prompt and rquired to give a special
+     password to enter the division.
+
+  To exit an '@sd session' simply type @sd/logout, and you will backtrace
+  through divisions you switched into.
+
+    Example:
+      > @sd #3
+        -> Password:
+      > JimmyBuffetPass
+        -> You have switched into Division: Master Division(#3D)
+
+  See Also: @sdin, @sdout, @asdout, @asdin, @SU
+
+& @program
+ Syntaxes:
+   @program[/lock] <player> = <program_object>/<program_attribute>
+   @programm[/lock] <player> = <program_attribute>
+   @program/quit <player>
+
+   This command gives the ability to place users into MUSHcoded 
+   '@programs'.  When a player is placed in a MUSH '@program', all
+   commands they feed in directly bypass commands, builtin-in or 
+   softcoded, and feed user-input to MUSHCode in a given attribute
+   specified.
+
+   Using this command requires the enacting object to have the 'PROGRAM'
+   power over the target player.  In order to use the lock switch, which
+   will prevent the user from escaping commands out of the program, also
+   requires the additional 'PROGLOCK' power over the target player.
+
+   (Continued in @program2)
+
+& @program2
+   Programs may be initiated directly on a player as such.
+  
+   Example:
+     &MyProgramAttribute MyProgramObject=@switch 
+                                             %0=Y,{@pe %#=Yes?;
+                                                   @prog/quit %#
+                                                  }
+                                                 ,{@pe %#=No?;
+                                                   @prog/quit %#
+                                                  }
+     @program *BillyBob = MyProgramObject/MyProgramAttribute
+
+     BillyBob Types:
+     >Y
+     Yes?
+   
+   (Continued in @program3)
+
+& @program3
+  Programs are normally done on the object holding the program itself
+  however, initiated through a user-defined command.  Using the same
+  MUSHCode Attribute holding the program take the following example.
+
+  Example:
+    @va MyProgramObject=$start-program:@program %#=MyProgramAttribute
+    >start-program
+    
+  The user will then see a lone '>' on the next line, and if they use 
+  a client that handles programs correctly as tinyfugue it will appear
+  in their input window.
+
+  Customized prompts may given with a program as well using the 
+  '@prompt' command explained in its own helpfile.
+
+  When in a program, that is not started using /lock, a user may escape
+  commands outside of the program using the '|' character.
+
+  Example:
+    > |WHO
+    -> ** User see's the 'WHO' **
+
+   See Also: quitprog(), program(), prompt(), @prompt
+	
+& program()
+ Syntax: 
+   program(<player>,<program_object>,<program_attribute>[,<proglock toggle>])
+
+This function will put a player in a @program as so long as the object
+that is enacting command has the 'PROGRAM' power & can use it over the
+target player.
+
+Locking a Program on a player requires that 'PROGLOCK' power over the 'target'
+player.  Locking a program on a player will in change lock a player into not
+being able to escape the program on their own will & require the program to
+or another object capable of releasing the player from the program.
+
+See Also: quitprog(), prompt() @program
+
+& prompt()
+ Syntax: prompt(<player>[,<prompt>])
+
+ A special version of pemit() that can only be used on players in a 
+ @program.  When used on players using clients that support the 
+ 'GOAHEAD' command, the <prompt> text will appear in their text 
+ input area.
+
+ Without the optional <prompt> argument a standard  hilited ansi '>'
+ symbol will appear to the user as the prompt.
+ 
+ See Also: @prompt, @program, pemit(), program(), quitprog()
+
+& @prompt
+ Syntaxes: @prompt <player>=<prompt>
+           @prompt <player>
+
+  A special version of @pemit that can only be used on players in a 
+  @program.  When used on players using clients that support the 
+  'GOAHEAD' command, the <prompt> text will appear in their text 
+  input area. 
+
+  When using the second verison of the command without the <prompt> text
+  area, a standard hilited ansi '>' symbol will be prompted to the user.
+
+  Example:
+    @program %#=MyProgram
+    @prompt %#=MyPrompt>
+
+  The user than see's 'MyPrompt>' on their screen, or in their input
+  window for the @program they are placed in.
+
+  See Also: @program, @pemit, program(), quitprog(),prompt()
+      
+& quitprog()
+Syntax: quitprog(<player>)
+
+  Will attempt to take a player out of a @program.
+
+  See Also: program(), @program
+
+& changes
+Type 'changes' for CobraMUSH Changes
+Type 'help pennmush changes' for pennmush version changes
+
+& guests
+& multi-guests
+The multi-guest system, is an a system that allows the 
+automatic creation of guest characters without manual
+creation by the admin.  The max number of multi guests
+is set in the mush.cnf file under max_guests.  If set to
+0, upto 100 guests will be allowed.  Guest characters are
+defined as being level 1 players.  As so, all level 1 
+players will be set for destruction at next purge cycle.
+
+
+& ICFUNCS
+  TODO
+
+& break()
+Syntax: break(<number>)
+Break out of an iter.
+
+For nested iters, increment the number break out more.
+Default agument is 0.
+
+Example:
+iter(1 2 3,##[if(eq(##,2),break())])
+	-> 1 2
+iter(1 2 3,iter(5 6 7,if(eq(itext(0),6),break(0))##)
+	-> 1  2   3
+iter(1 2 3,iter(5 6 7,if(eq(itext(0),6),break(1))##)
+	-> 1 
+
+
+& kickass credits
+& CREDITS
+  Maintainer: Nveid[RLB]
+  Developers: Ari[AJ], Jamie [JLW]
+  Derived From PennMUSH v1.7.7p26
+
+  For original PennMUSH credits type help pennmush credits.
+
+  Big Thanks goto to the PennMUSH  development team for giving
+  us a Stable Server to work off of.
+
+See also: help code, help license, help pennmush credits
+
+& @ZCLONE
+ Syntax: @zclone <zone>
+
+ Clones all rooms within a zone, and all exits inside those rooms.
+ The zone that is being cloned must have the privileged flag
+ 'ZCLONE_OK' set to allow it to be cloned.
+
+ The DBREF_LIST attribute on the Zone Master Object that is being
+ cloned may contain a list of dbrefs that correspond exits and
+ rooms within a zone.  When the new ZMO is created all dbrefs in
+ that list will be translated to the newly created exit/rooms
+ dbrefs.
+
+ The AZCLONE attribute on the Zone Master Object, after being
+ cloned on the newly created ZMO will be triggered to perform
+ any initialization procedures that maybe needed after the
+ @zcloning process.
+
+ See Also: ZCLONE_OK
+
+& ZCLONE_OK
+   Flag: ZCLONE_OK       (Thing)
+
+   This flag will allow any builder on the game to copy a
+   specified zone master object and all its rooms and exits
+   within that zone. Only privilege powered players may
+   set or unset this flag.
+
+& @CRON
+  Syntaxes:
+            @cron 
+	    @cron/add[/<type>] <cronjob>=<cronspec> <object>/<attribute>
+	    @cron/set <cronjob>=[!]<flag>
+	    @cron/list [<cronjob>]
+	    @cron/delete <cronjob>
+
+  Synposis: Manages the ingame MUSHCron system.
+
+  In order to use this command you must possess the 'Cron' Power.
+
+  This command alone with no switches will display all the @cron specs
+  you control.
+
+  @cron/add creates or alters the job named <cronjob>.  The <type> given
+  specified whether the attribute holds functions or commands.  If 
+  <object> is "global" then the cronjob will execute the job on all 
+  objects the 'executor' that adds the cronjob controls.   
+
+  @cron/set sets or unsets a flag on <cronjob>. Valid flags are:
+    COMMAND
+    FUNCTION  (not enabled as of this writing)
+    HALT
+
+  A cronjob may only be of the 'COMMAND' type as now for executing, 
+  functions are disabled.  If the Halt status is set on a @cron job
+  then the job will not be processed.
+
+  @cron/list will show information about the cronjobs. If you specify
+  <cronjob> you will see more information about the cronspec for that job.
+
+  @cron/delete will remove <cronjob> from the crontab.
+
+  See Also: @cron2
+
+& @CRON2
+  2 Default global cronjobs are included, being an 'Hourly' and
+  a 'Daily'
+
+  Daily spec triggering the 'Daily' attribute at the beginning of
+  each day and the Hourly spec triggering the 'Hourly' Attribute
+  at the beginning of each Hour.
+
+
+  See Also: @cron3
+
+& @CRON3
+  A cronspec describes at which time a cronjob will be executed.
+  The fields of a valid cronspec are as follows:
+
+    <minutes> <hours> <days of month> <months> <days of week>
+      0-59     0-23        0-30         0-11         0-6
+                                      Jan-Dec      Sun-Mon
+
+  Each field may contain a range of numbers, e.g. 2-5, or a * to indicate
+  0 through the maximum for that field.
+
+  A skip value can be used to select values from a range. It is specified
+  as /<skip>, e.g. 0-23/2 would execute at 0, 2, 4, etc. until 22.
+
+  You can specify a list of values in each field, seperated with a comma.
+  e.g. 0,2,4,6,10-14,20-30/5.
+
+  For the months and days of the week you may specify the english names
+  or 3 letter abbreviations. January and Sunday are 0.
+
+  * * * * *                     Every minute of every day
+  30 * * * *                    Run every half hour.
+  */30 * * * *                  Run every 30 minutes.
+  15 6,18 * * *                 6:15 am and pm
+  20 4 20 April *               Do something once a year
+  */2 * * * *                   Do it every 2 minutes
+
+  Examples:
+   @cron/add/command global_trigger_monday=0 0 * * Monday global/TRG_MONDAY

@@ -1,0 +1,58 @@
+<html>
+<head>
+<meta Name="Generator" Content="Lotus Word Pro">
+<title>Document Title</title>
+</head>
+
+<body>
+
+
+<h1 align=center>PennMUSH for OS/2 Warp -- Installation Guide</h1>
+<p>All questions regarding the OS/2 Port of PennMUSH should be directed to <a href="mailto:penn-os2@pennmush.org"><address>penn-os2@pennmush.org</address></a>. I'll answer questions as quickly as I can. It does help to have a working knowledge of *nix, OS/2 and MUSH to set up and configure Penn under OS/2. 
+<h2>Compilation</h2>
+<p>To compile PennMUSH under OS/2, you will need OS/2 Warp v3 or newer, a file system that mirrors a *nix file system and that supports long file names (I use Toronto Virtual File System for this purpose), The GNU file and text tools, SED, AWK, GREP, EMX GCC, and a *nix style shell (I use MSSH). All of these items are available from <a href="http://hobbes.nmsu.edu">http://hobbes.nmsu.edu</a>. 
+<p>First, set your GCCOPT environmental variable:
+<p>SET GCCOPT=-Zexe -Zcrtdll -Zmt -Zbsd-signals -lsigbsd -lwrap -pipe -lbsd
+<p>Then, run configure.  Depending on your setup, configure may or may not produce a good config.h file -- sometimes I get one that is right, sometimes I don't.  I've therefore sent a copy along with these instructions this time.
+<p>You'll need to fire up EPM.  Use EPM to edit src\Makefile.  First, find a line that looks like this:
+<p>LIBS=$(CLIBS) $(ILIBS) $(RLIBS)
+<p>Replace it with:
+<p>LIBS=$(ILIBS) $(RLIBS) $(CLIBS)
+<p>This keeps EMX's linker happy if you are using identd or rwho.
+<p>Find the block that builds buildinf.h:
+<p>buildinf:
+<p>	-rm ../hdrs/buildinf.h
+<p>	@echo &quot;/* This file generated automatically from Makefile */&quot; &gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define BUILDDATE \&quot;`date`\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define COMPILER \&quot;$(CC)\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define CCFLAGS \&quot;$(CCFLAGS)\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define MALLOC_O \&quot;$(MALLOC_O)\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define MALLOC_D \&quot;$(MALLOC_D)\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define RDEFS \&quot;$(RDEFS)\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define IDEFS \&quot;$(IDEFS)\&quot;&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>Replace it with this:
+<p>buildinf:
+<p>	-rm ../hdrs/buildinf.h
+<p>	@echo &quot;/* This file generated automatically from Makefile */&quot; &gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define BUILDDATE \042`date`\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define COMPILER \042$(CC)\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define CCFLAGS \042$(CCFLAGS)\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define MALLOC_O \042$(MALLOC_O)\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define MALLOC_D \042$(MALLOC_D)\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define RDEFS \042$(RDEFS)\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>	@echo &quot;#define IDEFS \042$(IDEFS)\042&quot; &gt;&gt; ../hdrs/buildinf.h
+<p>Now use GNU Make 2.75 (and I have tried pamake, pdmake, dmake, nmake and wmake, none of which will work, so you really should use GNU Make to do this) to make the file.  First do a make update, then a make, etc.  You'll end up with several .exe files.
+<p>Once you have compiled, follow the *nix directions on configuration, etc. All options (including compressing the database) seem to work -- if you find one that doesn't, please e-mail me so I can investigate it. 
+<h2>Running it</h2>
+<p>To run Penn, use mssh, or an equivalent shell, to run the *nix script files. I recommend putting this in a startup.cmd file, or placing an icon to it in a startup folder on your desktop. Use gzip and tar to extract the archive, and make sure to have EMX .9c or newer installed! It should behave exactly like the *nix version.  Remember that the 'detach' command can be used to run a process in the background:
+<p>detach sh mymushname.restart
+<p>Since MUSH doesn't need UI, and doesn't really send much to the screen, and you'll have to look at the log files anyway, I usually just go ahead and use detach.  If you aren't familiar with detach, then type help detach at an OS/2 command prompt.
+<h2>Known Issues</h2>
+<p>1. Penn's output is not currently compatible with telnet's default options. CR/LF mode needs to be set to line-feed only. TinyFugue has no problems with it. This may be a limitation in the baseline distribution, I have not determined this yet. 
+<p>2. Sometimes there were extra checkpoints in 1.6.10, that were not removed until the next time Penn used the same checkpoint number.  These usually happened when you didn't @shutdown before rebooting the PC.  I haven't seen this in 1.7.x, but I'm letting you know in advance you may have several checkpoint db's.
+<p>3. The scripts really need to be rewritten in Rexx, ORexx or Java, to remove the need to have mssh and the *nix utilities installed. 
+<p>
+
+</body>
+</html>
+

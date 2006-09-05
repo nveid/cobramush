@@ -1,0 +1,751 @@
+& division
+& division system
+CobraMUSH Division System
+------------------------------------------------------
+	The Division system in use works much like zone trees in that it allows 
+for commands to be placed on the division object and those commands are 
+accessible to people attached to the division (or parent divisions). Depending 
+on how your division tree is setup a great deal of control can be maintained 
+over who can do what to what. Below we'll use a sample division tree and 
+briefly run through it.
+
+                           Master Division
+                                  |
+                       Master Builder Division
+                                  |
+              ____________________ ________________________
+             /                    |                        \
+        Empire 1              Empire 2                 Empire 3
+            |                     |                        |
+     ------- -------           ---^---          ------- ---^--- -------
+   /        |       \         /       \        /       /       \       \
+ Branch1 Branch2 Branch3   Branch1 Branch2  Branch1 Branch2 Branch3 Branch4
+
+	Above you see a standard setup of the division system used to represent 
+various empires and organizations within them. The primary reason for this 
+setup is security. Through the Division System powers, class levels and power 
+levels grant complete control. With this control you also gain the ability 
+to grant division leaders and empire heads and people in similiar positions the 
+powers they need to best perform their duties. 
+	For example we have Player1 who is attached to Branch1 of Empire1. This 
+player regardless of the powers given to him wouldnt be able to affect anyone 
+outside of Branch1. However following that example we have Player2 who is the 
+EmpireDirector of Empire1. With the powers granted to an empire leader Player2 
+will be able to examine, modify and in many other ways help to insure that 
+Empire1 is run as smoothly as possible.
+
+See Also:
+  POWERS LIST                             DIVISION COMMANDS
+  DIVISION CREDITS                        DIVISION FUNCTIONS
+  DIVISION TUTORIAL      
+
+& DIVISION TUTORIAL
+Your Division and You: Setting it up 101
+
+Ok, you've got a brand new division and you're wondering what you should do with
+it? Well you arent the first so here is a simple step by step guide to handling
+the Division System. This guide here assumes that you are using the SCed
+interface written by Jamie.
+
+<1> First off we create the division object (if you havent already done so or
+    been given one). We use the following command to do this
+
+@div/create Example Division
+
+<2> Next we want to define the max class level and max power level that will
+    be available within this division. Note, you can not set these values
+    above your current class level and power level. We do this with the next
+    set of commands
+
+@level Example Division=29
+@powerlevel Example Division=29
+
+
+NOTE: Powerlevels are obsolete refer to help @powergroup 
+
+Continued in 'help division tutorial2'
+
+& DIVISION TUTORIAL2
+
+<3> In step three we now decide what we want our classes to be called within
+    our division. You'll know via the @reclass/list command that 29 default
+    classes are already defined. This however doesnt mean you cant make up
+    your own. In fact one of the most powerfull and flexible features of
+    the Division System the option of custom classes for ANY division.
+
+ &class_list Example Division=Head_Cheese Top_Dog Sailor Wanderer Guestie
+   You'll note that I didnt use any spaces except between classes. At the
+   time of this writting the division system does not support class names
+   with spaces in them.
+
+<4> Now that you have your first class list defined we move onto the next
+    step and that's to define the level for each class. This step is very
+    important in that it defines half of the power system. For example if
+    a class level 15 guy has the Modify power then he'll be able to modify
+    anyone of lower class within his division scope. The format for setting
+    the class levels is very simple and I'll repeat the class_list just so
+    you can see the pattern.
+
+ &class_list Example Division=Head_Cheese Top_Dog Sailor Wanderer Guestie
+ &class_level Example Division=29           25     15       5       1
+
+You dont have to have them spaced out like I do there, but one space must
+exist between each of your rank numbers. I just spaced it out so you could
+see that each must correspond to the class name in the same order.
+
+Continued in 'help division tutorial3'
+
+& DIVISION TUTORIAL3
+
+<5> Lastly we set the power_level attribute on the division object. In most
+    cases this number will shadow the class_level attribute, but it's ok
+    if it varies. To see info on what powers are availabe to what power
+    level look at @powerlevel/info <#>
+
+ &class_list Example Division=Head_Cheese Top_Dog Sailor Wanderer Guestie
+ &class_level Example Division=29           25      15      5        1
+ &power_level Example Division=29           25      15      5        1
+
+NOTE: powerlevels are obsolete as of this version of CobraMUSH
+
+& powers list
+& DIVISION POWERS
+These are a list of all the default powers supplied with the CobraMUSH
+division system and their behavior definitions.
+
+(See for Yescode Definitions: help power yescodes)
+
+Parenthesis Special Behavior definitions:
+S - Only used over self
+B - only checks LT
+L - only checks LTE
+LS - If used over a division & they don't have division power they're fucked.
+     otherwise. works like a normal power.
+# - how many places of power. 1, 2(usually only yes, & lte checking), 
+    3 - full Yes/LTE/LT range power
+
+ANNOUNCE(S1)	-  Power to use @Announce
+ATTACH(2)	-  Power to set divisions
+BCREATE(B1)	-  Power to @BCreate & @newpass builders LT
+BUILDERS(S1)	-  Ability to use builder commands
+CAN_NSPEMIT(S1)	-  Power to use NoSpoof Pemit
+CEMIT(S1)	-  Power to @cemit
+CHAT(S1)	-  Chat Admin
+CHOWN(3)	-  Ability to @chown other peoples objects without CHOWN_OK
+COMBAT(3)	-  Power for an optional SCed combat system.
+
+(Continued in Powers2)
+
+& POWERS LIST2
+& powers2
+& DIVISION POWERS2
+DANNOUNCE(S1)	-  Ability to use @Dannounce
+DIVISION(S1)	-  Power to create & maintain Division objects.
+EANNOUNCE(S1)	-  Power to use @Eannounce 
+EMPIRE(S1)	-  Power used to do empire specific things with divisions.
+EMPOWER(L1)	-  Power to empower.
+GFUNCS(S1)	-  Ability to add functions to the global register.
+HALT(3)		-  Ability to @halt other players objects.
+IDLE(S1)	-  Power to idle to the end of the world.
+JOIN(2)		-  Power to Join other players.
+LEVEL(LS2)	-  Power to change a players class level.
+LINK(3)		-  Can @link an exit to anyplace
+LOGIN(S1)	-  Not subject to login restrictions.
+MAILADMIN(3)	-  Can use mail administration commands/functions.
+MANY_ATTRIBS(S) -  Ability to have unlimited attributes on an object.
+MODIFY(3)	-  Power to modify objects not belonging to you.
+NEWPASS(3)	-  Can use @newpassword command.
+NOPAY(S1)	-  Doesn't need money for anything.
+NOQUOTA(S1)	-  Unlimited quota.
+NUKE(3)		-  Ability to Nuke players
+OPEN(3)		-  Can @open a link from any room.
+PASS_LOCKS(3)	-  Can pass most locks.
+PCREATE(S1)	-  Can use @pcreate command.
+PEMIT(3)	-  Can @pemit to most anyone.
+POLL(S1)	-  @poll'er 
+PRIVILEGE(S1)	-  help 'privilege'
+(Continued in Powers3)		
+
+& POWERS LIST3
+& powers3 
+& Division Powers3
+PRIVWHO(S1)	-  Ability to get privileged who.
+PROGRAM(3)	-  Able to put another player in a @program.
+PROGLOCK(3)	-  Power to lock another player in a @program.
+PUEBLO_SEND(S)  - Ability to send XCH_SEND and SEND Pueblo tags.
+QUOTA(3)	-  Can use @quota command on other players.
+QUEUE(S1)	-  Can queue things computationaly expensive.
+REMOTE(3)	-  Ability to do things remotely.
+SEARCH(3)	-  Ability to @search other players.
+SEE_ALL(3)	-  Power to examine objects not owned by you.
+SEE_QUEUE(3)	-  Can see other players queue. 
+SETQUOTAS(3)    -  Ability to use @SQuota on Divisions and Players.
+SITE(S1)	-  Can use game-site specific commands such as @dump, @shutdown, etc.. 
+@SU(3)		-  Allows using '@su' to switch user to another player without password.
+SUMMON(2)	-  Power to summon others.
+TEL_THING(3)	-  Power to teleport anything within your class and division scope
+TEL_PLACE(3)	-  Power to teleport to anywhere within your class and division scope
+
+& PRIVILEGE
+Usually used in combination with admin or director level.  This power implments 
+some of the more 'priviliged' aspects of a command that we don't really need to
+make a power for every single small aspect.  Though in other cases a command is
+completely blocked off by this, or in other cases, you have to have this power & 
+another power to do something..  It is a very broad capability power, & should be
+given only to people you consider 'privileged' cause its effects vary in many cases.
+
+& DIVISION COMMANDS
+For help on these commands however do not include the S- in the
+command reference.
+
+Builtin Commands:
+
+   @DIVISION	     @EMPOWER		@LEVEL
+   @POWER            @POWERGROUP     
+   
+
+Softcoded Extension Commands:  (JW Cobra extensions)
+
+   @ANNOUNCE         @DANNOUNCE         @EANNOUNCE
+   JOIN              SUMMON             
+
+& S-@ANNOUNCE
+& @ANNOUNCE
+@announce <message>
+
+	 Announces a message to all connected players provided you have the 
+	 announce power.
+
+& S-@DANNOUNCE
+& @DANNOUNCE
+@dannounce <message>
+
+	 Announces a message to all connected players within your division 
+	 provided you have the announce division power.
+
+& S-JOIN
+& JOIN
+join <player>
+
+	 Teleports you to player's location provided you have the join power 
+	 over them.
+
+& S-SUMMON
+& SUMMON
+summon <player>
+
+	 Teleports <player> to your location provided you have the summon 
+	 power over them.
+
+
+& @power
+ Syntaxes:
+           @power <power name>
+	   @power <object> = <power name>
+           @power/add <power name>=<type>
+	   @power/alias <power name>=<power alias>
+	   @power/delete <power name>
+	   @power/list
+
+   This command manipulates and views information about the in game powers.
+   With no switches, 2 versions can be given.
+       1) Supplying just the power name argument will view information about
+          the specified power.
+	                         or
+       2) Suppling the left argument as a database object, and the right argument
+          as a power name is an alias to a typical use of the @empower command.
+   
+    Switches           Description:
+       /add            Add <power Name> as a specified type power 
+       /alias          Alias <power name> with <power alias>
+       /delete         Delete specified <power name>
+       /list           List all powers
+
+  See Also: Division System, power types, @empower
+
+& power types
+  In the CobraMUSH Power System, an individual power may take up multiple bits.
+  While on the other hand, others don't need to, so an arrangement of power types
+  has been made for the CobraMUSH Power System as follow.
+
+   Self: 
+            A simple self checking '1 bit' power, this power can only be used over
+            yourself in a powercheck.
+
+   LevChk:  
+            A standard CobraMUSH LevChecking Power, has '3 bits' and is used
+	    in all yescode instances of Yes, YesLTE, and YesLT.
+
+   LevChk_LTE:
+            A Full Yes '1 bit' power, can be used over other players but only
+	    acts like the YesCode instance of 'YesLTE'
+
+   LevSet:
+            A special check for level setting.  If the power is being used over a 
+	    division player must have 'Division' power as well.  A '3 bit' full yes
+	    power just like LevChk.
+
+   BCreate:
+            A Full Yes '1 bit' power, can be used over other players.  Only works
+ 	    in the 'YesLTE' sense however does a combination check making sure 
+	    player has 'Builder' power over player as well.
+
+  See Also: Division System, power yescodes, powover()
+
+& power yescodes
+  In setting powers, and reading powers.  You may notice a variance in 'codes'
+  so to say for a powers level.  In CobraMUSH these are called 'Power YesCodes'
+
+  Yes Levels in their correspondance to each other in the columns are as 
+  follow.
+
+        Yes             YesLTE           YesLT            No
+	Yes             LTE              LT               No
+	3               2                1                0
+
+  YesCode Defintions:
+      Yes                    The  power can be used on anyone.
+      YesLTE                 Thes power can be used on anyone equal or lower than
+                             the 'object' level enacting object.
+      YesLT                  The power can be used on anyone lower than the level
+                             of the enacting object.
+      No                     Power does not exist
+
+   All yescodes abide by the normal division 'DivScope' rules.  
+
+  See Also: Division System, Power Types, @empower, DivScope
+  
+& DivScope
+  DivScope of an object is defined as an object that is in your division on the
+  division tree of below it (Reference help division system for tree).
+
+  For Example If your 'Empire 2' on the division tree, Empire 2, Branch1 & Branch2
+  are in your divscope.  Nothing above you, nor aside of you is in your divscope.
+  However Branch1 and Branch2 and anything below them are.  If your in the Master
+  Division, everything follows under your divscope.
+
+  See Also: Division System, divscope(), power yescodes, power types
+
+& @POWERGROUP
+   Syntaxes:
+             @PowerGroup <Power Group>
+	     @PowerGroup <Power Group> = <Power>
+	     @PowerGroup <Object> = [!]<Power Group> ...
+	     @PowerGroup/Raw <Object> = <Power Group>
+	     @PowerGroup/Add <Power Group>
+	     @PowerGroup/Delete <Power Group>
+	     @PowerGroup/Auto <Power Group> = <Power Set List>
+	     @PowerGroup/Max <Power Group> = < Power Set List>
+	     @PowerGroup/List
+
+    In order to use this command you must possess the 'PowerGroup' Power.
+
+    This command views and manipulates the ingame powergroup system in coordination
+    with the power system.
+
+    With Just the <Power Group> argument it views the PowerGroup info.
+    If <Power Group> is given with a second argument being the power, its an alias
+    to the /max switch.  
+    
+    Otherwise if the first argument is an object and the second is  a PowerGroup Name,
+    the command assumes you are trying to set the powergroup on an object.  In order
+    to set a powergroup on an object you Must:
+
+        A) Be able to Use 'PowerGroup' power over <Object>
+	               and
+        B) Possess the 'Max' powers of such said powergroup.
+
+    The '!' character signifying the not token, is used to reset a powergroup and
+    multiple powergroups may be set/unset at a time providing a space inbetween the
+    powergroup names.
+
+ (Continued in @powergroup2)
+
+& @powergroup2 
+   
+  An as well may only receive a powergroup if the following conditions
+  are met.
+
+  1) If the powergroup is default for the object type, the object may receive it.
+  2) If the object has no division, and it is not the default powergroup being given.
+     They may not receive any powergroup.
+  3) The division the object is a member of has the specified powergroup.
+     The object may receive the powergroup.
+  4) The division the object is a member of can receive all 'Max' powers of specified
+     powergroup.  The object may receive the powergroup
+  
+  (Continued in @powergroup3)
+
+& @powergroup3
+
+  Switches                 Description
+    /Raw                   Sets powergroup in a 'raw manner' without automatically
+                           giving.
+
+    /Add                   Adds a named powergroup
+
+    /Delete                Delete a power group, only God can Do this
+
+    /Auto                  Sets a power on or off on the automatic power list. If power 
+                           does not exist on max power list, it automatically adds it. 
+                          (For Syntax See: @empower)
+
+    /Max                   Sets a power on or off on the max power list of a powergroup.
+                           If your removing a power from the max power list and it exists
+			   on the auto power list, it is automatically removed.
+			   (For Syntax see: @empower)
+
+    /List                  List all powergroups available to set
+  
+ See Also: Division System, powergroups(), @empower, power yescodes
+
+
+ 
+& @EMPOWER
+  Syntax:  @Empower <Object> = [!]<power name>:<yescode> ...
+
+    This command attemts to grant or take away <Power Name> from <Object>.  
+    Multiple powers may be set and/or removed at the same time.  The 'NOT'
+    or '!' token given before the powername specifies whether or not you 
+    are taking away the power.  In order to give or take away a specified 
+    power from an object you must first maintain that power yourself, and 
+    be able to use the 'Empower' power over <Object>
+
+  Example:
+    > @empower *bob=See_All:YesLt
+      -> Bob(#123) : See_All(YesLTE).
+
+  See Also: Division System, power yescodes
+
+& @LEVEL
+  Syntax: @level <object>=<level>
+
+    Attempts to Set Object's level to specified level.  Levels
+    exist 1-30, 1 being a power signifying Guest Player where
+    which in that instance the object will be restricted to 
+    normal guest restrictions.  
+    
+    If 'Level 1' or the 'Guest Level' is set on a player, then the
+    player will be destroyed automatically upon disconnection.
+
+    You Must be able to use the 'Level' power over <Object> in
+    order to use this command.
+
+  Example:
+    > @level *Bob=25
+      -> Level Set to: 25
+
+  See Also: Division System, Level()
+
+& @DIVISION
+  Syntaxes: 
+          @division <object>=<division>
+	  @division/create <Object>
+     
+    Without specifying a switch the command Attempts to set 
+    <object>'s division to <division>.  The user of this command 
+    must have 'Attach' power over <object> and <Division> must be 
+    in their divscope. 
+
+    When specifying the /Create switch, the command will  create
+    a new division upon the division tree you belong in.
+
+  Example:
+   > @division *bob=#3
+     -> Division for Bob(#123) set to Master Division(#3D).
+   > @division/create Bob's Division
+     -> Division created: Bob's Division(#93D)  Parent division: Master Division(#3D)
+
+  See Also: Division System, Division()
+
+& S-@RECLASS
+& @RECLASS
+@reclass <player>=<class>
+
+        Sets <player>'s class to <class> provided that the enact has the 
+	reclass power and that <player> is within the enactor's division scope. 
+	I'am not listing classes here since they vary from division to division.
+
+EXAMPLE: @reclass *bob=Captain
+
+@reclass/list [division]
+
+	 Returns a list of all valid classes within your division. If none 
+	 are set for your division it returns classes for the next higher
+	 division above yours. If the options [division] argument is used 
+	 it will return the class list for that division, provided you have 
+	 the needed level and power to see the list.
+
+EXAMPLES: @reclass/list
+EXAMPLES: @reclass/list #1234
+
+& DIVISION FUNCTIONS
+divscope()	level()		indivall()      division()	
+hasdivpower()	updiv()		downdiv()       indiv()		
+powover()       empire()	powers()	powergroups()
+haspowergroup() pgpowers()      pghaspower()
+
+
+& haspowergroup()
+  Syntax: haspowergroup(<object>, <powergroup>)
+
+  Tests if <object> has <powergroup> or not.  Returns 1 on a valid
+  success and 0 if not.
+
+  Example:
+    >  think haspowergroup(*Nveid, Wizard)
+        -> 1
+
+  See Also: powergroups(), DIVISION FUNCTIONS
+
+& powergroups()
+  Syntaxes: powergroups(<object>)
+            powergroups()
+
+  With no arguments given this function will return all powergroups
+  avaiable for executing object to set similar to @powergroups/list.
+
+  If an object is specified, a string listing of all powergroups set
+  on the object will be returned.
+
+  Examples:
+     > think powergroups(*Nveid)
+         -> Wizard
+
+     > think powergroups()
+         -> Admin Builder Director Player 
+
+
+  See Also: haspowergroup(), pghaspower(), pgpowers(), DIVISION FUNCTIONS
+
+& empire()
+  Syntax: empire(<object>)
+     
+     Returns teh database number of <object>'s empire.  If <object> is not in a valid
+     empire the function will return #-1 INVALID DIVISION.
+
+
+   See Also: Division Functions, Division(), Empire Objects
+
+& Empire Objects
+
+   Empire Objects are normal division objects, with the 'empire object flagged. The 
+   main use, is to particularly mark an object as the 'toplevel' division for a 
+   specified division.  These objects are referenced by any of their child divisions
+   using the empire() function.
+
+   See Also: division system, empire()
+
+& powers()
+  powers(<obj>)
+	 Returns a space sperated list of all powers that <obj> has along with
+	 the number corresponding to that power's permission. 3=YES, 2=YESLTE,
+	 and 1=YESLT.
+
+   Example:
+     > think powers(*Nveid)
+        -> @SU:2 Announce:3 Attach:3 BCreate:3 Boot:3 Builder:3 Can_NsPemit:3 Cemit:3
+
+   See Also: haspower(), hasdivpower(), DIVISION FUNCTIONS
+
+& divscope()
+  Syntax: divscope(<obj1>[,<obj2>])
+
+	  Returns a 1 if <obj1> is within the division scope of the enactor, 
+	  0 if not. If <obj2> is used it returns a 1 if <obj2> is within <obj1>'s 
+	  division scope and returns a 0 if not.
+
+  Example: 
+    > say [divscope(*Bob)]
+      -> You say, "0"
+
+  This example here assumes that bob is not within your division scope. Meaning
+  if you go by the tree example used in 'help division' then bob would not be
+  in a sub-division of the one the enactor is in.
+
+  Example:
+     > say [divscope(*bob, *jamie)]
+        -> You say, "1"
+
+  This example assumes that jane is either in a division directly below bob's
+  or another sub-division of bob's and is therefore within bob's division scope 
+  of influence.
+
+  See Also: Division Functions, DivScope
+
+& division()
+  Syntax: division(<object>)
+
+    Returns the database number of a given <object>'s assosciated division.
+
+  Example:
+    > say [division(%#)]
+      -> You say, "#1234"
+
+  This example shows the function return the dbref number of the enactor's
+  division.
+
+  See Also: Division Functions, Substitutions
+
+& level()
+  Syntax: level(<object> [,<level>])
+
+        Returns the level of <object> specified.  If the optional 2nd 
+	argument is given the object's level will attempt to change to
+	the level requested and return what to what level you have the
+	ability to change the <object> to.
+
+  Example:
+    > say [level(%#)]
+      -> You say, "25"
+  
+  This example shows the funciton return of the class level of the speaker.    
+
+    > think [level(#1,29)]
+      -> 30
+
+   This example shows the attempt to change God's level from someone who
+   can't.  So it returns the level God is at after the attempt.  In a 
+   successful attempt it will return the new level the Object is set.
+
+
+  See Also: Division Functions, level(), Substituions
+
+& haspower()
+  Syntax: haspower(<object>, <power name>)
+
+    Returns 1 if the object has the named power, and 0 if it does not.
+    If the object does not exist, #-1 will be returned.
+
+    You may or may not have to be able to examine the object to use this.
+
+  See Also: Division Functions, hasdivpower() 
+
+& hasdivpower()
+  Syntax: hasdivpower(<object>, <power name> [,<yes/yeslte/yeslt>])
+
+   Returns appropriately what level <object> has <power name> at.
+       3 - Has Power at Full 'Yes' Value
+       2 - Has Power at 'YesLTE' value
+       1 - Has Power at 'YesLT' value
+
+   If the optional third argument is given, it will test the object 
+   wether or not they have the power at the given power level. 
+   A simple 1 will return if they have the power at that level, and 
+   a 0 will return if not.
+
+   Example:
+     > think hasdivpower(*Nveid, See_All)
+        -> 3
+     > think hasdivpower(*Nveid, See_All, 3)
+        -> 1
+
+   * Both return true for Nveid has 'See_All', only the second one
+     makes sure Nveid has 'See_All' at full yes.
+     
+  See Also: Division Functions, powers(), haspower()
+
+& pghaspower()
+  Syntax: pghaspower(<powergroup>, <auto/max>, <power name> [,<yescode>])
+
+   Returns appropriately what level <powergroup> has <power name> at.
+       3 - Has Power at Full 'Yes' Value
+       2 - Has Power at 'YesLTE' value
+       1 - Has Power at 'YesLT' value
+
+   If the optional fourth argument is given, it will test the powergroup 
+   wether or not they have the power at the given power yescode. 
+
+   A simple 1 will return if they have the power at that level, and 
+   a 0 will return if not.
+
+   Example:
+     > think pghaspower(Director, Max, See_All)
+        -> 3
+     > think pghaspower(Director, Maxl, See_All,  3)
+        -> 1
+
+   * Both return true for director Powergroup  has 'See_All', only the 
+     second one makes sure the Director Powergroup has 'See_All' at 
+     full yes.
+     
+  See Also: Division Functions, pgpowers(), @powergroup, power yescodes
+
+& pgpowers()
+  Syntax: pgpowers(<powergroup>, <auto/max>)
+
+   Returns a space seperated list of powers existing within a powergroup, on
+   either its auto or max powerfield.
+
+   Example:
+     > think pgpowers(Player,Max)
+       -> RPChat:3 RPEmit:3
+
+   See Also: pghaspower(), @powergroup, DIVISION FUNCTIONS
+
+
+
+& updiv()
+  Syntax: updiv(<object>)
+	  Returns a space seperated list of divisions above <obj>.
+
+  See Also: Division Functions, downdiv()
+
+& indiv()
+  Syntax: indiv(<division>[,<type>])
+
+	  Returns a space seperated list of all players within <division>.
+	  <Type> limits search to specified Object type, if no type is
+	  given the search defaults to player type.
+
+  See Also: indivall()
+
+& indivall()
+  Syntax: indivall( <division> [,<type> ] )
+
+      Returns a space seperated list of all objects within a specified
+      <division> and all  its subdivisions of a specified <type>
+      object.  If no <type> given is given, the search defaults its
+      search to the player object type.
+
+      Example:
+        > think indivall(#3)
+	   -> #1 #4 #5 #7
+	> think indivall(#3, room)
+	   -> #0 #2 #8 #9 #10 #60 #64 #69 #76 #82 #87
+
+	* The first Search returns all players in the #3 Master Division entirely
+	  The second search returns all rooms in the #3 Master division entirely.
+
+  See Also: Division Functions, indiv()
+
+& downdiv()
+  Syntax: downdiv(<division>)
+
+     Returns a space seperated list of divisions below <division> (within 
+     <divison>'s range of power).  
+
+  Example:
+     > think downdiv(#8)
+        -> #8 #152 #192 #193 #1234 #1501
+
+  See Also: Division Functions, updiv()
+
+& powover()
+  Syntax: powover(<object1>, <object2>, <power name>)
+
+	Checks to see if <Object1> has Power over <Object2> with specified 
+	<power name>.
+
+  Example:
+    > think powover(*Nveid, *Jamie, See_All)
+       -> 1
+
+  See Also: Division Functions
+
+& DIVISION CREDITS
+  Originally based off TOS TrekMUSE Division System coded by Macgyver@tos.net
+  System in use Designed by Jamie and Nveid
+
+  HardCode (C) Implementations by Nveid[RLB]
+  SoftCode (MUSHCode) Implementations by Jamie[JLW] and Nveid[RLB]
