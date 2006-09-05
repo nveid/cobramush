@@ -1,7 +1,7 @@
 <This is where you announce that they've connected to your MUSH>
 <It's a good idea to include the version/patchlevel of MUSH you're running>
 <It's a good idea to include an email address for questions about the MUSH>
------------------------ CobraMUSH-v0.72 -------------------------------------
+----------------------- CobraMUSH-v0.73 -------------------------------------
 Use create <name> <password> to create a character.
 Use connect <name> <password> to connect to your existing character.
 Use 'ch <name> <pass>' to connect hidden, and cd to connect DARK (admin)
