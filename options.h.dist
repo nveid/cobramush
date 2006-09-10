@@ -121,6 +121,7 @@
 /* Standard PennMUSH chat system.  Allows user to talk cross-MUSH
  * to each other, without needing to be in the same room.  Wether or
  * not you want this depends on what type of MUSH you want.
+ */
 #define CHAT_SYSTEM /* */
 
 /* Many MUSHes want to change the +channels to =channels. That's
