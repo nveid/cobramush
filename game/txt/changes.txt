@@ -9,6 +9,9 @@ CobraMUSH Version 0.72p1
   Version 0.72p1 is a bugfix/maintenance release of version 0.72.
   It is the first bugfix/maintenance release in that series.
 
+  Fixes:
+     * Fixed notify bug that caused the chat system to crash [AEJ]
+
 & 0.72
 CobraMUSH Version 0.72
   This is a list of changes in CobraMUSH that could be of
