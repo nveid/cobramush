@@ -1,4 +1,14 @@
 & help
+& 0.72p2
+CobraMUSH Version 0.72p2
+
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.72p2 is a bugfix/maintenance release of version 0.72.
+  It is the second bugfix/maintenance release in that series.
+
 & 0.72p1
 CobraMUSH Version 0.72p1
 
