@@ -14,6 +14,7 @@ CobraMUSH Version 0.72p1
     * Hints for mysql in linux added.  Fixes odd cases where mysql
       isn't detected on certain servers. [RLB]
     * Fixed notify bug that caused the chat system to crash [AEJ]
+    * Fixed second notify bug that caused the chat system to crash [AEJ]
 
 & 0.72
 CobraMUSH Version 0.72
