@@ -9,6 +9,10 @@ CobraMUSH Version 0.72p1
   Version 0.72p1 is a bugfix/maintenance release of version 0.72.
   It is the first bugfix/maintenance release in that series.
 
+  Minor:
+    * Configure Script updated and rebuilt using base package settings
+      and variables referencing the CobraMUSH devteam rather than the
+      PennMUSH devteam. [RLB]
   Fixes:
     * Attribute Write Lock was unlocked to everyone by default. [RLB]
     * Hints for mysql in linux added.  Fixes odd cases where mysql
