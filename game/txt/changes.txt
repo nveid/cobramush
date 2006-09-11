@@ -19,6 +19,7 @@ CobraMUSH Version 0.72p1
       isn't detected on certain servers. [RLB]
     * Fixed notify bug that caused the chat system to crash [AEJ]
     * Fixed second notify bug that caused the chat system to crash [AEJ]
+    * Fixed conflict between NA_INTER_LOCK and NA_EVALONCONTACT [AEJ]
 
 & 0.72
 CobraMUSH Version 0.72

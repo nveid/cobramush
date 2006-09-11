@@ -128,7 +128,7 @@ extern void sql_shutdown(void);
 #define NA_INTER_LOCK	0x10000		/**< Message subject to @lock/interact even if not otherwise marked */
 #define NA_INTERACTION  (NA_INTER_HEAR|NA_INTER_SEE|NA_INTER_PRESENCE|NA_INTER_LOCK)	/**< Message follows interaction rules */
 #define NA_SPOOF        0x8000	/**< @ns* message, overrides NOSPOOF */
-#define NA_EVALONCONTACT 0x10000
+#define NA_EVALONCONTACT 0x20000
 
 /** A notify_anything lookup function type definition */
 typedef dbref (*na_lookup) (dbref, void *);
