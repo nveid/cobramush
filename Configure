@@ -18,9 +18,9 @@
 # you may fetch it yourself from your nearest archive site.)
 #
 
-# $Id: Configure,v 1.1.1.1 2004-06-06 20:32:51 ari Exp $
+# $Id: Head.U 1.3 Mon, 10 Nov 2003 14:51:32 -0600 dunemush $
 #
-# Generated on Tue Sep 30 17:54:35 CDT 2003 [metaconfig 3.0 PL70]
+# Generated on Mon Sep 11 02:11:00 EDT 2006 [metaconfig 3.0 PL70]
 
 cat >/tmp/c1$$ <<EOF
 ARGGGHHHH!!!!!
@@ -425,7 +425,6 @@ plibpth=''
 xlibpth=''
 libs=''
 d_openssl=''
-libcrypto=''
 libssl=''
 lns=''
 mailer=''
@@ -630,7 +629,7 @@ case "$sh" in
 $me:  Fatal Error:  I can't find a Bourne Shell anywhere.  
 
 Usually it's in /bin/sh.  How did you even get this far?
-Please contact me (Javelin) at dunemush@pennmush.org and 
+Please contact me (Nveid) at devteam@cobramush.org and 
 we'll try to straighten this all out.
 EOM
 	exit 1
@@ -869,7 +868,7 @@ touch optdef.sh
 . ./optdef.sh
 
 : set package name
-package=pennmush
+package=cobramush
 
 : Some greps do not return status, grrr.
 echo "grimblepritz" >grimble
@@ -1190,7 +1189,7 @@ THIS PACKAGE SEEMS TO BE INCOMPLETE.
 You have the option of continuing the configuration process, despite the
 distinct possibility that your kit is damaged, by typing 'y'es.  If you
 do, don't blame me if something goes wrong.  I advise you to type 'n'o
-and contact the author (dunemush@pennmush.org).
+and contact the author (devteam@cobramush.org).
 
 EOM
 		echo $n "Continue? [n] $c" >&4
@@ -1244,7 +1243,7 @@ if $needman; then
 	cat <<EOH
  
 This installation shell script will examine your system and ask you questions
-to determine how the pennmush package should be installed. If you get
+to determine how the cobramush package should be installed. If you get
 stuck on a question, you may use a ! shell escape to start a subshell or
 execute a command.  Many of the questions will have default answers in square
 brackets; typing carriage return will give you the default.
@@ -1284,7 +1283,7 @@ Much effort has been expended to ensure that this shell script will run on any
 Unix system.  If despite that it blows up on yours, your best bet is to edit
 Configure and run it again.  If you can't run Configure for some reason,
 you'll have to generate a config.sh file by hand.  Whatever problems you
-have, let me (dunemush@pennmush.org) know how I blew it.
+have, let me (devteam@cobramush.org) know how I blew it.
 
 This installation script affects things in two ways:
 
@@ -1367,6 +1366,7 @@ trylist="
 Mcc
 cpp
 date
+line
 ln
 mail
 perl
@@ -1592,7 +1592,7 @@ EOM
 	(cd $src/hints; ls -C *.sh) | $sed 's/\.sh/   /g' >&4
 	dflt=''
 	: Half the following guesses are probably wrong... If you have better
-	: tests or hints, please send them to dunemush@pennmush.org
+	: tests or hints, please send them to devteam@cobramush.org
 	: The metaconfig authors would also appreciate a copy...
 	$test -f /irix && osname=irix
 	$test -f /xenix && osname=sco_xenix
@@ -1667,16 +1667,16 @@ EOM
 		domainos) osname=apollo
 			osvers="$3"
 			;;
-		dgux) osname=dgux 
+		dgux) osname=dgux
 			osvers="$3"
 			;;
 		dynixptx*) osname=dynixptx
 			osvers="$3"
 			;;
-		freebsd) osname=freebsd 
+		freebsd) osname=freebsd
 			osvers="$3" ;;
 		genix) osname=genix ;;
-		hp*) osname=hpux 
+		hp*) osname=hpux
 			case "$3" in
 			*.08.*) osvers=9 ;;
 			*.09.*) osvers=9 ;;
@@ -1698,7 +1698,7 @@ EOM
 			*)	osvers="$3" ;;
 			esac
 			;;
-		netbsd*) osname=netbsd 
+		netbsd*) osname=netbsd
 			osvers="$3"
 			;;
 		bsd386) osname=bsd386
@@ -1739,12 +1739,15 @@ EOM
 			mips)	osname=mips_osf1 ;;
 			esac
 			;;
-		uts) osname=uts 
+		uts) osname=uts
 			osvers="$3"
 			;;
 		qnx) osname=qnx
 			osvers="$4"
 			;;
+                mingw32*) osname=mingw32
+                       osvers="$3"
+                       ;;
 		$2) case "$osname" in
 			*isc*) ;;
 			*freebsd*) ;;
@@ -3144,10 +3147,27 @@ EOM
 if $cc $ccflags $ldflags -o gnulibc gnulibc.c $libs >/dev/null 2>&1 && \
   ./gnulibc | $contains '^GNU C Library' >/dev/null 2>&1; then
 	val="$define"
-	echo "You are using the GNU C Library"
+	echo "You are using the GNU C Library" >&4
+else
+cat >gnulibc.c <<EOM
+#include <features.h>
+int main()
+{
+#ifdef __GLIBC__
+  return 0;
+#else
+  return 1;
+#endif
+}
+EOM
+if $cc $ccflags $ldflags -o gnulibc gnulibc.c $libs >/dev/null 2>&1 && \
+  ./gnulibc; then
+        val="$define"
+        echo "You are using the GNU C Library" >&4
 else
 	val="$undef"
-	echo "You are not using the GNU C Library"
+	echo "You are not using the GNU C Library" >&4
+fi
 fi
 $rm -f gnulibc*
 set d_gnulibc
@@ -4646,9 +4666,13 @@ main()
 	if (-1 == setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &val, sizeof(val)))
 		exit(2);
 #ifdef I_NETINET_TCP
+#ifdef TCP_KEEPIDLE
 	val = 1;
 	if (-1 == setsockopt(s, IPPROTO_TCP, TCP_KEEPIDLE, &val, sizeof(val)))
 		exit(3);
+#else
+        exit(3);
+#endif
 #endif
 	exit(0);
 }
@@ -4898,50 +4922,14 @@ $rm -f open3*
 
 : see if we should include -lssl and -lcrypto
 echo " "
-if $test -r /usr/lib/libssl$_a || \
-   $test -r /lib/libssl$_a || \
-   $test -r /usr/local/lib/libssl$_a ; then
-	echo "-lssl found." >&4
-	libssl='-lssl'
-else
-	xxx=`./loc libssl$_a x $libpth`
-	case "$xxx" in
-	x)
-		echo "No ssl library found." >&4
-		libssl=''
-		;;
-	*)
-		echo "SSL library found in $xxx." >&4
-		libssl="$xxx"
-		;;
-	esac
-fi
-
-if $test -r /usr/lib/libcrypto$_a || \
-   $test -r /lib/libcrypto$_a || \
-   $test -r /usr/local/lib/libcrypto$_a ; then
-	echo "-lcrypto found." >&4
-	libcrypto='-lcrypto'
-else
-	xxx=`./loc libcrypto$_a x $libpth`
-	case "$xxx" in
-	x)
-		echo "No crypto library found." >&4
-		libcrypto=''
-		;;
-	*)
-		echo "SSL crypto library found in $xxx." >&4
-		libcrypto="$xxx"
-		;;
-	esac
-fi
 
 d_openssl="$undef"
-case "x$libssl$libcrypto" in
-	x)
-		;;
-	*)
-$cat > test_openssl.c <<EOM
+
+if $test "x$no_openssl" = "x"; then
+
+  libssl="-lssl -lcrypto"
+
+  $cat > test_ssl.c <<EOM
 #include <stdio.h>
 #include <stdlib.h>
 #include <openssl/opensslv.h>
@@ -4951,27 +4939,30 @@ int main(int argc, char **argv) {
 }
 EOM
 
-if $cc $ccflags $ldflags -o test_openssl test_openssl.c $libs $libssl $libcrypto >/dev/null 2>&1 ;
-then
-    echo 'You have openssl...' >&4
-    version=`./test_openssl`
-    if $test $? -eq 0; then
-      d_openssl="$define"
-      echo '...and at least version 0.9.6. Great.' >&4
-    else
-      echo '...but not at least version 0.9.6.' >&4
+  if $cc $ccflags $ldflags -o test_ssl test_ssl.c $libs $libssl >/dev/null 2>&1 ;
+  then
+      echo 'You have openssl...' >&4
+      version=`./test_ssl`
+      if $test $? -eq 0; then
+	echo '...and at least version 0.9.6. Great.' >&4
+	d_openssl="$define"
+      else
+	echo '...but not version 0.9.6 or later.' >&4
+	libssl=''
+      fi
+  else
+      echo "You don't seem to have openssl." >&4
       libssl=''
-      libcrypto=''
-    fi
-else
-    echo "You don't seem to have openssl." >&4
-    libssl=''
-    libcrypto=''
-fi
-$rm -f test_openssl* core
+  fi
+  $rm -f test_ssl* core
 
-	;;	
-esac
+else
+
+  echo "Skipping openssl tests." >&4
+  libssl=''
+
+fi
+
 : see if rename exists
 set rename d_rename
 eval $inlibc
@@ -6061,6 +6052,18 @@ esac
 case "$passcat" in
 '') passcat='cat /etc/passwd';;
 esac
+case "$hostcat" in
+'') hostcat='cat /etc/hosts';;
+*)  ;;
+esac
+case "$groupcat" in
+'') groupcat='cat /etc/group';;
+*)  ;;
+esac
+case "$passcat" in
+'') passcat='cat /etc/passwd';;
+*)  ;;
+esac
 
 : now get the host name
 echo " "
@@ -6790,10 +6793,10 @@ while test "$cont"; do
 done
 
 : offer to join the mailing list
-list_request='pennmush-request@pennmush.org'
-list_sub="subscribe"
-list_unsub="unsubscribe"
-list_name="pennmush"
+list_request=''
+list_sub=""
+list_unsub=""
+list_name=""
 $cat <<EOM
 
 There is a mailing list for discussion about $package and related issues.
@@ -7102,7 +7105,6 @@ ksh='$ksh'
 ldflags='$ldflags'
 less='$less'
 libc='$libc'
-libcrypto='$libcrypto'
 libmysqlclient='$libmysqlclient'
 libpth='$libpth'
 libs='$libs'

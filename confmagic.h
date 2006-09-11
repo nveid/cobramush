@@ -6,7 +6,7 @@
  * If you wish to get rid of this magic, remove this file and rerun metaconfig
  * without the -M option.
  *
- *  $Id: confmagic.h,v 1.1.1.1 2004-06-06 20:32:51 ari Exp $
+ *  $Id: Magic_h.U,v 3.0.1.2 1993/11/10 17:32:58 ram Exp $
  */
 
 #ifndef _confmagic_h_
@@ -80,7 +80,6 @@
 #endif
 #endif
 
-/*
 #ifndef HAS_SIGCHLD
 #define SIGCHLD	SIGCLD
 #endif
@@ -88,7 +87,6 @@
 #ifndef HAS_SIGCLD
 #define SIGCLD	SIGCHLD
 #endif
-*/
 
 #ifndef HAS_INDEX
 #ifndef index

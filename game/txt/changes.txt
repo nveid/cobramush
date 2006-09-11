@@ -5,6 +5,9 @@ CobraMUSH Version 0.73
   interest to the user.
   (See 'changes entries' for a list of all versions.)
 
+ Fixes:
+   * All fixes from 0.72 stable development series
+
 & 0.72
 CobraMUSH Version 0.72
   This is a list of changes in CobraMUSH that could be of

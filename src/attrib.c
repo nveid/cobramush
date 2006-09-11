@@ -148,6 +148,10 @@ int cannot_write_this_attr_internal(dbref player, ATTR *attr, dbref obj, char sa
   if(!controls(player, lock_owner) && AL_WLock(attr) != TRUE_BOOLEXP && !eval_boolexp(player, AL_WLock(attr), obj, NULL))
     return 1;
 
+  /* As well if no lock is set.. and they don't controlt he player in the first place.. then they obviously can't.. */
+  if(AL_WLock(attr) == TRUE_BOOLEXP && !controls(player, obj))
+    return 1;
+
   return 0;
 }
 /*======================================================================*/
