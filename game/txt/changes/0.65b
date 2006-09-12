@@ -1,0 +1,31 @@
+& 0.65b
+CobraMUSH Version 0.65b
+ This is a list of changes in CobraMUSH that could be
+ of interest to the user.
+    (changes entries for list of all versions.)
+ Minor Changes:
+   * mortal WHO now shows Empire Abbreviation for players.
+   * Servercode is now also aimed at supporting a RP environment.
+   * New Queue Signal System inspired from Rhost Thaw & Freeze System.
+   * Helpfile updates
+   * Compile Warning Optimization 
+ Flags:
+   * MUTE flag added, settable on a player or room. On player MUTES
+     them individually, on a room it mutes everyone in the room.
+ Powers:
+   * RPTEL power now exists, which is required to move someone
+     in RPMODE.
+ Functions:
+   * new wait(), trigger(), and signal() functions
+   * version() reported pennmush version info when
+     it should show cobra specific version info.
+ Fixes: 
+   * Guest description wasn't being set when created, now it is.
+   * powerlevel setting bug fixed
+   * program prompting finally fixed.
+      - Fixes reported from pennmush changes files -
+   * @command/delete of a non-existing command is crash worthy.
+   * Crash bug in is_objid crashes with no string argument.
+   * string sub parser buffer overflow bug fixed.
+   * pennies overflow integer fixed.
+   * replace_string2 overflow fixed

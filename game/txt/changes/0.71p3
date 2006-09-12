@@ -1,0 +1,18 @@
+& 0.71p3
+CobraMUSH Version 0.71p3
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.71p3 is a bugfix/maintenance release of version 0.71.
+  It is the third bugfix/maintenance release in that series.
+
+  Bugfixes:
+     * Fedora Core systems caused crashes within @chown and
+       @powergroup. Reported by Apollo@New Republic. [RLB]
+     * CobraMUSH Configuration type 'CONF' conflicts with openssl,
+       CONF type.  Reported by lice. [RLB]
+     * pgpower(powergroup,max) was not returning max powers. [RLB]
+     * Game would crash upon a @pcreate in a newly created 
+       database before a @shutdown/reboot
+

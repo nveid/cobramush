@@ -1,0 +1,53 @@
+& 0.70
+CobraMUSH Version 0.7
+  This is a list of changes in CobraMUSH that could be of 
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Release Date: Sun Oct 09 17:24:10 2005
+
+  Major Changes:
+       * Power System rewritten to allow for database
+         dumpable type powers.
+       * PowerLevels removed
+       * PowerGroups Introduced
+  Minor Changes:
+       * @AtrLock Rewrite - Read & Write locks
+       * Seperate database now used for flags
+       * @command restrict permissions based on lock
+         boolexps*
+       * Added lock_command config parameter to config
+         loading.
+       * Fixed cobramush to properely handle win32 
+         support
+       * Know System Removed from source
+       * look <exit> is now recursively searched upwards
+         through the parent tree to find an exit to 
+	 look at just like going through an exit is.
+       * Added some extra @dbck'ing checks. 
+       * When destroying a division, all sub-divisions
+         now get passed up the divtree while everything
+	 else in the division itself gets thrown to 
+	 No division.
+       * Sub-Divisions on a division object now listed
+         under 'Sub-Divisions' in an examine or brief
+	 of the object instead of combining with
+	 Contents.
+       * Hacked Thorvald Natvig's VTS from '98 in using
+         the VTS #define to enable or disable it.
+  Attribute Changes:
+       * Added INVFORMAT attribute to specify a custom
+         inventory report.
+  Command Changes:
+       * @empower now sets multiple powers at a time
+       * @powergroup and @power command introduced as part of 
+         the new db power system
+       * @su commands introduced
+  Function Changes:
+       * ldivisions() function added to list all divisions
+         within an object.
+       * Power Related Functions Added: powergroups() and  
+         haspowergroup() added.
+  Fixes:
+       * Global Ufuns weren't default the Originating
+         Object Reference Right.
