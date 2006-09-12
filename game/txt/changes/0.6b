@@ -1,0 +1,52 @@
+& 0.6b
+CobraMUSH Version 0.6b
+ This is a list of changes in CobraMUSH that could be 
+ of interest to the user.
+    (changes entries for list of all versions.)
+ PennMUSH Update:
+   * Updated to base penn version 1.7.7-p32
+ Minor Changes:
+   * pow_inherit attribute flag now supports @CONFORMAT
+     and @EXITFORMAT code. (help pow_inherit added)
+   * PrivCheck improvements
+   * Know System Improvements
+ Flags:
+   * AUTH_PARENT flag added.  Special authorization for parents
+     in use with twinchecks to override twincheck attribute
+     queue behavior off the parent.
+   * RPMODE Flag has been incorporated as a central function
+     in CobraMUSH. Players now need RPCHAT power to chat while
+     in RPMODE, & RPEMIT power to emit while in RPMODE. And
+     paging is restricted unles one of the parties is level 24
+     or greater.
+ Commands:
+   * Hidden players no longer appear connected when paged by
+     someone that can't see them.
+   * @ATRCHOWN is now restricted to God if in secondary queue
+     or owner in primary.
+ Functions:
+   * Global functions can now be made to be executed ulocal style
+     via throwing ulocal in the restriction field of @function
+ Locks:
+   * DIVISION boolexp in locks had the '+' key added to lock
+     to a division and & all its children.
+ Fixes:
+   * @sweep showed objects that had commands & were set halt
+     or no_command as listening for commands.. Fixed
+   * @search me required search:lte. Fixed, you can now
+     search yourself.
+   * Security Hole that allowed people forcing another object
+     with a power they don't have to perform 'X' task, has been
+     resolved. As well as $-commands set by someone on someone
+     else to perform 'X' task that they can't do has been resolved.
+        New config options exist:
+		twinchecks  <bool> (enable this type of check or not)
+		powerless   <dbref> (a powerless object at level: 1(1))
+   * @DEBUGFORWARDLIST wouldn't forward to someone if they
+     were higher prived than them, even if attribute set by
+     a guy that was prived as such.  Now checks old check 
+     in combination with attribute ownership.
+   * ok_tag_attribute was breaking with new gcc
+   * div_t struct was changed to div_tab to allow for stdlib.h
+     include
+   * PrivWho didn't work correctly.  Works again.

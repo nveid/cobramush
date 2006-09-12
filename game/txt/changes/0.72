@@ -1,0 +1,122 @@
+& 0.72
+CobraMUSH Version 0.72
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Attributes:
+     * New 'AAHEAR' and 'AMHEAR' attribute flags, when set
+       on a ^listen attribute, cause it to behave like
+       @aahear or @amhear instead of like @ahear. [AEJ]
+  Locks:
+     * New DBREFLIST^<attrib> lock key checks if the enactor is listed
+       in the attribute by dbref or objid [AEJ]
+  Flags:
+     * LIGHT now overrides DARK consistently [AEJ]
+     * TRACK_MONEY flag on players causes the player to be
+       informed when his objects spend money [AEJ]
+  Powers:
+     * Pueblo_Send allows you to send Pueblo tags [AEJ]
+     * Many_Attribs allows an object to have more than the configured
+       maximum number of attributes [AEJ]
+     * Nuke is now used to limit who may destroy players. [RLB]
+     * CQuota Power Renamed to SetQuotas. [RLB]
+  Commands:
+     * @program now warns owner on attempting to use prompts within
+       the command. [RLB]
+     * lock_command to offers an optional fail message in the configuration
+       directive similar to restrict_command. [RLB]
+     * @list/powers works to list powers again. [RLB]
+     * @config/powers works to list powers again. [RLB]
+     * Command switches can now be individually locked
+       using the SWITCH^ lock key. [RLB]
+     * Wildcards can now be used in listing powers via:
+       @power/list, @list/powers, & @config/powers. [RLB]
+     * @newpassword can now be used to set passwords on
+       division objects. [RLB]
+     * @SD command added which allows switching between 
+       divisions. [RLB]
+     * @edit/check will display the results of an edit without
+       actually modifying the attribute [AEJ]
+     * @chan/recall now takes a <start line> parameter [AEJ]
+     * UNIMPLEMENTED_COMMAND allows hooks to disabled commands [AEJ]
+     * @power DEBUG switch removed. Due to its reason existed for 
+       original power system development. [RLB]
+  Functions:
+     * PrimaryDivision() Added to reference the primary division of a player
+       no matter where they are @sd'd to. [RLB]
+  Channels:
+     * Channels now ignore interaction rules by default, unless the
+       'interact' channel flag is set on them [AEJ]
+     * Default permissions for new channels are set by the channel_flags
+       configuration directive [AEJ]
+  Attributes:
+     * @SDIN, @OSDIN, @ASDIN added to be processed upon using @sd to 
+       switch into a division. [RLB]
+     * @SDOUT, @OSDOUT, @ASDOUT added to be processed upon exiting a division
+       when using @sd. [RLB]
+  Mail:
+     * @mailfilter attribute filters new mail into a folder if it returns
+       a folder name or number [AEJ]
+     * @mailforwardlist forwards mail to the list of dbrefs specified in
+       it, if you pass the MailForward lock on the target [AEJ]
+  Major changes:
+     * Chat.db now begins with +F for CobraMUSH databases; the reader
+       checks for +V to do a PennMUSH chat.db conversion [AEJ]
+     * New executable: 'console' will run the full CobraMUSH minus
+       networking, interacting with the user on stdin/stdout [AEJ]
+  Minor changes:
+     * All verbs, and generally anything that utilizes queue_base_attribute()
+       now acknowledges powinherit attribute flag.
+     * @program now saves Q registers through out the program.
+     * VTS removed from distribution. [RLB]
+     * LFAIL/OLFAIL/ALFAIL messages are activated whenever a @lock/leave
+       is checked and failed, not just when a leave command fails (so they
+       work for failed attempts to leave via exits and @tel) [AEJ]
+     * adjust_divisions() internal function, now only adjusts divisions
+       of a player's objects that were of their division that is being
+       changed. [RLB]
+     * Added conversion table for chat.db channel flags [AEJ]
+     * %u evaluates to the evaluated $command [AEJ]
+     * %i[0-9] give the same as itext(0)-itext(9) [AEJ]
+     * Rooms are considered connected in @dbck if they are connected to
+       the base room -or- to a room that is set FLOATING [AEJ]
+     * @invformat no longer receives the penny count as %0 and
+       its former %1 is now %0, the list of inventory items [AEJ]
+     * @conformat and @invformat now receive a |-separated list of names
+       as %1 [AEJ]
+     * Moved chat and mail function help from cobra_func.hlp to
+       cobra_chat.hlp and cobra_mail.hlp [AEJ]
+     * Removed vestiges of the previous attempt at a new chat system [AEJ]
+  Fixes:
+     * All fixes and additions from 0.71 maintenance release
+       patches.
+     * PennMUSH version numbers are no longer reported. [AEJ]
+     * cflags() now reports the N (nonames), T (notitles), and
+       C (nocemit) flags for channels [AEJ]
+     * If A can't hear from B (due to interactions), then A's puppet
+       would send a null line when it heard B; now the puppet doesn't
+       send at all [AEJ]
+     * Bug in reading dbs with no chatdb present [AEJ]
+     * playermem() and objectmem() now return #-1 NO MATCH consistently [AEJ]
+     * @list/list() now work with flags and powers [AEJ]
+     * @attribute NAME and @attribute @NAME now both show information about
+       attributes and @attribute/delete @NAME now also works [AEJ]
+     * Setting a password ending in a % is now possible [AEJ]
+     * @attribute did not check for valid attribute names before
+       adding them [AEJ]
+     * access.cnf checks now check for ipv6 addresses, too [AEJ]
+     * more consistent use of #defined telnet codes [AEJ]
+     * Renamed CONFGROUP to COBRA_CONFGROUP, just in case that interferes
+       with SSL the way that CONF did [AEJ]
+     * Fixed crash bug in pcreate() [AEJ]
+     * Fixed crash bug in setunion() [AEJ]
+     * Defunct internal function reverse_exits() existed to no use, for what 
+       reverse() served. [RLB]
+  Helpfiles:
+     * %q0-9 and %qa-z are now raliased to help r() [RLB]
+     * Help for grab() now references graball() [AEJ]
+     * Help for substitutions{2,3,4} aliased to %2, %3, and %4 [AEJ]
+     * Help for ulocal() clarified [AEJ]
+     * Help for strreplace() touched up [AEJ]
+

@@ -1,0 +1,53 @@
+& 0.71
+CobraMUSH Version 0.71
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list all versions.)
+
+  Minor Change:
+     * Version numbering changed, '-' will no longer preceed
+       maintenance patches, they will be preceeded by p.
+       This will allow easier migration of CobraMUSH to
+       debian packages.
+     * Began using vim folding on certain source files
+     * Jeremy Ritter's MUSHCron is now being used in replacement
+       of @hourly & @daily.  However hourly & daily,  still work 
+       as default global crontab entries.
+     * MUSH now auto-detects your connection for what type of
+       @prompt your connection can handle.  'WeirdPrompt's flag
+       no longer used as an affect of this.
+     * Global Attribute Locks are now possible as well as a catchall
+       attribute for any non-standard attribute.
+  Commands:
+     * @program now accepts the the format of @program obj=atr
+       to default to the executing object the attribute  is on.
+     * @program no longer handles a prompt, @prompt must be used
+       instead.
+     * @attribute/lock, @attribute/write, added todo apart of global
+       attribuet locking.
+  Configuration:
+     * Guest prefix moved to a config file option
+     * Option to use roman numeral numbering of guests 
+       given.
+     * Default Player Powergroup configuration option added.
+  Functions:
+     * program() no longer handles prompts, prompt() must be used.
+     * arabic2roman() converts arabic numbers to roman numerals.
+     * roman2arabic() converts roman numeral characters to
+       arabic characters.
+     * pghaspower(), and pgpowers() functions added.
+     * powergroups() with no arguments now gives the equivalent of
+       @powergroups/list
+  Helpfiles:
+     * documented @prompt, prompt(), pghaspower(), and pgpowers()
+     * modified @program, and powergroups() helpfiles for new syntaxes
+  Fixes:
+     * ooref overwrite bug in process_expressoin
+     * Deleting a powergroup that exists on a player would
+       crash the game.
+     * Newly created databases would create the master division
+       twice.
+     * Attributes weren't being cloned correctly.
+     * Deleting powers when a powergroup had no powers would crash
+       the game.
+

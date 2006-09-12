@@ -1,0 +1,18 @@
+& kv0.0.2a
+CobraMUSH Version 0.0.2a
+This is a list of changes in CobraMUSH that could be
+of interest to the user.  
+
+(changes entries for list of all versions.)
+ 
+  Minor Changes:
+  * DB Byte code reworked to allow the max-num of powerz to be upped on the fly
+  * Much of the division code rewritten to be easier to understand & more efficient
+  		-Commands-
+  * @division broken up into @powerlevel @empower @level & @division is now just
+    used for setting & creating divisions.
+  * Platform base name changed to CobraMUSH
+ Fixes:
+  * command power checking fixed.. Previously it checked AND powers, changed it to be
+    OR powers as was intended.
+

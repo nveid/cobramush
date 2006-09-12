@@ -1,0 +1,17 @@
+& 0.67
+CobraMUSH Version 0.67
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Functions:
+      * Idle_Average(<player>) Reports players Average
+        Idle time for their current session.
+  Attributes:
+      * LASTACTIVITY - Keeps track of players last session
+        activity
+  Fixes:
+      * lsearch eplayer, erooms, ethings, was bringing up
+        every object in the database.  Fixed to only bring
+        up corresponding types. [AEJ]
+

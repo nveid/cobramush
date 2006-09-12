@@ -1,0 +1,48 @@
+& 0.66b
+CobraMUSH Version 0.66 
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Minor Changes:
+      * Creation & Implementation of SWMP
+        Sql Web<->MUSH Protocol
+      * Sql_Mroom config addition
+      * TwinCheck Optimizations
+      * Inherit Behavior changed
+      * Modified: block kept on non players objects now.
+        Shows what the last modification on an object was.
+	Only owner or Director can see this.
+  Commands:
+      * Customizeable huh message code
+      * @ZCLONE - Copy a whole zone with the touch
+                  of a button.
+  Functions:
+      * Idle_Average(<player>) Reports players Average
+        Idle time for their current session.
+  Attributes:
+      * LASTACTIVITY - Keeps track of players last session
+        activity
+  Fixes:
+      * Fixed Inheritable Controls bug
+      * Flag Setting fixes 
+      * Help Updates
+      * @function updates now update function flags
+  RP Systems:
+      * Must have a valid TrueRace set before you can go IC now
+      * Combat RPLog System added. 
+      * Paralyzed/Blind flags added
+  PennMUSH Incorporations: (view with changes)
+      * pennincorp.1 
+
+& pennincorp.1
+      * Ported everything from penn patch 1.7.7p39 & p40
+        except:
+           - buy command and assosciated parts
+	   - simplified @version code.
+	   - @ps/all label patch
+	   - INFO Command and PennMUSH stuff
+      * @assert command
+      * @break/@assert default nosuccess action list
+      * Penn Related Fixes upto 1.8.0p6 
+

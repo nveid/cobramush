@@ -1,0 +1,28 @@
+& kv0.0.3b
+CobraMUSH Version 0.0.3b
+This is a list of changes in CobraMUSH that could be 
+of interest to the user.
+ (changes entries for list of all versions.)
+
+  Major Changes:
+	* Ported kickass code to 1.7.7p16 from 1.7.5p6 [AEJ]
+	* Patched to 1.7.7p26 [RLB]
+	* Completed Wiz/Roy compatability.
+	    - Wiz/Roy now marker flags to designated powerlevels
+	* DB Conversion improved.
+	    - Powers now converted to new powers
+	    - Wiz/Roy converted over properely
+	    - Master Division auto created & all except unregistered flagged players assigned
+	    - All Wiz, Roy, Guest, Unregistered, & Normal player levels set accordingly.
+  Minor Changes:
+  	* Completed Wiz/Roy compataibility.
+	    - Wiz/Roy re-implemented as marker flags 
+	    - Wiz Powerlevel & Level are both 29(default)
+	    - Roy Powerlevel is 25 & Level is 28(default)
+  	* DB Creation modified to create a division format database.
+	* @showlog taken out for redesign
+	* The following taken out temporarily due to drastic
+	  upgrade in base penn version.
+	    - AutoCreated Guests
+	    - @hourly
+	    - Pass_Locks Power

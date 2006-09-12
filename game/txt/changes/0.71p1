@@ -1,0 +1,18 @@
+& 0.71p1
+CobraMUSH Version 0.71p1
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.71p1 is a bugfix/maintenance release of version 0.71.
+
+  Helpfiles:
+     * @cron helpfile being cleaned up for corrections to actual
+       behavior. [RLB]
+  Bugfixes:
+     * Multiple powergroups can now be added to an object, and
+       powergroups are added by way of an insertion sort so that
+       they are kept in alphanumeric order on each object.
+     * Cleaned up removal of powergroups from objects.
+     * Invalid cron specs could crash the game.  [RLB]
+

@@ -1,0 +1,39 @@
+& 0.5b
+& kv0.0.5b
+CobraMUSH Version 0.5b
+  This is a list of changes in CobraMUSH that could be
+  of interest to the user.
+    (changes entries for list of all versions.)
+  Minor Changes:
+    * New auto-guest system implemented.  'help guests'
+    * Incorporated Division, Level, PowerLevel, & Power checks to the 
+      lock boolexp parser.
+    * Added optional Know System. 'help know system'
+    * God level now bypasses command restrictions
+    * Documented full list of powers under 'help powers'
+    * Documented @program
+    * Re-defined CMD_T's bit locations.
+    * Removed wizmotd.txt from MANIFEST
+    * Pass_Locks power changed to enable passing locks of all types
+      except Use-Lock.
+    * Changed Version Scheme.
+  Flags:
+    * Level 28 with privileged power can now set themselves Dark.
+  Powers:
+    * Broken Announce up into 3 different powers. Previously Announce
+      had 3 bits, but was only a self-checking power so it was pointless
+      to be of that magnitude, so it was split up as should be.
+      - Announce
+      - EAnnounce
+      - DAnnounce
+  Functions:
+    * Added kname(), check_know() as part of the know system
+    * name() behavior changes when ran on a object or room that
+      has the 'ICFUNC's flag
+    * Added break() to escape iter() loops.
+    * Added loctree() to feed a complete string tree list of an object's location.
+  Fixes:
+    * Minimal DB creation didn't set master division object's Home & Location
+      correctly.  Causing a crash when a subdivision was made.
+    * Channel Admin channel setting didn't work correctly. Fixed.
+

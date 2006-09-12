@@ -1,0 +1,16 @@
+& 0.70-2
+CobraMUSH Version 0.70-2
+  This is a list of changes in CobraMUSH that could be of 
+  interest to the user.
+  (changes entries for list all versions.)
+
+  Release Date: Tue Oct 25 20:42:05 2005
+
+  Fixes:
+    * Clean up on left over #ifdefs
+    * Helpfile grammatical, clarifications, and general helpfile
+      updates
+    * Chat Token Alias wasn't defaulty defined to '=', which
+      broke make update.
+    * Reverted VTS back to a usable stage.
+

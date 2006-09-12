@@ -1,0 +1,25 @@
+& 0.71p2
+CobraMUSH Version 0.71p2
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.71p2 is a bugfix/maintenance release of version 0.71.
+  It is the second bugfix/maintenance release in that series.
+
+  Distribution changes:
+     * MANIFEST updated to point to restart.dst instead of restart
+     * 'make install' will generate game/restart, as will 'make update'
+
+  Helpfile Changes:
+     * Grammar and spelling corrections in 'help @powergroup2'
+     * Defunct know system existed in helpfiles, removed.
+     * @program helpfile clarified
+     * Example added to help @prompt
+
+  Bugfixes:
+     * adjust_divisions() could crash when adjusting powergroups
+     * @su remembers the exit path across a @shutdown/reboot
+     * Warnings are now issued if you @parent an object to something
+       whose owner is different and which is not set AUTH_PARENT
+

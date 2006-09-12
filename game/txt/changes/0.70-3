@@ -1,0 +1,23 @@
+& 0.70-3
+CobraMUSH Version 0.70-3
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list all versions.)
+
+  Release Date: Fri Nov 04 15:41:54 2005
+
+  Minor Changes:
+     * Patchlevel file in rootlevel CobraMUSH directory
+       changed to reflect CobraMUSH version and maintenance
+       release information.
+     * Created changes.sh for easy compilation of changes
+       index file for development purposes.
+  Helpfile Changes:
+     * WeirdPrompts found undocumented, documented in
+       'help flag list', 'help @program', and created
+       WeirdPrompts helpfile entry.
+     * AUnidle referenced from 'help attributes' now.
+  Fixes:
+     * free_object made unstatic to not allow certain third-party
+       packages work with CobraMUSH.
+

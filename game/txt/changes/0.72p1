@@ -1,0 +1,22 @@
+& 0.72p1
+CobraMUSH Version 0.72p1
+
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (See 'changes entries' for a list of all versions.)
+
+  Version 0.72p1 is a bugfix/maintenance release of version 0.72.
+  It is the first bugfix/maintenance release in that series.
+
+  Minor:
+    * Configure Script updated and rebuilt using base package settings
+      and variables referencing the CobraMUSH devteam rather than the
+      PennMUSH devteam. [RLB]
+  Fixes:
+    * Attribute Write Lock was unlocked to everyone by default. [RLB]
+    * Hints for mysql in linux added.  Fixes odd cases where mysql
+      isn't detected on certain servers. [RLB]
+    * Fixed notify bug that caused the chat system to crash [AEJ]
+    * Fixed second notify bug that caused the chat system to crash [AEJ]
+    * Fixed conflict between NA_INTER_LOCK and NA_EVALONCONTACT [AEJ]
+

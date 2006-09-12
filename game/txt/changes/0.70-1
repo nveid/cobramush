@@ -1,0 +1,14 @@
+& 0.70-1
+CobraMUSH Version 0.70-1
+  This is a list of changes in CobraMUSH that could be of
+  interest to the user.
+  (changes entries for list of all versions.)
+
+  Release Date: Mon Oct 10 20:51:00 2005
+
+  Fixes:
+     * Master Division Couldn't keep powers or a level through
+       a @dbck.
+     * @shutdown was required localhost, fixed to require
+       Site power
+

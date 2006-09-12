@@ -1,0 +1,31 @@
+& kv0.0.1a
+KickAss Version 0.0.1a
+Major changes:
+  * Division system - Replaced Old Power System with DivPower System
+		    - Use dpowers.cnf for powerlevel definitions
+  * Replaced Old WizRoy Priv System with Div/Level/Power Priv System
+Commands:
+  * @division main interface to division system
+  * @showlog implemented to view logs in MUSH
+  * Many commands usability has changed with div/powerz system
+  * @program Added
+  * @Hourly Added [AEJ]
+Functions:
+  * Added division functions divscope(), level(), powerlevel(), division(),
+    hasdivpower() updiv(), downdiv(), indiv(), powover()
+  * Added cansee() function used for checking if a player can examine another
+    player
+  * haspower() now aliased to hasdivpower() to maintain compatibility
+  * baseconv() added [AEJ]
+Minor changes:
+  * Guests redid: - Guest Level replaces Guest Power
+		  - Guests AutoCreated at login now 
+  * Unregistered level replaces Unregistered Flag
+  * Division Object Type added
+  * Forcing of your own objects not logged
+  * Unkillable power ripped out along with kill command
+  * WizMOTD Removed along with @wizwall @rwall & friends
+  * Added AriSpace Option [AEJ]
+  * '%z' Ansi substitution
+See 'help 1.7.5p4' for penn based off of.
+
