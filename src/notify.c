@@ -826,10 +826,10 @@ notify_anything_loc(dbref speaker, na_lookup func,
 	const char *tmpbuf = msgbuf;
 	for (j = 0; j < 10; j++)
 	  wsave[j] = global_eval_context.wenv[j];
-  	global_eval_context.wenv[0] = msgbuf;
-  	for (j = 1; j < 10; j++)
-  	  global_eval_context.wenv[j] = NULL;
-  	bp = eocm;
+	global_eval_context.wenv[0] = msgbuf;
+	for (j = 1; j < 10; j++)
+	  global_eval_context.wenv[j] = NULL;
+	bp = eocm;
 	process_expression(eocm, &bp, &tmpbuf, target, speaker, speaker,
 			   PE_DEFAULT, PT_DEFAULT, NULL);
 	*bp = 0;
