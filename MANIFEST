@@ -14,7 +14,6 @@ game/txt/evt/index.evt
 game/txt/evt/pennmush.evt
 game/txt/Makefile
 game/txt/README
-game/txt/changes.sh
 game/txt/changes.txt
 game/txt/compose.sh.SH
 game/txt/connect.txt

@@ -9,5 +9,7 @@ CobraMUSH Version 0.72p2
   It is the second bugfix/maintenance release in that series.
 
   Fixes:
-    * NoQuota power set to not be inheritable [RLB]
+    * NoQuota power set to not be inheritable. [RLB]
+    * MANIFEST listed defunct non-existing changes.sh
+      script. Removed as to acknowledge its non-existance. [RLB]
 
