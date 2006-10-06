@@ -8,3 +8,6 @@ CobraMUSH Version 0.72p2
   Version 0.72p2 is a bugfix/maintenance release of version 0.72.
   It is the second bugfix/maintenance release in that series.
 
+  Fixes:
+    * NoQuota power set to not be inheritable [RLB]
+
