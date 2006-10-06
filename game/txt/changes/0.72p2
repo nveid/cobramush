@@ -12,4 +12,5 @@ CobraMUSH Version 0.72p2
     * NoQuota power set to not be inheritable. [RLB]
     * MANIFEST listed defunct non-existing changes.sh
       script. Removed as to acknowledge its non-existance. [RLB]
-
+    * Program environment code was partially dropped in darcs
+      conversion.  Rewrote supported missing code needed. [RLB]

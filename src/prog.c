@@ -36,8 +36,8 @@ extern int queue_eol(DESC * d);
 int password_handler(DESC *, char *);
 
 /* Telnet codes */
-#define IAC		255	/**< interpret as command */
-#define GOAHEAD		249	/**< go ahead */
+#define IAC		255     /**< interpret as command */
+#define GOAHEAD		249     /**< go ahead */
 
 #define UNDEFINED_PROMPT "\x1B[1m>\x1b[0m"
 #define PI_LOCK		      0x1
@@ -156,11 +156,12 @@ COMMAND(cmd_prog)
                   object_header(target, player));
   if (t) {
     pflags |= PI_PROMPT;
-    do_rawlog(LT_ERR, "Bad Program Prompt.  Allowed (will be defunct as of CobraMUSH 1.0).  Suggest use @prompt: %d - %s",
-	          player, global_eval_context.ccom);
-    notify_format(Owner(player), 
-	  "WARNING: %s is using bad prompt syntax with @program.  Refer to help @prompt."
-	  , object_header(Owner(player), player));
+    do_rawlog(LT_ERR,
+              "Bad Program Prompt.  Allowed (will be defunct as of CobraMUSH 1.0).  Suggest use @prompt: %d - %s",
+              player, global_eval_context.ccom);
+    notify_format(Owner(player),
+                  "WARNING: %s is using bad prompt syntax with @program.  Refer to help @prompt.",
+                  object_header(Owner(player), player));
 
     char buf[BUFFER_LEN], *bp;
     tooref = ooref, ooref = NOTHING;
@@ -172,13 +173,13 @@ COMMAND(cmd_prog)
   /* Save Registers to XY_PROGENV */
   memset(tbuf1, '\0', BUFFER_LEN);
   tbp = tbuf1;
-  for(i = 0 ; i < NUMQ ; i++) {
-      if(global_eval_context.renv[i][0]) {
-	tbuf2 = str_escaped_chr(global_eval_context.renv[i], '|');
-	safe_str(tbuf2, tbuf1, &tbp);
-	mush_free((Malloc_t) tbuf2, "str_escaped_chr.buff");
-      }
-      safe_chr('|', tbuf1, &tbp);
+  for (i = 0; i < NUMQ; i++) {
+    if (global_eval_context.renv[i][0]) {
+      tbuf2 = str_escaped_chr(global_eval_context.renv[i], '|');
+      safe_str(tbuf2, tbuf1, &tbp);
+      mush_free((Malloc_t) tbuf2, "str_escaped_chr.buff");
+    }
+    safe_chr('|', tbuf1, &tbp);
   }
 
   tbp--;
@@ -268,13 +269,13 @@ FUNCTION(fun_prog)
   /* Save Registers to XY_PROGENV */
   memset(tbuf1, '\0', BUFFER_LEN);
   tbp = tbuf1;
-  for(i = 0 ; i < NUMQ ; i++) {
-      if(global_eval_context.renv[i][0]) {
-	tbuf2 = str_escaped_chr(global_eval_context.renv[i], '|');
-	safe_str(tbuf2, tbuf1, &tbp);
-	mush_free((Malloc_t) tbuf2, "str_escaped_chr.buff");
-      }
-      safe_chr('|', tbuf1, &tbp);
+  for (i = 0; i < NUMQ; i++) {
+    if (global_eval_context.renv[i][0]) {
+      tbuf2 = str_escaped_chr(global_eval_context.renv[i], '|');
+      safe_str(tbuf2, tbuf1, &tbp);
+      mush_free((Malloc_t) tbuf2, "str_escaped_chr.buff");
+    }
+    safe_chr('|', tbuf1, &tbp);
   }
 
   tbp--;
@@ -306,17 +307,17 @@ FUNCTION(fun_quitprog)
   }
 
   DESC_ITER_CONN(d)
-    if (d->player == target) {
-      if (d->pinfo.lock && !CanProgLock(executor, target)) {
-        safe_str(e_perm, buff, bp);
-        return;
-      }
-      d->pinfo.object = -1;
-      d->pinfo.atr = NULL;
-      d->pinfo.lock = 0;
-      d->input_handler = do_command;
-      queue_newwrite(d, (unsigned char *) tprintf("%c%c", IAC, GOAHEAD), 2);
+      if (d->player == target) {
+    if (d->pinfo.lock && !CanProgLock(executor, target)) {
+      safe_str(e_perm, buff, bp);
+      return;
     }
+    d->pinfo.object = -1;
+    d->pinfo.atr = NULL;
+    d->pinfo.lock = 0;
+    d->input_handler = do_command;
+    queue_newwrite(d, (unsigned char *) tprintf("%c%c", IAC, GOAHEAD), 2);
+  }
   atr_clr(target, "XY_PROGINFO", GOD);
   atr_clr(target, "XY_PROGPROMPT", GOD);
   atr_clr(target, "XY_PROGENV", GOD);
@@ -378,7 +379,8 @@ COMMAND(cmd_prompt)
             tmp = tprintf("%s %c%c", prompt, IAC, GOAHEAD);
           else
             tmp =
-                tprintf("%s %c%c", remove_markup(prompt, NULL), IAC, GOAHEAD);
+                tprintf("%s %c%c", remove_markup(prompt, NULL), IAC,
+                        GOAHEAD);
         } else {
           if (ShowAnsiColor(d->player))
             tmp = tprintf("%s \r\n", prompt);
@@ -433,7 +435,8 @@ FUNCTION(fun_prompt)
             tmp = tprintf("%s %c%c", prompt, IAC, GOAHEAD);
           else
             tmp =
-                tprintf("%s %c%c", remove_markup(prompt, NULL), IAC, GOAHEAD);
+                tprintf("%s %c%c", remove_markup(prompt, NULL), IAC,
+                        GOAHEAD);
         } else {
           if (ShowAnsiColor(who))
             tmp = tprintf("%s \r\n", prompt);
@@ -455,7 +458,7 @@ prog_handler(DESC * d, char *input)
   ATTR *a;
   char buf[BUFFER_LEN];
   char *tbuf, *bp;
-  char *p_buf[BUFFER_LEN / 2];
+  char *p_buf[NUMQ];
   int rcnt, i;
 
   if (!strcmp(input, "IDLE")) {
@@ -476,12 +479,12 @@ prog_handler(DESC * d, char *input)
   d->last_time = mudtime;
   /* First Load Any Q Registers if we have 'em */
   a = atr_get(d->player, "XY_PROGENV");
-  if(a) {
-    rcnt = elist2arr(p_buf, BUFFER_LEN / 2, safe_atr_value(a), '|');
+  if (a) {
+    rcnt = elist2arr(p_buf, NUMQ, safe_atr_value(a), '|');
 
-    for(i = 0 ; i <  NUMQ && i < rcnt ; i++)
-      if(p_buf[i] && strlen(p_buf[i]) > 0)
-	strcpy(global_eval_context.renv[i], p_buf[i]);
+    for (i = 0; i < NUMQ && i < rcnt; i++)
+      if (p_buf[i] && strlen(p_buf[i]) > 0)
+        strcpy(global_eval_context.renv[i], p_buf[i]);
   }
   strcpy(buf, atr_value(d->pinfo.atr));
   global_eval_context.wnxt[0] = input;
@@ -489,13 +492,13 @@ prog_handler(DESC * d, char *input)
   /* Save Registers to XY_PROGENV */
   memset(buf, '\0', BUFFER_LEN);
   bp = buf;
-  for(i = 0 ; i < NUMQ ; i++) {
-      if(global_eval_context.renv[i][0]) {
-	tbuf = str_escaped_chr(global_eval_context.renv[i], '|');
-	safe_str(tbuf, buf, &bp);
-	mush_free((Malloc_t) tbuf, "str_escaped_chr.buff");
-      }
-      safe_chr('|', buf, &bp);
+  for (i = 0; i < NUMQ; i++) {
+    if (global_eval_context.renv[i][0]) {
+      tbuf = str_escaped_chr(global_eval_context.renv[i], '|');
+      safe_str(tbuf, buf, &bp);
+      mush_free((Malloc_t) tbuf, "str_escaped_chr.buff");
+    }
+    safe_chr('|', buf, &bp);
   }
   bp--;
   *bp = '\0';
@@ -532,13 +535,15 @@ pw_div_connect(DESC * d, char *input __attribute__ ((__unused__)))
   /* Division @su should be backlogged through an internal attribute. */
   add_to_div_exit_path(d->player, Division(d->player));
   /* Trigger SDOUT first */
-  did_it(d->player, Division(d->player), "SDOUT", NULL, NULL,  NULL, "ASDOUT", Location(d->player));
+  did_it(d->player, Division(d->player), "SDOUT", NULL, NULL, NULL,
+         "ASDOUT", Location(d->player));
   Division(d->player) = d->pinfo.object;
   /* Now Trigger Sdin */
-  did_it(d->player, Division(d->player), "SDIN", 
-               tprintf("You have switched into Division: %s", object_header(d->player, Division(d->player)))
-              , NULL,  NULL, "ASDIN", Location(d->player));
-	
+  did_it(d->player, Division(d->player), "SDIN",
+         tprintf("You have switched into Division: %s",
+                 object_header(d->player, Division(d->player)))
+         , NULL, NULL, "ASDIN", Location(d->player));
+
   d->pinfo.object = NOTHING;
   d->input_handler = do_command;
   return 1;
