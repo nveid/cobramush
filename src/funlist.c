@@ -128,9 +128,12 @@ int elist2arr(char *r[], int max, char *list, char sep) {
      }
      if(*p == sep) {
        *p = '\0';
-       safe_str(lp, cbufp, &bp);
-       *bp++ = '\0';
-       r[i++] = tbuf;
+       if(lp != NULL) {
+	 safe_str(lp, cbufp, &bp);
+         *bp++ = '\0'; 
+	 r[i++] = cbufp; 
+	 cbufp = bp;
+       } else r[i++] = NULL;
        lp = ++p;
        continue;
      }
