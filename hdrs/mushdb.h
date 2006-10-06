@@ -58,7 +58,7 @@
 #define TC_MoneyAdmin(x)    (NoPay(x) && Prived(x))
 #define MoneyAdmin(x)	   OOREF(x,TC_MoneyAdmin(x),TC_MoneyAdmin(ooref))
 #define TC_NoQuota(x)       (div_powover(x,x,"NoQuota") || div_powover(Owner(x),Owner(x),"NoQuota"))
-#define TC_DNoQuota(x)	    div_powover(x, x, "NoQuota")
+#define TC_DNoQuota(x)	    (!!has_power(x, "NoQuota"))
 #define NoQuota(x)	(IsDivision(x) ? OOREF(x,TC_DNoQuota(x), TC_DNoQuota(ooref)) :  OOREF(x,TC_NoQuota(x),TC_NoQuota(ooref)))
 #define CanSearch(x,y)   OOREF(x,(Owner(x) == Owner(y) || div_powover(x,y,"Search")),(Owner(ooref) == Owner(y) || div_powover(ooref,y,"Search") ))
 #define Global_Funcs(x)  OOREF(x,div_powover(x,x,"GFuncs"),div_powover(ooref,ooref,"GFuncs"))
