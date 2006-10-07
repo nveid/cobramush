@@ -16,4 +16,6 @@ CobraMUSH Version 0.72p2
       conversion.  Rewrote supported missing code needed. [RLB]
     * @div/create didn't abide by quotas.  Added can_pay_fees()
       check to div creatin and added new configuration option
-      division_cost.
+      division_cost. [RLB]
+    * Quotas were not being checked properely before a division
+      received objects into their division. [RLB]
