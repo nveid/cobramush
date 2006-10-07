@@ -1462,7 +1462,7 @@ division_set(dbref exec, dbref target, const char *arg2)
   ATTR *divrcd;
   char *p_buf[BUFFER_LEN / 2];
   char buf[BUFFER_LEN], *bp;
-  dbref divi;
+  dbref cur_obj, divi;
   struct power_group_list *pg_l;
   int cnt;
 
@@ -1479,6 +1479,8 @@ division_set(dbref exec, dbref target, const char *arg2)
     notify(exec, T(e_perm));
     return;
   }
+
+  
 
   if (!strcasecmp(arg2, "NONE")) {
     notify(exec, T("Division reset."));
@@ -1515,6 +1517,23 @@ division_set(dbref exec, dbref target, const char *arg2)
     notify(exec, T("Can't division something to itself."));
     return;
   }
+
+  /* Make sure the receiving division has the quota to receive all of this crapp...
+   */
+
+  if(Typeof(target) == TYPE_PLAYER) {
+    for(cnt = cur_obj = 0; cur_obj < db_top ; cur_obj++)
+      if(Owner(cur_obj) == target && Division(cur_obj) == Division(target))
+        cnt++;
+  } else cnt = 1;
+
+  if(!pay_quota(divi, cnt)) {
+    notify(exec, T("That division does not have the quota required to receive that."));
+    return;
+  }
+  
+  if(Division(target))
+    change_quota(Division(target), cnt);
 
   if (Typeof(target) == TYPE_PLAYER)
     adjust_divisions(target, Division(target), divi);

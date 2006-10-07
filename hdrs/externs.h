@@ -319,7 +319,7 @@ void add_player(dbref player, const char *alias);
 void delete_player(dbref player, const char *alias);
 
 /* From predicat.c */
-
+extern int pay_quota(dbref, int);
 extern char *WIN32_CDECL tprintf(const char *fmt, ...)
   __attribute__ ((__format__(__printf__, 1, 2)));
 

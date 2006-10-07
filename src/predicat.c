@@ -46,7 +46,7 @@ static int grep_util_helper(dbref player, dbref thing, dbref parent,
 static int grep_helper(dbref player, dbref thing, dbref parent,
 		       char const *pattern, ATTR *atr, void *args);
 void do_grep(dbref player, char *obj, char *lookfor, int flag, int insensitive);
-static int pay_quota(dbref, int);
+int pay_quota(dbref, int);
 extern PRIV attr_privs[];
 
 /** A generic function to generate a formatted string. The
@@ -673,7 +673,7 @@ change_quota(dbref who, int payment)
  * \retval 1 quota successfully debitted.
  * \retval 0 not enough quota to debit.
  */
-static int
+int
 pay_quota(dbref who, int cost)
 {
   int curr;
