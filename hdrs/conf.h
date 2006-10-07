@@ -235,6 +235,7 @@ struct options_table {
   char names_file[256];	/**< Name of file of forbidden player names */
   int object_cost;	/**< Cost to create an object */
   int exit_cost;	/**< Cost to create an exit */
+  int division_cost;   /**< Cost to create a division */
   int link_cost;	/**< Cost to link an exit */
   int room_cost;	/**< Cost to dig a room */
   int queue_cost;	/**< Deposit to queue a command */
@@ -384,6 +385,7 @@ int cf_time(const char *opt, const char *val, void *loc, int maxval,
 #define ROOM_COST (options.room_cost)
 #define LINK_COST (options.link_cost)
 #define EXIT_COST (options.exit_cost)
+#define DIVISION_COST (options.division_cost)
 #define OBJECT_COST (options.object_cost)
 #define GOD ((dbref) 1)
 #define ANNOUNCE_CONNECTS (options.announce_connects)
