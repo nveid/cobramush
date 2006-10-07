@@ -14,3 +14,6 @@ CobraMUSH Version 0.72p2
       script. Removed as to acknowledge its non-existance. [RLB]
     * Program environment code was partially dropped in darcs
       conversion.  Rewrote supported missing code needed. [RLB]
+    * @div/create didn't abide by quotas.  Added can_pay_fees()
+      check to div creatin and added new configuration option
+      division_cost.

@@ -449,6 +449,8 @@ COBRA_CONF conftable[] = {
   ,
   {"exit_cost", cf_int, &options.exit_cost, 10000, 0, "costs"}
   ,
+  {"division_cost", cf_int, &options.division_cost, 10000, 0, "costs"}
+  ,
   {"link_cost", cf_int, &options.link_cost, 10000, 0, "costs"}
   ,
   {"room_cost", cf_int, &options.room_cost, 10000, 0, "costs"}
@@ -1175,6 +1177,7 @@ conf_default_set(void)
   strcpy(options.names_file, "names.cnf");
   options.object_cost = 10;
   options.exit_cost = 1;
+  options.division_cost = 1;
   options.link_cost = 1;
   options.room_cost = 10;
   options.queue_cost = 10;
