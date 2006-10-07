@@ -528,7 +528,7 @@ log_forces	yes
 # Support the pueblo MUSH client and allow html to be sent to it
 pueblo	no
 
-# allow non-wizard/royalty logins
+# allow players to connect without login power
 logins	yes
 
 # allow guest logins
@@ -621,12 +621,12 @@ link_to_object	yes
 # high, rather than when the object's queue is too high?
 owner_queues	no
 
-# If this is yes, DARK wizards do not trigger AENTER/ALEAVE when they move.
+# If this is yes, DARK directors do not trigger AENTER/ALEAVE when they move.
 # If it's no, they are just like anybody else.
 # We don't have wizards.. Should we make this be something else?
 # wiz_noaenter	no
 
-# should say/pose by a DARK wizard be anonymous ('Someone says...')?
+# should say/pose by a DARK director be anonymous ('Someone says...')?
 full_invis	no
 
 ###
