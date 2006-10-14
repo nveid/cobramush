@@ -1566,7 +1566,7 @@ create_div(dbref owner, const char *name)
   dbref obj, loc;
 
   if(!can_pay_fees(owner, DIVISION_COST))
-    return;
+    return NOTHING;
 
   if (!div_powover(owner, owner, "Division")) {
     notify(owner, T(e_perm));
