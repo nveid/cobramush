@@ -3911,7 +3911,7 @@ announce_disconnect(dbref player)
   }
   if (!Dark(player))
     flag_broadcast(0, "MONITOR", "%s %s", T("GAME:"), tbuf1);
-  if(Guest(player))  { /* queue for destruction */
+  if(Guest(player) && !Connected(player))  { /* queue for destruction */
       set_flag_internal(player, "GOING");
       set_flag_internal(player, "GOING_TWICE");
     }
