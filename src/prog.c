@@ -483,9 +483,10 @@ prog_handler(DESC * d, char *input)
     rcnt = elist2arr(p_buf, NUMQ, safe_atr_value(a), '|');
 
     for (i = 0; i < NUMQ && i < rcnt; i++)
-      if (p_buf[i] && strlen(p_buf[i]) > 0)
-        strcpy(global_eval_context.rnxt[i], p_buf[i]);
-    
+      if (p_buf[i] && strlen(p_buf[i]) > 0) {
+        strcpy(global_eval_context.renv[i], p_buf[i]);
+	global_eval_context.rnxt[i] = global_eval_context.renv[i];
+      }
   }
   strcpy(buf, atr_value(d->pinfo.atr));
   global_eval_context.wnxt[0] = input;
