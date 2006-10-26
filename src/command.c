@@ -1735,11 +1735,11 @@ command_check(dbref player, COMMAND_INFO *cmd, switch_mask switches)
 #endif
   if ((cmd->type & CMD_T_NOGUEST) && Guest(player)) {
     mess =  T("Guests cannot do that.");
-    return 0;
+    goto send_error;
   }
   if ((cmd->type & CMD_T_GOD) && (!God(player))) {
     mess =  T("Only God can do that.");
-    return 0;
+    goto send_error;
   }
   switch (Typeof(player)) {
   case TYPE_ROOM:
