@@ -19,3 +19,6 @@ CobraMUSH Version 0.72p2
       division_cost. [RLB]
     * Quotas were not being checked properely before a division
       received objects into their division. [RLB]
+    * In the event two descriptors were connected to a Guest, and
+      one disconnected.  Possible through possesing a Guest using @su. 
+      Guest was destroyed even though it was connected. [RLB]
