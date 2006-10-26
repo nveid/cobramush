@@ -574,7 +574,7 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
   }
   for (pg_indx = 0; pg_indx < pg_cnt; reset = 0, pg_indx++) {
     p = p_buf[pg_indx];
-    if (*p == '!') {
+    if (*p == NOT_TOKEN) {
       reset++;
       p++;
     }
@@ -1523,7 +1523,9 @@ division_set(dbref exec, dbref target, const char *arg2)
 
   if(Typeof(target) == TYPE_PLAYER) {
     for(cnt = cur_obj = 0; cur_obj < db_top ; cur_obj++)
-      if(Owner(cur_obj) == target && Division(cur_obj) == Division(target))
+      if(!IsPlayer(cur_obj) && 
+          (Owner(cur_obj) == target) 
+          && (Division(cur_obj) == Division(target)))
         cnt++;
   } else cnt = 1;
 

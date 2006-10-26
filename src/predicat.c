@@ -679,10 +679,12 @@ pay_quota(dbref who, int cost)
   int curr;
 
   /* Check to make sure they can pass the division first */
-  curr = get_current_quota(Division(who));
+  if(GoodObject(Division(who))) { 
+    curr = get_current_quota(Division(who));
 
-  if(USE_QUOTA && !NoQuota(Division(who)) && (curr - cost < 0))
-    return 0;
+    if(USE_QUOTA && !NoQuota(Division(who)) && (curr - cost < 0))
+      return 0;
+  }
 
   /* some people don't need a quota */
   if (NoQuota(who))
