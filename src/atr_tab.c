@@ -443,6 +443,9 @@ void
 do_attribute_info(dbref player, char *name)
 {
   ATTR *ap;
+
+  ap = NULL;
+
   if (!name || !*name) {
     if(catchall)
       ap = catchall;
