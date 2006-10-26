@@ -24,3 +24,4 @@ CobraMUSH Version 0.72p2
       Guest was destroyed even though it was connected. [RLB]
     * Certain command restrictions that were applied did not give
       appropriate command failure messages correctly. [RLB]
+    * Checking info for any attributes would crash the game. [RLB]
