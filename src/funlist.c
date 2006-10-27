@@ -119,7 +119,7 @@ int elist2arr(char *r[], int max, char *list, char sep) {
    i = 0;
 
    /* Do first */
-   while(p && *p && (i < max)) {
+   while(p && *p && (i <= max)) {
      if(*p == '\\' && (p + 1)) {
        /* Remove This Char & let the next char in */
        *p++ = '\0';
@@ -139,9 +139,16 @@ int elist2arr(char *r[], int max, char *list, char sep) {
      }
      p++;
    }
+   /* Insert our final one.. */
+
+   if(lp != NULL) {
+     safe_str(lp, cbufp, &bp);
+     *bp = '\0';
+     r[i] = cbufp;
+   }
 
      
-  return i;
+  return i+1;
 }
 
 
