@@ -629,7 +629,7 @@ get_current_quota(dbref who)
 
   for (i = 0; i < db_top; i++)
     if (!IsGarbage(i) && ((!IsDivision(who) && Owner(i) == Owner(who)) 
-	  || (IsDivision(who) && !IsPlayer(i) && div_inscope(who,i))))
+	  || (IsDivision(who) && !IsPlayer(i) && IsDivision(Division(i)) && div_inscope(who,i))))
       owned++;
   owned--;			/* don't count the player or division itself */
 
