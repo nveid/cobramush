@@ -5600,6 +5600,9 @@ COMMAND(cmd_su) {
       /* We're only entering using a password at this moment */
 	queue_newwrite(match, (unsigned char *) tprintf(T("Password: %c%c"),
 							IAC, GOAHEAD), 13);
+	if(!PromptConnection(match))
+	  queue_newwrite(match, (unsigned char *) "\r\n", 3);
+
 	match->input_handler = password_handler;
 	match->pinfo.object = target;
 	match->pinfo.function = &pw_div_connect;
@@ -5649,6 +5652,9 @@ COMMAND(cmd_su) {
 	/* Part 3b.  Put guy in password program */
 	queue_newwrite(match, (unsigned char *) tprintf(T("Password: %c%c"),
 							IAC, GOAHEAD), 13);
+	if(!PromptConnection(match))
+	  queue_newwrite(match, (unsigned char *) "\r\n", 3);
+
 	match->input_handler = password_handler;
 	match->pinfo.object = target;
 	match->pinfo.function = &pw_player_connect;
