@@ -154,21 +154,21 @@ do_quota(dbref player, const char *arg1, const char *arg2, int set_q)
     if (Owner(thing) == who && !IsDivision(who)) {
       if (!IsGarbage(thing))
 	++owned;
-    } else if(IsDivision(who) && div_inscope(who,thing)) { /* incase we're doing division quotas */
+    } else if(IsDivision(who) && IsDivision(Division(thing)) && div_inscope(who,thing) ) { /* incase we're doing division quotas */
       if(!IsGarbage(thing) && !IsPlayer(thing)) /* we don't include garbage or player objects in div quotas */
 	++owned;
     }
     /* And No matter what.. we have to calculate the same info from the division we're in.. */
-    if( !IsMasterDivision(Division(who)) &&
+    if( !IsMasterDivision(Division(who)) && !IsGarbage(thing) && !IsPlayer(thing) && IsDivision(Division(thing))&& 
 	div_inscope(Division(who), thing)) 
 	downed++;
   }
 
    if(!IsMasterDivision(Division(who)) && !NoQuota(Division(who)))
-    dlimit = get_current_quota(who);
+    dlimit = get_current_quota(Division(who));
 
 
-  /* the quotas of priv'ed players are unlimited and cannot be set. */
+  /* the quotas of players with the NoQuota power are unlimited and cannot be set. */
   if (!USE_QUOTA || NoQuota(who)) {
     notify_format(player, T("Objects: %d   Limit: UNLIMITED"), owned);
     return;
@@ -179,14 +179,14 @@ do_quota(dbref player, const char *arg1, const char *arg2, int set_q)
 
   if (!set_q) {
     limit = get_current_quota(who);
-    notify_format(player, T("Objects: %d   Limit: %d"), owned, (downed + dlimit) > (owned + limit) && dlimit != NOTHING
+    notify_format(player, T("Objects: %d   Limit: %d"), owned, (downed + dlimit) < (owned + limit) && dlimit != NOTHING
 	? (downed + dlimit) : (owned + limit));
     return;
   }
   /* set a new quota */
   if (!arg2 || !*arg2) {
     limit = get_current_quota(who);
-    notify_format(player, T("Objects: %d   Limit: %d"), owned, (downed + dlimit) > (owned + limit) && dlimit != NOTHING ? 
+    notify_format(player, T("Objects: %d   Limit: %d"), owned, (downed + dlimit) < (owned + limit) && dlimit != NOTHING ? 
 	(downed + dlimit) : (owned + limit));
     notify(player, T("What do you want to set the quota to?"));
     return;

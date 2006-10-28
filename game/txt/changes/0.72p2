@@ -27,3 +27,5 @@ CobraMUSH Version 0.72p2
     * Checking info for any attributes would crash the game. [RLB]
     * @su and @sd Password: prompt didn't handle correctly for clients
       that did not handle the GOAHEAD prompt telnet code. [RLB]
+    * Quotas were not accounting Division new quotas restrictions 
+      correctly for display using the @quota command.
