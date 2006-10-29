@@ -76,6 +76,7 @@
 #define Can_RPEMIT(x)	(div_powover(x,x, "RPEmit") || (Inherit_Powers(x) || div_powover(Owner(x),Owner(x), "RPEmit")) ||Admin(x))
 #define Can_RPCHAT(x)	(div_powover(x, x, "RPChat") || (Inherit_Powers(x) || div_powover(Owner(x),Owner(x), "RPChat")) || Admin(x))
 #define Inherit_Powers(x)	(Inherit(x) && Inheritable(Owner(x)))
+#define CanChown(x,y) (OOREF(x,div_powover(x,y,"Chown"),div_powover(ooref,y,"Chown")))
 
 /* Permission macros */
 #define TC_Can_See_Flag(p,t,f) ((!(f->perms & (F_DARK | F_MDARK | F_ODARK | F_DISABLED)) || \

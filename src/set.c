@@ -211,7 +211,7 @@ do_chown(dbref player, const char *name, const char *newobj, int preserve)
     notify(player, T("Permission denied."));
     return;
   }
-  if (IsThing(thing) && !Admin(player) &&
+  if (IsThing(thing) && !CanChown(player,thing) &&
       !(GoodObject(Location(thing)) && (Location(thing) == player))) {
     notify(player, T("You must carry the object to @chown it."));
     return;

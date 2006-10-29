@@ -7,7 +7,10 @@ CobraMUSH Version 0.73
  Flags:
    * LEAVE_BEHIND - When a player leaves the location of 
      someone they're flowing with this flag it unfollows
-     the follower.
+     the follower. [RLB]
+ Commands:
+   * @chown now allows players to do remote chowns as long
+     as they have the Chown power over the object. [RLB]
  Fixes:
    * All fixes from 0.72 stable development series
 
