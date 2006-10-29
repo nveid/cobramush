@@ -660,7 +660,7 @@ change_quota(dbref who, int payment)
 
   /* Check If Division Quota has to be adjusted now */
 
-  if(!NoQuota(Division(who))) 
+  if(GoodObject(Division(who)) && !NoQuota(Division(who))) 
   (void) atr_add(Division(who), "RQUOTA",
 		 tprintf("%d", get_current_quota(Division(who)) + payment), GOD, NOTHING);
 
