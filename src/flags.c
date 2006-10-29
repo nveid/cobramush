@@ -753,6 +753,7 @@ flag_add_additional(void)
   add_flag("BUILDER", '\0', TYPE_PLAYER, F_PRIVILEGE, F_PRIVILEGE);
   add_flag("AUTH_PARENT", '\0', NOTYPE, F_PRIVILEGE, F_PRIVILEGE);
   add_flag("MUTE", '\0', TYPE_PLAYER, F_PRIVILEGE, F_PRIVILEGE);
+  add_flag("LEAVE_BEHIND", '\0', TYPE_PLAYER | TYPE_THING, F_ANY, F_ANY);
 #ifdef RPMODE_SYS
   add_flag("RPMODE", '\0', TYPE_PLAYER, F_PRIVILEGE, F_PRIVILEGE);
   add_flag("BLIND", '\0', TYPE_PLAYER, F_PRIVILEGE, F_PRIVILEGE);

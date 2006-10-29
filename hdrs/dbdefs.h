@@ -78,6 +78,9 @@ extern dbref first_free;	/* pointer to free list */
 
 #define GoodObject(x) ((x >= 0) && (x < db_top))
 
+/* Leave Followers Behind */
+#define Leave_Behind(x) has_flag_by_name(x, "LEAVE_BEHIND", TYPE_THING | TYPE_PLAYER)
+
 /* Can guy talk? */
 #define Mute(x)		(has_flag_by_name(x, "MUTE", TYPE_THING | TYPE_PLAYER | TYPE_ROOM))
 #define IsMuted(x,y)	(Mute(x) || Mute(Location(x)))

@@ -1363,7 +1363,7 @@ clear_following(dbref follower, int noisy)
 static void
 follower_command(dbref leader, dbref loc, const char *com)
 {
-  dbref follower;
+  dbref cur_obj;
   ATTR *a;
   char *s, *sp;
   char tbuf1[BUFFER_LEN];
@@ -1372,21 +1372,38 @@ follower_command(dbref leader, dbref loc, const char *com)
     return;
   strcpy(combuf, com);
   a = atr_get_noparent(leader, "FOLLOWERS");
-  if (!a)
-    return;			/* No followers */
+  if (!a) {
+     /* No-followers.. Check to see if they're following anyone.. And if that person they're following has
+      * the LEAVE_BEHIND flag.. then unfollow us
+      */
+    a = atr_get(leader, "FOLLOWING");
+    if(!a) /* Not following anyone either */
+      return;
+    strcpy(tbuf1, atr_value(a));
+    s = tbuf1;
+    while(s) {
+      sp = split_token(&s, ' ');
+      cur_obj = parse_dbref(sp);
+      if(GoodObject(cur_obj) && Location(cur_obj) == loc && Leave_Behind(cur_obj)) {
+	/* K.. we found someone we suppose to be following.. Trigger unfollow on them */
+	do_unfollow(leader, unparse_dbref(cur_obj));
+      }
+    }
+    return;
+  }
   strcpy(tbuf1, atr_value(a));
   s = tbuf1;
   while (s) {
     sp = split_token(&s, ' ');
-    follower = parse_dbref(sp);
-    if (GoodObject(follower) && (Location(follower) == loc)
-	&& (Connected(follower) || IsThing(follower))
+    cur_obj = parse_dbref(sp);
+    if (GoodObject(cur_obj) && (Location(cur_obj) == loc)
+	&& (Connected(cur_obj) || IsThing(cur_obj))
 	&& (!(DarkLegal(leader)
-	      || (Dark(Location(follower)) && !Light(leader)))
-	    || CanSee(follower, leader))) {
+	      || (Dark(Location(cur_obj)) && !Light(leader)))
+	    || CanSee(cur_obj, leader))) {
       /* This is a follower who was in the room with the leader. Follow. */
-      notify_format(follower, T("You follow %s."), Name(leader));
-      process_command(follower, combuf, follower, follower, 0);
+      notify_format(cur_obj, T("You follow %s."), Name(leader));
+      process_command(cur_obj, combuf, cur_obj, cur_obj, 0);
     }
   }
 }

@@ -4,6 +4,10 @@ CobraMUSH Version 0.73
   interest to the user.
   (See 'changes entries' for a list of all versions.)
 
+ Flags:
+   * LEAVE_BEHIND - When a player leaves the location of 
+     someone they're flowing with this flag it unfollows
+     the follower.
  Fixes:
    * All fixes from 0.72 stable development series
 
