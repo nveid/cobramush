@@ -1534,7 +1534,7 @@ division_set(dbref exec, dbref target, const char *arg2)
     return;
   }
   
-  if(Division(target))
+  if(GoodObject(Division(target)) && Division(target))
     change_quota(Division(target), cnt);
 
   if (Typeof(target) == TYPE_PLAYER)
