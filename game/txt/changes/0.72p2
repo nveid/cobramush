@@ -29,3 +29,5 @@ CobraMUSH Version 0.72p2
       that did not handle the GOAHEAD prompt telnet code. [RLB]
     * Quotas were not accounting new Division quotas restrictions 
       correctly for display using the @quota command. [RLB]
+    * If a player was nuked at the end of the chain before the login
+      screen in the su exit path. Game would crash. [RLB]

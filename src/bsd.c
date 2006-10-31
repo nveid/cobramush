@@ -5742,9 +5742,9 @@ static int do_su_exit(DESC *d) {
 	path_entry = path_entry->next;
 	mush_free(mark_path, "SU_PATH_ENTRY");
       }
+    d->su_exit_path = path_entry;
     if(!path_entry)
       return 0;
-    d->su_exit_path = path_entry;
     /* Disconnect appearance */
     announce_disconnect(d->player);
     d->player = path_entry->player;
