@@ -2122,6 +2122,8 @@ do_chan_title(dbref player, const char *name, const char *title)
     notify(player, T("You must specify a channel."));
     return;
   }
+  if (!title)
+    title = "";
   if (strlen(title) >= CU_TITLE_LEN) {
     notify(player, T("Title too long."));
     return;

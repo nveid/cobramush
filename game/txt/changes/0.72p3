@@ -9,4 +9,5 @@ CobraMUSH Version 0.72p3
   It is the third bugfix/maintenance release in that series.
 
   Fixes:
+    * Fixed do_chan_title crash [AEJ]
 
