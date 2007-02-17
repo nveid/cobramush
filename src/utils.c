@@ -68,7 +68,7 @@ mush_malloc(size_t size, const char *check)
   add_check(check);
   ptr = malloc(size);
   if (ptr == NULL)
-    do_log(LT_ERR, 0, 0, "mush_malloc failed to malloc %d bytes for %s",
+    do_log(LT_ERR, 0, 0, "mush_malloc failed to malloc %ld bytes for %s",
 	   size, check);
   return ptr;
 }

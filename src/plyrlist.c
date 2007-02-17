@@ -54,12 +54,14 @@ clear_players(void)
 void
 add_player(dbref player, const char *alias)
 {
+  long tmp;
+  tmp = player;
   if (!hft_initialized)
     init_hft();
   if (alias)
-    hashadd(strupper(alias), (void *) player, &htab_player_list);
+    hashadd(strupper(alias), (void *) tmp, &htab_player_list);
   else
-    hashadd(strupper(Name(player)), (void *) player, &htab_player_list);
+    hashadd(strupper(Name(player)), (void *) tmp, &htab_player_list);
 }
 
 /** Look up a player in the player list htab (or by dbref).
@@ -71,6 +73,7 @@ lookup_player(const char *name)
 {
   int p;
   void *hval;
+  long tmp;
 
   if (!name || !*name)
     return NOTHING;
@@ -86,7 +89,8 @@ lookup_player(const char *name)
   hval = hashfind(strupper(name), &htab_player_list);
   if (!hval)
     return NOTHING;
-  return (dbref) hval;
+  tmp = (long) hval;
+  return (dbref) tmp;
   /* By the way, there's a flaw in this code. If #0 was a player, we'd
    * hash its name with a dbref of (void *)0, aka NULL, so we'd never
    * be able to retrieve that player. However, we assume that #0 will

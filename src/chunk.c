@@ -1284,7 +1284,7 @@ read_cache_region(fd_type fd, RegionHeader * rhp, u_int_16 region)
   mush_panicf("chunk swap file read, %d remaining, GetLastError %d",
 	      remaining, GetLastError());
 #else
-  mush_panicf("chunk swap file read, %d remaining, errno %d: %s",
+  mush_panicf("chunk swap file read, %zu remaining, errno %d: %s",
 	      remaining, errno, strerror(errno));
 #endif
 }
@@ -1349,7 +1349,7 @@ write_cache_region(fd_type fd, RegionHeader * rhp, u_int_16 region)
   mush_panicf("chunk swap file write, %d remaining, GetLastError %d",
 	      remaining, GetLastError());
 #else
-  mush_panicf("chunk swap file write, %d remaining, errno %d: %s",
+  mush_panicf("chunk swap file write, %zu remaining, errno %d: %s",
 	      remaining, errno, strerror(errno));
 #endif
 }
