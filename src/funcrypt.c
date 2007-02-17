@@ -156,7 +156,7 @@ FUNCTION(fun_digest)
   EVP_MD_CTX ctx;
   const EVP_MD *mp;
   unsigned char md[EVP_MAX_MD_SIZE];
-  size_t n, len = 0;
+  unsigned n, len = 0;
 
   if ((mp = EVP_get_digestbyname(args[0])) == NULL) {
     safe_str(T("#-1 UNSUPPORTED DIGEST TYPE"), buff, bp);
