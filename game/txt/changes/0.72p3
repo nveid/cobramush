@@ -10,4 +10,5 @@ CobraMUSH Version 0.72p3
 
   Fixes:
     * Fixed do_chan_title crash [AEJ]
+    * Many 64-bit (amd64) compatibility and warning fixes [AEJ]
 
