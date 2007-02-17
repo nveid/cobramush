@@ -143,7 +143,7 @@ st_stats(dbref player, StrTree *root, const char *name)
   bytes = (sizeof(StrNode) - BUFFER_LEN) * root->count + root->mem;
   st_traverse_stats(root->root, &maxdepth, &mindepth, &avgdepth, &leaves,
 		    &perms, &nperms);
-  notify_format(player, "%-10s %7d %7d %6d %4d %4d %9lu %11.3f %7lu",
+  notify_format(player, "%-10s %7ld %7d %6d %4d %4d %9lu %11.3f %7lu",
 		name, root->count, leaves, mindepth, maxdepth,
 		avgdepth, perms,
 		((double) nperms / (double) (root->count - perms)), bytes);

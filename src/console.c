@@ -3270,7 +3270,7 @@ do_doing(dbref player, const char *message)
       strcpy(d->doing, buf);
   if (strlen(message) >= DOING_LEN) {
     notify_format(player,
-		  T("Doing set. %d characters lost."),
+		  T("Doing set. %zu characters lost."),
 		  strlen(message) - (DOING_LEN - 1));
   } else
     notify(player, T("Doing set."));
@@ -3303,7 +3303,7 @@ do_poll(dbref player, const char *message)
   if (strlen(message) >= DOING_LEN) {
     poll_msg[DOING_LEN - 1] = 0;
     notify_format(player,
-		  T("Poll set. %d characters lost."),
+		  T("Poll set. %zu characters lost."),
 		  strlen(message) - (DOING_LEN - 1));
   } else
     notify(player, T("Poll set."));

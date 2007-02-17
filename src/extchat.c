@@ -1083,7 +1083,7 @@ list_partial_matches(dbref player, const char *name, enum chan_match_type type)
     if (!Chan_Can_See(p, player))
       continue;
     if ((type == PMATCH_ALL) || ((type == PMATCH_ON)
-				 ? (int) (void *) OnChannel(player, p)
+				 ? (long) OnChannel(player, p)
 				 : !OnChannel(player, p))) {
       strcpy(cleanp, remove_markup(ChanName(p), NULL));
       if (string_prefix(cleanp, cleanname)) {
