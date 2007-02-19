@@ -428,6 +428,7 @@ create_atr(dbref thing, char const *atr_name)
   /* initialize atr */
   AL_WLock(ptr) = TRUE_BOOLEXP;
   AL_RLock(ptr) = TRUE_BOOLEXP;
+  AL_FLAGS(ptr) = 0;
   AL_NAME(ptr) = name;
   ptr->data = NULL_CHUNK_REFERENCE;
 
