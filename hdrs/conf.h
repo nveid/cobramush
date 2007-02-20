@@ -133,6 +133,7 @@ struct options_table {
   int idle_timeout;	/**< Maximum idle time allowed, in minutes */
   int idle_time;	/** Time for the system to consider player 'idle' used in conjuntion with @AUNIDLE */
   int unconnected_idle_timeout;	/**< Maximum idle time for connections without dbrefs, in minutes */
+  int keepalive_timeout; /**< Number of seconds between TCP keepalive pings */
   int dump_interval;	/**< Interval between database dumps, in seconds */
   char dump_message[256]; /**< Message shown at start of nonforking dump */
   char dump_complete[256]; /**< Message shown at end of nonforking dump */

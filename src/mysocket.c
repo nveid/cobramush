@@ -354,7 +354,7 @@ make_nonblocking(int s)
 }
 
 
-
+#ifndef INFOSLAVE
 /** Enable TCP keepalive on the given socket if we can.
  * \param s socket.
  */
@@ -362,25 +362,33 @@ make_nonblocking(int s)
 void
 set_keepalive(int s __attribute__ ((__unused__)))
 {
-#ifdef CAN_KEEPALIVE
+#ifdef SO_KEEPALIVE
   int keepalive = 1;
-#ifdef CAN_KEEPIDLE
-  int keepidle = 900;
+#if defined(TCP_KEEPIDLE) || defined(TCP_KEEPALIVE)
+  int keepidle = options.keepalive_timeout;
 #endif
 
   /* enable TCP keepalive */
   if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE,
 		 (void *) &keepalive, sizeof(keepalive)) == -1)
     fprintf(stderr, "[%d] could not set SO_KEEPALIVE: errno %d", s, errno);
-#ifdef CAN_KEEPIDLE
+
+  /* And set the ping time to something reasonable instead of the
+     default 2 hours. Linux, NetBSD and o thers use TCP_KEEPIDLE to do
+     this. OS X and possibly others use TCP_KEEPALIVE. */
+#if defined(TCP_KEEPIDLE)
   if (setsockopt(s, IPPROTO_TCP, TCP_KEEPIDLE,
+		 (void *) &keepidle, sizeof(keepidle)) == -1)
+    fprintf(stderr, "[%d] could not set TCP_KEEPIDLE: errno %d", s, errno);
+#elif defined(TCP_KEEPALIVE)
+  if (setsockopt(s, IPPROTO_TCP, TCP_KEEPALIVE,
 		 (void *) &keepidle, sizeof(keepidle)) == -1)
     fprintf(stderr, "[%d] could not set TCP_KEEPALIVE: errno %d", s, errno);
 #endif
 #endif
   return;
 }
-
+#endif
 
 
 /** Connect a socket, possibly making it nonblocking first.

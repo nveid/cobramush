@@ -291,6 +291,8 @@ COBRA_CONF conftable[] = {
   {"unconnected_idle_timeout", cf_time, &options.unconnected_idle_timeout,
    100000, 0, "limits"}
   ,
+  {"keepalive_timeout", cf_time, &options.keepalive_timeout, 10000, 0, "limits"}
+  ,
   {"whisper_loudness", cf_int, &options.whisper_loudness, 100, 0, "limits"}
   ,
   {"starting_quota", cf_int, &options.starting_quota, 10000, 0, "limits"}
@@ -1066,6 +1068,7 @@ conf_default_set(void)
   options.idle_timeout = 0;
   options.idle_time = 0;
   options.unconnected_idle_timeout = 300;
+  options.keepalive_timeout = 300;
   options.dump_interval = 3601;
   strcpy(options.dump_message,
 	 T("GAME: Dumping database. Game may freeze for a minute"));
