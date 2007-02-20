@@ -1,19 +1,18 @@
 & code
 & contact
 PennMUSH is developed by a team of developers whose names are
-listed in 'help changes'. It is maintained by Javelin, aka
-Alan Schwartz.  Suggestions, comments, and bug reports are welcome:
+listed in 'help changes'.  Suggestions, comments, and bug reports are
+welcome:
 
 Report bugs at:               pennmush-bugs@pennmush.org
 Comments/suggestions to:      pennmush-developers@pennmush.org
-Reach Javelin at:             dunemush@pennmush.org
 
 For information about downloading PennMUSH, see 'help download'.
 For information about changes in versions of the code, see 'help changes'.
 
 & download
 The latest version of this MUSH code is available at
-http://download..pennmush.org/Source.  It will be called something like
+http://download.pennmush.org/Source.  It will be called something like
 pennmush-1.7.6p0.tar.Z, depending on the version number. You
 will also find files of translations of server messages into various
 languages in Source/translations/<version>. See help i18n
@@ -49,13 +48,13 @@ variable in the PennMUSH restart script.
 & copyright
 & copyrite
 & license
-Copyright, License, and Credits for PennMUSH 1.x. Revised October 2002.
+Copyright, License, and Credits for PennMUSH 1.x. Revised March 2006.
 
 I. Copyrights
 
 PennMUSH 1.x
-Copyright (c) 1995-2002, Alan Schwartz, T. Alexander Popiel, Shawn Wagner
-Contact email for Alan Schwartz: <dunemush@pennmush.org>. 
+Copyright (c) 1995-2006, T. Alexander Popiel <talek@pennmush.org>
+and Shawn Wagner <raevnos@pennmush.org>.
 
 Some code used in this server may have been derived from the
 TinyMUSH 2.2 source code, with permission. TinyMUSH 2.2 is
