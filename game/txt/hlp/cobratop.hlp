@@ -445,7 +445,8 @@ Standard Attributes: (see @list/attribs for the complete list)
   See also: MONEY, money(), score
 & PENNMUSH CREDITS
   Maintainer: Javelin
-  Developers: Talek [TAP], Raevnos [SW], Ervin Hearn III [EEH]
+  Developers: Talek [TAP], Raevnos [SW], Ervin Hearn III [EEH],
+              Greg Millam [GM]
   Porters: Nick Gammon [NJG] (win32), Dan Williams [DW] (MacOS), 
            Sylvia (OS/2)
   Former developers: Rhyanna [RLM], Trivian [TN], Halatir [LdW]
