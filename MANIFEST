@@ -122,7 +122,6 @@ hints/cygwin.sh
 hints/darwin.sh
 hints/dec_osf.sh
 hints/freebsd.sh
-hints/freebsd_5.sh
 hints/hpux-gcc.sh
 hints/hpux.sh
 hints/irix.sh
