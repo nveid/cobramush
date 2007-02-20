@@ -42,7 +42,6 @@
 #include "confmagic.h"
 
 
-int on_second = 0;   /**< Have we been called at the end of a second? */
 static sig_atomic_t hup_triggered = 0;
 static sig_atomic_t usr1_triggered = 0;
 
@@ -219,9 +218,9 @@ dispatch(void)
     do_reboot(NOTHING, 0);	/* We don't return from this */
     usr1_triggered = 0;		/* But just in case */
   }
-  if (!on_second)
+  if (!globals.on_second)
     return;
-  on_second = 0;
+  globals.on_second = 0;
 
   mudtime = time(NULL);
 

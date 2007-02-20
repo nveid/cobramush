@@ -34,8 +34,6 @@
 #pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
 #endif
 
-extern time_t start_time, first_start_time;
-extern int reboot_count;
 extern FUN flist[];
 static char *soundex(char *str);
 extern char cf_motd_msg[BUFFER_LEN],
@@ -429,19 +427,19 @@ FUNCTION(fun_version)
 /* ARGSUSED */
 FUNCTION(fun_starttime)
 {
-  safe_str(show_time(first_start_time, 0), buff, bp);
+  safe_str(show_time(globals.first_start_time, 0), buff, bp);
 }
 
 /* ARGSUSED */
 FUNCTION(fun_restarttime)
 {
-  safe_str(show_time(start_time, 0), buff, bp);
+  safe_str(show_time(globals.start_time, 0), buff, bp);
 }
 
 /* ARGSUSED */
 FUNCTION(fun_restarts)
 {
-  safe_integer(reboot_count, buff, bp);
+  safe_integer(globals.reboot_count, buff, bp);
 }
 
 /* Data for soundex functions */

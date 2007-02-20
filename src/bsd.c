@@ -153,17 +153,11 @@ void rusage_stats(void);
 #endif
 int que_next(void);		/* from cque.c */
 
-extern int on_second;		/**< Are we ready to do per-second processing? */
 void dispatch(void);		/* from timer.c */
 dbref email_register_player(const char *name, const char *email, const char *host, const char *ip);	/* from player.c */
 
-extern time_t start_time;	/**< When was the mush last rebooted? */
-extern time_t first_start_time;	/**< When was the mush first started? */
-extern int reboot_count;	/**< How many times have we been rebooted? */
-extern int database_loaded;	/* From game.c */
 static int extrafd;
 int shutdown_flag = 0;		/**< Is it time to shut down? */
-extern int paranoid_dump;	/**< Are we doing a paranoid dump? */
 #ifdef CHAT_SYSTEM
 void chat_player_announce(dbref player, char *msg, int ungag);
 #endif /* CHAT_SYSTEM */
@@ -409,7 +403,6 @@ void WIN32_CDECL signal_shutdown(int sig);
 void WIN32_CDECL signal_dump(int sig);
 void reaper(int sig);
 extern Pid_t forked_dump_pid;	/**< Process id of forking dump process */
-extern time_t last_dump_time;	/**< Time of last database dump */
 static void dump_users(DESC *call_by, char *match, int doing);
 static const char *time_format_1(long int dt);
 static const char *time_format_2(long int dt);
@@ -629,7 +622,7 @@ main(int argc, char **argv)
 
   init_game_postdb(confname);
 
-  database_loaded = 1;
+  globals.database_loaded = 1;
 
   set_signals();
 
@@ -1061,7 +1054,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
     last_slice.tv_usec = current_time.tv_usec;
 
     if (msec_diff(&current_time, &then) >= 1000) {
-      on_second = 1;
+      globals.on_second = 1;
       then.tv_sec = current_time.tv_sec;
       then.tv_usec = current_time.tv_usec;
     }
@@ -1078,7 +1071,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
     }
 
     if (signal_dump_flag) {
-      paranoid_dump = 0;
+      globals.paranoid_dump = 0;
       do_rawlog(LT_CHECK, "DUMP by external signal");
       fork_and_dump(1);
       signal_dump_flag = 0;
@@ -3429,7 +3422,7 @@ reaper(int sig __attribute__ ((__unused__)))
 	do_rawlog(LT_ERR, T("ERROR! forking dump exited with signal %d"),
 		  WTERMSIG(my_stat));
       } else if (WIFEXITED(my_stat) && WEXITSTATUS(my_stat) == 0) {
-	time(&last_dump_time);
+	time(&globals.last_dump_time);
 	if (DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
 	  flag_broadcast(0, 0, "%s", DUMP_NOFORK_COMPLETE);
 
@@ -3460,7 +3453,7 @@ dump_info(DESC *call_by)
   }
   queue_string_eol(call_by, tprintf("Name: %s", options.mud_name));
   queue_string_eol(call_by,
-		   tprintf("Uptime: %s", show_time(first_start_time, 0)));
+		   tprintf("Uptime: %s", show_time(globals.first_start_time, 0)));
   queue_string_eol(call_by, tprintf("Connected: %d", count));
   queue_string_eol(call_by, tprintf("Size: %d", db_top));
   queue_string_eol(call_by, tprintf("Version: CobraMUSH v%s [%s]", VERSION,
@@ -4962,8 +4955,8 @@ dump_reboot_db(void)
 
     putref(f, 0);
     putstring(f, poll_msg);
-    putref(f, first_start_time);
-    putref(f, reboot_count);
+    putref(f, globals.first_start_time);
+    putref(f, globals.reboot_count);
     fclose(f);
   }
 }
@@ -5134,8 +5127,8 @@ load_reboot_db(void)
   }
 
   strcpy(poll_msg, getstring_noalloc(f));
-  first_start_time = getref(f);
-  reboot_count = getref(f) + 1;
+  globals.first_start_time = getref(f);
+  globals.reboot_count = getref(f) + 1;
   DESC_ITER_CONN(d) {
     d->mailp = find_exact_starting_point(d->player);
   }

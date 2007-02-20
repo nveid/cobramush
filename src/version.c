@@ -21,7 +21,6 @@
 #endif
 #include "confmagic.h"
 
-extern time_t start_time;	/* from bsd.c */
 void do_version _((dbref player));
 
 void
@@ -32,7 +31,7 @@ do_version(player)
 
   notify_format(player, T("You are connected to %s"), MUDNAME);
 
-  strcpy(buff, ctime(&start_time));
+  strcpy(buff, ctime(&globals.start_time));
   buff[strlen(buff) - 1] = '\0';	/* eat the newline */
   notify_format(player, T("Last restarted: %s"), buff);
 

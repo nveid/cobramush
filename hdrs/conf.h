@@ -471,4 +471,22 @@ int cf_time(const char *opt, const char *val, void *loc, int maxval,
 #define GST_NUMBERING   (options.guest_roman_numeral)
 #define GUEST_NUMBER(x)  (const char *) (GST_NUMBERING ? ArabicToRoman(x) : unparse_number((NVAL) x))
 #define PLAYER_DEF_POWERGROUP (options.player_powergroup)
+
+typedef struct globals_table GLOBALTAB;
+
+struct globals_table {
+  int database_loaded;		/**< True after the database has been read. */
+  char dumpfile[200];		/**< File name to dump database to */
+  time_t start_time;		/**< MUSH start time (since process exec'd) */
+  time_t first_start_time;	/**< MUSH start time (since last shutdown) */
+  time_t last_dump_time;	/**< Time of last successful db save */
+  int reboot_count;		/**< Number of reboots so far */
+  int paranoid_dump;		/**< if paranoid, scan before dumping */
+  int paranoid_checkpt;		/**< write out an okay message every x objs */
+  long indb_flags;		/**< flags set in the input database */
+  int on_second;		/**< is it time for per-second processes? */
+};
+
+extern GLOBALTAB globals;
+
 #endif				/* __CONF_H */

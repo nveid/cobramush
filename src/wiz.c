@@ -51,8 +51,6 @@
 extern dbref find_entrance(dbref door);
 struct db_stat_info *get_stats(dbref owner);
 extern dbref find_player_by_desc(int port);
-extern int paranoid_dump;
-extern int paranoid_checkpt;
 
 
 #ifndef WIN32
@@ -2054,10 +2052,10 @@ do_reboot(dbref player, int flag)
 		   Name(Owner(player)));
   }
   if (flag) {
-    paranoid_dump = 1;
-    paranoid_checkpt = db_top / 5;
-    if (paranoid_checkpt < 1)
-      paranoid_checkpt = 1;
+    globals.paranoid_dump = 1;
+    globals.paranoid_checkpt = db_top / 5;
+    if (globals.paranoid_checkpt < 1)
+      globals.paranoid_checkpt = 1;
   }
 #ifdef HAS_OPENSSL
   close_ssl_connections();

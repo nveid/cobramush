@@ -92,12 +92,7 @@ void Win32MUSH_setup(void);
 #endif
 
 /* declarations */
-int database_loaded = 0;	 /**< True after the database has been read. */
-char dumpfile[200];		/**< File name to dump database to */
-time_t start_time;		/**< MUSH start time (since process exec'd) */
-time_t first_start_time = 0;	/**< MUSH start time (since last shutdown) */
-time_t last_dump_time = 0;	/**< Time of last successful db save */
-int reboot_count = 0;		/**< Number of reboots so far */
+GLOBALTAB globals = { 0, "", 0, 0, 0, 0, 0, 0, 0, 0 };
 static int epoch = 0;
 static int reserved;			/**< Reserved file descriptor */
 int depth = 0;			/**< excessive recursion prevention */
@@ -110,9 +105,6 @@ static void errdb_grow(void);
 
 extern void initialize_mt(void);
 extern const unsigned char *tables;
-int paranoid_dump = 0;		/**< if paranoid, scan before dumping */
-int paranoid_checkpt = 0;	/**< write out an okay message every x objs */
-extern long indb_flags;
 extern void conf_default_set(void);
 static int dump_database_internal(void);
 static FILE *db_open(const char *filename);
@@ -200,45 +192,46 @@ do_dump(dbref player, char *num, enum dump_type flag)
     if (flag != DUMP_NORMAL) {
 #endif
       /* want to do a scan before dumping each object */
-      paranoid_dump = 1;
+      globals.paranoid_dump = 1;
       if (num && *num) {
 	/* checkpoint interval given */
-	paranoid_checkpt = atoi(num);
-	if ((paranoid_checkpt < 1) || (paranoid_checkpt >= db_top)) {
+	globals.paranoid_checkpt = atoi(num);
+	if ((globals.paranoid_checkpt < 1)
+	    || (globals.paranoid_checkpt >= db_top)) {
 	  notify(player, T("Permission denied. Invalid checkpoint interval."));
-	  paranoid_dump = 0;
+	  globals.paranoid_dump = 0;
 	  return;
 	}
       } else {
 	/* use a default interval */
-	paranoid_checkpt = db_top / 5;
-	if (paranoid_checkpt < 1)
-	  paranoid_checkpt = 1;
+	globals.paranoid_checkpt = db_top / 5;
+	if (globals.paranoid_checkpt < 1)
+	  globals.paranoid_checkpt = 1;
       }
       if (flag == DUMP_PARANOID) {
 	notify_format(player, T("Paranoid dumping, checkpoint interval %d."),
-		      paranoid_checkpt);
+		      globals.paranoid_checkpt);
 	do_rawlog(LT_CHECK,
 		  "*** PARANOID DUMP *** done by %s(#%d),\n",
 		  Name(player), player);
       } else {
 	notify_format(player, T("Debug dumping, checkpoint interval %d."),
-		      paranoid_checkpt);
+		      globals.paranoid_checkpt);
 	do_rawlog(LT_CHECK,
 		  "*** DEBUG DUMP *** done by %s(#%d),\n",
 		  Name(player), player);
       }
       do_rawlog(LT_CHECK, T("\tcheckpoint interval %d, at %s"),
-		paranoid_checkpt, show_time(mudtime, 0));
+		globals.paranoid_checkpt, show_time(mudtime, 0));
     } else {
       /* normal dump */
-      paranoid_dump = 0;	/* just to be safe */
+      globals.paranoid_dump = 0;	/* just to be safe */
       notify(player, "Dumping...");
       do_rawlog(LT_CHECK, "** DUMP ** done by %s(#%d) at %s",
 		Name(player), player, show_time(mudtime, 0));
     }
     fork_and_dump(1);
-    paranoid_dump = 0;
+    globals.paranoid_dump = 0;
   }
 }
 
@@ -320,10 +313,10 @@ do_shutdown(dbref player, enum shutdown_type flag)
       mush_panic("@shutdown/panic");
     } else {
       if (flag == SHUT_PARANOID) {
-	paranoid_checkpt = db_top / 5;
-	if (paranoid_checkpt < 1)
-	  paranoid_checkpt = 1;
-	paranoid_dump = 1;
+	globals.paranoid_checkpt = db_top / 5;
+	if (globals.paranoid_checkpt < 1)
+	  globals.paranoid_checkpt = 1;
+	globals.paranoid_dump = 1;
       }
       shutdown_flag = 1;
     }
@@ -385,12 +378,12 @@ dump_database_internal(void)
       }
     }
 
-    sprintf(realdumpfile, "%s%s", dumpfile, options.compresssuff);
-    strcpy(tmpfl, make_new_epoch_file(dumpfile, epoch));
+    sprintf(realdumpfile, "%s%s", globals.dumpfile, options.compresssuff);
+    strcpy(tmpfl, make_new_epoch_file(globals.dumpfile, epoch));
     sprintf(realtmpfl, "%s%s", tmpfl, options.compresssuff);
 
     if ((f = db_open_write(tmpfl)) != NULL) {
-      switch (paranoid_dump) {
+      switch (globals.paranoid_dump) {
       case 0:
 #ifdef ALWAYS_PARANOID
 	db_paranoid_write(f, 0);
@@ -456,7 +449,7 @@ dump_database_internal(void)
       longjmp(db_err, 1);
     }
 #endif /* CHAT_SYSTEM */
-    time(&last_dump_time);
+    time(&globals.last_dump_time);
   }
 
 #endif
@@ -503,7 +496,7 @@ mush_panic(const char *message)
   emergency_shutdown();
 
   /* dump panic file if we have a database read. */
-  if (database_loaded) {
+  if (globals.database_loaded) {
     if (setjmp(db_err)) {
       /* Dump failed. We're in deep doo-doo */
       do_rawlog(LT_ERR, T("CANNOT DUMP PANIC DB. OOPS."));
@@ -566,9 +559,9 @@ dump_database(void)
 {
   epoch++;
 
-  do_rawlog(LT_ERR, "DUMPING: %s.#%d#", dumpfile, epoch);
+  do_rawlog(LT_ERR, "DUMPING: %s.#%d#", globals.dumpfile, epoch);
   dump_database_internal();
-  do_rawlog(LT_ERR, "DUMPING: %s.#%d# (done)", dumpfile, epoch);
+  do_rawlog(LT_ERR, "DUMPING: %s.#%d# (done)", globals.dumpfile, epoch);
 }
 
 /** Dump a database, possibly by forking the process.
@@ -593,11 +586,11 @@ fork_and_dump(int forking)
   chunk_stats(NOTHING, 0);
   chunk_stats(NOTHING, 1);
 #endif
-  do_rawlog(LT_CHECK, "CHECKPOINTING: %s.#%d#\n", dumpfile, epoch);
+  do_rawlog(LT_CHECK, "CHECKPOINTING: %s.#%d#\n", globals.dumpfile, epoch);
   if (NO_FORK)
     nofork = 1;
   else
-    nofork = !forking || (paranoid_dump == 2);	/* Don't fork for dump/debug */
+    nofork = !forking || (globals.paranoid_dump == 2);	/* Don't fork for dump/debug */
 #ifdef WIN32
   nofork = 1;
 #endif
@@ -766,9 +759,9 @@ init_game_config(const char *conf)
   }
 
   /* set MUSH start time */
-  start_time = time((time_t *) 0);
-  if (!first_start_time)
-    first_start_time = start_time;
+  globals.start_time = time((time_t *) 0);
+  if (!globals.first_start_time)
+    globals.first_start_time = globals.start_time;
 
   /* initialize all the hash and prefix tables */
   init_flagspaces();
@@ -797,7 +790,7 @@ init_game_config(const char *conf)
 
   do_rawlog(LT_ERR, "CobraMUSH v%s [%s]", VERSION, VBRANCH);
   do_rawlog(LT_ERR, T("MUSH restarted, PID %d, at %s"),
-	    (int) getpid(), show_time(start_time, 0));
+	    (int) getpid(), show_time(globals.start_time, 0));
 }
 
 /** Post-db-load configuration.
@@ -871,7 +864,7 @@ init_game_dbs(void)
   outfile = options.output_db;
   flag_file = options.flagdb;
   mailfile = options.mail_db;
-  strcpy(dumpfile, outfile);
+  strcpy(globals.dumpfile, outfile);
 
   /* read small text files into cache */
   fcache_init();
@@ -942,7 +935,7 @@ init_game_dbs(void)
      * format db, with everything shoved together. In that case,
      * don't close the file
      */
-    panicdb = ((indb_flags & DBF_PANIC) && !feof(f));
+    panicdb = ((globals.indb_flags & DBF_PANIC) && !feof(f));
 
     if (!panicdb)
       db_close(f);
@@ -2194,22 +2187,22 @@ do_uptime(dbref player, int mortal)
   char tbuf1[BUFFER_LEN];
   struct tm *when;
 
-  when = localtime(&first_start_time);
+  when = localtime(&globals.first_start_time);
   strftime(tbuf1, sizeof tbuf1, T("     Up since %a %b %d %X %Z %Y"), when);
   notify(player, tbuf1);
 
-  when = localtime(&start_time);
+  when = localtime(&globals.start_time);
   strftime(tbuf1, sizeof tbuf1, T("  Last reboot: %a %b %d %X %Z %Y"), when);
   notify(player, tbuf1);
 
-  notify_format(player, T("Total reboots: %d"), reboot_count);
+  notify_format(player, T("Total reboots: %d"), globals.reboot_count);
 
   when = localtime(&mudtime);
   strftime(tbuf1, sizeof tbuf1, T("     Time now: %a %b %d %X %Z %Y"), when);
   notify(player, tbuf1);
 
-  if (last_dump_time > 0) {
-    when = localtime(&last_dump_time);
+  if (globals.last_dump_time > 0) {
+    when = localtime(&globals.last_dump_time);
     strftime(tbuf1, sizeof tbuf1,
 	     T("   Time of last database save: %a %b %d %X %Z %Y"), when);
     notify(player, tbuf1);

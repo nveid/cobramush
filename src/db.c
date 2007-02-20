@@ -48,8 +48,6 @@ void shutdown_checkpoint(void);
 #define MAYBE_GET(f,x) \
         (indb_flags & (x)) ? getref(f) : 0
 
-extern int paranoid_checkpt;	/* from game.c */
-
 long indb_flags;		/**< What flags are in the db we read at startup? */
 long flagdb_flags;		/**< What flags are in the flag db we read at startup? */
 
@@ -940,7 +938,7 @@ db_paranoid_write(FILE * f, int flag)
     OUTPUT(fprintf(f, "!%d\n", i));
     db_paranoid_write_object(f, i, flag);
     /* print out a message every so many objects */
-    if (i % paranoid_checkpt == 0)
+    if (i % globals.paranoid_checkpt == 0)
       do_rawlog(LT_CHECK, T("\t...wrote up to object #%d\n"), i);
   }
   OUTPUT(fputs(EOD, f));
@@ -1977,12 +1975,10 @@ init_objdata_htab(int size)
   hashinit(&htab_objdata_keys, 8, 32);
 }
 
-extern time_t first_start_time;
-
 void init_postconvert() {
   dbref master_division, i;
 
-	  if((!(indb_flags & DBF_DIVISIONS) || (indb_flags & DBF_TYPE_GARBAGE)) && CreTime(0) != first_start_time ) {
+	  if((!(indb_flags & DBF_DIVISIONS) || (indb_flags & DBF_TYPE_GARBAGE)) && CreTime(0) != globals.first_start_time ) {
 	    do_rawlog(LT_ERR, "Beginning Pennmush to CobraMUSH database conversion process.");
 	      /* Final Step of DB Conversion
 	       * We're gonna first Create the Master Division
