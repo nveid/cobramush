@@ -33,8 +33,8 @@
 static MYSQL *mysql_struct = NULL;
 #define MYSQL_RETRY_TIMES 3
 
-static int safe_sql_query(dbref player, char *q_string, char row_delim,
-			  char field_delim, char *buff, char **bp);
+static int safe_sql_query(dbref player, char *q_string, char *rowsep,
+			  char *fieldsep, char *buff, char **bp);
 void sql_timer();
 static int sql_init(void);
 #ifdef _SWMP_
@@ -102,10 +102,8 @@ sql_init(void)
     return 0;
 }
 
-#define print_sep(s,b,p)  if (s) safe_chr(s,b,p)
-
 static int
-safe_sql_query(dbref player, char *q_string, char row_delim, char field_delim,
+safe_sql_query(dbref player, char *q_string, char *rowsep, char *fieldsep,
 	       char *buff, char **bp)
 {
   MYSQL_RES *qres;
@@ -176,13 +174,13 @@ safe_sql_query(dbref player, char *q_string, char row_delim, char field_delim,
   if (buff) {
     for (i = 0; i < got_rows; i++) {
       if (i > 0) {
-	print_sep(row_delim, buff, bp);
+	safe_str(rowsep, buff, bp);
       }
       row_p = mysql_fetch_row(qres);
       if (row_p) {
 	for (j = 0; j < got_fields; j++) {
 	  if (j > 0) {
-	    print_sep(field_delim, buff, bp);
+	    safe_str(fieldsep, buff, bp);
 	  }
 	  if (row_p[j] && *row_p[j])
 	    if (safe_str(row_p[j], buff, bp))
@@ -216,7 +214,8 @@ finished:
 
 FUNCTION(fun_sql)
 {
-  char row_delim, field_delim;
+  char *rowsep = (char *) " ";
+  char *fieldsep = (char *) " ";
 
   if (!Sql_Ok(executor)) {
     safe_str(T(e_perm), buff, bp);
@@ -224,35 +223,16 @@ FUNCTION(fun_sql)
   }
 
   if (nargs >= 2) {
-    /* we have a delimiter in args[2]. Got to parse it */
-    char insep[BUFFER_LEN];
-    char *isep = insep;
-    const char *arg2 = args[1];
-    process_expression(insep, &isep, &arg2, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
-    *isep = '\0';
-    strcpy(args[1], insep);
+    /* we have a row separator in args[2]. */
+    rowsep = args[1];
   }
 
   if (nargs >= 3) {
-    /* we have a delimiter in args[3]. Got to parse it */
-    char insep[BUFFER_LEN];
-    char *isep = insep;
-    const char *arg3 = args[2];
-    process_expression(insep, &isep, &arg3, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
-    *isep = '\0';
-    strcpy(args[2], insep);
+    /* we have a field separator in args[3]. */
+    fieldsep = args[2];
   }
 
-  if (!delim_check(buff, bp, nargs, args, 2, &row_delim))
-    return;
-  if (nargs < 3)
-    field_delim = ' ';
-  else if (!delim_check(buff, bp, nargs, args, 3, &field_delim))
-    return;
-
-  safe_sql_query(executor, args[0], row_delim, field_delim, buff, bp);
+  safe_sql_query(executor, args[0], rowsep, fieldsep, buff, bp);
 }
 
 
@@ -285,7 +265,7 @@ FUNCTION(fun_sql_escape)
 
 
 COMMAND (cmd_sql) {
-  safe_sql_query(player, arg_left, ' ', ' ', NULL, NULL);
+  safe_sql_query(player, arg_left, NULL, NULL, NULL, NULL);
 }
 #ifdef _SWMP_ /* SWM Protocol */
 /* Do secondly checks on Authentication Table & Query Tables */
