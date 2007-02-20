@@ -72,6 +72,7 @@ void Win32MUSH_setup(void);
 #include "function.h"
 #include "help.h"
 #include "dbio.h"
+#include "pcre.h"
 
 #ifdef hpux
 #include <sys/syscall.h>
@@ -108,7 +109,7 @@ extern int use_flagfile;
 static void errdb_grow(void);
 
 extern void initialize_mt(void);
-
+extern const unsigned char *tables;
 int paranoid_dump = 0;		/**< if paranoid, scan before dumping */
 int paranoid_checkpt = 0;	/**< write out an okay message every x objs */
 extern long indb_flags;
@@ -1051,6 +1052,61 @@ do_readcache(dbref player)
           } \
          } while(0)
 
+/** Attempt to tell if the command is a @password or @newpassword, so
+  * that the password isn't logged by Suspect or log_commands
+  * \param cmd The command to check
+  * \return A sanitized version of the command suitable for logging.
+  */
+static char *
+passwd_filter(const char *cmd)
+{
+  static int initialized = 0;
+  static pcre *pass_ptn, *newpass_ptn;
+  static char buff[BUFFER_LEN];
+  char *bp = buff;
+  int ovec[20];
+  size_t cmdlen;
+  int matched;
+
+  if (!initialized) {
+    const char *errptr;
+    int eo;
+
+    pass_ptn = pcre_compile("^(@pass.*?)\\s([^=]*)=(.*)",
+			    PCRE_CASELESS, &errptr, &eo, tables);
+    if (!pass_ptn)
+      do_log(LT_ERR, GOD, GOD, "pcre_compile: %s", errptr);
+    newpass_ptn = pcre_compile("^(@(?:newp|pcreate)[^=]*)=(.*)",
+			       PCRE_CASELESS, &errptr, &eo, tables);
+    if (!newpass_ptn)
+      do_log(LT_ERR, GOD, GOD, "pcre_compile: %s", errptr);
+    initialized = 1;
+  }
+
+  cmdlen = strlen(cmd);
+
+  if ((matched = pcre_exec(pass_ptn, NULL, cmd, cmdlen, 0, 0, ovec, 20)) > 0) {
+    /* It's a password */
+    pcre_copy_substring(cmd, ovec, matched, 1, buff, BUFFER_LEN);
+    bp = buff + strlen(buff);
+    safe_chr(' ', buff, &bp);
+    safe_fill('*', ovec[5] - ovec[4], buff, &bp);
+    safe_chr('=', buff, &bp);
+    safe_fill('*', ovec[7] - ovec[6], buff, &bp);
+  } else if ((matched = pcre_exec(newpass_ptn, NULL, cmd, cmdlen, 0, 0,
+				  ovec, 20)) > 0) {
+    pcre_copy_substring(cmd, ovec, matched, 1, buff, BUFFER_LEN);
+    bp = buff + strlen(buff);
+    safe_chr('=', buff, &bp);
+    safe_fill('*', ovec[5] - ovec[4], buff, &bp);
+  } else {
+    safe_strl(cmd, cmdlen, buff, &bp);
+  }
+  *bp = '\0';
+  return buff;
+}
+
+
 /** Attempt to match and execute a command.
  * This function performs some sanity checks and then attempts to
  * run a command. It checks, in order: home, built-in commands,
@@ -1126,13 +1182,6 @@ process_command(dbref player, char *command, dbref cause, dbref realcause,  int 
   }
   orator = player;
 
-  log_activity(LA_CMD, player, command);
-  if (options.log_commands || Suspect(player))
-    do_log(LT_CMD, player, NOTHING, "%s", command);
-
-  if (Verbose(player))
-    raw_notify(Owner(player), tprintf("#%d] %s", player, command));
-
   /* eat leading whitespace */
   while (*command && isspace((unsigned char) *command))
     command++;
@@ -1147,6 +1196,17 @@ process_command(dbref player, char *command, dbref cause, dbref realcause,  int 
   if ((!command || !*command) && !from_port)
     return;
 
+  {
+    char *msg = passwd_filter(command);
+
+    log_activity(LA_CMD, player, msg);
+    if (options.log_commands || Suspect(player))
+      do_log(LT_CMD, player, NOTHING, "%s", msg);
+    if Verbose
+      (player)
+      raw_notify(Owner(player), tprintf("#%d] %s", player, msg));
+  }
+
   /* important home checking comes first! */
   if (strcmp(command, "home") == 0) {
     if (!Mobile(player))
@@ -1157,6 +1217,8 @@ process_command(dbref player, char *command, dbref cause, dbref realcause,  int 
       do_move(player, command, 0);
     return;
   }
+
+
   strcpy(unp, command);
 
   cptr = command_parse(player, cause, realcause, command, from_port);
