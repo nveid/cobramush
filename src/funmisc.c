@@ -159,15 +159,23 @@ FUNCTION(fun_setq)
 {
   /* sets a variable into a local register */
   int qindex;
+  int n;
 
-  if (*args[0] && (*(args[0] + 1) == '\0') &&
-      ((qindex = qreg_indexes[(unsigned char) args[0][0]]) != -1)
-      && global_eval_context.renv[qindex]) {
-    strcpy(global_eval_context.renv[qindex], args[1]);
-    if (!strcmp(called_as, "SETR"))
-      safe_strl(args[1], arglens[1], buff, bp);
-  } else
-    safe_str(T("#-1 REGISTER OUT OF RANGE"), buff, bp);
+  if ((nargs % 2) != 0) {
+    safe_str(T("#-1 FUNCTION EXPECTS AN EVEN NUMBER OF ARGUMENTS"), buff, bp);
+    return;
+  }
+
+  for (n = 0; n < nargs; n += 2) {
+    if (*args[n] && (*(args[n] + 1) == '\0') &&
+	((qindex = qreg_indexes[(unsigned char) args[n][0]]) != -1)
+	&& global_eval_context.renv[qindex]) {
+      strcpy(global_eval_context.renv[qindex], args[n + 1]);
+      if (n == 0 && !strcmp(called_as, "SETR"))
+	safe_strl(args[n + 1], arglens[n + 1], buff, bp);
+    } else
+      safe_str(T("#-1 REGISTER OUT OF RANGE"), buff, bp);
+  }
 }
 
 /* ARGSUSED */
