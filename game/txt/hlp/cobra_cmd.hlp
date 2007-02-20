@@ -2815,13 +2815,7 @@ See also: @wall, @wizwall
     @search eval=gt(money(##),10)     <-- list all objects owned by me  
                                           worth more than 10 coins.
   
-  If <class>=POWERS, only objects with the given power are listed. Only
-  one power may be specified.
-  
-  If <class>=EVAL, only objects for which <restriction> evaluates to a
-  true boolean value will be listed. The token '##' in <restriction>, which
-  is a function, is replaced by each dbref sequentially. Classes EPLAYER,
-  EROOM, EEXIT, and EOBJECT work like EVAL but are restricted to a single type.
+  See also: lsearch, lsearchr
 & @select
   @select <string>=<expr1>,<action1>[,<exprN>,<actionN>]...[,<default>]
   This is similar to @switch, except it only executes the action

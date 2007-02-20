@@ -59,12 +59,27 @@ extern dbref find_player_by_desc(int port);
 #endif
 #endif
 
+struct search_spec {
+  dbref owner;	/**< Limit to this owner, if specified */
+  int type;	/**< Limit to this type */
+  dbref parent;	/**< Limit to children of this parent */
+  dbref zone;	/**< Limit to those in this zone */
+  char flags[BUFFER_LEN];	/**< Limit to those with these flags */
+  char lflags[BUFFER_LEN];	/**< Limit to those with these flags */
+  char powers[BUFFER_LEN];	/**< Limit to those with these powers */
+  char eval[BUFFER_LEN];	/**< Limit to those where this evals true */
+  char name[BUFFER_LEN];	/**< Limit to those prefix-matching this name */
+  dbref low;	/**< Limit to dbrefs here or higher */
+  dbref high;	/**< Limit to dbrefs here or lower */
+};
+
 int tport_dest_ok(dbref player, dbref victim, dbref dest);
 int tport_control_ok(dbref player, dbref victim, dbref loc);
 static int mem_usage(dbref thing);
-static int raw_search(dbref player, const char *owner, const char *class,
-		      const char *restriction, const char *start,
-		      const char *stop, dbref **result, PE_Info * pe_info);
+static int raw_search(dbref player, const char *owner, int nargs,
+		      const char **args, dbref **result, PE_Info * pe_info);
+static int fill_search_spec(dbref player, const char *owner, int nargs,
+			    const char **args, struct search_spec *spec);
 
 #ifdef INFO_SLAVE
 void kill_info_slave(void);
@@ -1135,9 +1150,14 @@ do_search(dbref player, const char *arg1, char **arg3)
       tbuf[0] = '\0';
     }
   }
-
-  nresults = raw_search(player, tbuf, arg2, arg3[1], arg3[2], arg3[3],
-			&results, NULL);
+  {
+    const char *myargs[4];
+    myargs[0] = arg2;
+    myargs[1] = arg3[1];
+    myargs[2] = arg3[2];
+    myargs[3] = arg3[3];
+    nresults = raw_search(player, tbuf, 4, myargs, &results, NULL);
+  }
 
   if (nresults == 0) {
     notify(player, T("Nothing found."));
@@ -1212,7 +1232,7 @@ do_search(dbref player, const char *arg1, char **arg3)
     }
 
     if (nthings) {
-      notify(player, "\nOBJECTS:");
+      notify(player, "\nTHINGS:");
       for (n = 0; n < nthings; n++) {
 	tbp = tbuf;
 	safe_format(tbuf, &tbp, "%s [owner: ",
@@ -1254,7 +1274,7 @@ do_search(dbref player, const char *arg1, char **arg3)
     notify(player, T("----------  Search Done  ----------"));
     notify_format(player,
 		  T
-		  ("Totals: Rooms...%d  Exits...%d  Objects...%d  Players...%d  Divisions...%d"),
+		  ("Totals: Rooms...%d  Exits...%d  Things...%d  Players...%d  Divisions...%d"),
 		  nrooms, nexits, nthings, nplayers, ndivisions);
     mush_free((Malloc_t) rooms, "dbref_list");
     mush_free((Malloc_t) exits, "dbref_list");
@@ -1277,12 +1297,15 @@ FUNCTION(fun_lsearch)
     return;
   }
 
-  if (!strcmp(called_as, "CHILDREN"))
-    nresults = raw_search(executor, NULL, "PARENT", args[0], NULL,
-			  NULL, &results, pe_info);
-  else
-    nresults = raw_search(executor, args[0], args[1], args[2], args[3], args[4],
-			  &results, pe_info);
+  if (!strcmp(called_as, "CHILDREN")) {
+    const char *myargs[2];
+    myargs[0] = "PARENT";
+    myargs[1] = args[0];
+    nresults = raw_search(executor, NULL, 2, myargs, &results, pe_info);
+  } else
+    nresults =
+      raw_search(executor, args[0], nargs - 1, (const char **) (args + 1),
+		 &results, pe_info);
 
   if (nresults < 0) {
     safe_str("#-1", buff, bp);
@@ -1314,356 +1337,6 @@ FUNCTION(fun_lsearch)
     mush_free(results, "search_results");
 }
 
-
-/** Type of limitation to apply to a search of the db */
-enum search_class {
-  S_OWNER,	/**< Limit to a single owner */
-  S_TYPE,	/**< Limit to a single type */
-  S_PARENT,	/**< Limit to objects with a given parent */
-  S_ZONE,	/**< Limit to objects in a given zone */
-  S_FLAG,	/**< Limit to objects with given flag characters */
-  S_POWER,	/**< Limit to objects with given power */
-  S_EVAL,	/**< Limit to objects for which an expression evals true */
-  S_NAME,	/**< Limit to objects prefix-matching a given name */
-  S_LFLAG	/**< Limit to objects with given flag names */
-};
-
-/* Does the actual searching */
-static int
-raw_search(dbref player, const char *owner, const char *class,
-	   const char *restriction, const char *start, const char *stop,
-	   dbref **result, PE_Info * pe_info)
-{
-  size_t result_size;
-  size_t nresults = 0;
-  char *p;
-  enum search_class sclass = S_OWNER;
-  int n, i;
-  int restrict_type = NOTYPE;
-  POWER *restrict_powers;
-  dbref restrict_obj = NOTHING, restrict_owner = ANY_OWNER;
-  dbref low = 0, high = db_top - 1;
-
-  i = YESLT;
-
-  /* Range limits */
-  if (start && *start) {
-    size_t offset = 0;
-    if (start[0] == '#')
-      offset = 1;
-    low = parse_integer(start + offset);
-    if (!GoodObject(low))
-      low = 0;
-  }
-  if (stop && *stop) {
-    size_t offset = 0;
-    if (stop[0] == '#')
-      offset = 1;
-    high = parse_integer(stop + offset);
-    if (!GoodObject(high))
-      high = db_top - 1;
-  }
-
-  /* set limits on who we search */
-  if (!owner || !*owner || strcasecmp(owner, "all") == 0)
-    restrict_owner = ANY_OWNER;
-  else if (strcasecmp(owner, "me") == 0)
-    restrict_owner = player;
-  else
-    restrict_owner = lookup_player(owner);
-  if (restrict_owner == NOTHING) {
-    notify(player, T("Unknown owner."));
-    return -1;
-  }
-
-  /* Figure out the class */
-  if (!class || !*class || strcasecmp(class, "none") == 0) {
-    sclass = S_OWNER;
-  } else if (string_prefix("type", class)) {
-    sclass = S_TYPE;
-    if (string_prefix("things", restriction)
-	|| string_prefix("objects", restriction)) {
-      restrict_type = TYPE_THING;
-    } else if (string_prefix("rooms", restriction)) {
-      restrict_type = TYPE_ROOM;
-    } else if (string_prefix("exits", restriction)) {
-      restrict_type = TYPE_EXIT;
-    } else if (string_prefix("rooms", restriction)) {
-      restrict_type = TYPE_ROOM;
-    } else if (string_prefix("players", restriction)) {
-      restrict_type = TYPE_PLAYER;
-    } else if (string_prefix("divisions", restriction)) {
-      restrict_type = TYPE_DIVISION;
-    } else {
-      notify(player, T("Unknown type."));
-      return -1;
-    }
-  } else if (string_prefix("things", class) || string_prefix("objects", class)) {
-    sclass = S_NAME;
-    restrict_type = TYPE_THING;
-  } else if (string_prefix("exits", class)) {
-    sclass = S_NAME;
-    restrict_type = TYPE_EXIT;
-  } else if (string_prefix("rooms", class)) {
-    sclass = S_NAME;
-    restrict_type = TYPE_ROOM;
-  } else if (string_prefix("players", class)) {
-    sclass = S_NAME;
-    restrict_type = TYPE_PLAYER;
-  } else if (string_prefix("divisions", class)) {
-    sclass = S_NAME;
-    restrict_type = TYPE_DIVISION;
-  } else if (string_prefix("name", class)) {
-    sclass = S_NAME;
-  } else if (string_prefix("parent", class)) {
-    sclass = S_PARENT;
-    if (!is_objid(restriction)) {
-      notify(player, T("Unknown parent."));
-      return -1;
-    }
-    restrict_obj = parse_objid(restriction);
-    if (!GoodObject(restrict_obj)) {
-      notify(player, T("Unknown parent."));
-      return -1;
-    }
-  } else if (string_prefix("zone", class)) {
-    sclass = S_ZONE;
-    if (!is_objid(restriction)) {
-      notify(player, T("Unknown zone."));
-      return -1;
-    }
-    restrict_obj = parse_objid(restriction);
-    if (!GoodObject(restrict_obj)) {
-      notify(player, T("Unknown zone."));
-      return -1;
-    }
-  } else if (string_prefix("eval", class)) {
-    sclass = S_EVAL;
-  } else if (string_prefix("ethings", class) ||
-	     string_prefix("eobjects", class)) {
-    sclass = S_EVAL;
-    restrict_type = TYPE_THING;
-  } else if (string_prefix("eexits", class)) {
-    sclass = S_EVAL;
-    restrict_type = TYPE_EXIT;
-  } else if (string_prefix("erooms", class)) {
-    sclass = S_EVAL;
-    restrict_type = TYPE_ROOM;
-  } else if (string_prefix("eplayers", class)) {
-    sclass = S_EVAL;
-    restrict_type = TYPE_PLAYER;
-  } else if (string_prefix("powers", class)) {
-    sclass = S_POWER;
-    if((p = strchr(restriction, ':'))) {
-      *p++ = '\0';
-      while(*p == ' ')
-        p++;
-      i = yescode_i(p);
-    }
-
-    restrict_powers = find_power(restriction);
-    if (!restrict_powers) {
-      notify(player, T("No such power to search for."));
-      return -1;
-    }
-  } else if (string_prefix("flags", class)) {
-    /* Handle the checking later.  */
-    sclass = S_FLAG;
-    if (!restriction || !*restriction) {
-      notify(player, T("You must give a string of flag characters."));
-      return -1;
-    }
-  } else if (string_prefix("lflags", class)) {
-    /* Handle the checking later.  */
-    sclass = S_LFLAG;
-    if (!restriction || !*restriction) {
-      notify(player, T("You must give a list of flag names."));
-      return -1;
-    }
-  } else {
-    notify(player, T("Unknown search class."));
-    return -1;
-  }
-
-  if ((restrict_owner != ANY_OWNER && restrict_owner != player) &&
-      !(CanSearch(player, restrict_owner) || (sclass == S_TYPE && restrict_type == TYPE_PLAYER))) {
-    notify(player, T("You need a search warrant to do that."));
-    return -1;
-  }
-
-  /* make sure player has money to do the search */
-  if (!payfor(player, FIND_COST)) {
-    notify_format(player, T("Searches cost %d %s."), FIND_COST,
-		  ((FIND_COST == 1) ? MONEY : MONIES));
-    return -1;
-  }
-
-  result_size = (db_top / 4) + 1;
-  *result =
-    (dbref *) mush_malloc(sizeof(dbref) * result_size, "search_results");
-  if (!*result)
-    mush_panic(T("Couldn't allocate memory in search!"));
-
-  switch (sclass) {
-  case S_OWNER:		/* @search someone */
-  case S_TYPE:			/* @search type=whatever */
-    for (n = low; n <= high; n++) {
-      if (CanSearch(player, Owner(n)) && (restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	  && (restrict_type == NOTYPE || Typeof(n) == restrict_type)) {
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults = (dbref *) realloc((Malloc_t) *result,
-					 sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-	(*result)[nresults++] = (dbref) n;
-      }
-    }
-    break;
-  case S_ZONE:			/* @search ZONE=#1234 */
-    for (n = low; n <= high; n++) {
-      if (CanSearch(player, Owner(n)) && (restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	  && Zone(n) == restrict_obj) {
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults =
-	    (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-
-	(*result)[nresults++] = (dbref) n;
-      }
-    }
-    break;
-  case S_PARENT:		/* @search parent=#1234 */
-    for (n = low; n <= high; n++) {
-      if (CanSearch(player, Owner(n)) && (restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	  && Parent(n) == restrict_obj) {
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults =
-	    (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-
-	(*result)[nresults++] = (dbref) n;
-      }
-    }
-    break;
-  case S_NAME:			/* @search (?:name|exits|objects|rooms|players|things)=name */
-    for (n = low; n <= high; n++) {
-      if (CanSearch(player, Owner(n)) && (restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	  && (restrict_type == NOTYPE || Typeof(n) == restrict_type)
-	  && string_match(Name(n), restriction)) {
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults =
-	    (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-
-	(*result)[nresults++] = (dbref) n;
-      }
-    }
-    break;
-  case S_EVAL:			/* @search (?:eval|ething|eroom|eplayer|eexit)=code */
-    {
-      char *ebuf1;
-      const char *ebuf2;
-      char tbuf1[BUFFER_LEN];
-      char *bp;
-
-      if (!restriction || !*restriction)
-	break;
-
-      for (n = low; n <= high; n++) {
-	if (!CanSearch(player, Owner(n)) || !((restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	      && (restrict_type == NOTYPE || Typeof(n) == restrict_type)))
-	  continue;
-
-	ebuf1 = replace_string("##", unparse_dbref(n), restriction);
-	ebuf2 = ebuf1;
-	bp = tbuf1;
-	process_expression(tbuf1, &bp, &ebuf2, player, player, player,
-			   PE_DEFAULT, PT_DEFAULT, pe_info);
-	mush_free((Malloc_t) ebuf1, "replace_string.buff");
-	*bp = '\0';
-	if (!parse_boolean(tbuf1))
-	  continue;
-
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults =
-	    (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-	(*result)[nresults++] = (dbref) n;
-	if (pe_info && pe_info->fun_invocations >= FUNCTION_LIMIT)
-	  break;
-      }
-    }
-    break;
-  case S_POWER:		/* @search power=see_all */
-    for (n = low; n <= high; n++) {
-      if (CanSearch(player, Owner(n))
-	&& (restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	&& ((i == NO ? (God(n) ? YES : check_power_yescode(DPBITS(n), restrict_powers)) == NO :
-			(God(n) ? YES : check_power_yescode(DPBITS(n), restrict_powers)) >= i))) {
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults =
-	    (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-
-	(*result)[nresults++] = (dbref) n;
-      }
-    }
-    break;
-  case S_FLAG:
-  case S_LFLAG:
-    for (n = low; n <= high; n++) {
-      if (CanSearch(player, Owner(n)) && (restrict_owner == ANY_OWNER || Owner(n) == restrict_owner)
-	  && (restrict_type == NOTYPE || Typeof(n) == restrict_type)
-	  && ((sclass == S_FLAG) ?
-	      flaglist_check("FLAG", player, n, restriction, 1)
-	      : flaglist_check_long("FLAG", player, n, restriction, 1))) {
-	if (nresults >= result_size) {
-	  dbref *newresults;
-	  result_size *= 2;
-	  newresults =
-	    (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
-	  if (!newresults)
-	    mush_panic(T("Couldn't reallocate memory in search!"));
-	  *result = newresults;
-	}
-
-	(*result)[nresults++] = (dbref) n;
-      }
-    }
-    break;
-  }
-
-  return (int) nresults;
-}
 
 #ifdef WIN32
 #pragma warning( disable : 4761)	/* Disable bogus conversion warning */
@@ -2088,4 +1761,281 @@ do_reboot(dbref player, int flag)
   execl("pennmush.exe", "pennmush.exe", "/run", NULL);
 #endif				/* WIN32 */
   exit(1);			/* Shouldn't ever get here, but just in case... */
+}
+
+
+static int
+fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
+               struct search_spec *spec)
+{
+  int n;
+  const char *class, *restriction;
+
+  spec->zone = spec->parent = spec->owner = ANY_OWNER;
+  spec->type = NOTYPE;
+  strcpy(spec->flags, "");
+  strcpy(spec->lflags, "");
+  strcpy(spec->powers, "");
+  strcpy(spec->eval, "");
+  strcpy(spec->name, "");
+  spec->low = 0;
+  spec->high = db_top - 1;
+
+  /* set limits on who we search */
+  if (!owner || !*owner || strcasecmp(owner, "all") == 0)
+    spec->owner = ANY_OWNER;
+  else if (strcasecmp(owner, "me") == 0)
+    spec->owner = player;
+  else
+    spec->owner = lookup_player(owner);
+  if (spec->owner == NOTHING) {
+    notify(player, T("Unknown owner."));
+    return -1;
+  }
+
+  for (n = 0; n < nargs - 1; n += 2) {
+    class = args[n];
+    restriction = args[n + 1];
+    /* A special old-timey kludge */
+    if (class && !*class && restriction && *restriction) {
+      if (isdigit(*restriction) || ((*restriction == '#') && *(restriction + 1)
+				    && isdigit(*(restriction + 1)))) {
+      size_t offset = 0;
+      if (*restriction == '#')
+        offset = 1;
+      spec->high = parse_integer(restriction + offset);
+      if (!GoodObject(spec->high))
+	spec->high = db_top - 1;
+	continue;
+      }
+    }
+    if (!class || !*class || !restriction)
+      continue;
+    if (isdigit(*class) ||
+      ((*class == '#') && *(class + 1) && isdigit(*(class + 1)))) {
+      size_t offset = 0;
+      if (*class == '#')
+      offset = 1;
+      spec->low = parse_integer(class + offset);
+      if (!GoodObject(spec->low))
+      spec->low = 0;
+      if (isdigit(*restriction) || ((*restriction == '#') && *(restriction + 1)
+				    && isdigit(*(restriction + 1)))) {
+	offset = 0;
+	if (*restriction == '#')
+	  offset = 1;
+	spec->high = parse_integer(restriction + offset);
+	if (!GoodObject(spec->high))
+	  spec->high = db_top - 1;
+      }
+      continue;
+    }
+    /* Figure out the class */
+    /* Old-fashioned way to select everything */
+    if (string_prefix("none", class))
+      continue;
+    if (string_prefix("mindb", class)) {
+      size_t offset = 0;
+      if (*restriction == '#')
+      offset = 1;
+      spec->low = parse_integer(restriction + offset);
+      if (!GoodObject(spec->low))
+	spec->low = 0;
+      continue;
+    } else if (string_prefix("maxdb", class)) {
+      size_t offset = 0;
+      if (*restriction == '#')
+	offset = 1;
+      spec->high = parse_integer(restriction + offset);
+      if (!GoodObject(spec->high))
+	spec->low = db_top - 1;
+      continue;
+    }
+
+    if (string_prefix("type", class)) {
+      if (string_prefix("things", restriction)
+	  || string_prefix("objects", restriction)) {
+	spec->type = TYPE_THING;
+      } else if (string_prefix("rooms", restriction)) {
+	spec->type = TYPE_ROOM;
+      } else if (string_prefix("exits", restriction)) {
+	spec->type = TYPE_EXIT;
+      } else if (string_prefix("rooms", restriction)) {
+	spec->type = TYPE_ROOM;
+      } else if (string_prefix("players", restriction)) {
+	spec->type = TYPE_PLAYER;
+      } else {
+	notify(player, T("Unknown type."));
+	return -1;
+      }
+    } else if (string_prefix("things", class)
+	       || string_prefix("objects", class)) {
+      strcpy(spec->name, restriction);
+      spec->type = TYPE_THING;
+    } else if (string_prefix("exits", class)) {
+      strcpy(spec->name, restriction);
+      spec->type = TYPE_EXIT;
+    } else if (string_prefix("rooms", class)) {
+      strcpy(spec->name, restriction);
+      spec->type = TYPE_ROOM;
+    } else if (string_prefix("players", class)) {
+      strcpy(spec->name, restriction);
+      spec->type = TYPE_PLAYER;
+    } else if (string_prefix("name", class)) {
+      strcpy(spec->name, restriction);
+    } else if (string_prefix("parent", class)) {
+      if (!*restriction) {
+	spec->parent = NOTHING;
+	continue;
+      }
+      if (!is_objid(restriction)) {
+	notify(player, T("Unknown parent."));
+	return -1;
+      }
+      spec->parent = parse_objid(restriction);
+      if (!GoodObject(spec->parent)) {
+	notify(player, T("Unknown parent."));
+	return -1;
+      }
+    } else if (string_prefix("zone", class)) {
+      if (!*restriction) {
+	spec->zone = NOTHING;
+	continue;
+      }
+      if (!is_objid(restriction)) {
+	notify(player, T("Unknown zone."));
+	return -1;
+      }
+      spec->zone = parse_objid(restriction);
+      if (!GoodObject(spec->zone)) {
+	notify(player, T("Unknown zone."));
+	return -1;
+      }
+    } else if (string_prefix("eval", class)) {
+      strcpy(spec->eval, restriction);
+    } else if (string_prefix("ethings", class) ||
+	       string_prefix("eobjects", class)) {
+      strcpy(spec->eval, restriction);
+      spec->type = TYPE_THING;
+    } else if (string_prefix("eexits", class)) {
+      strcpy(spec->eval, restriction);
+      spec->type = TYPE_EXIT;
+    } else if (string_prefix("erooms", class)) {
+      strcpy(spec->eval, restriction);
+      spec->type = TYPE_ROOM;
+    } else if (string_prefix("eplayers", class)) {
+      strcpy(spec->eval, restriction);
+      spec->type = TYPE_PLAYER;
+    } else if (string_prefix("powers", class)) {
+      /* Handle the checking later.  */
+      if (!restriction || !*restriction) {
+	notify(player, T("You must give a list of power names."));
+	return -1;
+      }
+      strcpy(spec->powers, restriction);
+    } else if (string_prefix("flags", class)) {
+      /* Handle the checking later.  */
+      if (!restriction || !*restriction) {
+	notify(player, T("You must give a string of flag characters."));
+	return -1;
+      }
+      strcpy(spec->flags, restriction);
+    } else if (string_prefix("lflags", class)) {
+      /* Handle the checking later.  */
+      if (!restriction || !*restriction) {
+	notify(player, T("You must give a list of flag names."));
+	return -1;
+      }
+      strcpy(spec->lflags, restriction);
+    } else {
+      notify(player, T("Unknown search class."));
+      return -1;
+    }
+  }
+  return 0;
+}
+
+
+/* Does the actual searching */
+static int
+raw_search(dbref player, const char *owner, int nargs, const char **args,
+	   dbref **result, PE_Info * pe_info)
+{
+  size_t result_size;
+  size_t nresults = 0;
+  int n;
+  struct search_spec spec;
+
+  /* make sure player has money to do the search */
+  if (!payfor(player, FIND_COST)) {
+    notify_format(player, T("Searches cost %d %s."), FIND_COST,
+		  ((FIND_COST == 1) ? MONEY : MONIES));
+    return -1;
+  }
+
+  if (fill_search_spec(player, owner, nargs, args, &spec) < 0)
+    return -1;
+
+  if ((spec.owner != ANY_OWNER && spec.owner != player
+      && !(CanSearch(player, spec.owner) || (spec.type == TYPE_PLAYER)))) {
+    notify(player, T("You need a search warrant to do that."));
+    return -1;
+  }
+  
+  result_size = (db_top / 4) + 1;
+  *result =
+    (dbref *) mush_malloc(sizeof(dbref) * result_size, "search_results");
+  if (!*result)
+    mush_panic(T("Couldn't allocate memory in search!"));
+  
+  for (n = spec.low; n <= spec.high; n++) {
+    if (spec.owner == ANY_OWNER && !CanSearch(player, Owner(n)))
+      continue;
+    if (spec.owner != ANY_OWNER && Owner(n) != spec.owner)
+      continue;
+    if (spec.type != NOTYPE && Typeof(n) != spec.type)
+      continue;
+    if (spec.zone != ANY_OWNER && Zone(n) != spec.zone)
+      continue;
+    if (spec.parent != ANY_OWNER && Parent(n) != spec.parent)
+      continue;
+    if (*spec.name && !string_match(Name(n), spec.name))
+      continue;
+    if (*spec.flags && !flaglist_check("FLAG", player, n, spec.flags, 1))
+      continue;
+    if (*spec.lflags && !flaglist_check_long("FLAG", player, n, spec.lflags, 1))
+      continue;
+    if (*spec.powers
+	&& !flaglist_check_long("POWER", player, n, spec.powers, 1))
+      continue;
+    if (*spec.eval) {
+      char *ebuf1;
+      const char *ebuf2;
+      char tbuf1[BUFFER_LEN];
+      char *bp;
+
+      ebuf1 = replace_string("##", unparse_dbref(n), spec.eval);
+      ebuf2 = ebuf1;
+      bp = tbuf1;
+      process_expression(tbuf1, &bp, &ebuf2, player, player, player,
+			 PE_DEFAULT, PT_DEFAULT, pe_info);
+      mush_free((Malloc_t) ebuf1, "replace_string.buff");
+      *bp = '\0';
+      if (!parse_boolean(tbuf1))
+	continue;
+    }
+    if (nresults >= result_size) {
+      dbref *newresults;
+      result_size *= 2;
+      newresults =
+	(dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
+      if (!newresults)
+	mush_panic(T("Couldn't reallocate memory in search!"));
+      *result = newresults;
+    }
+
+    (*result)[nresults++] = (dbref) n;
+  }
+
+  return (int) nresults;
 }

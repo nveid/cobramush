@@ -2114,8 +2114,8 @@ for an object named "Test", preferring a thing over other types.
 & SEARCH()
 & LSEARCHR()
 & CHILDREN()
-  lsearch(<player>[, <class>[, <restriction>[, <low>[, <high>]]]])
-  lsearchr(<player>[, <class>[, <restriction>[, <low>[, <high>]]]])
+  lsearch(<player>[, <class>[, <restriction>]])
+  lsearchr(<player>[, <class>[, <restriction>]])
   children(<object>)
  
   This function is similar to the @search command, except it returns
@@ -2123,12 +2123,12 @@ for an object named "Test", preferring a thing over other types.
   costs 100 pennies to perform. The function must have at least three
   arguments.  Wizards can specify "all" or <player> for the <player>
   field; mortals must use "me". If you do not want to restrict
-  something, use "none" for <class> and/or <restriction>. <low> and
-  <high> restrict the search to that range of db#'s and are specified as
-  dbrefs ("#2") with the #.
+  something, use "none" for <class> and/or <restriction>.
 
   The possible <class>es and <restriction>s are the same as those accepted
-  by @search. See 'help @search' for information about them.
+  by @search. lsearch() can accept multiple class/restriction pairs, and
+  applies them in a boolean "AND" fashion, returning only dbrefs that
+  fulfill all restrictions. See 'help @search' for information about them.
 
   children() is exactly the same as lsearch(<me|all>,parent,<object>),
   using "all" for See_All/Search_All players  and "me" for others.
@@ -2151,9 +2151,9 @@ for an object named "Test", preferring a thing over other types.
  
   Examples:
   
-  lsearch(all, flags, gc)                   <-- lists all connected gagged players. 
+  lsearch(all, flags, gc)                  <-- lists all connected gagged players.
   lsearch(me, type, room)                  <-- lists all rooms owned by me.
-  lsearch(me, type, room, 100, 200)        <-- same, but only w/db# 100-200
+  lsearch(me, type, room, flag, J)         <-- lists only JUMP_OK rooms.
   lsearch(all, eplayer, \[eq(money(##),100)\]) <-- lists all players with 100
                                                    coins.
 & LSTATS()
