@@ -448,7 +448,8 @@ parse_english(const char **name, long *flags)
     } else if (strcasecmp(e, "th")) {
       count = -1;
     }
-  }
+  } else
+    count = -1;
   *mname = ' ';
   if (count < 0) {
     /* An error (like '0th' or '12nd') - this wasn't really a count
