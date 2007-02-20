@@ -16,7 +16,7 @@ the following issues:
    II. Mush configuration overview
    III. SQL setup tips
 
-I. Compiling withi MySQL
+I. Compiling with MySQL
 
   The Configure script distributed with PennMUSH automatically detects
   the MySQL client library (libmysqlclient) and attempts to link
