@@ -1286,7 +1286,6 @@ FUNCTION(fun_lsearch)
     safe_str("#-1", buff, bp);
   } else if (nresults == 0) {
     notify(executor, T("Nothing found."));
-    safe_str("#-1", buff, bp);
   } else {
     int first = 1, n;
     if (!rev) {
