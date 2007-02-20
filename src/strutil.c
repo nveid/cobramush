@@ -1626,6 +1626,31 @@ depopulate_codes(ansi_string *as)
   }
 }
 
+/** Reverse an ansi string, preserving its ansification.
+ * This function destructively modifies the ansi_string passed.
+ * \param as pointer to an ansi string.
+ */
+void
+flip_ansi_string(ansi_string *as)
+{
+  int p, n;
+
+  populate_codes(as);
+
+  for (p = 0, n = as->len - 1; p < n; p++, n--) {
+    char *tcode;
+    char t;
+
+    tcode = as->codes[p];
+    t = as->text[p];
+    as->codes[p] = as->codes[n];
+    as->text[p] = as->text[n];
+    as->codes[n] = tcode;
+    as->text[n] = t;
+  }
+}
+
+
 static int is_ansi_code(const char *s);
 static int is_start_html_code(const char *s) __attribute__ ((__unused__));
 static int is_end_html_code(const char *s);

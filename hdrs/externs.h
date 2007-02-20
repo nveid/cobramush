@@ -451,6 +451,7 @@ strdup(const char *s)
 
 
     extern ansi_string *parse_ansi_string(const char *src) __attribute_malloc__;
+    extern void flip_ansi_string(ansi_string *as);
     extern void free_ansi_string(ansi_string *as);
     extern void populate_codes(ansi_string *as);
     extern void depopulate_codes(ansi_string *as);

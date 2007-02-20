@@ -606,25 +606,9 @@ FUNCTION(fun_strcat)
 FUNCTION(fun_flip)
 {
   ansi_string *as;
-  int p, n;
-
   as = parse_ansi_string(args[0]);
-  populate_codes(as);
-
-  for (p = 0, n = as->len - 1; p < n; p++, n--) {
-    char *tcode;
-    char t;
-
-    tcode = as->codes[p];
-    t = as->text[p];
-    as->codes[p] = as->codes[n];
-    as->text[p] = as->text[n];
-    as->codes[n] = tcode;
-    as->text[n] = t;
-  }
-
+  flip_ansi_string(as);
   safe_ansi_string(as, 0, as->len, buff, bp);
-
   free_ansi_string(as);
 }
 
@@ -931,10 +915,11 @@ FUNCTION(fun_rjust)
 /* ARGSUSED */
 FUNCTION(fun_center)
 {
-  /* pads a string with leading blanks (or other fill character) */
-
-  size_t width, len, lsp, rsp;
-  char sep;
+  /* pads a string with leading blanks (or other fill string) */
+  size_t width, len, lsp, rsp, filllen;
+  int fillq, fillr, i;
+  char fillstr[BUFFER_LEN], *fp;
+  ansi_string *as;
 
   if (!is_uinteger(args[1])) {
     safe_str(T(e_uint), buff, bp);
@@ -946,20 +931,60 @@ FUNCTION(fun_center)
     safe_strl(args[0], arglens[0], buff, bp);
     return;
   }
-  rsp = width - len;
-  lsp = rsp / 2;
-  rsp -= lsp;
+  lsp = rsp = (width - len) / 2;
+  rsp += (width - len) % 2;
   if (lsp >= BUFFER_LEN)
-    lsp = BUFFER_LEN - 1;
-  if (rsp >= BUFFER_LEN)
-    rsp = BUFFER_LEN - 1;
+    lsp = rsp = BUFFER_LEN - 1;
 
-  if (!delim_check(buff, bp, nargs, args, 3, &sep))
+  if (!args[2] || !*args[2]) {
+    /* Fast case for default fill with spaces */
+    safe_fill(' ', lsp, buff, bp);
+    safe_strl(args[0], arglens[0], buff, bp);
+    safe_fill(' ', rsp, buff, bp);
     return;
+  }
 
-  safe_fill(sep, lsp, buff, bp);
+  /* args[2] contains the possibly ansi, multi-char fill string */
+  filllen = ansi_strlen(args[2]);
+  as = parse_ansi_string(args[2]);
+  fillq = lsp / filllen;
+  fillr = lsp % filllen;
+  fp = fillstr;
+  for (i = 0; i < fillq; i++)
+    safe_ansi_string(as, 0, as->len, fillstr, &fp);
+  safe_ansi_string(as, 0, fillr, fillstr, &fp);
+  *fp = '\0';
+  free_ansi_string(as);
+  safe_str(fillstr, buff, bp);
   safe_strl(args[0], arglens[0], buff, bp);
-  safe_fill(sep, rsp, buff, bp);
+  /* If we have args[3], that's the right-side fill string */
+  if (nargs > 3) {
+    if (args[3] && *args[3]) {
+      filllen = ansi_strlen(args[3]);
+      as = parse_ansi_string(args[3]);
+      fillq = rsp / filllen;
+      fillr = rsp % filllen;
+      fp = fillstr;
+      for (i = 0; i < fillq; i++)
+      safe_ansi_string(as, 0, as->len, fillstr, &fp);
+      safe_ansi_string(as, 0, fillr, fillstr, &fp);
+      *fp = '\0';
+      free_ansi_string(as);
+      safe_str(fillstr, buff, bp);
+    } else {
+      /* Null args[3], fill right side with spaces */
+      safe_fill(' ', rsp, buff, bp);
+    }
+    return;
+  }
+  /* No args[3], so we flip args[2] */
+  as = parse_ansi_string(fillstr);
+  flip_ansi_string(as);
+  safe_ansi_string(as, 0, as->len, buff, bp);
+  /* Is there an extra char left over we need to pad with? */
+  if (rsp > lsp)
+    safe_ansi_string(as, 0, 1, buff, bp);
+  free_ansi_string(as);
 }
 
 /* ARGSUSED */

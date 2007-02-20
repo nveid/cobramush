@@ -312,7 +312,7 @@ FUNTAB flist[] = {
   {"CTITLE", fun_ctitle, 2, 2, FN_REG},
   {"CWHO", fun_cwho, 1, 1, FN_REG},
 #endif /* CHAT_SYSTEM */
-  {"CENTER", fun_center, 2, 3, FN_REG},
+  {"CENTER", fun_center, 2, 4, FN_REG},
   {"CHILDREN", fun_lsearch, 1, 1, FN_REG},
   {"CHR", fun_chr, 1, 1, FN_REG},
   {"CHECKPASS", fun_checkpass, 2, 2, FN_REG | FN_DIRECTOR},
