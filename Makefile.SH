@@ -46,6 +46,9 @@ $spitshell >Makefile <<!GROK!THIS!
 # If you want to profile the code, add -pg -a -DPROFILING to CCFLAGS
 # and (probably) remove -O
 #
+# If you want to do a paranoid compile, add the following to CCFLAGS:
+# -Wall -Wno-comment -Wno-parentheses -Wno-switch -Werror
+#
 $make_set_make
 CC=$cc
 CCFLAGS=$optimize -I.. -I../hdrs $ccflags $warnings
