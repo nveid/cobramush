@@ -1102,7 +1102,7 @@ passwd_filter(const char *cmd)
 
 /** Attempt to match and execute a command.
  * This function performs some sanity checks and then attempts to
- * run a command. It checks, in order: home, built-in commands,
+ * run a command. It checks, in order:  built-in commands,
  * enter aliases, leave aliases, $commands on neighboring objects or
  * the player, $commands on the container, $commands on inventory,
  * exits in the zone master room, $commands on objects in the ZMR,
@@ -1199,18 +1199,6 @@ process_command(dbref player, char *command, dbref cause, dbref realcause,  int 
       (player)
       raw_notify(Owner(player), tprintf("#%d] %s", player, msg));
   }
-
-  /* important home checking comes first! */
-  if (strcmp(command, "home") == 0) {
-    if (!Mobile(player))
-      return;
-    if (Fixed(player))
-      notify(player, T("You can't do that IC!"));
-    else
-      do_move(player, command, 0);
-    return;
-  }
-
 
   strcpy(unp, command);
 

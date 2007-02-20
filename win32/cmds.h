@@ -59,6 +59,7 @@ COMMAND_PROTO(cmd_grep);
 COMMAND_PROTO(cmd_halt);
 COMMAND_PROTO(cmd_helpcmd);
 COMMAND_PROTO(cmd_hide);
+COMMAND_PROTO(cmd_home);
 COMMAND_PROTO(cmd_hook);
 COMMAND_PROTO(cmd_huh_command);
 COMMAND_PROTO(cmd_inventory);

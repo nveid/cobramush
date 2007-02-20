@@ -317,6 +317,7 @@ COMLIST commands[] = {
   {"GET", NULL, cmd_get, CMD_T_PLAYER | CMD_T_THING | CMD_T_NOGAGGED, NULL},
   {"GIVE", "SILENT", cmd_give, CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_NOGAGGED, NULL},
   {"GOTO", NULL, cmd_goto, CMD_T_PLAYER | CMD_T_THING, NULL},
+  {"HOME", NULL, cmd_home, CMD_T_PLAYER | CMD_T_THING, NULL},
   {"INVENTORY", NULL, cmd_inventory, CMD_T_ANY, NULL},
 
   {"LOOK", "OUTSIDE", cmd_look, CMD_T_ANY, NULL},
@@ -957,7 +958,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
      * usual processing. Exits have next priority.  We still pass them
      * through the parser so @hook on GOTO can work on them.
      */
-    if (can_move(player, p)) {
+    if (strcasecmp(p, "home") && can_move(player, p)) {
       ec = exit_command;
       safe_str("GOTO ", exit_command, &ec);
       safe_str(p, exit_command, &ec);

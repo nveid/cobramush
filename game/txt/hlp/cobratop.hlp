@@ -557,7 +557,6 @@ Standard Attributes: (see @list/attribs for the complete list)
   order of possible commands:
 
     Special game commands: WHO, QUIT, etc.
-    "home" command
     Single-token commands: ", :, ;, +
     Exits in the room
     @-commands

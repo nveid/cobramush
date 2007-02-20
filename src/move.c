@@ -301,12 +301,16 @@ safe_tel(dbref player, dbref dest, int nomovemsgs)
 int
 can_move(dbref player, const char *direction)
 {
-  if (!strcasecmp(direction, "home") && !Fixed(player) && !RPMODE(player))
-    return 1;
-
-  /* otherwise match on exits - don't use GoodObject here! */
-  return (match_result(player, direction, TYPE_EXIT, MAT_ENGLISH | MAT_EXIT) !=
+  int ok;
+  if (!strcasecmp(direction, "home")) {
+    ok = !Fixed(player);
+    ok = ok && command_check_byname(player, "HOME");
+  } else {
+    /* otherwise match on exits - don't use GoodObject here! */
+    ok = (match_result(player, direction, TYPE_EXIT, MAT_ENGLISH | MAT_EXIT) !=
 	  NOTHING);
+  }
+  return ok;
 }
 
 static dbref
@@ -355,7 +359,7 @@ void
 do_move(dbref player, const char *direction, enum move_type type)
 {
   dbref exit_m, loc, var_dest;
-  if(!strcasecmp(direction, "home") && (RPMODE(player) || Fixed(player))) {
+  if(!strcasecmp(direction, "home") && can_move(player, "home")) {
 	  notify(player, "Not right now pal.");
 	  return;
   }
@@ -365,7 +369,7 @@ do_move(dbref player, const char *direction, enum move_type type)
     return;
   }
 #endif
-  if (!strcasecmp(direction, "home")) {
+  if (!strcasecmp(direction, "home") && can_move(player, "home")) {
     /* send him home */
     /* but steal all his possessions */
     if (!Mobile(player) || !GoodObject(Home(player)) ||
