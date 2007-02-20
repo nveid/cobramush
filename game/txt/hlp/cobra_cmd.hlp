@@ -1326,6 +1326,21 @@ See also: follow, unfollow, followers(), @ofollow, @afollow
   @lock/forward me=$me)
 
 See also: @filter, @prefix, AUDIBLE, PUPPET
+& @DEBUGFORWARDLIST
+  @debugforwardlist <object> [=<list of dbrefs>]
+
+  When an object is set DEBUG, its @debugforwardlist attribute is checked,
+  and if present, the debug output is forwarded to all the dbrefs in
+  the @debugforwardlist.
+
+  The @debugforwardlist must be a space-seperated list of dbrefs.
+  In order to forward to an object, you must either control it,
+  have the pemit_all power, or, if it has a @lock/forward set,  pass
+  its @lock/forward.  (If you want to allow all objects you own to
+  forward to you, regardless of whether or not they control you, use
+  @lock/forward me=$me)
+
+See also: DEBUG
 & @unfollow
   @unfollow <object> = <message>
 
