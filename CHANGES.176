@@ -1,3 +1,7 @@
+This is the changes file for PennMUSH 1.7.6. Please look it over; each
+version contains new things which might significantly affect the
+function of your server.  Changes are reported in reverse
+chronological order (most recent first)
 
 [TN] is Thorvald Natvig, a PennMUSH developer (aka Trivian)
 [TAP] is T. Alexander Popiel, a PennMUSH developer (aka Talek)

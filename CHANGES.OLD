@@ -1,5 +1,6 @@
 This is the old changes file for PennMUSH.  Changes are reported in reverse
-chronological order (more recent first)
+chronological order (more recent first.) Starting with 1.7.4, each minor
+version has its own changelog, in CHANGES.174 and so on.
 
 [TN] is Thorvald Natvig, a PennMUSH developer (aka Trivian)
 [TAP] is T. Alexander Popiel, a PennMUSH developer (aka Talek)
@@ -2658,7 +2659,7 @@ Fixes:
           Fixed by [TAP].
 
 
-Version 1.6.7 patchlevel 0               Augest 22, 1996
+Version 1.6.7 patchlevel 0               August 22, 1996
 
 Major Changes:
 

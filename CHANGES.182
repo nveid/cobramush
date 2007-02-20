@@ -1,0 +1,95 @@
+
+This is the most current changes file for PennMUSH. Please look it
+over; each version contains new things which might significantly affect
+the function of your server.  Changes are reported in reverse
+chronological order (most recent first)
+
+[TAP] is T. Alexander Popiel, a PennMUSH developer (aka Talek)
+[SW] is Shawn Wagner, a PennMUSH developer (aka Raevnos)
+[EEH] is Ervin Hearn III, a PennMUSH developer (aka Noltar)
+[GM] is Greg Millam, a PennMUSH developer (aka Walker)
+[3] refers to code by (or inspired by) TinyMUSH 3.0
+[MUX] refers to code by (or inspired by) TinyMUX 2.x
+[Rhost] refers to code by (or inspired by) RhostMUSH
+
+==========================================================================
+
+Version 1.8.2 patchlevel 2                      January 27, 2007
+
+Fixes:
+  * Vector functions with an empty vector didn't return anything.
+    Reported by Talvo. [SW]
+  * Several typos in server messages. Fixed by Sketch, Stoko.
+  * Help fixes by Malix, [GM], Talvo, Sketch, and others.
+  * Crash bug in lmath() fixed. [GM]
+  * Crash bug in list functions fixed. [GM]
+  * list2arr in C now removes markup. list2arr_ansi() was added. [GM]
+  * Compilation problems on IRIX and similar OSes. [SW]
+  * Matcher bug with multiple wildcards fixed. Reported by Ian. [SW]
+  * Garbled output of locks from examine. Reported by Intrevis. [SW].
+  * regraballi() couldn't use its output seperator argument. Reported
+    by Jules. [SW]
+  * Looking at an object used the looker, not the lookee, as the origin
+    of the name for @ahear/@aahear/@amhear. [SW]
+  * Fixed the distribution of random numbers with a huge range. Reported
+    by Luke. 
+
+Version 1.8.2 patchlevel 1                      November 26, 2006
+
+Fixes:
+  * Corrected inadvertent breakage of null comparisons. Patched by
+    Javelin.
+  * Added overview since 1.8.0 to help 1.8.2p0. [EEH]
+
+
+Version 1.8.2 patchlevel 0                      November 26, 2006
+
+Major Changes (since 1.8.0):
+  * Players may have multiple aliases.
+  * 'home' is now a standard command.
+  * Errors in matching switches to commands are ignored when the command
+    is hook/ignored or hook/overriden.
+  * @attrib/access no longer treats one-word flag lists that don't match
+    a single flag as a set of flag characters.
+  * pcre updated to 6.4.
+  * NT_TCP code has been removed from the server.
+  * The FIXED flag's restriction on 'home' has been moved to restrict.cnf.
+  * New commands: @edit/check, @function/preserve, @hook/list, @prompt,
+    @nsprompt, @list/locks, UNIMPLEMENTED_COMMAND, PROMPT_NEWLINES,
+    @poll/clear.
+  * New functions: alias, fullalias, attrib_set, sortkey, namegrab/all,
+    ns/prompt, textentries, cdesc, cusers, cmsgs, cbuffer, cstatus,
+    clflags, numversion, nl/nsearch, nchildren, decompose, mapsql,
+    wildgrep/i, ordinal, ulambda, speak, unique, nextdbref, namelist,
+    crecall, l/m/x/xmwhoid, stringsecs
+  * New attributes: invformat, mailforwardlist, mailfilter
+  * New substitutions: %+, %  (percent-space), %i0-%i9, %u
+  * New locks: mailforward, take
+  * New behaviors: @flag/alias, @attribute/access, flip(), reverse(),
+    lsearch(), extract(), center(), setq(), setr(), page, align(),
+    regedit(), delete(), @search, @pemit/list, @poll, width(), height(),
+    locate(), @chan/recall, insert(), default(), @conformat, link().
+  * New flags: loud, track_money.
+  * New powers: pueblo_send, many_attribs.
+  * New attribute flags: aahear, amhear.
+  * New config directives: channel_flags.
+  * New function restriction "localize" causes q-registers to be
+    saved and restored around the function as if localize() or
+    ulocal() were used; handy for @functions.
+  * New DBREFLIST^<attrib> lock key checks to see if the enactor
+    appears in a list of dbrefs/objids stored on an attribute of
+    the object.
+  * The LIGHT flag now overrides the DARK flag consistently.
+
+Minor Changes (since 1.8.1):
+ * decompose() now properly handles all manner of spaces, as well as
+   replacing 5 or more spaces with [space(<count>)]. Report by Malix. [GM]
+
+Fixes (since 1.8.1):
+ * Fix crash bug in decompose(). Report by Malix.
+ * The mush can listen to ports above 32000. Suggested by Nathan Baum.
+ * Fix the mix() bug that prepends the separator to the list. [GM]
+ * Win32 experienced erratic time behavior when compiled with MSVC++ 8
+   or higher. Reported by Intrevis@M*U*S*H.
+ * Win32 project and readme files for MSVC++ 6 and .Net updated. [EEH]
+ * Help fixes by Kevin@M*U*S*H.
