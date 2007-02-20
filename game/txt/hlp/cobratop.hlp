@@ -1925,6 +1925,8 @@ player who runs it instead of a generic, unhelpful error message.
               to @command or @function.
    noparse    Function arguments are not evaluated. Only applies
               to @functions.
+   localize   %q-registers are saved/restored when evaluating, as if
+              the @function were wrapped in localize().
 
  Commands can also use the 'noplayer' restriction, which stops
  player objects from using the command, as well as any generic <flag>

@@ -994,8 +994,10 @@ apply_restrictions(unsigned int result, const char *restriction)
       flag = FN_LOGNAME;
     } else if (!strcasecmp(restriction, "noparse")) {
       flag = FN_NOPARSE;
-    } else if(!strcasecmp(restriction, "ulocal")) {
-      flag = FN_ULOCAL;
+    } else if (!strcasecmp(restriction, "localize")) {
+      flag = FN_LOCALIZE;
+    } else if (!strcasecmp(restriction, "ulocal")) {
+      flag = FN_LOCALIZE;
     }
     if (clear)
       result &= ~flag;
@@ -1021,6 +1023,7 @@ apply_restrictions(unsigned int result, const char *restriction)
  *   god        can only be used by god
  *   noplayer   can't be used by players, just objects/rooms/exits
  *   nosidefx   can't be used to do side-effect thingies
+ *   localize   localize q-registers
  * \endverbatim
  * \param name name of function to restrict.
  * \param restriction name of restriction to apply to function.
@@ -1470,10 +1473,11 @@ do_function_report(dbref player, char *name)
       first = 0;
   }
 
-  if(fp->flags & FN_ULOCAL) {
-	  safe_str("Ulocal", tbuf, &tp);
-	  if(first)
-		  first = 0;
+  if (fp->flags & FN_LOCALIZE) {
+    if (first == 0)
+      safe_strl(", ", 2, tbuf, &tp);
+    safe_str("Localize", tbuf, &tp);
+    first = 0;
   }
 
   if (fp->flags & FN_LITERAL) {

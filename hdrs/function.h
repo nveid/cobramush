@@ -33,8 +33,8 @@
 #define FN_LOGNAME 0x1000
 /* Log function name and args */
 #define FN_LOGARGS 0x2000
-/* Run Function Ulocal Style */
-#define FN_ULOCAL  0x4000
+/* Localize function registers */
+#define FN_LOCALIZE     0x4000
 #define FN_NORP 0x8000
 #define FN_ONEARG 0x10000
 

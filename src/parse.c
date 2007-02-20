@@ -467,7 +467,6 @@ process_expression(char *buff, char **bp, char const **str,
   int e_len;
   int retval = 0;
   const char *e_msg;
-  dbref local_ooref;
 
   if (!buff || !bp || !str || !*str)
     return 0;
@@ -1271,24 +1270,18 @@ process_expression(char *buff, char **bp, char const **str,
 		safe_str(userfn_tab[fp->where.offset].name, buff, bp);
 		safe_chr(')', buff, bp);
 	      } else { 
-		/* Open temporary ooref change exception */
-		/* local ooref changing should be safe here. 
-		 * Cause we're going to the global func scope, any
-		 * previous calling ooref shouldn't effect security here
-		 */
+		char *preserve[NUMQ];
+		dbref local_ooref;
+		if (fp->flags & FN_LOCALIZE)
+		  save_global_regs("@function.save", preserve);
+		/* Temporarily change ooref */
 		local_ooref = ooref;
 		ooref = attrib->creator;
-		if(fp->flags & FN_ULOCAL) {
-		  char *preserve[NUMQ];
-		  save_global_regs("globalufun.save", preserve);
-		  do_userfn(buff, bp, thing, attrib, nfargs, fargs,
-		      executor, caller, enactor, pe_info);
-		  restore_global_regs("globalufun.save", preserve);
-		} else {
-		  do_userfn(buff, bp, thing, attrib, nfargs, fargs, executor, caller, enactor, pe_info);
-		}
-		/* Go back to normal ooref  status */
+		do_userfn(buff, bp, thing, attrib, nfargs, fargs,
+			  executor, caller, enactor, pe_info);
 		ooref = local_ooref;
+		if (fp->flags & FN_LOCALIZE)
+		  restore_global_regs("@function.save", preserve);
 	      }
 	    }
 	    pe_info->fun_depth--;
