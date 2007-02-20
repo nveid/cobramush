@@ -622,6 +622,9 @@ See also: @create
   are parsed by default, but you can call foo/noeval. Note: the $-command
   needs to make allowances for the /noeval switch in it's matching.
 
+  Commands added with @command/add, like other standard commands,
+  are never case-sensitive (regardless of CASE flag on the attribute).
+
 (examples in help @command3)
 & @command3
   Examples:

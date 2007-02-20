@@ -2645,10 +2645,10 @@ for an object named "Test", preferring a thing over other types.
 & PMATCH()
   pmatch(<string>)
  
-  Given the partial name of a player, it returns that player's dbref
+  Given the partial name of a connected player, returns that player's dbref
   number. This partial name completion works similarly to the partial
   name completion of the "page" command - i.e. it first attempts to match
-  the normal names of all players (connected or not), and if that fails,
+  the full names of all players (connected or not), and if that fails,
   it tries to match the partial names of connected players visible to
   the enactor. If no player is matched, it returns "#-1". If more than
   one match is possible for a partial name, it returns "#-2".
@@ -3308,7 +3308,7 @@ for an object named "Test", preferring a thing over other types.
   be careful to escape them with sqlescape(), like this:
 
      &SEL_GETID obj = SELECT id FROM mytable WHERE name = '[sqlescape(%0)]'
-     &DOIT obj = $do *: ... [setq(0,u(SEL_GETID,%0))] ...
+     &DOIT obj = $do *: ... [setq(0,sql(u(SEL_GETID,%0),~,|))] ...
 
   See also: sqlescape(), @sql
 

@@ -1160,7 +1160,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   string from left to right. Most characters stand for themselves in a
   pattern, and match the corresponding characters in the subject. 
 
-  There are two different sets of meta-characters: those  that are
+  There are two different sets of meta-characters: those that are
   recognized anywhere in the pattern except within square brackets,
   and those that are recognized in square  brackets.  Outside square
   brackets, the meta-characters are as follows:
@@ -1205,7 +1205,7 @@ Standard Attributes: (see @list/attribs for the complete list)
  
   (Cont'd in help regexp syntax4)
 & regexp syntax4
-  A backlash can also two useful assertions -- conditions that
+  A backlash can also be used for two useful assertions -- conditions that
   must be met at a particular point in a match:
 
        \b     word boundary
@@ -1487,19 +1487,21 @@ Continued in 'help regexp classes2'
   Standard attributes are set using @<attrib> <obj>=<value>
   Nonstandard attributes are set using &<attrib> <obj>=<value> 
   Attributes may also be set using @set <obj>=<attrib>:<value>
+  or the set() function.
   
   Attributes are cleared using @<attrib> <obj> or &<attrib> <obj>
-  or with @wipe.
+  or with @wipe or wipe().
   
-  Note that there is a difference between clearing an attribute
-  and setting an attribute to a null value:
+  Note that if the empty_attrs configuration option is set
+  (@config empty_attrs to check), there is a difference between
+  clearing an attribute and setting an attribute to a null value:
     @va me       <--- wipes out my VA attribute
     @va me=      <--- sets my VA attribute to be empty
   
   Empty attributes retain their flags and atrlock status. Wiped attributes
   are gone forever.
   
-  See also ATTRIBUTES, NON-STANDARD ATTRIBUTES, @set, @wipe
+  See also ATTRIBUTES, NON-STANDARD ATTRIBUTES, @set, @wipe, set(), wipe()
 & SPOOFING
   Spoofing is the act of making other characters think that a person
   said or did something that they did not.  This is very easy to
