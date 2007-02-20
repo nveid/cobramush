@@ -1771,8 +1771,8 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
                   (flags & 0x02) ? AF_NOPROG : NOTHING)
       : atr_clr(thing, name, player);
   if (res == AE_SAFE) {
-    notify(player,
-           T("That attribute is SAFE.  Set it !SAFE to modify it."));
+    notify_format(player, T("Attribute %s is SAFE. Set it !SAFE to modify it."),
+		  name);
     return 0;
   } else if (res == AE_BADNAME) {
     notify(player, T("That's not a very good name for an attribute."));
