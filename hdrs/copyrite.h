@@ -1,13 +1,13 @@
 /* copyrite.h */
 
 /*
- * Copyright, License, and Credits for PennMUSH 1.x. Revised October 2002.
+ * Copyright, License, and Credits for PennMUSH 1.x. Revised March 2006.
  *
  * I. Copyrights
  *
  * PennMUSH 1.x
- * Copyright (c) 1995-2002, Alan Schwartz, T. Alexander Popiel, Shawn Wagner
- * Contact email for Alan Schwartz: <dunemush@pennmush.org>. 
+ * Copyright (c) 1995-2006, T. Alexander Popiel <talek@pennmush.org>
+ * and Shawn Wagner <raevnos@pennmush.org>.
  * 
  * Some code used in this server may have been derived from the
  * TinyMUSH 2.2 source code, with permission. TinyMUSH 2.2 is
@@ -170,7 +170,7 @@
  *
  * Past and present PennMUSH development team members:
  *  T. Alexander Popiel, Ralph Melton, Thorvald Natvig, Luuk de Waard,
- *  Shawn Wagner
+ *  Shawn Wagner, Ervin Hearn III, Alan "Javelin" Schwartz
  * Past and present PennMUSH porters:
  *  Nick Gammon, Sylvia, Dan Williams, Ervin Hearn III
  * TinyMUSH 2.2, TinyMUSH 3.0, TinyMUX 2, and RhostMUSH developers
