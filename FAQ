@@ -36,12 +36,15 @@ Ralph Melton has since retired, and Thorvald Natvig took his place
 on the devteam. He rewrote the command parser, and PennMUSH was
 advanced to 1.7.0.
 
-Currently, the active development team is Javelin, Talek, and Raevnos.
-The stable version is 1.7.6, and the development version is 1.7.7.
+Currently, the active development team is Javelin, Talek, Raevnos,
+Noltar, and Walker.  The stable version is 1.8.0, and the development
+version is 1.8.1.
 
 1. How do I ask for help with a problem?
 
-Email to dunemush@pennmush.org
+Email to pennmush-developers@pennmush.org
+or visit http://www.pennmush.org/jitterbug/pennmush
+
 When asking for help, please be as specific as you can about the
 problem. Include at least the following:
  - Version of PennMUSH including any official patches you've applied

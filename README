@@ -76,9 +76,15 @@ outstanding issues and history.
 In August of 1997, Ralph Melton left the PennMUSH development team,
 and Thorvald Natvig joined as a new member.  Many thanks go to Ralph
 who contributed much time, code, and good cheer to PennMUSH.
+Since that time, the development team has gained and lost members.
+The current membership is usually listed at the top of the
+latest CHANGES.<version> file.
 
-Javelin, in conjunction with Talek (T. Alexander Popiel) and Thorvald
-Natvig, are the current PennMUSH development team.
+In November 2002, with the release of PennMUSH 1.7.6, PennMUSH
+began using the Artistic License (see the COPYRITE file),
+an open source/free software license. This license was
+simultaneously adopted by TinyMUSH (2.2.5, 3.x) and TinyMUX to
+facilitate code sharing and widen use.
 
 A MUSH manual should be available at ftp.digex.net, ftp.math.okstate.edu,
 primerd.prime.com, or from wherever you got this code from. The manual
@@ -87,7 +93,8 @@ should be numbered version 2.007 or higher.
 If you are planning on modifying the source code to PennMUSH, you'll
 probably want Javelin's Guide for PennMUSH Gods, which should be
 available where you got this code, or, in hypertext, as
-http://pennmush.org/~alansz/guide.html
+http://pennmush.org/~alansz/guide.html. More recent versions
+may be available at http://community.pennmush.org.
 
       Enjoy!
 
@@ -124,11 +131,6 @@ There are three places one could get help with a problem:
    bugs to pennmush-bugs). This will generally give you the fastest
    response and is ideal for unusual bugs. A web-based submission
    form is at http://www.pennmush.org/jitterbug/pennmush
-
-3. dunemush@pennmush.org is Javelin's email address.
-   This is a good place for small suggestions, common-seeming bugs,
-   etc. -- stuff you wouldn't want to bother all the developers with.
-   You will receive a quick response.
 
 When reporting a problem, please always include the following
 information:
