@@ -558,13 +558,17 @@ do_teleport(dbref player, const char *arg1, const char *arg2, int silent,
       return;
     } else {
       /* attempted teleport to an exit */
-      if (Tel_Thing(player, victim) || controls(player, victim)
-	  || controls(player, Location(victim)))
+      if ((Tel_Thing(player, victim) || controls(player, victim)
+	   || controls(player, Location(victim)))
+	  && !Fixed(Owner(victim)) && !Fixed(player)) {
 	do_move(victim, to, 0);
-      else
-	notify_format(victim,
-		      T("%s tries to impose his will on you and fails."),
-		      Name(player));
+      } else {
+	notify(player, T("Permission denied."));
+	if (victim != player)
+	  notify_format(victim,
+			T("%s tries to impose his will on you and fails."),
+			Name(player));
+      }
     }
   }
 }
