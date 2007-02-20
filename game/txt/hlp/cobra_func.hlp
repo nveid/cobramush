@@ -511,6 +511,23 @@
 
   When given a second argument of "on" (or "off"), attempts to lock
   (unlock) the specified attribute, as per @atrlock.
+& ATTRIB_SET()
+  attrib_set(<object>/<attrib>[, <value>])
+
+  Sets or clears an attribute. With a value, it sets the attribute,
+  without one, it clears the attribute. This is an easier-to-read
+  replacement for the old set(<object>, <attrib>:<value>) notation,
+  and a less destructive replacement for wipe() that won't destroy
+  entire attribute trees in one shot.
+
+  If there is a second argument, then attrib_set() will create an
+  attribute, even if the second argument is empty (in which case
+  attrib_set() will create an empty attribute).  This means that
+  attrib_set(me/foo,%0) will _always_ create an attribute.
+
+  Of course, if the empty_attrs configuration option is turned off,
+  then the above paragraph doesn't apply.  See @config attribs.
+
 & BAND()
   band(<integer>,<integers>,...)
 
@@ -3038,9 +3055,10 @@ for an object named "Test", preferring a thing over other types.
   flags, set attributes, and many other things.  The two arguments
   to the function are the same as the arguments that would appear
   on either side of the '=' in @set. This function returns nothing.
- 
-  Note that you can't clear an attribute with set(), though
-  you can make it an empty attribute. Use wipe() to clear attributes.
+
+  The attribute setting ability of set() is deprecated.  You should
+  use attrib_set() instead; it's easier to read, and allows you to
+  clear attributes, too.
 
 & SETDIFF()
   setdiff(<list1>, <list2>[, <delimiter>][, <sort type>][, <osep>])
@@ -4121,7 +4139,9 @@ for an object named "Test", preferring a thing over other types.
 & WIPE() 
   wipe(<obj>/<attribute-pattern>)
 
-  This function is equivalent to @wipe. It returns nothing. 
+  This function is equivalent to @wipe. It returns nothing. Like
+  @wipe, this function will destroy entire attribute trees; for
+  more judicious deletion, use attrib_set().
   
 & WORDPOS()
   wordpos(<list>, <number>[, <delimiter>])

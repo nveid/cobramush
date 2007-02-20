@@ -1816,6 +1816,39 @@ FUNCTION(fun_wipe)
   do_wipe(executor, args[0]);
 }
 
+/* ARGSUSED */
+FUNCTION(fun_attrib_set)
+{
+  dbref thing;
+  char *s;
+
+  if (!FUNCTION_SIDE_EFFECTS) {
+    safe_str(T(e_disabled), buff, bp);
+    return;
+  }
+  if (!command_check_byname(executor, "ATTRIB_SET") || fun->flags & FN_NOSIDEFX) {
+    safe_str(T(e_perm), buff, bp);
+    safe_str(T(e_perm), buff, bp);
+    return;
+  }
+  s = strchr(args[0], '/');
+  if (!s) {
+    safe_str(T("#-1 BAD ARGUMENT FORMAT TO ATTRIB_SET"), buff, bp);
+    return;
+  }
+  *s++ = '\0';
+  thing = match_thing(executor, args[0]);
+  if (!GoodObject(thing)) {
+    safe_str(T(e_notvis), buff, bp);
+    return;
+  }
+  if (nargs == 1) {
+    do_set_atr(thing, s, NULL, executor, 1);
+  } else {
+    do_set_atr(thing, s, args[1], executor, 1);
+  }
+}
+
 
 /* --------------------------------------------------------------------------
  * Misc functions: TEL
