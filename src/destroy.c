@@ -762,6 +762,7 @@ free_object(dbref thing)
   set_name(thing, "Garbage");
   Exits(thing) = NOTHING;
   Home(thing) = NOTHING;
+  CreTime(thing) = 0;		/* Prevents it from matching objids */
   set_lmod(thing, NULL);
 
   clear_objdata(thing);

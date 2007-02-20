@@ -1195,7 +1195,7 @@ FUNCTION(fun_ctime)
 {
   dbref it = match_thing(executor, args[0]);
 
-  if (GoodObject(it))
+  if (GoodObject(it) && !IsGarbage(it))
     safe_str(show_time(CreTime(it), 0), buff, bp);
   else
     safe_str(T(e_notvis), buff, bp);
