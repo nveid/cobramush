@@ -51,8 +51,8 @@ static void math_hash_insert(const char *, MATH *);
 static MATH *math_hash_lookup(char *);
 static NVAL angle_to_rad(NVAL angle, const char *from);
 static NVAL rad_to_angle(NVAL angle, const char *to);
-static double frac(double v, int *RESTRICT n, int *RESTRICT d,
-                   double error);
+static double frac(double v, double *RESTRICT n, double *RESTRICT d,
+		   double error);
 void init_math_hashtab(void);
 
 extern int format_long(long n, char *buff, char **bp, int maxlen,
@@ -1173,7 +1173,7 @@ FUNCTION(fun_root)
  * \return -1.0 if (v < MIN || v > MAX || error < 0.0) | (v - n/d) / v | otherwise.
  */
 static double
-frac(double v, int *RESTRICT n, int *RESTRICT d, double error)
+frac(double v, double *RESTRICT n, double *RESTRICT d, double error)
 {
 
 /* Based on a routine found in netlib (http://www.netlib.org) by
@@ -1192,22 +1192,22 @@ frac(double v, int *RESTRICT n, int *RESTRICT d, double error)
   */
 
 
-  int D, N, t;
+  double D, N, t;
   int first = 1;
   double epsilon, r = 0.0, m;
 
   if (v < 0 || error < 0.0)
     return -1.0;
   *d = D = 1;
-  *n = (int) v;
+  *n = floor(v);
   N = *n + 1;
 
   do {
     if (!first) {
       if (r <= 1.0)
         r = 1.0 / r;
-      N += *n * (int) r;
-      D += *d * (int) r;
+      N += *n * floor(r);
+      D += *d * floor(r);
       *n += N;
       *d += D;
     } else
@@ -1231,7 +1231,7 @@ frac(double v, int *RESTRICT n, int *RESTRICT d, double error)
     do {
       m *= 10.0;
     } while (m * epsilon < 1.0);
-    epsilon = 1.0 / m * ((int) (0.5 + m * epsilon));
+    epsilon = 1.0 / m * floor(0.5 + m * epsilon);
     if (epsilon <= error)
       return epsilon;
   } while (r != 0.0);
@@ -1240,7 +1240,7 @@ frac(double v, int *RESTRICT n, int *RESTRICT d, double error)
 
 FUNCTION(fun_fraction)
 {
-  int num = 0, denom = 0;
+  double num = 0, denom = 0;
   NVAL n;
   int sign = 0;
 
@@ -1264,10 +1264,10 @@ FUNCTION(fun_fraction)
   if (sign)
     safe_chr('-', buff, bp);
 
-  if (denom == 1)
-    safe_integer(num, buff, bp);
+  if (fabs(denom - 1) < 1.0e-10)
+    safe_format(buff, bp, "%.0lf", num);
   else
-    safe_format(buff, bp, "%d/%d", num, denom);
+    safe_format(buff, bp, "%.0lf/%.0lf", num, denom);
 }
 
 FUNCTION(fun_isint)
