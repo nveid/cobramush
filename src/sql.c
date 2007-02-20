@@ -248,7 +248,7 @@ FUNCTION(fun_sql)
   if (!delim_check(buff, bp, nargs, args, 2, &row_delim))
     return;
   if (nargs < 3)
-    field_delim = row_delim;
+    field_delim = ' ';
   else if (!delim_check(buff, bp, nargs, args, 3, &field_delim))
     return;
 
