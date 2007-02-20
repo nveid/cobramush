@@ -2842,6 +2842,9 @@ See also: @switch, switch()
   You can also do this with &<attribute> <object>=<value>
     Ex: @set Test Object=random:This is a random attribute.
         &random Test Object=This is a random attribute.
+  An important difference between these two forms is that @set will
+  evaluate the <value> before setting it on <object>, while the
+  &<attribute> form will not (and is usually what you want).
   
   The fourth form sets (or unsets) an attribute flag on the specified
   attribute. See 'help attribute flags'.

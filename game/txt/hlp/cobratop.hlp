@@ -177,6 +177,9 @@ Type "help <topic name>" for help.
 
   Note that the choice of which ancestor to look up is based on the 
   type of the *child* object, as is the check of the ORPHAN flag.
+  Also note that ancestors are *not* checked for $-commands or
+  ^-commands; you should use the master room for global commands,
+  instead.
 
   See also: PARENTS, ORPHAN
 & ANONYMOUS ATTRIBUTES
@@ -965,8 +968,12 @@ Standard Attributes: (see @list/attribs for the complete list)
   parent of #101, which is the parent of #102, object #102 checks itself,
   #101, and #100 for attributes. Attributes are checked on the object
   itself first, followed by its parent, followed by that parent's parent,
-  and so forth. There is a (configurable) maximum number of ancestors
-  an object may have; the default is 10.
+  and so forth. There is a (configurable) maximum length of the parent
+  chain for an object; the default is 10.
+
+  After the parent chain is exhausted, the type-specific ancestor is
+  also checked in similar fashion.  See 'help ANCESTORS' for more about
+  ancestors.
    
 (continued in help parents2) 
 & PARENTS2
@@ -1028,7 +1035,8 @@ Standard Attributes: (see @list/attribs for the complete list)
  
   Parent-object $-command checking is at its most efficient when there
   are few or no attributes on the child. Also, each additional level
-  of parents further reduces efficiency.
+  of parents further reduces efficiency.  Finally, note that ancestors
+  are *not* checked for $-commands.
  
   If you are "mass-marketing" your objects, you can create blank copies, 
   and @parent those copies to a template object. You can then customize 
@@ -1037,7 +1045,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   that you want to make impossible to read, it's safe to allow the
   purchasers of your object to @chown their copy.
 
-  See also: @parent, $-COMMANDS, ATTRIBUTES
+  See also: @parent, $-COMMANDS, ATTRIBUTES, ANCESTORS
 
 & PUPPETS
   A thing is turned into a puppet by setting the PUPPET flag on it.
