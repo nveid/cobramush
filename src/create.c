@@ -190,7 +190,7 @@ do_open(dbref player, const char *direction, char **links)
 void
 do_unlink(dbref player, const char *name)
 {
-  dbref exit_l;
+  dbref exit_l, old_loc;
   long match_flags = MAT_EXIT | MAT_HERE | MAT_ABSOLUTE;
 
   if (!OOREF(player,div_powover(player, player,  "Link"), div_powover(ooref, ooref, "Link"))) {
@@ -209,8 +209,10 @@ do_unlink(dbref player, const char *name)
     } else {
       switch (Typeof(exit_l)) {
       case TYPE_EXIT:
+	old_loc = Location(exit_l);
 	Location(exit_l) = NOTHING;
-	notify_format(player, T("Unlinked exit #%d."), exit_l);
+	notify_format(player, T("Unlinked exit #%d (Used to lead to %s)."),
+		      exit_l, unparse_object(player, old_loc));
 	break;
       case TYPE_ROOM:
 	Location(exit_l) = NOTHING;
@@ -314,7 +316,8 @@ do_link(dbref player, const char *name, const char *room_name, int preserve)
       Location(thing) = room;
 
       /* notify the player */
-      notify_format(player, T("Linked exit #%d to #%d"), thing, room);
+      notify_format(player, T("Linked exit #%d to %s"), thing,
+		    unparse_object(player, room));
       break;
     case TYPE_DIVISION:
     case TYPE_PLAYER:
