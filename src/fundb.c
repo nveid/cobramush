@@ -1080,7 +1080,7 @@ FUNCTION(fun_lock)
   lock_type real_ltype;
 
   if ((ltype = strchr(args[0], '/'))) {
-    *ltypep++ = '\0';
+    *ltype++ = '\0';
     upcasestr(ltype);
   }
 
