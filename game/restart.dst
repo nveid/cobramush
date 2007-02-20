@@ -26,7 +26,7 @@ LOG=log/netmush.log
 # to debug them.
 #ulimit -c unlimited
 
-if [ ! -d $GAMEDIR ]; then
+if [ ! -d "$GAMEDIR" ]; then
   echo "GAMEDIR doesn't appear to be a directory. It's: $GAMEDIR"
   exit 1
 fi
@@ -34,7 +34,7 @@ fi
 cd $GAMEDIR
 echo Running from `pwd`
 
-if [ ! -f $CONF_FILE ]; then
+if [ ! -f "$CONF_FILE" ]; then
   echo "CONF_FILE doesn't exist. It's: $CONF_FILE"
   echo "Create $CONF_FILE from $GAMEDIR/mushcnf.dst"
   exit 1
@@ -63,12 +63,12 @@ CONF_FILE=mush.cnf
 
 #######################################################################
 
-if [ -z $GAMEDIR ]; then
+if [ -z "$GAMEDIR" ]; then
   echo "You must set GAMEDIR in the restart script."
   exit 1
 fi
 
-if [ ! -d $GAMEDIR ]; then
+if [ ! -d "$GAMEDIR" ]; then
   echo "GAMEDIR doesn't appear to be a directory. It's: $GAMEDIR"
   exit 1
 fi
@@ -128,7 +128,7 @@ SUFFIX=""
 # Find out what the compression program is, if any
 egrep -s "^compress_program[ 	]*[A-Za-z0-9]" $CONF_FILE
 nocompress=$?
-if [ $nocompress -eq 0 ]; then
+if [ "$nocompress" -eq 0 ]; then
     COMPRESSOR=`egrep "^compress_program" $CONF_FILE | sed "s/[^ 	]*[ 	]*\(.*\)/\1/"`
     SUFFIX=`egrep "^compress_suffix" $CONF_FILE | sed "s/[^ 	]*[ 	]*\(.*\)/\1/"`
 fi
@@ -141,7 +141,7 @@ fi
 mush=`ps uwwx | grep " $GAMEDIR/$CONF_FILE" | grep -v grep | wc -l`
 
 
-if [ $mush -gt 0 ]; then
+if [ "$mush" -gt 0 ]; then
   echo Mush already active or some other process is using $GAMEDIR/$CONF_FILE.
   exit 0
 fi
@@ -151,7 +151,7 @@ echo Building text file indexes.
 
 echo Restarting Mush.
 
-if [ -r $PANICDIR/$PANICDB ]; then
+if [ -r "$PANICDIR/$PANICDB" ]; then
    end="`tail -1 $PANICDIR/$PANICDB`"
    if [ "$end" = "***END OF DUMP***" ]; then
       echo "Recovering PANIC dump."
@@ -166,17 +166,17 @@ fi
 
 rm -f log/*.log
 
-if [ -r data/$OUTDB$SUFFIX ]; then
+if [ -r "data/$OUTDB$SUFFIX" ]; then
    rm -f save/$INDB$SUFFIX.old
    mv -f data/$INDB$SUFFIX save/$INDB$SUFFIX.old
    mv data/$OUTDB$SUFFIX data/$INDB$SUFFIX
 else
    echo "No $OUTDB$SUFFIX found."
-   if [ -r data/$INDB$SUFFIX ]; then
+   if [ -r "data/$INDB$SUFFIX" ]; then
       echo "Using $INDB$SUFFIX."
    else
       echo "No $INDB$SUFFIX found."
-      if [ -r save/$INDB$SUFFIX.old ]; then
+      if [ -r "save/$INDB$SUFFIX.old" ]; then
 	 echo "Using save/$INDB$SUFFIX.old."
 	 cp save/$INDB$SUFFIX.old data/$INDB$SUFFIX
       else
