@@ -1076,14 +1076,17 @@ get_locktype(str)
 FUNCTION(fun_lock)
 {
   dbref it;
-  char *p;
-  lock_type ltype;
+  char *ltype = NULL;
+  lock_type real_ltype;
 
-  if ((p = strchr(args[0], '/')))
-    *p++ = '\0';
+  if ((ltype = strchr(args[0], '/'))) {
+    *ltypep++ = '\0';
+    upcasestr(ltype);
+  }
+
+  real_ltype = get_locktype(ltype);
 
   it = match_thing(executor, args[0]);
-  ltype = get_locktype(p);
 
   if (nargs == 2) {
     if (!command_check_byname(executor, "@lock") || fun->flags & FN_NOSIDEFX) {
@@ -1097,9 +1100,10 @@ FUNCTION(fun_lock)
       return;
     }
   }
-  if (GoodObject(it) && (ltype != NULL)
-      && Can_Read_Lock(executor, it, ltype)) {
-    safe_str(unparse_boolexp(executor, getlock(it, ltype), UB_DBREF), buff, bp);
+  if (GoodObject(it) && (real_ltype != NULL)
+      && Can_Read_Lock(executor, it, real_ltype)) {
+    safe_str(unparse_boolexp(executor, getlock(it, real_ltype), UB_DBREF),
+	     buff, bp);
     return;
   }
   safe_str("#-1", buff, bp);

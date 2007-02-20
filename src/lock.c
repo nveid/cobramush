@@ -763,9 +763,12 @@ do_lock(dbref player, const char *name, const char *keyname, lock_type type)
           lmbuf[strlen(lmbuf)+1] = '\0';
           set_lmod(thing, lmbuf);
 	}
-      } else
+      } else {
 	notify(player, T("Permission denied."));
-    }
+	free_boolexp(key);
+      }
+    } else
+      free_boolexp(key);
   }
 }
 
