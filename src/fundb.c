@@ -1205,7 +1205,7 @@ FUNCTION(fun_ctime)
 FUNCTION(fun_mtime)
 {
   dbref it = match_thing(executor, args[0]);
-  if (!GoodObject(it))
+  if (!GoodObject(it) || IsGarbage(it))
     safe_str(T(e_notvis), buff, bp);
   else if (!Can_Examine(executor, it) || IsPlayer(it))
     safe_str(T(e_perm), buff, bp);
