@@ -44,7 +44,7 @@ static dbref
 	             int start, int count, int *retcount);
 
 
-static const char *
+const char *
 do_get_attrib(dbref executor, dbref thing, const char *attrib)
 {
   ATTR *a;

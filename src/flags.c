@@ -2490,7 +2490,7 @@ list_all_flags(const char *ns, const char *name, dbref privs, int which)
 	ptrs[numptrs++] = (char *) f->name;
     }
   }
-  do_gensort(ptrs, numptrs, ALPHANUM_LIST);
+  do_gensort(privs, ptrs, numptrs, ALPHANUM_LIST);
   bp = buf;
   for (i = 0; i < numptrs; i++) {
     switch (which) {

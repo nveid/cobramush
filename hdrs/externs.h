@@ -103,6 +103,10 @@ extern int hidden(dbref player);
 extern dbref guest_to_connect(dbref player);
 void dump_reboot_db(void);
 void close_ssl_connections(void);
+int least_idle_time(dbref player);
+int least_idle_time_priv(dbref player);
+int most_conn_time(dbref player);
+int most_conn_time_priv(dbref player);
 char *least_idle_ip(dbref player);
 char *least_idle_hostname(dbref player);
 extern int do_command(DESC *d, char *command);
@@ -592,11 +596,24 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 /** Default (case-insensitive) local wildcard match */
 #define local_wild_match(s,d) local_wild_match_case(s, d, 0)
 
-    /** Types of lists, based on what their elements are */
-    typedef enum list_type {
-      ALPHANUM_LIST, NUMERIC_LIST, DBREF_LIST, FLOAT_LIST, INSENS_ALPHANUM_LIST,
-      UNKNOWN_LIST
-    } list_type;
+/** Types of lists */
+
+    extern char ALPHANUM_LIST[];
+    extern char INSENS_ALPHANUM_LIST[];
+    extern char DBREF_LIST[];
+    extern char NUMERIC_LIST[];
+    extern char FLOAT_LIST[];
+    extern char DBREF_NAME_LIST[];
+    extern char DBREF_NAMEI_LIST[];
+    extern char DBREF_IDLE_LIST[];
+    extern char DBREF_CONN_LIST[];
+    extern char DBREF_CTIME_LIST[];
+    extern char DBREF_OWNER_LIST[];
+    extern char DBREF_LOCATION_LIST[];
+    extern char DBREF_ATTR_LIST[];
+    extern char DBREF_ATTRI_LIST[];
+    extern char *UNKNOWN_LIST;
+
 /* From function.c and other fun*.c */
     extern char *strip_braces(char const *line);
     extern void save_global_regs(const char *funcname, char *preserve[]);
@@ -614,7 +631,9 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
     extern int delim_check(char *buff, char **bp, int nfargs, char **fargs,
 			   int sep_arg, char *sep);
     extern int get_gender(dbref player);
-    extern int gencomp(char *a, char *b, list_type sort_type);
+    extern int gencomp(dbref player, char *a, char *b, char *sort_type);
+    extern const char *do_get_attrib(dbref executor, dbref thing,
+				     const char *aname);
     extern char *ArabicToRoman(int);
     extern int RomanToArabic(char *);
 
@@ -654,7 +673,7 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
     void local_flags(void);
 
 /* funlist.c */
-    void do_gensort(char *s[], int n, list_type sort_type);
+    void do_gensort(dbref player, char *s[], int n, char *sort_type);
 
 /* sig.c */
     /** Type definition for signal handlers */

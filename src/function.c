@@ -761,7 +761,9 @@ list_functions(void)
     ptrs[nptrs++] = fp->name;
     fp = (FUN *) hash_nextentry(&htab_user_function);
   }
-  do_gensort((char **) ptrs, nptrs, 0);
+  /* do_gensort needs a dbref now, but only for sort types that aren't
+   * used here anyway */
+  do_gensort((dbref) 0, (char **) ptrs, nptrs, 0);
   bp = buff;
   safe_str(ptrs[0], buff, &bp);
   for (i = 1; i < nptrs; i++) {

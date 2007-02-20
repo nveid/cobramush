@@ -46,6 +46,7 @@ static int align_one_line(char *buff, char **bp, int ncols,
 			  char *ptrs[MAX_COLS], ansi_string *as[MAX_COLS],
 			  int linenum, char *fieldsep, int fslen, char *linesep,
 			  int lslen, char filler);
+static int comp_gencomp(dbref exceutor, char *left, char *right, char *type);
 void init_tag_hashtab(void);
 void init_pronouns(void);
 
@@ -460,6 +461,14 @@ FUNCTION(fun_strreplace)
 
 }
 
+static int
+comp_gencomp(dbref executor, char *left, char *right, char *type)
+{
+  int c;
+  c = gencomp(executor, left, right, type);
+  return (c > 0 ? 1 : (c < 0 ? -1 : 0));
+}
+
 /* ARGSUSED */
 FUNCTION(fun_comp)
 {
@@ -481,7 +490,8 @@ FUNCTION(fun_comp)
       memcpy(left, l, llen);
       r = remove_markup(args[1], &rlen);
       memcpy(right, r, rlen);
-      safe_integer(gencomp(left, right, ALPHANUM_LIST), buff, bp);
+      safe_integer(comp_gencomp(executor, left, right, ALPHANUM_LIST), buff,
+		   bp);
       return;
     }
   case 'I':			/* Case-insensitive lexicographic */
@@ -492,7 +502,8 @@ FUNCTION(fun_comp)
       memcpy(left, l, llen);
       r = remove_markup(args[1], &rlen);
       memcpy(right, r, rlen);
-      safe_integer(gencomp(left, right, INSENS_ALPHANUM_LIST), buff, bp);
+      safe_integer(comp_gencomp(executor, left, right, INSENS_ALPHANUM_LIST),
+		   buff, bp);
       return;
     }
   case 'N':			/* Integers */
@@ -500,14 +511,16 @@ FUNCTION(fun_comp)
       safe_str(T(e_ints), buff, bp);
       return;
     }
-    safe_integer(gencomp(args[0], args[1], NUMERIC_LIST), buff, bp);
+    safe_integer(comp_gencomp(executor, args[0], args[1], NUMERIC_LIST), buff,
+		 bp);
     return;
   case 'F':
     if (!is_strict_number(args[0]) || !is_strict_number(args[1])) {
       safe_str(T(e_nums), buff, bp);
       return;
     }
-    safe_integer(gencomp(args[0], args[1], FLOAT_LIST), buff, bp);
+    safe_integer(comp_gencomp(executor, args[0], args[1], FLOAT_LIST), buff,
+		 bp);
     return;
   case 'D':
     {
@@ -518,7 +531,8 @@ FUNCTION(fun_comp)
 	safe_str(T("#-1 INVALID DBREF"), buff, bp);
 	return;
       }
-      safe_integer(gencomp(args[0], args[1], DBREF_LIST), buff, bp);
+      safe_integer(comp_gencomp(executor, args[0], args[1], DBREF_LIST), buff,
+		   bp);
       return;
     }
   default:

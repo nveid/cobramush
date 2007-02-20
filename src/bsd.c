@@ -4167,6 +4167,90 @@ lookup_desc(dbref executor, const char *name)
   }
 }
 
+/** Return the conn time of the longest-connected connection of a player.
+ * This function treats hidden connectios as nonexistent.
+ * \param player dbref of player to get ip for.
+ * \return connection time of player as an INT, or -1 if not found or hidden.
+ */
+int
+most_conn_time(dbref player)
+{
+  DESC *d, *match = NULL;
+  DESC_ITER_CONN(d) {
+    if ((d->player == player) && !Hidden(d) && (!match ||
+						(d->connected_at >
+						 match->connected_at)))
+      match = d;
+  }
+  if (match) {
+    double result = difftime(mudtime, match->connected_at);
+    return (int) result;
+  } else
+    return -1;
+}
+
+/** Return the conn time of the longest-connected connection of a player.
+ * This function does includes hidden people.
+ * \param player dbref of player to get ip for.
+ * \return connection time of player as an INT, or -1 if not found.
+ */
+int
+most_conn_time_priv(dbref player)
+{
+  DESC *d, *match = NULL;
+  DESC_ITER_CONN(d) {
+    if ((d->player == player) && (!match ||
+				  (d->connected_at > match->connected_at)))
+      match = d;
+  }
+  if (match) {
+    double result = difftime(mudtime, match->connected_at);
+    return (int) result;
+  } else
+    return -1;
+}
+
+/** Return the idle time of the least-idle connection of a player.
+ * This function treats hidden connections as nonexistant.
+ * \param player dbref of player to get time for.
+ * \return idle time of player as an INT, or -1 if not found or hidden.
+ */
+int
+least_idle_time(dbref player)
+{
+  DESC *d, *match = NULL;
+  DESC_ITER_CONN(d) {
+    if ((d->player == player) && !Hidden(d) &&
+	(!match || (d->last_time > match->last_time)))
+      match = d;
+  }
+  if (match) {
+    double result = difftime(mudtime, match->last_time);
+    return (int) result;
+  } else
+    return -1;
+}
+
+/** Return the idle time of the least-idle connection of a player.
+ * This function performs no permission checking.
+ * \param player dbref of player to get time for.
+ * \return idle time of player as an INT, or -1 if not found.
+ */
+int
+least_idle_time_priv(dbref player)
+{
+  DESC *d, *match = NULL;
+  DESC_ITER_CONN(d) {
+    if ((d->player == player) && (!match || (d->last_time > match->last_time)))
+      match = d;
+  }
+  if (match) {
+    double result = difftime(mudtime, match->last_time);
+    return (int) result;
+  } else
+    return -1;
+}
+
 /** Return the ip address of the least-idle connection of a player.
  * This function performs no permission checking, and returns the
  * pointer from the descriptor itself (so don't destroy the result!)

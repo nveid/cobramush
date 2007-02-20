@@ -10,6 +10,7 @@
 #include "config.h"
 #include <string.h>
 #include <ctype.h>
+#include "ansi.h"
 #include "conf.h"
 #include "case.h"
 #include "externs.h"
@@ -29,12 +30,10 @@
 #define MAX_SORTSIZE (BUFFER_LEN / 2)  /**< Maximum number of elements to sort */
 
 static char *next_token(char *str, char sep);
-static list_type autodetect_list(char **ptrs, int nptrs);
-static list_type get_list_type(char **args, int nargs,
-			       int type_pos, char **ptrs, int nptrs);
-static list_type get_list_type_noauto(char **args, int nargs, int type_pos);
-static int a_comp(const void *s1, const void *s2);
-static int ai_comp(const void *s1, const void *s2);
+static char *autodetect_list(char **ptrs, int nptrs);
+static char *get_list_type(char **args, int nargs,
+			   int type_pos, char **ptrs, int nptrs);
+static char *get_list_type_noauto(char **args, int nargs, int type_pos);
 static int i_comp(const void *s1, const void *s2);
 static int f_comp(const void *s1, const void *s2);
 static int u_comp(const void *s1, const void *s2);
@@ -691,20 +690,31 @@ FUNCTION(fun_shuffle)
   arr2list(words, n, buff, bp, osep);
 }
 
-static list_type
+typedef enum {
+  L_NUMERIC,
+  L_FLOAT,
+  L_ALPHANUM,
+  L_DBREF
+} ltype;
+
+static char *
 autodetect_list(char *ptrs[], int nptrs)
 {
-  list_type sort_type;
+  char * sort_type;
+  ltype lt;
   int i;
 
+
+  lt = L_NUMERIC;
   sort_type = NUMERIC_LIST;
 
   for (i = 0; i < nptrs; i++) {
-    switch (sort_type) {
-    case NUMERIC_LIST:
+    switch (lt) {
+    case L_NUMERIC:
       if (!is_strict_integer(ptrs[i])) {
 	/* If it's not an integer, see if it's a floating-point number */
 	if (is_strict_number(ptrs[i])) {
+	  lt = L_FLOAT;
 	  sort_type = FLOAT_LIST;
 	} else if (i == 0) {
 
@@ -712,18 +722,19 @@ autodetect_list(char *ptrs[], int nptrs)
 	   * alphanumeric guess, unless this is the first
 	   * element and we have a dbref.
 	   */
-	  if (is_objid(ptrs[i]))
+	  if (is_objid(ptrs[i])) {
+	    lt = L_DBREF;
 	    sort_type = DBREF_LIST;
-	  else
+	  } else
 	    return ALPHANUM_LIST;
 	}
       }
       break;
-    case FLOAT_LIST:
+    case L_FLOAT:
       if (!is_strict_number(ptrs[i]))
 	return ALPHANUM_LIST;
       break;
-    case DBREF_LIST:
+    case L_DBREF:
       if (!is_objid(ptrs[i]))
 	return ALPHANUM_LIST;
       break;
@@ -734,116 +745,280 @@ autodetect_list(char *ptrs[], int nptrs)
   return sort_type;
 }
 
-static list_type
+
+typedef struct sort_record s_rec;
+
+typedef int (*qsort_func) (const void *, const void *);
+typedef void (*makerecord) (s_rec *, dbref player, char *sortflags);
+
+#define GENRECORD(x) void x(s_rec *rec,dbref player,char *sortflags); \
+  void x(s_rec *rec, \
+    dbref player __attribute__ ((__unused__)), \
+    char *sortflags __attribute__ ((__unused__)))
+
+/** Sorting strings by different values. We store both the string and
+ * its 'key' to sort by. Sort of a hardcode munge.
+ */
+struct sort_record {
+  char *val;	 /**< The string this is */
+  dbref db;	 /**< dbref (default 0, bad is -1) */
+  char *str;	 /**< string comparisons */
+  int num;	 /**< integer comparisons */
+  NVAL numval;	 /**< float comparisons */
+  int freestr;	 /**< free str on completion */
+};
+
+/* Compare(r,x,y) {
+ *   if (x->db < 0 && y->db < 0)
+ *     return 0;  // Garbage is identical.
+ *   if (x->db < 0)
+ *     return 2;  // Garbage goes last.
+ *   if (y->db < 0)
+ *     return -2; // Garbage goes last.
+ *   if (r < 0)
+ *     return -2; // different
+ *   if (r > 0)
+ *     return 2;  // different
+ *   if (x->db < y->db)
+ *     return -1; // similar
+ *   if (y->db < x-db)
+ *     return 1;  // similar
+ *   return 0;    // identical
+ * }
+ */
+
+/* If I could, I'd let sort() toss out non-existant dbrefs
+ * Instead, sort stuffs them into a jumble at the end. */
+
+#define Compare(r,x,y) \
+        ((x->db < 0 || y->db < 0) ? \
+           ((x->db < 0 && y->db < 0) ? 0 : (x->db < 0 ? 2 : -2)) \
+           : ((r != 0) ? (r < 0 ? -2 : 2) \
+             : (x->db == y->db ? 0 : (x->db < y->db ? -1 : 1)) \
+           ) \
+         )
+
+static int
+s_comp(const void *s1, const void *s2)
+{
+  const s_rec *sr1 = (const s_rec *) s1;
+  const s_rec *sr2 = (const s_rec *) s2;
+  int res = 0;
+  res = strcoll(sr1->str, sr2->str);
+  return Compare(res, sr1, sr2);
+}
+
+static int
+si_comp(const void *s1, const void *s2)
+{
+  const s_rec *sr1 = (const s_rec *) s1;
+  const s_rec *sr2 = (const s_rec *) s2;
+  int res = 0;
+  res = strcasecoll(sr1->str, sr2->str);
+  return Compare(res, sr1, sr2);
+}
+
+static int
+i_comp(const void *s1, const void *s2)
+{
+  const s_rec *sr1 = (const s_rec *) s1;
+  const s_rec *sr2 = (const s_rec *) s2;
+  int res = 0;
+  res = sr1->num - sr2->num;
+  return Compare(res, sr1, sr2);
+}
+
+static int
+f_comp(const void *s1, const void *s2)
+{
+  const s_rec *sr1 = (const s_rec *) s1;
+  const s_rec *sr2 = (const s_rec *) s2;
+  NVAL res = 0;
+  res = sr1->numval - sr2->numval;
+  return Compare(res, sr1, sr2);
+}
+
+GENRECORD(gen_alphanum)
+{
+  size_t len;
+  if (strchr(rec->val, ESC_CHAR)) {
+    rec->str = mush_strdup(remove_markup(rec->val, &len), "genrecord");
+    rec->freestr = 1;
+  } else {
+    rec->str = rec->val;
+  }
+}
+
+GENRECORD(gen_dbref)
+{
+  rec->num = qparse_dbref(rec->val);
+}
+
+GENRECORD(gen_num)
+{
+  rec->num = parse_integer(rec->val);
+}
+
+GENRECORD(gen_float)
+{
+  rec->numval = parse_number(rec->val);
+}
+
+#define RealGoodObject(x) (GoodObject(x) && !IsGarbage(x))
+
+GENRECORD(gen_db_name)
+{
+  rec->str = (char *) "";
+  if (RealGoodObject(rec->db))
+    rec->str = (char *) Name(rec->db);
+}
+
+GENRECORD(gen_db_idle)
+{
+  rec->num = -1;
+  if (RealGoodObject(rec->db)) {
+    if (Priv_Who(player))
+      rec->num = least_idle_time_priv(rec->db);
+    else
+      rec->num = least_idle_time(rec->db);
+  }
+}
+
+GENRECORD(gen_db_conn)
+{
+  rec->num = -1;
+  if (RealGoodObject(rec->db)) {
+    if (Priv_Who(player))
+      rec->num = most_conn_time_priv(rec->db);
+    else
+      rec->num = most_conn_time(rec->db);
+  }
+}
+
+GENRECORD(gen_db_ctime)
+{
+  if (RealGoodObject(rec->db))
+    rec->num = CreTime(rec->db);
+}
+
+GENRECORD(gen_db_owner)
+{
+  if (RealGoodObject(rec->db))
+    rec->num = Owner(rec->db);
+}
+
+GENRECORD(gen_db_loc)
+{
+  rec->num = -1;
+  if (RealGoodObject(rec->db) && Can_Locate(player, rec->db)) {
+    rec->num = Location(rec->db);
+  }
+}
+
+GENRECORD(gen_db_attr)
+{
+  /* Eek, I hate dealing with memory issues. */
+
+  static char *defstr = (char *) "";
+  const char *ptr;
+
+  rec->str = defstr;
+  if (RealGoodObject(rec->db) && sortflags && *sortflags &&
+      (ptr = do_get_attrib(player, rec->db, sortflags)) != NULL) {
+    rec->str = mush_strdup(ptr, "genrecord");
+    rec->freestr = 1;
+  }
+}
+
+typedef struct _list_type_list_ {
+  char *name;
+  makerecord make_record;
+  qsort_func sorter;
+  int isdbs;
+} list_type_list;
+
+char ALPHANUM_LIST[] = "A";
+char INSENS_ALPHANUM_LIST[] = "I";
+char DBREF_LIST[] = "D";
+char NUMERIC_LIST[] = "N";
+char FLOAT_LIST[] = "F";
+char DBREF_NAME_LIST[] = "NAME";
+char DBREF_NAMEI_LIST[] = "NAMEI";
+char DBREF_IDLE_LIST[] = "IDLE";
+char DBREF_CONN_LIST[] = "CONN";
+char DBREF_CTIME_LIST[] = "CTIME";
+char DBREF_OWNER_LIST[] = "OWNER";
+char DBREF_LOCATION_LIST[] = "LOC";
+char DBREF_ATTR_LIST[] = "ATTR";
+char DBREF_ATTRI_LIST[] = "ATTRI";
+char *UNKNOWN_LIST = NULL;
+
+list_type_list ltypelist[] = {
+  /* List type name,            recordmaker,    comparer, dbrefs? */
+  {ALPHANUM_LIST, gen_alphanum, s_comp, 0},
+  {INSENS_ALPHANUM_LIST, gen_alphanum, si_comp, 0},
+  {DBREF_LIST, gen_dbref, i_comp, 0},
+  {NUMERIC_LIST, gen_num, i_comp, 0},
+  {FLOAT_LIST, gen_float, f_comp, 0},
+  {DBREF_NAME_LIST, gen_db_name, s_comp, 1},
+  {DBREF_NAMEI_LIST, gen_db_name, si_comp, 1},
+  {DBREF_IDLE_LIST, gen_db_idle, i_comp, 1},
+  {DBREF_CONN_LIST, gen_db_conn, i_comp, 1},
+  {DBREF_CTIME_LIST, gen_db_ctime, i_comp, 1},
+  {DBREF_OWNER_LIST, gen_db_owner, i_comp, 1},
+  {DBREF_LOCATION_LIST, gen_db_loc, i_comp, 1},
+  {DBREF_ATTR_LIST, gen_db_attr, s_comp, 1},
+  {DBREF_ATTRI_LIST, gen_db_attr, si_comp, 1},
+  /* This stops the loop, so is default */
+  {NULL, gen_alphanum, s_comp, 0}
+};
+
+char *
 get_list_type(char *args[], int nargs, int type_pos, char *ptrs[], int nptrs)
 {
+  static char stype[BUFFER_LEN];
+  int i;
+  char *str;
   if (nargs >= type_pos) {
-    switch (*args[type_pos - 1]) {
-    case 'A':
-    case 'a':
-      return ALPHANUM_LIST;
-    case 'I':
-    case 'i':
-      return INSENS_ALPHANUM_LIST;
-    case 'D':
-    case 'd':
-      return DBREF_LIST;
-    case 'N':
-    case 'n':
-      return NUMERIC_LIST;
-    case 'F':
-    case 'f':
-      return FLOAT_LIST;
-    case '\0':
-      return autodetect_list(ptrs, nptrs);
-    default:
-      return ALPHANUM_LIST;
+    str = args[type_pos - 1];
+    if (*str) {
+      strcpy(stype, str);
+      str = strchr(stype, ':');
+      if (str)
+	*(str++) = '\0';
+      for (i = 0; ltypelist[i].name && strcasecmp(ltypelist[i].name, stype);
+	   i++) ;
+      /* return ltypelist[i].name; */
+      if (ltypelist[i].name) {
+	return args[type_pos - 1];
+      }
     }
   }
   return autodetect_list(ptrs, nptrs);
 }
 
-static list_type
+char *
 get_list_type_noauto(char *args[], int nargs, int type_pos)
 {
+  static char stype[BUFFER_LEN];
+  int i;
+  char *str;
   if (nargs >= type_pos) {
-    switch (*args[type_pos - 1]) {
-    case 'A':
-    case 'a':
-      return ALPHANUM_LIST;
-    case 'I':
-    case 'i':
-      return INSENS_ALPHANUM_LIST;
-    case 'D':
-    case 'd':
-      return DBREF_LIST;
-    case 'N':
-    case 'n':
-      return NUMERIC_LIST;
-    case 'F':
-    case 'f':
-      return FLOAT_LIST;
-    default:
-      return UNKNOWN_LIST;
+    str = args[type_pos - 1];
+    if (*str) {
+      strcpy(stype, str);
+      str = strchr(stype, ':');
+      if (str)
+	*(str++) = '\0';
+      for (i = 0; ltypelist[i].name && strcasecmp(ltypelist[i].name, stype);
+	   i++) ;
+      /* return ltypelist[i].name; */
+      return args[type_pos - 1];
     }
   }
   return UNKNOWN_LIST;
 }
 
-static int
-a_comp(const void *s1, const void *s2)
-{
-  return strcoll(*(char *const *) s1, *(char *const *) s2);
-}
-
-static int
-ai_comp(const void *s1, const void *s2)
-{
-  return strcasecoll(*(char *const *) s1, *(char *const *) s2);
-}
-
-/** An integer, for sorting purposes. We store both the string and
- * the int forms to make some things more efficient.
- */
-typedef struct i_record {
-  char *str;	/**< string representation */
-  int num;	/**< integer representation */
-} i_rec;
-
-/** Integer comparison routine for sorts.
- * \param s1 void pointer to an i_record.
- * \param s2 void pointer to an i_record.
- * \retval <0 s1's integer is < s2's integer.
- * \retval 0 s1's integer = s2's integer.
- * \retval >0 s1's integer is > s2's integer.
- */
-static int
-i_comp(const void *s1, const void *s2)
-{
-  if (((const i_rec *) s1)->num > ((const i_rec *) s2)->num)
-    return 1;
-  if (((const i_rec *) s1)->num < ((const i_rec *) s2)->num)
-    return -1;
-  return 0;
-}
-
-/** A double, for sorting purposes. We store both the string and
- * the NVAL forms to make some things more efficient.
- */
-typedef struct f_record {
-  char *str;	/**< string representation */
-  NVAL num;	/**< numeric representation */
-} f_rec;
-
-static int
-f_comp(const void *s1, const void *s2)
-{
-  if (((const f_rec *) s1)->num > ((const f_rec *) s2)->num)
-    return 1;
-  if (((const f_rec *) s1)->num < ((const f_rec *) s2)->num)
-    return -1;
-  return 0;
-}
 
 static dbref ucomp_executor, ucomp_caller, ucomp_enactor;
 static char ucomp_buff[BUFFER_LEN];
@@ -877,129 +1052,110 @@ u_comp(const void *s1, const void *s2)
   return n;
 }
 
-/** Compare two values based on sort_type.
- * \param a one value.
- * \param b another value.
- * \param sort_type how to compare the values.
- * \retval <0 a < b
- * \retval 0  a = b
- * \retval >0 a > b
+/** A generic comparer routine to compare two values of any sort type.
+ * \param
  */
 int
-gencomp(char *a, char *b, list_type sort_type)
+gencomp(dbref player, char *a, char *b, char *sort_type)
 {
-  switch (sort_type) {
-  case NUMERIC_LIST:
-    {
-      int na, nb;
-      na = parse_integer(a);
-      nb = parse_integer(b);
-      if (na < nb)
-	return -1;
-      if (na > nb)
-	return 1;
-      return 0;
-    }
-  case DBREF_LIST:
-    {
-      int dga, dgb;
-      dga = parse_objid(a);
-      dgb = parse_objid(b);
-      if (dga < dgb)
-	return -1;
-      if (dga > dgb)
-	return 1;
-      return 0;
-    }
-  case FLOAT_LIST:
-    {
-      NVAL na, nb;
-      na = parse_number(a);
-      nb = parse_number(b);
-      if (na < nb)
-	return -1;
-      if (na > nb)
-	return 1;
-      return 0;
-    }
-  case INSENS_ALPHANUM_LIST:
-    {
-      int result;
-      result = strcasecoll(a, b);
-      if (result < 0)
-	return -1;
-      if (result > 0)
-	return 1;
-      return 0;
-    }
-  case ALPHANUM_LIST:		/* Falls through */
-  default:
-    {
-      int result;
-      result = strcoll(a, b);
-      if (result < 0)
-	return -1;
-      if (result > 0)
-	return 1;
-      return 0;
-    }
+  char *ptr;
+  int i, len;
+  int result;
+  s_rec s1, s2;
+  ptr = NULL;
+  if (!sort_type) {
+    /* Advance i to the default */
+    for (i = 0; ltypelist[i].name; i++) ;
+  } else if ((ptr = strchr(sort_type, ':'))) {
+    len = ptr - sort_type;
+    ptr += 1;
+    if (!*ptr)
+      ptr = NULL;
+    for (i = 0;
+	 ltypelist[i].name && strncasecmp(ltypelist[i].name, sort_type, len);
+	 i++) ;
+  } else {
+    for (i = 0; ltypelist[i].name && strcasecmp(ltypelist[i].name, sort_type);
+	 i++) ;
   }
+  s1.freestr = s2.freestr = 0;
+  if (ltypelist[i].isdbs) {
+    s1.db = parse_dbref(a);
+    s2.db = parse_dbref(b);
+    if (!RealGoodObject(s1.db))
+      s1.db = NOTHING;
+    if (!RealGoodObject(s2.db))
+      s2.db = NOTHING;
+  } else {
+    s1.db = s2.db = 0;
+  }
+
+  s1.val = a;
+  s2.val = b;
+  ltypelist[i].make_record(&s1, player, ptr);
+  ltypelist[i].make_record(&s2, player, ptr);
+  result = ltypelist[i].sorter((const void *) &s1, (const void *) &s2);
+  if (s1.freestr)
+    mush_free(s1.str, "genrecord");
+  if (s2.freestr)
+    mush_free(s2.str, "genrecord");
+  return result;
 }
 
-/** A generic sort routine to sort an array in place.
+/** A generic sort routine to sort several different
+ * types of arrays, in place.
+ * \param player the player executing the sort.
  * \param s the array to sort.
- * \param n number of elements in array s.
- * \param sort_type type of sort.
+ * \param n number of elements in array s
+ * \param sort_type the string that describes the sort type.
  */
-void
-do_gensort(char *s[], int n, list_type sort_type)
-{
-  int i;
-  f_rec *fp;
-  i_rec *ip;
 
-  switch (sort_type) {
-  case ALPHANUM_LIST:
-  case UNKNOWN_LIST:
-    qsort(s, n, sizeof(char *), a_comp);
-    break;
-  case INSENS_ALPHANUM_LIST:
-    qsort(s, n, sizeof(char *), ai_comp);
-    break;
-  case NUMERIC_LIST:
-    ip = (i_rec *) mush_malloc(n * sizeof(i_rec), "do_gensort.int_list");
-    for (i = 0; i < n; i++) {
-      ip[i].str = s[i];
-      ip[i].num = parse_integer(s[i]);
-    }
-    qsort((void *) ip, n, sizeof(i_rec), i_comp);
-    for (i = 0; i < n; i++)
-      s[i] = ip[i].str;
-    mush_free((Malloc_t) ip, "do_gensort.int_list");
-    break;
-  case DBREF_LIST:
-    ip = (i_rec *) mush_malloc(n * sizeof(i_rec), "do_gensort.dbref_list");
-    for (i = 0; i < n; i++) {
-      ip[i].str = s[i];
-      ip[i].num = qparse_dbref(s[i]);
-    }
-    qsort((void *) ip, n, sizeof(i_rec), i_comp);
-    for (i = 0; i < n; i++)
-      s[i] = ip[i].str;
-    mush_free((Malloc_t) ip, "do_gensort.dbref_list");
-    break;
-  case FLOAT_LIST:
-    fp = (f_rec *) mush_malloc(n * sizeof(f_rec), "do_gensort.num_list");
-    for (i = 0; i < n; i++) {
-      fp[i].str = s[i];
-      fp[i].num = parse_number(s[i]);
-    }
-    qsort((void *) fp, n, sizeof(f_rec), f_comp);
-    for (i = 0; i < n; i++)
-      s[i] = fp[i].str;
-    mush_free((Malloc_t) fp, "do_gensort.num_list");
-    break;
+void
+do_gensort(dbref player, char *s[], int n, char *sort_type)
+{
+  char *ptr;
+  static char stype[BUFFER_LEN];
+  int i, sorti;
+  s_rec *sp;
+  ptr = NULL;
+  if (!sort_type || !*sort_type) {
+    /* Advance sorti to the default */
+    for (sorti = 0; ltypelist[sorti].name; sorti++) ;
+  } else if (strchr(sort_type, ':') != NULL) {
+    strcpy(stype, sort_type);
+    ptr = strchr(stype, ':');
+    *(ptr++) = '\0';
+    if (!*ptr)
+      ptr = NULL;
+    for (sorti = 0;
+	 ltypelist[sorti].name && strcasecmp(ltypelist[sorti].name, stype);
+	 sorti++) ;
+  } else {
+    for (sorti = 0;
+	 ltypelist[sorti].name && strcasecmp(ltypelist[sorti].name, sort_type);
+	 sorti++) ;
   }
+  sp = (s_rec *) mush_malloc(n * sizeof(s_rec), "do_gensort");
+  for (i = 0; i < n; i++) {
+    sp[i].val = s[i];
+    sp[i].freestr = 0;
+    sp[i].db = 0;
+    sp[i].str = NULL;
+    if (ltypelist[sorti].isdbs) {
+      sp[i].db = parse_objid(s[i]);
+      if (!RealGoodObject(sp[i].db))
+	sp[i].db = NOTHING;
+    }
+    ltypelist[sorti].make_record(&(sp[i]), player, ptr);
+  }
+  qsort((void *) sp, n, sizeof(s_rec), ltypelist[sorti].sorter);
+
+  for (i = 0; i < n; i++) {
+    s[i] = sp[i].val;
+    if (sp[i].freestr)
+      mush_free(sp[i].str, "genrecord");
+  }
+  mush_free((Malloc_t) sp, "do_gensort");
 }
 
 /* ARGSUSED */
@@ -1007,7 +1163,7 @@ FUNCTION(fun_sort)
 {
   char *ptrs[MAX_SORTSIZE];
   int nptrs;
-  list_type sort_type;
+  char *sort_type;
   char sep;
   char outsep[BUFFER_LEN];
 
@@ -1025,7 +1181,7 @@ FUNCTION(fun_sort)
 
   nptrs = list2arr(ptrs, MAX_SORTSIZE, args[0], sep);
   sort_type = get_list_type(args, nargs, 2, ptrs, nptrs);
-  do_gensort(ptrs, nptrs, sort_type);
+  do_gensort(executor, ptrs, nptrs, sort_type);
   arr2list(ptrs, nptrs, buff, bp, outsep);
 }
 
@@ -1155,7 +1311,7 @@ FUNCTION(fun_setinter)
   char sep;
   char **a1, **a2;
   int n1, n2, x1, x2, val;
-  list_type sort_type = ALPHANUM_LIST;
+  char *sort_type = ALPHANUM_LIST;
   int osepl = 0;
   char *osep = NULL, osepd[2] = { '\0', '\0' };
 
@@ -1169,7 +1325,7 @@ FUNCTION(fun_setinter)
   a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   if (!a1 || !a2)
-    mush_panic("Unable to allocate memory in fun_setinter");
+    mush_panic("Unable to allocate memory in fun_setunion");
 
   /* make arrays out of the lists */
   n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
@@ -1198,12 +1354,12 @@ FUNCTION(fun_setinter)
     osepl = arglens[4];
   }
   /* sort each array */
-  do_gensort(a1, n1, sort_type);
-  do_gensort(a2, n2, sort_type);
+  do_gensort(executor, a1, n1, sort_type);
+  do_gensort(executor, a2, n2, sort_type);
 
   /* get the first value for the intersection, removing duplicates */
   x1 = x2 = 0;
-  while ((val = gencomp(a1[x1], a2[x2], sort_type))) {
+  while ((val = gencomp(executor, a1[x1], a2[x2], sort_type))) {
     if (val < 0) {
       x1++;
       if (x1 >= n1) {
@@ -1221,7 +1377,7 @@ FUNCTION(fun_setinter)
     }
   }
   safe_str(a1[x1], buff, bp);
-  while (!gencomp(a1[x1], a2[x2], sort_type)) {
+  while (!gencomp(executor, a1[x1], a2[x2], sort_type)) {
     x1++;
     if (x1 >= n1) {
       mush_free((Malloc_t) a1, "ptrarray");
@@ -1232,7 +1388,7 @@ FUNCTION(fun_setinter)
 
   /* get values for the intersection, until at least one list is empty */
   while ((x1 < n1) && (x2 < n2)) {
-    while ((val = gencomp(a1[x1], a2[x2], sort_type))) {
+    while ((val = gencomp(executor, a1[x1], a2[x2], sort_type))) {
       if (val < 0) {
 	x1++;
 	if (x1 >= n1) {
@@ -1251,7 +1407,7 @@ FUNCTION(fun_setinter)
     }
     safe_strl(osep, osepl, buff, bp);
     safe_str(a1[x1], buff, bp);
-    while (!gencomp(a1[x1], a2[x2], sort_type)) {
+    while (!gencomp(executor, a1[x1], a2[x2], sort_type)) {
       x1++;
       if (x1 >= n1) {
 	mush_free((Malloc_t) a1, "ptrarray");
@@ -1270,8 +1426,7 @@ FUNCTION(fun_setunion)
   char sep;
   char **a1, **a2;
   int n1, n2, x1, x2, val;
-  int lastx1, lastx2, found;
-  list_type sort_type = ALPHANUM_LIST;
+  char *sort_type = ALPHANUM_LIST;
   int osepl = 0;
   char *osep = NULL, osepd[2] = { '\0', '\0' };
 
@@ -1285,7 +1440,7 @@ FUNCTION(fun_setunion)
   a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   if (!a1 || !a2)
-    mush_panic("Unable to allocate memory in fun_setdiff");
+    mush_panic("Unable to allocate memory in fun_setunion");
 
   /* make arrays out of the lists */
   n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
@@ -1315,149 +1470,12 @@ FUNCTION(fun_setunion)
   }
 
   /* sort each array */
-  do_gensort(a1, n1, sort_type);
-  do_gensort(a2, n2, sort_type);
-
-  /* get values for the union, in order, skipping duplicates */
-  lastx1 = lastx2 = -1;
-  found = x1 = x2 = 0;
-  if (n1 == 1 && !*a1[0])
-    n1 = 0;
-  if (n2 == 1 && !*a2[0])
-    n2 = 0;
-  while ((x1 < n1) || (x2 < n2)) {
-    /* If we've already copied off something from a1, and our current
-     * look at a1 is the same element, or we've copied from a2 and
-     * our current look at a1 is the same element, skip forward in a1.
-     */
-    if (x1 < n1 && lastx1 >= 0) {
-      val = gencomp(a1[lastx1], a1[x1], sort_type);
-      if (val == 0) {
-	x1++;
-	continue;
-      }
-    }
-    if (x1 < n1 && lastx2 >= 0) {
-      val = gencomp(a2[lastx2], a1[x1], sort_type);
-      if (val == 0) {
-	x1++;
-	continue;
-      }
-    }
-    if (x2 < n2 && lastx1 >= 0) {
-      val = gencomp(a1[lastx1], a2[x2], sort_type);
-      if (val == 0) {
-	x2++;
-	continue;
-      }
-    }
-    if (x2 < n2 && lastx2 >= 0) {
-      val = gencomp(a2[lastx2], a2[x2], sort_type);
-      if (val == 0) {
-	x2++;
-	continue;
-      }
-    }
-    if (x1 >= n1) {
-      /* Just copy off the rest of a2 */
-      if (x2 < n2) {
-	if (found)
-	  safe_strl(osep, osepl, buff, bp);
-	safe_str(a2[x2], buff, bp);
-	lastx2 = x2;
-	x2++;
-	found = 1;
-      }
-    } else if (x2 >= n2) {
-      /* Just copy off the rest of a1 */
-      if (x1 < n1) {
-	if (found)
-	  safe_strl(osep, osepl, buff, bp);
-	safe_str(a1[x1], buff, bp);
-	lastx1 = x1;
-	x1++;
-	found = 1;
-      }
-    } else {
-      /* At this point, we're merging. Take the lower of the two. */
-      val = gencomp(a1[x1], a2[x2], sort_type);
-      if (val <= 0) {
-	if (found)
-	  safe_strl(osep, osepl, buff, bp);
-	safe_str(a1[x1], buff, bp);
-	lastx1 = x1;
-	x1++;
-	found = 1;
-      } else {
-	if (found)
-	  safe_strl(osep, osepl, buff, bp);
-	safe_str(a2[x2], buff, bp);
-	lastx2 = x2;
-	x2++;
-	found = 1;
-      }
-    }
-  }
-  mush_free((Malloc_t) a1, "ptrarray");
-  mush_free((Malloc_t) a2, "ptrarray");
-}
-
-/* ARGSUSED */
-FUNCTION(fun_setdiff)
-{
-  char sep;
-  char **a1, **a2;
-  int n1, n2, x1, x2, val;
-  list_type sort_type = ALPHANUM_LIST;
-  int osepl = 0;
-  char *osep = NULL, osepd[2] = { '\0', '\0' };
-
-  /* if no lists, then no work */
-  if (!*args[0] && !*args[1])
-    return;
-
-  if (!delim_check(buff, bp, nargs, args, 3, &sep))
-    return;
-
-  a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
-  a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
-  if (!a1 || !a2)
-    mush_panic("Unable to allocate memory in fun_setdiff");
-
-  /* make arrays out of the lists */
-  n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
-  n2 = list2arr(a2, MAX_SORTSIZE, args[1], sep);
-
-  if (nargs < 4) {
-    osepd[0] = sep;
-    osep = osepd;
-    if (sep)
-      osepl = 1;
-  } else if (nargs == 4) {
-    sort_type = get_list_type_noauto(args, nargs, 4);
-    if (sort_type == UNKNOWN_LIST) {
-      sort_type = ALPHANUM_LIST;
-      osep = args[3];
-      osepl = arglens[3];
-    } else {
-      osepd[0] = sep;
-      osep = osepd;
-      if (sep)
-      osepl = 1;
-    }
-  } else if (nargs == 5) {
-    sort_type = get_list_type(args, nargs, 4, a1, n1);
-    osep = args[4];
-    osepl = arglens[4];
-  }
-
-  /* sort each array */
-  do_gensort(a1, n1, sort_type);
-  do_gensort(a2, n2, sort_type);
+  do_gensort(executor, a1, n1, sort_type);
+  do_gensort(executor, a2, n2, sort_type);
 
   /* get the first value for the difference, removing duplicates */
   x1 = x2 = 0;
-  while ((val = gencomp(a1[x1], a2[x2], sort_type)) >= 0) {
+  while ((val = gencomp(executor, a1[x1], a2[x2], sort_type)) >= 0) {
     if (val > 0) {
       x2++;
       if (x2 >= n2)
@@ -1480,11 +1498,11 @@ FUNCTION(fun_setdiff)
       mush_free((Malloc_t) a2, "ptrarray");
       return;
     }
-  } while (!gencomp(a1[x1], a1[x1 - 1], sort_type));
+  } while (!gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
 
   /* get values for the difference, until at least one list is empty */
   while (x2 < n2) {
-    if ((val = gencomp(a1[x1], a2[x2], sort_type)) < 0) {
+    if ((val = gencomp(executor, a1[x1], a2[x2], sort_type)) < 0) {
       safe_strl(osep, osepl, buff, bp);
       safe_str(a1[x1], buff, bp);
     }
@@ -1496,7 +1514,7 @@ FUNCTION(fun_setdiff)
 	  mush_free((Malloc_t) a2, "ptrarray");
 	  return;
 	}
-      } while (!gencomp(a1[x1], a1[x1 - 1], sort_type));
+      } while (!gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
     }
     if (val >= 0)
       x2++;
@@ -1508,7 +1526,119 @@ FUNCTION(fun_setdiff)
     safe_str(a1[x1], buff, bp);
     do {
       x1++;
-    } while ((x1 < n1) && !gencomp(a1[x1], a1[x1 - 1], sort_type));
+    } while ((x1 < n1) && !gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
+  }
+  mush_free((Malloc_t) a1, "ptrarray");
+  mush_free((Malloc_t) a2, "ptrarray");
+}
+
+/* ARGSUSED */
+FUNCTION(fun_setdiff)
+{
+  char sep;
+  char **a1, **a2;
+  int n1, n2, x1, x2, val;
+  char *sort_type = ALPHANUM_LIST;
+  int osepl = 0;
+  char *osep = NULL, osepd[2] = { '\0', '\0' };
+
+  /* if no lists, then no work */
+  if (!*args[0] && !*args[1])
+    return;
+
+  if (!delim_check(buff, bp, nargs, args, 3, &sep))
+    return;
+
+  a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
+  a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
+  if (!a1 || !a2)
+    mush_panic("Unable to allocate memory in fun_setunion");
+
+  /* make arrays out of the lists */
+  n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
+  n2 = list2arr(a2, MAX_SORTSIZE, args[1], sep);
+
+  if (nargs < 4) {
+    osepd[0] = sep;
+    osep = osepd;
+    if (sep)
+      osepl = 1;
+  } else if (nargs == 4) {
+    sort_type = get_list_type_noauto(args, nargs, 4);
+    if (sort_type == UNKNOWN_LIST) {
+      sort_type = ALPHANUM_LIST;
+      osep = args[3];
+      osepl = arglens[3];
+    } else {
+      osepd[0] = sep;
+      osep = osepd;
+      if (sep)
+	osepl = 1;
+    }
+  } else if (nargs == 5) {
+    sort_type = get_list_type(args, nargs, 4, a1, n1);
+    osep = args[4];
+    osepl = arglens[4];
+  }
+
+  /* sort each array */
+  do_gensort(executor, a1, n1, sort_type);
+  do_gensort(executor, a2, n2, sort_type);
+
+  /* get the first value for the difference, removing duplicates */
+  x1 = x2 = 0;
+  while ((val = gencomp(executor, a1[x1], a2[x2], sort_type)) >= 0) {
+    if (val > 0) {
+      x2++;
+      if (x2 >= n2)
+	break;
+    }
+    if (!val) {
+      x1++;
+      if (x1 >= n1) {
+	mush_free((Malloc_t) a1, "ptrarray");
+	mush_free((Malloc_t) a2, "ptrarray");
+	return;
+      }
+    }
+  }
+  safe_str(a1[x1], buff, bp);
+  do {
+    x1++;
+    if (x1 >= n1) {
+      mush_free((Malloc_t) a1, "ptrarray");
+      mush_free((Malloc_t) a2, "ptrarray");
+      return;
+    }
+  } while (!gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
+
+  /* get values for the difference, until at least one list is empty */
+  while (x2 < n2) {
+    if ((val = gencomp(executor, a1[x1], a2[x2], sort_type)) < 0) {
+      safe_strl(osep, osepl, buff, bp);
+      safe_str(a1[x1], buff, bp);
+    }
+    if (val <= 0) {
+      do {
+	x1++;
+	if (x1 >= n1) {
+	  mush_free((Malloc_t) a1, "ptrarray");
+	  mush_free((Malloc_t) a2, "ptrarray");
+	  return;
+	}
+      } while (!gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
+    }
+    if (val >= 0)
+      x2++;
+  }
+
+  /* empty out remaining values, still removing duplicates */
+  while (x1 < n1) {
+    safe_strl(osep, osepl, buff, bp);
+    safe_str(a1[x1], buff, bp);
+    do {
+      x1++;
+    } while ((x1 < n1) && !gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
   }
   mush_free((Malloc_t) a1, "ptrarray");
   mush_free((Malloc_t) a2, "ptrarray");
