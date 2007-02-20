@@ -113,7 +113,7 @@ COMLIST commands[] = {
 #endif
   {"@DBCK", NULL, cmd_dbck, CMD_T_ANY, "POWER^SITE"},
 
-  {"@DECOMPILE", "DB TF FLAGS ATTRIBS SKIPDEFAULTS", cmd_decompile,
+  {"@DECOMPILE", "DB PREFIX TF FLAGS ATTRIBS SKIPDEFAULTS", cmd_decompile,
    CMD_T_ANY, NULL},
 
   {"@DESTROY", "OVERRIDE", cmd_destroy, CMD_T_ANY, NULL},

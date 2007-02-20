@@ -1522,12 +1522,12 @@ decompile_locks(dbref player, dbref thing, const char *name, int skipdef)
  * \param skipdef if true, skip showing default flags on attributes/locks.
  */
 void
-do_decompile(dbref player, const char *name, enum dec_type dbflag, int skipdef)
+do_decompile(dbref player, const char *name, const char *prefix,
+	     enum dec_type dbflag, int skipdef)
 {
   dbref thing;
   const char *object = NULL;
   char *attrib;
-  ATTR *a;
   char dbnum[40];
 
   /* @decompile must always have an argument */
@@ -1554,20 +1554,13 @@ do_decompile(dbref player, const char *name, enum dec_type dbflag, int skipdef)
   if (attrib && *attrib) {
     switch (dbflag) {
     case DEC_DB:
-      decompile_atrs(player, thing, dbnum, attrib, "", skipdef);
-      break;
-    case DEC_TF:
-      if (((a = atr_get_noparent(player, "TFPREFIX")) != NULL) &&
-	  AL_STR(a) && *AL_STR(a)) {
-	decompile_atrs(player, thing, dbnum, attrib, atr_value(a), skipdef);
-      } else
-	decompile_atrs(player, thing, dbnum, attrib, "FugueEdit > ", skipdef);
+      decompile_atrs(player, thing, dbnum, attrib, prefix, skipdef);
       break;
     default:
       if (IsRoom(thing))
-	decompile_atrs(player, thing, "here", attrib, "", skipdef);
+	decompile_atrs(player, thing, "here", attrib, prefix, skipdef);
       else
-	decompile_atrs(player, thing, Name(thing), attrib, "", skipdef);
+	decompile_atrs(player, thing, Name(thing), attrib, prefix, skipdef);
       break;
     }
     return;
@@ -1594,7 +1587,7 @@ do_decompile(dbref player, const char *name, enum dec_type dbflag, int skipdef)
     } else
       object = Name(thing);
     if (dbflag != DEC_ATTR)
-      notify_format(player, "@create %s", object);
+      notify_format(player, "%s@create %s", prefix, object);
     break;
   case TYPE_ROOM:
     if (dbflag == DEC_DB) {
@@ -1603,7 +1596,7 @@ do_decompile(dbref player, const char *name, enum dec_type dbflag, int skipdef)
     } else
       object = "here";
     if (dbflag != DEC_ATTR)
-      notify_format(player, "@dig/teleport %s", Name(thing));
+      notify_format(player, "%s@dig/teleport %s", prefix, Name(thing));
     break;
   case TYPE_EXIT:
     if (dbflag == DEC_DB) {
@@ -1611,7 +1604,7 @@ do_decompile(dbref player, const char *name, enum dec_type dbflag, int skipdef)
     } else {
       object = shortname(thing);
       if (dbflag != DEC_ATTR)
-	notify_format(player, "@open %s", Name(thing));
+	notify_format(player, "%s@open %s", prefix, Name(thing));
     }
     break;
   case TYPE_DIVISION:
@@ -1621,37 +1614,39 @@ do_decompile(dbref player, const char *name, enum dec_type dbflag, int skipdef)
       object = shortname(thing);
     }
     if (dbflag != DEC_ATTR)
-      notify_format(player, "@division/create %s", object);
+      notify_format(player, "%s@division/create %s", prefix, object);
     break;
   }
 
   if (dbflag != DEC_ATTR) {
     if (Mobile(thing)) {
       if (GoodObject(Home(thing)))
-	notify_format(player, "@link %s = #%d", object, Home(thing));
+	notify_format(player, "%s@link %s = #%d", prefix, object, Home(thing));
       else if (Home(thing) == HOME)
-	notify_format(player, "@link %s = HOME", object);
+	notify_format(player, "%s@link %s = HOME", prefix, object);
     } else {
       if (GoodObject(Destination(thing)))
-	notify_format(player, "@link %s = #%d", object, Destination(thing));
+	notify_format(player, "%s@link %s = #%d", prefix, object,
+		      Destination(thing));
       else if (Destination(thing) == AMBIGUOUS)
-	notify_format(player, "@link %s = VARIABLE", object);
+	notify_format(player, "%s@link %s = VARIABLE", prefix, object);
       else if (Destination(thing) == HOME)
-	notify_format(player, "@link %s = HOME", object);
+	notify_format(player, "%s@link %s = HOME", prefix, object);
     }
 
     if (GoodObject(Zone(thing)))
-      notify_format(player, "@chzone %s = #%d", object, Zone(thing));
+      notify_format(player, "%s@chzone %s = #%d", prefix, object, Zone(thing));
     if (GoodObject(Parent(thing)))
-      notify_format(player, "@parent %s = #%d", object, Parent(thing));
+      notify_format(player, "%s@parent %s=#%d", prefix, object, Parent(thing));
     if (GoodObject(SDIV(thing).object) && IsDivision(SDIV(thing).object))
-      notify_format(player, "@division %s = #%d", object, SDIV(thing).object);
+      notify_format(player, "%s@division %s = #%d", prefix, object,
+		    SDIV(thing).object);
 
     decompile_locks(player, thing, object, skipdef);
     decompile_flags(player, thing, object);
     decompile_powers(player, thing, object);
   }
   if (dbflag != DEC_FLAG) {
-    decompile_atrs(player, thing, object, "**", "", skipdef);
+    decompile_atrs(player, thing, object, "**", prefix, skipdef);
   }
 }

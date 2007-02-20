@@ -820,12 +820,16 @@ See also: ATTRIBUTES, NON-STANDARD ATTRIBUTES
 
 & @decompile
   @decompile[</switch>] <object>[/<attribute-pattern>]
-  @decompile/tf <object>/<attrib>
+  @decompile/prefix <object>[/<attribute-pattern>]=<prefix>
 
   This command produces a list of the commands that you would have to
   enter in order to recreate <object>. Useful for either copying objects
   from one MUSH to another, or for making logs of important objects to
   protect against an accidental @nuke or a crash.
+
+  When the /prefix switch is specified, and a prefix is given, all output
+  lines will be prefixed with <prefix>.  Good for creating client-side
+  scripts to edit code with.
 
   You can either @decompile an entire object, or just certain parts of it.
   To @decompile just a few attributes, for example, you could type:
@@ -854,24 +858,27 @@ See also: ATTRIBUTES, NON-STANDARD ATTRIBUTES
 (continued in help @decompile3)
 & @decompile3
 
-  @decompile/tf <object>/<attribute>
+  @decompile/tf <object>[/<attribute>]
 
-  The /tf switch is useful only for users of the popular "TinyFugue" 
-  client program (available from ftp.tcp.com in the directory
-  /pub/muds/Clients/tinyfugue). If you do have this program, this
-  switch is invaluable for editing code online, because it will grab the 
-  code to set that attribute and put it into your buffer.
+  Supplying the /tf switch makes @decompile act exactly as if you typed:
+  @decompile/prefix <object>[/<attribute>]=FugueEdit >%b
 
-  To use @dec/tf, first type this command into TinyFugue:
+  You can use a string other than "FugueEdit > " by setting your TFPREFIX
+  attribute.  You are strongly urged to do so. Using @decompile/tf with
+  the default prefix presents the opportunity for a malicious player
+  to load your TinyFugue command line with a harmful command for you to
+  execute inadvertently.
 
-    /def -ag -mglob -p100 -t"FugueEdit > *" fe = /grab %-2
+  The /tf switch is handy for grabbing code and placing it right
+  into your input window. To do this:
 
-  (you can also put this into your .tfrc so it will automatically
-  be entered every time you start TinyFugue (tf).) This command works
-  just like the 'FugueEdit' object originally created by van@TinyTIM.
+    In TinyFugue:
+      /def -ag -mglob -p100 -t"FugueEdit > *" fe = /grab %-2
 
-  You can use a string other than "FugueEdit > " by setting your
-  TFPREFIX attribute. This is probably a good idea.
+    In SimpleMU:
+      Set your Options -> Grab Password
+      @set me=tfprefix:<grabpassword>FugueEdit >%b
+
 See also: CLIENTS, ATTRIBUTES, WILDCARDS, MUSHCODE
 & @describe
   @describe <object> [=<description>]

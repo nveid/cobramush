@@ -75,9 +75,9 @@ extern void do_sweep(dbref player, const char *arg1);
 enum ent_type { ENT_EXITS, ENT_THINGS, ENT_PLAYERS, ENT_ROOMS, ENT_ALL };
 extern void do_entrances(dbref player, const char *where, char **argv,
 			 enum ent_type val);
-enum dec_type { DEC_NORMAL, DEC_DB, DEC_TF, DEC_FLAG, DEC_ATTR };
-extern void do_decompile
-  (dbref player, const char *name, enum dec_type dbflag, int skipdef);
+enum dec_type { DEC_NORMAL, DEC_DB, DEC_FLAG, DEC_ATTR };
+extern void do_decompile(dbref player, const char *name, const char *prefix,
+			 enum dec_type dbflag, int skipdef);
 
 /* From move.c */
 extern void do_get(dbref player, const char *what);
