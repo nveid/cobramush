@@ -855,7 +855,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
       }
     } else {
       if(source == 0)
-	do_rawlog(LT_ERR, T("CONFIG: command_lock %s requires a lock boolexp.\n"), val);
+	do_rawlog(LT_ERR, T("CONFIG: lock_command %s requires a lock boolexp.\n"), val);
 	return 0;
     }
     return 1;
