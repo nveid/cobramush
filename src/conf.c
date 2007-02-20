@@ -843,7 +843,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
   /* Was this "restrict_command <command> <restriction>"? If so, do it */
   if(!strcasecmp(opt, "lock_command")) {
     if(!restrictions)
-      return 1;
+      return 0;
     for(p = val; *p && !isspace((unsigned char) *p); p++)
       ;
     if(*p) {
@@ -861,7 +861,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
     return 1;
   } else if (!strcasecmp(opt, "restrict_command")) {
     if (!restrictions)
-      return 1;
+      return 0;
     for (p = val; *p && !isspace((unsigned char) *p); p++) ;
     if (*p) {
       *p++ = '\0';
@@ -884,7 +884,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
     return 1;
   } else if (!strcasecmp(opt, "restrict_function")) {
     if (!restrictions)
-      return 1;
+      return 0;
     for (p = val; *p && !isspace((unsigned char) *p); p++) ;
     if (*p) {
       *p++ = '\0';
@@ -908,12 +908,12 @@ config_set(const char *opt, char *val, int source, int restrictions)
     return 1;
   } else if (!strcasecmp(opt, "reserve_alias")) {
     if (!restrictions)
-      return 1;
+      return 0;
     reserve_alias(val);
     return 1;
   } else if (!strcasecmp(opt, "command_alias")) {
     if (!restrictions)
-      return 1;
+      return 0;
     for (p = val; *p && !isspace((unsigned char) *p); p++) ;
     if (*p) {
       *p++ = '\0';
@@ -933,7 +933,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
     return 1;
   } else if (!strcasecmp(opt, "attribute_alias")) {
     if (!restrictions)
-      return 1;
+      return 0;
     for (p = val; *p && !isspace((unsigned char) *p); p++) ;
     if (*p) {
       *p++ = '\0';
@@ -953,7 +953,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
     return 1;
   } else if (!strcasecmp(opt, "function_alias")) {
     if (!restrictions)
-      return 1;
+      return 0;
     for (p = val; *p && !isspace((unsigned char) *p); p++) ;
     if (*p) {
       *p++ = '\0';
@@ -976,7 +976,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
     char *comm, *file;
     int admin = !strcasecmp(opt, "ahelp_command");
     if (!restrictions)
-      return 1;
+      return 0;
     /* Add a new help-like command */
     if (source == 1)
       return 0;
