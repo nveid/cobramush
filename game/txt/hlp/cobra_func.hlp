@@ -1165,10 +1165,13 @@
  
   Returns e to the power of <number>.
 & EXTRACT()
-  extract(<list>,<first>,<length>[,<delimiter>])
+  extract(<list>[,<first>[,<length>[,<delimiter>]]])
 
   This function returns <length> elements of a list, counting
-  from the <first> element.
+  from the <first> element. If <length> is not specified, the
+  default is 1, so extract(list,3) acts like elements(list,3).
+  If <first> is not specified, the default is the 1, so
+  extract(list) acts like first(list).
 
   For example:
     think extract(This is a test string,3,2)

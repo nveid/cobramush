@@ -362,7 +362,7 @@ FUNTAB flist[] = {
   {"EVAL", fun_eval, 2, 2, FN_REG},
   {"ESCAPE", fun_escape, 1, -1, FN_REG},
   {"EXIT", fun_exit, 1, 1, FN_REG},
-  {"EXTRACT", fun_extract, 3, 4, FN_REG},
+  {"EXTRACT", fun_extract, 1, 4, FN_REG},
   {"FILTER", fun_filter, 2, 4, FN_REG},
   {"FILTERBOOL", fun_filter, 2, 4, FN_REG},
   {"FINDABLE", fun_findable, 2, 2, FN_REG},

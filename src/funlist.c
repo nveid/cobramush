@@ -1919,8 +1919,8 @@ FUNCTION(fun_wordpos)
 /* ARGSUSED */
 FUNCTION(fun_extract)
 {
-  char sep;
-  int start, len;
+  char sep = ' ';
+  int start = 1, len = 1;
   char *s, *r;
 
   if (!is_integer(args[1]) || !is_integer(args[2])) {
@@ -1928,9 +1928,22 @@ FUNCTION(fun_extract)
     return;
   }
   s = args[0];
-  start = parse_integer(args[1]);
-  len = parse_integer(args[2]);
-  if (!delim_check(buff, bp, nargs, args, 4, &sep))
+
+  if (nargs > 1) {
+    if (!is_integer(args[1])) {
+      safe_str(T(e_ints), buff, bp);
+      return;
+    }
+    start = parse_integer(args[1]);
+  }
+  if (nargs > 2) {
+    if (!is_integer(args[2])) {
+      safe_str(T(e_ints), buff, bp);
+      return;
+    }
+    len = parse_integer(args[2]);
+  }
+  if ((nargs > 3) && (!delim_check(buff, bp, nargs, args, 4, &sep)))
     return;
 
   if ((start < 1) || (len < 1))
