@@ -729,6 +729,11 @@ sed <<!GROK!THIS! >config.h -e 's!^#undef\(.*/\)\*!/\*#define\1 \*!' -e 's!^#un-
  */
 #$d_toupper HAS_SAFE_TOUPPER /**/
 
+/* HAS_UINT32_T:
+ *	If defined, this system has the uint32_t type.
+ */
+#$d_uint32_t HAS_UINT32_T	/**/
+
 /* UPTIME_PATH:
  *	This symbol gives the full path to the uptime(1) program if
  *	it exists on the system. If not, this symbol is undefined.
@@ -806,6 +811,12 @@ sed <<!GROK!THIS! >config.h -e 's!^#undef\(.*/\)\*!/\*#define\1 \*!' -e 's!^#un-
  *	include <setjmp.h> and have things work right.
  */
 #$i_setjmp I_SETJMP		/**/
+
+/* I_STDINT:
+ *	This symbol, if defined, indicates that the program should include
+ *	<stdint.h>.
+ */
+#$i_stdint I_STDINT		/**/
 
 /* USE_TIOCNOTTY:
  *	This symbol, if defined indicate to the C program that the ioctl()

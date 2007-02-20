@@ -355,6 +355,7 @@ i_tcl=''
 d_textdomain=''
 d_timelocal=''
 d_toupper=''
+d_uint32_t=''
 d_uptime=''
 d_urandom=''
 d_uwait3=''
@@ -382,6 +383,7 @@ i_sysin=''
 i_nitcp=''
 i_setjmp=''
 i_stddef=''
+i_stdint=''
 i_stdlib=''
 i_string=''
 strings=''
@@ -5331,65 +5333,6 @@ EOM
 fi
 $rm -f test_toupper* core
 
-: uptime
-echo " "
-if $test -x $uptime ; then
-	val="$define"
-else
-	val="$undef"
-fi
-set d_uptime; eval $setvar
-
-: see if /dev/urandom is present
-echo " "
-if $test -c /dev/urandom ; then
-	val="$define"
-else
-	val="$undef"
-fi
-set d_urandom; eval $setvar
-
-: see if union wait is available
-echo " "
-set X $cppflags
-shift
-flags=''
-also=''
-for f in $*; do
-	case "$f" in
-	*NO_PROTO*) ;;
-	*) flags="$flags $f";;
-	esac
-done
-xxx="`./findhdr sys/wait.h`"
-case "x$xxx" in
-x) xxx=/dev/null
-esac
-$cat "$xxx" | $cppstdin $flags $cppminus >wait.out 2>/dev/null
-if $contains 'union.*wait.*{' wait.out >/dev/null 2>&1 ; then
-	echo "Looks like your <sys/wait.h> knows about 'union wait'..." >&4
-	val="$define"
-	also='also '
-	if $contains 'extern.*wait[ 	]*([ 	]*int' wait.out >/dev/null 2>&1
-	then
-		echo "But wait() seems to expect an 'int' pointer (POSIX way)." >&4
-		val="$undef"
-		also=''
-	elif $contains 'extern.*wait[ 	]*([ 	]*union' wait.out >/dev/null 2>&1
-	then
-		echo "And indeed wait() expects an 'union wait' pointer (BSD way)." >&4
-	else
-		echo "So we'll use that for wait()." >&4
-	fi
-else
-	echo "No trace of 'union wait' in <sys/wait.h>..." >&4
-	val="$undef"
-	echo "Your wait() should be happy with a plain 'int' pointer." >&4
-fi
-set d_uwait
-eval $setvar
-$rm -f wait.out
-
 : get C preprocessor symbols handy
 echo " "
 $echo $n "Hmm... $c"
@@ -5496,6 +5439,117 @@ else
 	fi
 fi
 $rm -f ccsym*
+
+: see if this is a stdint system
+val="$undef"
+if $test "`./findhdr stdint.h`"; then
+	val="$define"
+	echo "<stdint.h> found." >&4
+fi
+echo " "
+set i_stdint; eval $setvar
+: see if we have uint32_t
+echo "Let's try to figure out a really big double." >&4
+echo " "
+	$cat >d_uint32.c <<EOCP
+#include <stdio.h>
+#$i_stdint I_STDINT
+#ifdef I_STDINT
+#include <stdint.h>
+#endif
+
+int main()
+{
+  uint32_t a;
+  a = 2*2*2*2;
+  a *= a; /* 2^8 */
+  a *= a; /* 2^16 */
+  a *= a; /* 2^32 */
+  a += 1; /* 2^32 + 1 */
+  if (a == 1)
+    printf("ok\n");
+  else
+    printf("not ok\n");
+}
+EOCP
+
+if $cc $ccflags $ldflags d_uint32.c -o d_uint32 $libs >/dev/null 2>&1; then
+          val=`./d_uint32`
+          if test $val = "ok" ; then
+		val="$define"
+		set d_uint32_t; eval $setvar
+		echo "You have uint32_t." >&4
+	  else
+		val="$undef"
+		set d_uint32_t; eval $setvar
+		echo "You don't have uint32_t, hope you're a 32 bit machine." >&4
+	  fi
+else
+	  val="$undef"
+	  set d_uint32_t; eval $setvar
+	  echo "I can't tell if you have uint32_t, hope you're a 32 bit machine." >&4
+fi
+
+$rm -f d_uint32*
+
+: uptime
+echo " "
+if $test -x $uptime ; then
+	val="$define"
+else
+	val="$undef"
+fi
+set d_uptime; eval $setvar
+
+: see if /dev/urandom is present
+echo " "
+if $test -c /dev/urandom ; then
+	val="$define"
+else
+	val="$undef"
+fi
+set d_urandom; eval $setvar
+
+: see if union wait is available
+echo " "
+set X $cppflags
+shift
+flags=''
+also=''
+for f in $*; do
+	case "$f" in
+	*NO_PROTO*) ;;
+	*) flags="$flags $f";;
+	esac
+done
+xxx="`./findhdr sys/wait.h`"
+case "x$xxx" in
+x) xxx=/dev/null
+esac
+$cat "$xxx" | $cppstdin $flags $cppminus >wait.out 2>/dev/null
+if $contains 'union.*wait.*{' wait.out >/dev/null 2>&1 ; then
+	echo "Looks like your <sys/wait.h> knows about 'union wait'..." >&4
+	val="$define"
+	also='also '
+	if $contains 'extern.*wait[     ]*([    ]*int' wait.out >/dev/null 2>&1
+	then
+		echo "But wait() seems to expect an 'int' pointer (POSIX way)." >&4
+		val="$undef"
+		also=''
+	elif $contains 'extern.*wait[   ]*([    ]*union' wait.out >/dev/null 2>&1
+	then
+		echo "And indeed wait() expects an 'union wait' pointer (BSD way)." >&4
+	else
+		echo "So we'll use that for wait()." >&4
+	fi
+else
+	echo "No trace of 'union wait' in <sys/wait.h>..." >&4
+	val="$undef"
+	echo "Your wait() should be happy with a plain 'int' pointer." >&4
+fi
+set d_uwait
+eval $setvar
+$rm -f wait.out
 
 : see if this is a termio system
 val="$undef"
@@ -7018,6 +7072,7 @@ d_tcl='$d_tcl'
 d_textdomain='$d_textdomain'
 d_timelocal='$d_timelocal'
 d_toupper='$d_toupper'
+d_uint32_t='$d_uint32_t'
 d_uptime='$d_uptime'
 d_urandom='$d_urandom'
 d_usgnames='$d_usgnames'
@@ -7069,6 +7124,7 @@ i_setjmp='$i_setjmp'
 i_sgtty='$i_sgtty'
 i_stdarg='$i_stdarg'
 i_stddef='$i_stddef'
+i_stdint='$i_stdint'
 i_stdlib='$i_stdlib'
 i_string='$i_string'
 i_syserrno='$i_syserrno'

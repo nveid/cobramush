@@ -2,6 +2,9 @@
 #define _SHS_H
 
 #include "config.h"
+#ifdef I_STDINT
+#include <stdint.h>
+#endif
 #include "confmagic.h"
 
 /* -------------- SHS.H --------------------------- */
@@ -15,7 +18,11 @@ typedef unsigned char BYTE;
 typedef long LONG;
 #else
 typedef unsigned char BYTE;
+#ifdef HAS_UINT32_T
+typedef uint32_t LONG;
+#else
 typedef unsigned long LONG;
+#endif
 #endif
 
 #define SHS_BLOCKSIZE 64
