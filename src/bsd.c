@@ -1021,7 +1021,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
   socklen_t addr_len;
   int newsock;
 #endif
-  int input_ready, output_ready;
+  unsigned long input_ready, output_ready;
 
 #ifdef NT_TCP
   if (platform != VER_PLATFORM_WIN32_NT)
