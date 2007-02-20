@@ -1917,8 +1917,10 @@ add_flag(const char *name, const char letter, int type,
   FLAGSPACE *n;
   n = hashfind("FLAG", &htab_flagspaces);
   /* Don't double-add */
-  if ((f = match_flag_ns(n, strupper(name))))
-    return f;
+  if ((f = match_flag_ns(n, strupper(name)))) {
+    if (strcasecmp(f->name, name) == 0)
+      return f;
+  }
   f = new_flag();
   f->name = mush_strdup(strupper(name), "flag name");
   f->letter = letter;
