@@ -36,7 +36,6 @@
 #include "extmail.h"
 #include "confmagic.h"
 
-
 #ifdef WIN32
 #pragma warning( disable : 4761)      /* disable warning re conversion */
 #endif

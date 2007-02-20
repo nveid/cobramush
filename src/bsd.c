@@ -28,6 +28,7 @@
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #define MAXHOSTNAMELEN 32
 #define LC_MESSAGES 6
+#pragma warning( disable : 4761)	/* disable warning re conversion */
 #else				/* !WIN32 */
 #ifdef I_SYS_FILE
 #include <sys/file.h>
