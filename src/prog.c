@@ -521,6 +521,8 @@ password_handler(DESC * d, char *input)
     queue_newwrite(d, (unsigned char *) "Invalid password.\r\n", 19);
     do_log(LT_WIZ, d->player, d->pinfo.object, "** @SU FAIL **");
     d->pinfo.object = NOTHING;
+    d->pinfo.function = NULL;
+    d->pinfo.lock = 0;
     return 1;
   }
 
