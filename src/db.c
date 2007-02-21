@@ -1588,7 +1588,7 @@ db_read_oldstyle(FILE * f)
       }
       /* check to see if it's a player */
       if (IsPlayer(i)) {
-	add_player(i, NULL);
+	add_player(i);
 	clear_flag_internal(i, "CONNECTED");
       }
       break;
@@ -1937,7 +1937,7 @@ db_read(FILE * f)
 		    i);
 	}
 	if (IsPlayer(i)) {
-	  add_player(i, NULL);
+	  add_player(i);
 	  clear_flag_internal(i, "CONNECTED");
 	}
       }
@@ -2122,7 +2122,7 @@ create_minimal_db(void)
   add_folder_name(god, 0, "inbox");
 #endif
   PUSH(god, Contents(start_room));
-  add_player(god, NULL);
+  add_player(god);
   s_Pennies(god, START_BONUS);
   local_data_create(god);
   current_state.players++;

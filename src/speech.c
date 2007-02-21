@@ -638,6 +638,7 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   int fails_lock;
   int is_haven;
   ATTR *a;
+  char *alias;
 
   tp2 = tbuf2 = (char *) mush_malloc(BUFFER_LEN, "string");
   if (!tbuf2)
@@ -866,8 +867,8 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   }
 
   /* Figure out the 'name' of the player */
-  if (PAGE_ALIASES && (a = atr_get_noparent(player, "ALIAS")))
-    current = tprintf("%s (%s)", Name(player), atr_value(a));
+  if (PAGE_ALIASES && (alias = shortalias(player)) && *alias)
+    current = tprintf("%s (%s)", Name(player), alias);
   else
     current = (char *) Name(player);
 

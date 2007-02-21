@@ -114,9 +114,7 @@ do_name(dbref player, const char *name, char *newname)
 	    password++;
 	}
       }
-      if (strcasecmp(newname, Name(thing))
-	  && !ok_player_name(newname, thing)) {
-	/* strcasecmp allows changing foo to Foo, etc. */
+      if (!ok_player_name(newname, player, thing)) {
 	notify(player, T("You can't give a player that name."));
 	return;
       }
@@ -141,7 +139,7 @@ do_name(dbref player, const char *name, char *newname)
       myenv[i] = NULL;
 
     if (IsPlayer(thing))
-      delete_player(thing, NULL);
+      reset_player_list(thing, Name(thing), NULL, newname, NULL);
     set_name(thing, newname);
     if(!IsPlayer(thing)) {
           char lmbuf[1024];
@@ -151,7 +149,7 @@ do_name(dbref player, const char *name, char *newname)
           set_lmod(thing, lmbuf);
     }
     if (IsPlayer(thing))
-      add_player(thing, NULL);
+      add_player(thing);
 
     if (!AreQuiet(player, thing))
       notify(player, T("Name set."));

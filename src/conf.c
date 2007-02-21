@@ -247,6 +247,8 @@ COBRA_CONF conftable[] = {
   {"player_name_spaces", cf_bool, &options.player_name_spaces, 2, 0,
    "cosmetic"}
   ,
+  {"max_aliases", cf_int, &options.max_aliases, -1, 0, "limits"}
+  ,
   {"ansi_names", cf_bool, &options.ansi_names, 2, 0, "cosmetic"}
   ,
   {"only_ascii_in_names", cf_bool, &options.ascii_names, 2, 0, "cosmetic"}
@@ -1166,6 +1168,7 @@ conf_default_set(void)
   strcpy(options.ip_addr, "");
   strcpy(options.ssl_ip_addr, "");
   options.player_name_spaces = 0;
+  options.max_aliases = 3;
   options.forking_dump = 1;
   options.restrict_building = 0;
   options.free_objects = 1;

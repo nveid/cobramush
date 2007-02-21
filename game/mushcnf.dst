@@ -399,6 +399,11 @@ log_wipe_passwd	zap!
 # actual maximum length you want.
 player_name_len	16
 
+# The maximum number of aliases a player may have simultaneously.
+# Setting this to 0 disables aliases. To allow an unlimited number
+# of aliases, set this to 4000 or so.
+max_aliases   3
+
 # Limit the number of objects players can own.
 use_quota yes
 

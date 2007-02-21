@@ -201,7 +201,7 @@ dbref create_guest(const char *host, const char *ip) {
 		gst_id = NOTHING;  
 		strncpy(guest_name, T(GUEST_PREFIX), BUFFER_LEN-1);
 		strcat(guest_name, GUEST_NUMBER(i+1));
-		if(ok_player_name(guest_name, NOTHING))
+		if(ok_player_name(guest_name, NOTHING, NOTHING))
 		  break;	
 		else if((gst_id = lookup_player(guest_name)) != NOTHING && !Connected(gst_id))
 			break;
@@ -247,7 +247,7 @@ create_player(const char *name, const char *password, const char *host,
 	      const char *ip)
 {
   dbref player;
-  if (!ok_player_name(name, NOTHING)) {
+  if (!ok_player_name(name, NOTHING, NOTHING)) {
     do_log(LT_CONN, 0, 0, T("Failed creation (bad name) from %s"), host);
     return NOTHING;
   }
@@ -301,7 +301,7 @@ email_register_player(const char *name, const char *email, const char *host,
   dbref player;
   FILE *fp;
 
-  if (!ok_player_name(name, NOTHING)) {
+  if (!ok_player_name(name, NOTHING, NOTHING)) {
     do_log(LT_CONN, 0, 0, T("Failed registration (bad name) from %s"), host);
     return NOTHING;
   }
@@ -450,7 +450,7 @@ make_player(const char *name, const char *password, const char *host,
   /* link him to PLAYER_START */
   PUSH(player, Contents(PLAYER_START));
 
-  add_player(player,NULL);
+  add_player(player);
   add_lock(GOD, player, Basic_Lock, parse_boolexp(player, "=me", Basic_Lock),
 	   -1);
   add_lock(GOD, player, Enter_Lock, parse_boolexp(player, "=me", Basic_Lock),

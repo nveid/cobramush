@@ -1711,20 +1711,18 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   upcasestr(name);
   if (!strcmp(name, "ALIAS") && IsPlayer(thing)) {
     old = atr_get_noparent(thing, "ALIAS");
+    tbuf1[0] = '\0';
     if (old) {
       /* Old alias - we're allowed to change to a different case */
       strcpy(tbuf1, atr_value(old));
-      if (s
-          && (!*s
-              || (strcasecmp(s, tbuf1) && !ok_player_name(s, player)))) {
+      if (s && (!*s || (strcasecmp(s, tbuf1)
+			&& !ok_player_alias(s, player, thing)))) {
         notify(player, T("That is not a valid alias."));
         return -1;
       }
-      if (Can_Write_Attr(player, thing, old))
-        delete_player(thing, tbuf1);
     } else {
       /* No old alias */
-      if (s && *s && !ok_player_name(s, player)) {
+      if (s && *s && !ok_player_alias(s, player, thing)) {
         notify(player, T("That is not a valid alias."));
         return -1;
       }
@@ -1794,12 +1792,11 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
     return 0;
   }
   if (!strcmp(name, "ALIAS") && IsPlayer(thing)) {
-    if (s && *s) {
-      add_player(thing, s);
+    reset_player_list(thing, NULL, tbuf1, NULL, s);
+    if (s && *s)
       notify(player, T("Alias set."));
-    } else {
+    else
       notify(player, T("Alias removed."));
-    }
     return 1;
   } else if (!strcmp(name, "LISTEN")) {
     if (IsRoom(thing))

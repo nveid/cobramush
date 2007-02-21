@@ -52,6 +52,8 @@
 
 /* delimiter for lists of exit aliases */
 #define EXIT_DELIMITER ';'
+/* delimiter for lists of player name aliases */
+#define ALIAS_DELIMITER ';'
 
 #define QUIT_COMMAND "QUIT"
 #define WHO_COMMAND "WHO"
@@ -221,6 +223,7 @@ struct options_table {
   char ip_addr[64];	/**< What ip address should the server bind to? */
   char ssl_ip_addr[64];	/**< What ip address should the server bind to? */
   int player_name_spaces;	/**< Can players have multiword names? */
+  int max_aliases;		/**< Maximum allowed aliases per player */
   int forking_dump;	/**< Should we fork to dump? */
   int restrict_building;	/**< Is the builder power required to build? */
   int free_objects;	/**< If builder power is required, can you create without it? */
@@ -403,6 +406,7 @@ int cf_time(const char *opt, const char *val, void *loc, int maxval,
 #define RESTRICTED_BUILDING (options.restrict_building)
 #define NO_FORK (!options.forking_dump)
 #define PLAYER_NAME_SPACES (options.player_name_spaces)
+#define MAX_ALIASES (options.max_aliases)
 #define SAFER_UFUN (options.safer_ufun)
 #define NOISY_WHISPER (options.noisy_whisper)
 #define POSSESSIVE_GET (options.possessive_get)

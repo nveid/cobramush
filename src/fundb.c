@@ -1420,6 +1420,42 @@ FUNCTION(fun_owner)
 }
 
 /* ARGSUSED */
+FUNCTION(fun_alias)
+{
+  dbref it;
+
+  it = match_thing(executor, args[0]);
+  if (!GoodObject(it))
+    safe_str(T(e_notvis), buff, bp);
+
+  /* Support changing alias via function if side-effects are enabled */
+  if (nargs == 2) {
+    if (!command_check_byname(executor, "ATTRIB_SET")
+ 	|| fun->flags & FN_NOSIDEFX) {
+      safe_str(T(e_perm), buff, bp);
+      return;
+    }
+    if (!FUNCTION_SIDE_EFFECTS)
+      safe_str(T(e_disabled), buff, bp);
+    else
+      do_set_atr(it, "ALIAS", args[1], executor, 0);
+    return;
+  } else {
+    safe_str(shortalias(it), buff, bp);
+  }
+}
+
+/* ARGSUSED */
+FUNCTION(fun_fullalias)
+{
+  dbref it = match_thing(executor, args[0]);
+  if (GoodObject(it))
+    safe_str(fullalias(it), buff, bp);
+  else
+    safe_str(T(e_notvis), buff, bp);
+}
+
+/* ARGSUSED */
 FUNCTION(fun_name)
 {
   dbref it;

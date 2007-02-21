@@ -267,19 +267,29 @@ See also: leave, @leave, @oleave, ACTION LISTS
 
 See also: leave, @lfail, @olfail, ACTION LISTS
 & @alias
-  @alias <player>=<alias>
- 
-  @alias is a special attribute. When a player sets an @alias, he is
-  effectively giving himself a secondary name; he can be paged by his
-  @alias, and matched with *<alias>, and all other game functions which
-  look up player names will also accept the alias. The attribute is
-  visible to all players.
-  
-  Aliases cannot be longer than the limit allowed for player names, 
+  @alias <player>=<name>;<alias>[;<alias2>[;<alias3>[...]]]
+
+  @alias is a special attribute that lists a player's names; players
+  can be paged by their aliases, matched with *<alias>, and all other game
+  functions which look up player names will also accept an alias.
+  The attribute is visible to all players.
+
+  A list of aliases, separated by semicolons, may be provided.
+  Players should include their usual @name in the alias list, because
+  the @name command allows setting name to any alias in the list.
+  The number of aliases allowed in the list may be limited by
+  the game's administrators through the 'max_aliases' @config parameter.
+
+  If the page_aliases config directive is on, the first alias in the
+  list is returned along with the player's name.
+
+  Each alias cannot be longer than the limit allowed for player names,
   cannot contain spaces, and must be unique -- no other player may
   have the same alias or name as any other player's alias or name.
 
   @alias has no effect on non-players.
+
+  See also: @name, alias(), fullalias()
 & @allhalt
   @allhalt
 
@@ -2202,9 +2212,15 @@ See also: go, @omove, @oxmove, @amove
   names, the name should be enclosed in quotes:
     @name me = "James Bond"
 
+  Players can change their name to any name not in use by another
+  player; players may "reserve" a set of names for their use by
+  setting them in their @alias.
+
   Changing the name of <object> will cause object to execute its
   ONAME and ANAME. The old name will be passed at %0 to these;
   the new name will be passed as %1.
+
+  See also: @alias
 & @newpassword
   @newpassword <player> = <password>
 
@@ -2802,6 +2818,10 @@ See also: @wall, @wizwall
   
   See "help @search3" for more.
 & @search3
+  If <class>=MINDB, only objects with dbrefs of <restriction> or
+  higher will be listed. If <class>=MAXDB, only objects with dbrefs
+  of <restriction> or lower will be listed.
+
   For the class TYPE=PLAYER, and for  PLAYER=<player-name>, anyone may
   obtain information on any player.  In all other cases, only Directors may
   obtain information about other players. This is computationally
@@ -2814,7 +2834,7 @@ See also: @wall, @wizwall
     @search Joe eval=1,100,200   <-- list objects from #100-#200 owned by Joe.
     @search eval=gt(money(##),10)     <-- list all objects owned by me  
                                           worth more than 10 coins.
-  
+
   See also: lsearch, lsearchr
 & @select
   @select <string>=<expr1>,<action1>[,<exprN>,<actionN>]...[,<default>]

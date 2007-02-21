@@ -54,7 +54,7 @@ FUNCTION(fun_valid)
   else if (!strcasecmp(args[0], "attrname"))
     safe_boolean(good_atr_name(upcasestr(args[1])), buff, bp);
   else if (!strcasecmp(args[0], "playername"))
-    safe_boolean(ok_player_name(args[1], executor), buff, bp);
+    safe_boolean(ok_player_name(args[1], executor, executor), buff, bp);
   else if (!strcasecmp(args[0], "password"))
     safe_boolean(ok_password(args[1]), buff, bp);
   else if (!strcasecmp(args[0], "command"))

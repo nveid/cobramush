@@ -785,21 +785,23 @@ ok_name(const char *n)
 	  && strcasecmp((char *) name, "here"));
 }
 
-/** Is a name a valid player name?
+/** Is a name a valid player name when applied by player to thing?
  * Player names must be valid object names, but also not forbidden (unless
  * the player is a wizard). They are
  * subject to a different length limit, and subject to more stringent
  * restrictions on valid characters. Finally, it can't be the same as
- * an existing player name or alias.
+ * an existing player name or alias unless it's one of theirs.
  * \param name name to check.
  * \param player player for permission checks.
+ * \param thing player who will get the name.
  * \retval 1 name is valid for players.
  * \retval 0 name is not valid for players.
  */
 int
-ok_player_name(const char *name, dbref player)
+ok_player_name(const char *name, dbref player, dbref thing)
 {
   const unsigned char *scan, *good;
+  dbref lookup;
 
   if (!ok_name(name)
       || (forbidden_name(name) && !(GoodObject(player) && Director(player)))
@@ -816,8 +818,46 @@ ok_player_name(const char *name, dbref player)
       return 0;
   }
 
-  return (lookup_player(name) == NOTHING);
+  lookup = lookup_player(name);
+  return ((lookup == NOTHING) || (lookup == thing));
 }
+
+
+/** Is a alias a valid player alias-list for thing?
+ * It must be a semicolon-separated list of valid player names
+ * with no more than than MAX_ALIASES names, if the player isn't
+ * a wizard.
+ * \param alias list to check.
+ * \param player player for permission checks.
+ * \param thing player who is being aliased.
+ * \retval 1 alias is valid for players.
+ * \retval 0 alias is not valid for players.
+ */
+int
+ok_player_alias(const char *alias, dbref player, dbref thing)
+{
+  char tbuf1[BUFFER_LEN], *s, *sp;
+  int cnt = 0;
+
+  if (!alias || !*alias)
+    return 0;
+
+  strncpy(tbuf1, alias, BUFFER_LEN - 1);
+  tbuf1[BUFFER_LEN - 1] = '\0';
+  s = trim_space_sep(tbuf1, ALIAS_DELIMITER);
+  while (s) {
+    sp = split_token(&s, ALIAS_DELIMITER);
+    while (sp && *sp && *sp == ' ')
+      sp++;
+    if (!sp || !*sp)
+      return 0;			/* No null aliases */
+    if (!ok_player_name(sp, player, thing))
+      return 0;
+    cnt++;
+  }
+  return ((cnt <= MAX_ALIASES) || Director(player));
+}
+
 
 /** Is a password acceptable?
  * Acceptable passwords must be non-null and must contain only

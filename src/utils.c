@@ -533,6 +533,48 @@ get_random_long(long low, long high)
   return low + (n % x);
 }
 
+/** Return an object's alias. We expect a valid object.
+ * \param it dbref of object.
+ * \return object's complete alias.
+ */
+char *
+fullalias(dbref it)
+{
+  static char n[BUFFER_LEN];  /* STATIC */
+  ATTR *a = atr_get_noparent(it, "ALIAS");
+
+  if (!a)
+    return '\0';
+
+  strncpy(n, atr_value(a), BUFFER_LEN - 1);
+  n[BUFFER_LEN - 1] = '\0';
+
+  return n;
+}
+
+/** Return only the first component of an object's alias. We expect
+ * a valid object.
+ * \param it dbref of object.
+ * \return object's short alias.
+ */
+char *
+shortalias(dbref it)
+{
+  static char n[BUFFER_LEN];  /* STATIC */
+  char *s;
+
+  s = fullalias(it);
+  if (!(s && *s))
+    return '\0';
+
+  strncpy(n, s, BUFFER_LEN - 1);
+  n[BUFFER_LEN - 1] = '\0';
+  if ((s = strchr(n, ';')))
+    *s = '\0';
+
+  return n;
+}
+
 /** Return an object's name, but for exits, return just the first
  * component. We expect a valid object.
  * \param it dbref of object.

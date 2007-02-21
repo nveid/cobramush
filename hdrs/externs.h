@@ -304,6 +304,7 @@ extern char *mush_crypt(const char *key);
 /* From player.c */
 extern int password_check(dbref player, const char *password);
 extern dbref lookup_player(const char *name);
+extern dbref lookup_player_name(const char *name);
 /* from player.c */
 extern dbref create_player(const char *name, const char *password,
 			   const char *host, const char *ip);
@@ -319,8 +320,11 @@ extern int is_strict_integer(const char *str);
 
 /* From plyrlist.c */
 void clear_players(void);
-void add_player(dbref player, const char *alias);
+void add_player(dbref player);
+void add_player_alias(dbref player, const char *alias);
 void delete_player(dbref player, const char *alias);
+void reset_player_list(dbref player, const char *oldname, const char *oldalias,
+		       const char *name, const char *alias);
 
 /* From predicat.c */
 extern int pay_quota(dbref, int);
@@ -354,7 +358,8 @@ extern int get_current_quota(dbref who);
 extern void change_quota(dbref who, int payment);
 extern int ok_name(const char *name);
 extern int ok_command_name(const char *name);
-extern int ok_player_name(const char *name, dbref player);
+extern int ok_player_name(const char *name, dbref player, dbref thing);
+extern int ok_player_alias(const char *alias, dbref player, dbref thing);
 extern int ok_password(const char *password);
 extern int ok_tag_attribute(dbref player, char *params);
 extern dbref parse_match_possessor(dbref player, const char **str);
@@ -561,6 +566,8 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 				const char *check) __attribute_malloc__;
     extern void mush_free(Malloc_t RESTRICT ptr, const char *RESTRICT check);
     extern long get_random_long(long low, long high);
+    extern char *fullalias(dbref it);
+    extern char *shortalias(dbref it);
     extern char *shortname(dbref it);
     extern dbref absolute_room(dbref it);
     int can_interact(dbref from, dbref to, int type);

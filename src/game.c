@@ -695,7 +695,7 @@ do_restart(void)
 	bp = buf;
 	safe_str(atr_value(s), buf, &bp);
 	*bp = '\0';
-	add_player(thing, buf);
+	add_player_alias(thing, buf);
       }
     }
   }
