@@ -1243,14 +1243,10 @@ process_expression(char *buff, char **bp, char const **str,
 	    global_fun_recursions++;
 	    pe_info->fun_depth++;
 	    if (fp->flags & FN_BUILTIN) {
-	      int old_nfargs;
 	      global_fun_invocations++;
 	      pe_info->fun_invocations++;
-	      old_nfargs = pe_info->arg_count;
-	      pe_info->arg_count = nfargs;
 	      fp->where.fun(fp, buff, bp, nfargs, fargs, arglens, executor,
 			    caller, enactor, fp->name, pe_info);
-	      pe_info->arg_count = old_nfargs;
 	      if (fp->flags & FN_LOGARGS) {
 		char logstr[BUFFER_LEN];
 		char *logp;
