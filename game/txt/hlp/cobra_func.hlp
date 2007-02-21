@@ -3168,7 +3168,9 @@ for an object named "Test", preferring a thing over other types.
 
   produces the following when executed by an object:
 
-  Object says "foo" Object says "bar" Object says "foo"
+  Object says "foo"
+  Object says "bar"
+  Object says "foo"
 
 & SETUNION()
   setunion(<list1>, <list2>[, <delimiter>][, <sort type>][, <osep>])
