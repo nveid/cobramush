@@ -118,10 +118,10 @@ fi
 #
 # Read the cnf file and set some variables.
 #
-INDB=`egrep "^input_database" $CONF_FILE | sed "s/.*[ 	][ 	]*.*\/\(.*\)/\1/"`
-OUTDB=`egrep "^output_database" $CONF_FILE | sed "s/.*[ 	][ 	]*.*\/\(.*\)/\1/"`
-PANICDB=`egrep "^crash_database" $CONF_FILE | sed "s/.*[ 	][ 	]*.*\/\(.*\)/\1/"`
-PANICDIR=`egrep "^crash_database" $CONF_FILE | sed "s/.*[ 	][ 	]*\(.*\)\/.*/\1/"`
+INDB=`egrep "^input_database" $CONF_FILE | sed "s/.*[ 	][ 	]*.*\/\(.*\)/\1/" | sed 's/\r$//'`
+OUTDB=`egrep "^output_database" $CONF_FILE | sed "s/.*[ 	][ 	]*.*\/\(.*\)/\1/" | sed 's/\r$//'`
+PANICDB=`egrep "^crash_database" $CONF_FILE | sed "s/.*[ 	][ 	]*.*\/\(.*\)/\1/" | sed 's/\r$//'`
+PANICDIR=`egrep "^crash_database" $CONF_FILE | sed "s/.*[ 	][ 	]*\(.*\)\/.*/\1/" | sed 's/\r$//'`
 COMPRESSOR="cat"
 SUFFIX=""
 
@@ -129,8 +129,8 @@ SUFFIX=""
 egrep -s "^compress_program[ 	]*[A-Za-z0-9]" $CONF_FILE
 nocompress=$?
 if [ "$nocompress" -eq 0 ]; then
-    COMPRESSOR=`egrep "^compress_program" $CONF_FILE | sed "s/[^ 	]*[ 	]*\(.*\)/\1/"`
-    SUFFIX=`egrep "^compress_suffix" $CONF_FILE | sed "s/[^ 	]*[ 	]*\(.*\)/\1/"`
+    COMPRESSOR=`egrep "^compress_program" $CONF_FILE | sed "s/[^ 	]*[ 	]*\(.*\)/\1/" | sed 's/\r$//'`
+    SUFFIX=`egrep "^compress_suffix" $CONF_FILE | sed "s/[^ 	]*[ 	]*\(.*\)/\1/" | sed 's/\r$//'`
 fi
   
 
