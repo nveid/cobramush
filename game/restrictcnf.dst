@@ -49,6 +49,9 @@ restrict_command @open noguest
 # @power is traditionally logged
 restrict_command @power logargs
 
+# Prevent players going home while set FIXED
+restrict_command home nofixed " You can't do that IC!
+
 # Some additional protection against spam attacks by guests
 restrict_command @dolist noguest
 restrict_function repeat noguest
