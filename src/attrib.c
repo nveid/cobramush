@@ -292,6 +292,7 @@ string_to_atrflag(dbref player, char const *p)
     return -1;
   if (!div_powover(player, player, "Privilege") && (f & AF_PRIVILEGE))
     return -1;
+  f &= ~AF_INTERNAL;
   return f;
 }
 
@@ -317,6 +318,7 @@ string_to_atrflagsets(dbref player, char const *p, int *setbits, int *clrbits)
     return -1;
   if (!See_All(player) && ((*setbits & AF_PRIVILEGE) || (*clrbits & AF_PRIVILEGE)))
     return -1;
+  f &= ~AF_INTERNAL;
   return *setbits;
 }
 
