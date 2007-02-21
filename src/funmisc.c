@@ -162,7 +162,9 @@ FUNCTION(fun_setq)
   int n;
 
   if ((nargs % 2) != 0) {
-    safe_str(T("#-1 FUNCTION EXPECTS AN EVEN NUMBER OF ARGUMENTS"), buff, bp);
+    safe_format(buff, bp,
+		T("#-1 FUNCTION (%s) EXPECTS AN EVEN NUMBER OF ARGUMENTS"),
+		called_as);
     return;
   }
 
