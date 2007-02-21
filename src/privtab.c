@@ -34,6 +34,7 @@ string_to_privs(PRIV *table, const char *str, long int origprivs)
   PRIV *c;
   long int yes = 0;
   long int no = 0;
+  long int ltr = 0;
   char *p, *r;
   char tbuf1[BUFFER_LEN];
   int not;
@@ -51,13 +52,27 @@ string_to_privs(PRIV *table, const char *str, long int origprivs)
       if (!*++p)
 	continue;
     }
-    for (c = table; c->name; c++) {
-      if (string_prefix(c->name, p)) {
-	if (not)
-	  no |= c->bits_to_set;
-	else
-	  yes |= c->bits_to_set;
-	break;
+    ltr = 0;
+    if (strlen(p) == 1) {
+      /* One-letter string is treated as a character if possible */
+      ltr = letter_to_privs(table, p, 0);
+      if (not)
+	no |= ltr;
+      else
+	yes |= ltr;
+    }
+    /* If we didn't handle a one-char string as a character,
+     * or if the string is longer than one char, use prefix-matching
+     */
+    if (!ltr) {
+      for (c = table; c->name; c++) {
+	if (string_prefix(c->name, p)) {
+	  if (not)
+	    no |= c->bits_to_set;
+	  else
+	    yes |= c->bits_to_set;
+	  break;
+	}
       }
     }
   }
@@ -85,6 +100,7 @@ string_to_privsets(PRIV *table, const char *str, int *setprivs, int *clrprivs)
   char *p, *r;
   char tbuf1[BUFFER_LEN];
   int not;
+  long int ltr;
   int words = 0;
   int err = 0;
   int found = 0;
@@ -104,14 +120,27 @@ string_to_privsets(PRIV *table, const char *str, int *setprivs, int *clrprivs)
       continue;
       }
     }
-    for (c = table; c->name; c++) {
-      if (string_prefix(c->name, p)) {
-      found++;
+    ltr = 0;
+    if (strlen(p) == 1) {
+      /* One-letter string is treated as a character if possible */
+      ltr = letter_to_privs(table, p, 0);
       if (not)
-        *clrprivs |= c->bits_to_set;
+	*clrprivs |= ltr;
       else
-        *setprivs |= c->bits_to_set;
-      break;
+	*setprivs |= ltr;
+    }
+    if (ltr) {
+      found++;
+    } else {
+      for (c = table; c->name; c++) {
+	if (string_prefix(c->name, p)) {
+	  found++;
+	  if (not)
+	    *clrprivs |= c->bits_to_set;
+	  else
+	    *setprivs |= c->bits_to_set;
+	  break;
+	}
       }
     }
   }
