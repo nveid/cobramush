@@ -91,3 +91,29 @@ restrict_command warn_on_missing nobody
 # We add a dummy here to make updating easier
 restrict_function lstats noguest
 
+# Remove the hardcode chat system by uncommenting these
+#restrict_command @cemit nobody
+#restrict_command @nscemit nobody
+#restrict_command @channel nobody
+#restrict_command @chat nobody
+#restrict_command @clock nobody
+#restrict_function cowner nobody
+#restrict_function ctitle nobody
+#restrict_function cwho nobody
+#restrict_function channels nobody
+#restrict_function cflags nobody
+
+# Remove the hardcode mail system by uncommenting these
+#restrict_command @mail nobody
+#restrict_command @malias nobody
+#restrict_function mail nobody
+#restrict_function maildstats nobody
+#restrict_function mailfrom nobody
+#restrict_function mailfstats nobody
+#restrict_function mailstats nobody
+#restrict_function mailstatus nobody
+#restrict_function mailsubject nobody
+#restrict_function mailtime nobody
+#restrict_function malias nobody
+#restrict_function folderstats nobody
+
