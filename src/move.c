@@ -423,8 +423,14 @@ do_move(dbref player, const char *direction, enum move_type type)
 	case AMBIGUOUS:
 	  var_dest = find_var_dest(player, exit_m);
 	  /* Only allowed if the owner of the exit could link to var_dest */
-	  if (GoodObject(var_dest) && !can_link_to(exit_m, var_dest))
-	    var_dest = NOTHING;
+	  if (!GoodObject(var_dest) || !can_link_to(exit_m, var_dest)) {
+	    notify_format(player,
+			  T
+			  ("Variable exit destination #%d is invalid or not permitted."),
+			  var_dest);
+
+	    return;
+	  }
 	  break;
 	default:
 	  var_dest = Location(exit_m);
