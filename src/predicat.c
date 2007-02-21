@@ -973,7 +973,7 @@ ok_function_name(const char *name)
 
 /** Does params contain only acceptable HTML tag attributes?
  * Right now, this means: filter out SEND and XCH_CMD if
- * the player isn't a Wizard. Params may contain a space-separated
+ * the player isn't a privileged. Params may contain a space-separated
  * list of tag=value pairs. It's probably possible to fool this
  * checking. Needs more work, or removing HTML support. 
  * \param player player using the attribute, or NOTHING for internal.
