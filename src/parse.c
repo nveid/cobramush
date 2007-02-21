@@ -716,14 +716,20 @@ process_expression(char *buff, char **bp, char const **str,
 
 	(*str)++;
 	savec = **str;
-	if (!savec)
+	if (!savec) {
+	  /* Line ended in %, so treat it as a literal */
+	  safe_chr('%', buff, bp);
 	  goto exit_sequence;
+	}
 	savepos = *bp;
 	(*str)++;
 
 	switch (savec) {
 	case '%':		/* %% - a real % */
 	  safe_chr('%', buff, bp);
+	  break;
+	case ' ':		/* "% " for more natural typing */
+	  safe_str("% ", buff, bp);
 	  break;
 	case '!':		/* executor dbref */
 	  safe_dbref(executor, buff, bp);
