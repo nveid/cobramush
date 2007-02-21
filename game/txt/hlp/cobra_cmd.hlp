@@ -375,7 +375,7 @@ See also: @atrchown, ATTRIBUTES, NON-STANDARD ATTRIBUTES, LOCKING
 See also: @success, @osuccess, get, @lock, EXITS, ACTION LISTS
 & @attribute
   @attribute <attrib>
-  @attribute/access[/retroactive] <attrib> = <flag list>
+  @attribute/access[/retroactive] <attrib> = <flag list or "none">
   @attribute/delete <attrib>
   @attribute/rename <attrib> = <new name>
 
@@ -393,8 +393,9 @@ See also: @success, @osuccess, get, @lock, EXITS, ACTION LISTS
 
   @attribute/access adds a new standard attribute into the table,
   associating it with the given space-separated list of flags.
-  See 'help @set' for possible flags.
-  If the /retroactive switch is added, the flags are set on every copy
+  See 'help @set' for possible flags. A flag list of "none" removes
+  all flag associations.
+  If the /retroactive switch is added, the flags are assigned to every copy
   of the attribute that already exists in the database.
 
   @attribute/delete removes a standard attribute from the table.

@@ -265,10 +265,12 @@ do_attribute_access(dbref player, char *name, char *perms, int retroactive)
     notify(player, T("Which attribute do you mean?"));
     return;
   }
-  flags = string_to_privs(attr_privs, perms, 0);
-  if (!flags) {
-    notify(player, T("I don't understand those permissions."));
-    return;
+  if (strcasecmp(perms, "none")) {
+    flags = string_to_privs(attr_privs, perms, 0);
+    if (!flags) {
+      notify(player, T("I don't understand those permissions."));
+      return;
+    }
   }
   upcasestr(name);
   /* Is this attribute already in the table? */
