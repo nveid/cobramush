@@ -2037,11 +2037,13 @@ FUNCTION(fun_align)
     return;
   }
   if (nargs >= (ncols + 2)) {
-    if (!args[ncols + 1] || strlen(args[ncols + 1]) != 1) {
+    if (!args[ncols + 1] || strlen(args[ncols + 1]) > 1) {
       safe_str(T("#-1 FILLER MUST BE ONE CHARACTER"), buff, bp);
       return;
     }
-    filler = *(args[ncols + 1]);
+    if (*args[ncols + 1]) {
+      filler = *(args[ncols + 1]);
+    }
   }
   if (nargs >= (ncols + 3)) {
     fieldsep = args[ncols + 2];
