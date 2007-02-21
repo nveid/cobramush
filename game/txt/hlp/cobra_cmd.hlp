@@ -699,6 +699,19 @@ See also: @create
   for example. More complex things are, obviously, possible.
  
   See also: @exitformat, @nameformat, @descformat
+& @invformat
+  @invformat <object> [=<format>]
+
+  Replaces the usual "You are carrying:" format when an object uses the
+  "inventory" command, by a player-specified format. This is evaluated
+  as if it were a description or other similar message on the object.
+  The objects carried are passed as a dbref list in %0.
+
+  One could change the format to 'You've got: Object1 Object2 Object3'
+  through '@invformat me = You've got: [iter(%0,name(##))]',
+  for example. More complex things are, obviously, possible.
+
+  See also: inventory
 & @descformat
   @descformat <object> [=<text>]
 
