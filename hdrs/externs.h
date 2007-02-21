@@ -358,6 +358,7 @@ extern int get_current_quota(dbref who);
 extern void change_quota(dbref who, int payment);
 extern int ok_name(const char *name);
 extern int ok_command_name(const char *name);
+extern int ok_function_name(const char *name);
 extern int ok_player_name(const char *name, dbref player, dbref thing);
 extern int ok_player_alias(const char *alias, dbref player, dbref thing);
 extern int ok_password(const char *password);

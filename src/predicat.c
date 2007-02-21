@@ -882,9 +882,10 @@ ok_password(const char *password)
   return 1;
 }
 
-/** Is a name ok for a command or function?
- * It must begin with an uppercase alpha, and contain only
- * uppercase alpha, numbers, or underscore thereafter.
+/** Is a name ok for a command?
+ * It must contain only uppercase alpha, numbers, or punctuation.
+ * It must contain at least one uppercase alpha.
+ * It may not begin with " : ; & ] \ and # (the special tokens).
  * \param name name to check.
  * \retval 1 name is acceptable.
  * \retval 0 name is not acceptable.
@@ -893,17 +894,80 @@ int
 ok_command_name(const char *name)
 {
   const unsigned char *p;
-  if (!isupper((unsigned char) *name))
+  int cnt = 0;
+  /* First char: uppercase alphanum or legal punctuation */
+  switch ((unsigned char) *name) {
+  case SAY_TOKEN:
+  case POSE_TOKEN:
+  case SEMI_POSE_TOKEN:
+  case EMIT_TOKEN:
+  case NOEVAL_TOKEN:
+  case NUMBER_TOKEN:
+  case '&':
     return 0;
-  for (p = (unsigned char *) name; p && *p; p++) {
-    if (!(isupper(*p) || isdigit(*p) || (*p == '_')))
+  default:
+    if (!isupper((unsigned char) *name) && !isdigit((unsigned char) *name))
       return 0;
   }
-
+  /* Everything else must be printable and non-space, and we need
+   * to find at least one uppercase alpha
+   */
+  for (p = (unsigned char *) name; p && *p; p++) {
+    if (isspace(*p))
+      return 0;
+    if (isupper(*p))
+      cnt++;
+  }
+  if (!cnt)
+    return 0;
   /* Not too long */
   if (strlen(name) >= COMMAND_NAME_LIMIT)
     return 0;
+  return 1;
+}
 
+/** Is a name ok for a function?
+ * It must start with uppercase alpha or punctuation and may contain only
+ * uppercase alpha, numbers, or punctuation thereafter.
+ * It must contain at least one uppercase alpha.
+ * It may not begin with " : ; & ] \ and # (the special tokens).
+ * \param name name to check.
+ * \retval 1 name is acceptable.
+ * \retval 0 name is not acceptable.
+ */
+int
+ok_function_name(const char *name)
+{
+  const unsigned char *p;
+  int cnt = 0;
+  /* First char: uppercase alpha or legal punctuation */
+  switch ((unsigned char) *name) {
+  case SAY_TOKEN:
+  case POSE_TOKEN:
+  case SEMI_POSE_TOKEN:
+  case EMIT_TOKEN:
+  case NOEVAL_TOKEN:
+  case NUMBER_TOKEN:
+  case '&':
+    return 0;
+  default:
+    if (!isupper((unsigned char) *name))
+      return 0;
+  }
+  /* Everything else must be printable and non-space, and we need
+   * to find at least one uppercase alpha
+   */
+  for (p = (unsigned char *) name; p && *p; p++) {
+    if (isspace(*p))
+      return 0;
+    if (isupper(*p))
+      cnt++;
+  }
+  if (!cnt)
+    return 0;
+  /* Not too long */
+  if (strlen(name) >= COMMAND_NAME_LIMIT)
+    return 0;
   return 1;
 }
 

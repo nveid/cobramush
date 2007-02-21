@@ -60,7 +60,7 @@ FUNCTION(fun_valid)
   else if (!strcasecmp(args[0], "command"))
     safe_boolean(ok_command_name(upcasestr(args[1])), buff, bp);
   else if (!strcasecmp(args[0], "function"))
-    safe_boolean(ok_command_name(upcasestr(args[1])), buff, bp);
+    safe_boolean(ok_function_name(upcasestr(args[1])), buff, bp);
   else
     safe_str("#-1", buff, bp);
 }
