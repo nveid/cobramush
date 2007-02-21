@@ -359,10 +359,6 @@ void
 do_move(dbref player, const char *direction, enum move_type type)
 {
   dbref exit_m, loc, var_dest;
-  if(!strcasecmp(direction, "home") && can_move(player, "home")) {
-	  notify(player, "Not right now pal.");
-	  return;
-  }
 #ifdef RPMODE_SYS
   if(IsParalyzed(player)) {
     notify(player, "You are temporarily paralyzed.");
