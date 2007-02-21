@@ -981,40 +981,52 @@ FUNCTION(fun_hasflag)
 /* ARGSUSED */
 FUNCTION(fun_hastype)
 {
+  char *r, *s;
+  int found = 0;
   dbref it = match_thing(executor, args[0]);
   if (!GoodObject(it)) {
     safe_str(T(e_notvis), buff, bp);
     return;
   }
-  switch (*args[1]) {
-  case 'r':
-  case 'R':
-    safe_boolean(IsRoom(it), buff, bp);
-    break;
-  case 'e':
-  case 'E':
-    safe_boolean(IsExit(it), buff, bp);
-    break;
-  case 'p':
-  case 'P':
-    safe_boolean(IsPlayer(it), buff, bp);
-    break;
-  case 't':
-  case 'T':
-    safe_boolean(IsThing(it), buff, bp);
-    break;
-  case 'd':
-  case 'D':
-    safe_boolean(IsDivision(it), buff, bp);
-    break;
-  case 'g':
-  case 'G':
-    safe_boolean(IsGarbage(it), buff, bp);
-    break;
-  default:
-    safe_str(T("#-1 NO SUCH TYPE"), buff, bp);
-    break;
-  };
+  s = trim_space_sep(args[1], ' ');
+  r = split_token(&s, ' ');
+  do {
+    switch (*r) {
+    case 'r':
+    case 'R':
+      if (IsRoom(it))
+      found = 1;
+      break;
+    case 'e':
+    case 'E':
+      if (IsExit(it))
+      found = 1;
+      break;
+    case 'p':
+    case 'P':
+      if (IsPlayer(it))
+      found = 1;
+      break;
+    case 't':
+    case 'T':
+      if (IsThing(it))
+      found = 1;
+      break;
+    case 'g':
+    case 'G':
+      if (IsGarbage(it))
+      found = 1;
+      break;
+    default:
+      safe_str(T("#-1 NO SUCH TYPE"), buff, bp);
+      return;
+    }
+    if (found) {
+      safe_boolean(found, buff, bp);
+      return;
+    }
+  } while ((r = split_token(&s, ' ')));
+  safe_boolean(0, buff, bp);
 }
 
 /* ARGSUSED */

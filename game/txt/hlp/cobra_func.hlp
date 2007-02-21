@@ -1538,10 +1538,12 @@ Continued in HELP FOREACH2
 
   See also: orlflags(), andlflags(), orflags(), andflags()
 & HASTYPE()
-  hastype(<object>, <type>)
+  hastype(<object>, <type list>)
 
   Returns 1 if the object is of the named type, otherwise 0.
-  Valid types are: ROOM, EXIT, PLAYER, THING, GARBAGE.
+  Valid types are: ROOM, EXIT, PLAYER, THING, GARBAGE. You can
+  test to see if the object is one of a number of types by using a space-
+  separated list of types.
   If an invalid type is given, #-1 NO SUCH TYPE is returned.
 & HIDDEN()
   hidden(<player|descriptor>)
