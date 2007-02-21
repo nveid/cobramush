@@ -755,12 +755,13 @@ See also: @create
 
   Customizes the usual display of the object's name to people who
   are inside it and 'look'. It is evaluated as if it were a description
-  or similar message on the room. The room's dbref is passed as %0.
+  or similar message on the room. The room's dbref is passed as %0,
+  and the default-formatted name as %1.
 
   @nameformat is not used when people outside the object look at it.
 
   Example: Show the room's zone after its name.
-  @nameformat here = [name(%0)] [if(isdbref(zone(%0)),<[name(zone(%0))]>)]
+  @nameformat here = %1 [if(isdbref(zone(%0)),<[name(zone(%0))]>)]
 
   See also: @exitformat, @conformat, @descformat
 & @cost

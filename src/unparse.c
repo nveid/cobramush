@@ -135,16 +135,10 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
   case HOME:
     return T("*HOME*");
   default:
-    if (use_nameformat && nameformat(player, loc, buf)) {
-      strcpy(tbuf1, buf);
-      got_nameformat = 1;
-    } else {
-      /* Not using @nameformat or couldn't get one */
-      if (use_nameaccent)
-	strcpy(tbuf1, accented_name(loc));
-      else
-	strcpy(tbuf1, Name(loc));
-    }
+    if (use_nameaccent)
+      strcpy(tbuf1, accented_name(loc));
+    else
+      strcpy(tbuf1, Name(loc));
     if (IsExit(loc) && obey_myopic) {
       if ((p = strchr(tbuf1, ';')))
 	*p = '\0';
@@ -166,18 +160,23 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
 	safe_format(buf, &bp, "%s(#%d%s)", tbuf1, loc,
 		    unparse_flags(loc, player));
       *bp = '\0';
-      return buf;
     } else {
       /* show only the name */
       if (ANSI_NAMES && ShowAnsi(player) && !got_nameformat) {
 	bp = buf;
 	safe_format(buf, &bp, "%s%s%s", ANSI_HILITE, tbuf1, ANSI_NORMAL);
 	*bp = '\0';
-	return buf;
       } else
-	return tbuf1;
+	strcpy(buf, tbuf1);
     }
   }
+  /* buf now contains the default formatting of the name. If we
+   * have @nameaccent, though, we might change to that.
+   */
+  if (use_nameformat && nameformat(player, loc, tbuf1, buf))
+    return tbuf1;
+  else
+    return buf;
 }
 
 /** Build the name of loc as seen by a player inside it, but only
@@ -187,21 +186,23 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
  * \param player the looker.
  * \param loc dbref of location being looked at.
  * \param tbuf1 address to store formatted name of loc.
+ * \param defname the name as it would be formatted without NAMEFORMAT.
  * \retval 1 a NAMEFORMAT was found, and tbuf1 contains formatted name.
  * \retval 0 no NAMEFORMAT on loc, tbuf1 is undefined.
  */
 int
-nameformat(dbref player, dbref loc, char *tbuf1)
+nameformat(dbref player, dbref loc, char *tbuf1, char *defname)
 {
   ATTR *a;
   char *wsave[10], *rsave[NUMQ];
-  char *arg, *bp;
+  char *arg, *bp, *arg2;
   char const *sp, *save;
 
   int j;
   a = atr_get(loc, "NAMEFORMAT");
   if (a) {
     arg = (char *) mush_malloc(BUFFER_LEN, "string");
+    arg2 = (char *) mush_malloc(BUFFER_LEN, "string");
     if (!arg)
       mush_panic("Unable to allocate memory in nameformat");
     save_global_regs("nameformat", rsave);
@@ -213,6 +214,8 @@ nameformat(dbref player, dbref loc, char *tbuf1)
       global_eval_context.renv[j][0] = '\0';
     strcpy(arg, unparse_dbref(loc));
     global_eval_context.wenv[0] = arg;
+    strcpy(arg2, defname);
+    global_eval_context.wenv[1] = defname;
     sp = save = safe_atr_value(a);
     bp = tbuf1;
     process_expression(tbuf1, &bp, &sp, loc, player, player,
@@ -224,6 +227,7 @@ nameformat(dbref player, dbref loc, char *tbuf1)
     }
     restore_global_regs("nameformat", rsave);
     mush_free((Malloc_t) arg, "string");
+    mush_free((Malloc_t) arg2, "string");
     return 1;
   } else {
     /* No @nameformat attribute */

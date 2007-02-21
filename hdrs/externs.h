@@ -550,7 +550,7 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 #define object_header(p,l) unparse_object(p,l)
     extern const char *unparse_object_myopic(dbref player, dbref loc);
     extern const char *unparse_room(dbref player, dbref loc);
-    extern int nameformat(dbref player, dbref loc, char *tbuf1);
+    extern int nameformat(dbref player, dbref loc, char *tbuf1, char *defname);
     extern const char *accented_name(dbref thing);
 
 /* From utils.c */
