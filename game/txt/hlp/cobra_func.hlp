@@ -3126,7 +3126,10 @@ for an object named "Test", preferring a thing over other types.
   function.  setr() returns the value stored. Multiple registers can be
   assigned with a single setq() or setr(), with additional pairs of
   registers and values in the function's arguments. In this case,
-  setr() returns the value stored in the first register listed.
+  setr() returns the value stored in the first register listed.  All
+  arguments are evaluated before any registers are set; if you want
+  to use the result of setting one register in setting another, use
+  multiple setq()s.
 
   There are thirty-six local registers, numbered 0 through 9 and A
   through Z.  They are cleared at the start of each new queue cycle
@@ -3144,17 +3147,24 @@ for an object named "Test", preferring a thing over other types.
   The setq() function is probably best used at the start of the string
   being manipulated, such as in the following example:
 
-    &TEST object=[strlen(%0)] &CMD object=$test
-    *:"[setq(0,u(TEST,%0))]Test. %0 has length [r(0)].  test Foo >
-    Object says, "Test. Foo has length 3."
+    &TEST object=[strlen(%0)]
+    &CMD object=$test *:"[setq(0,u(TEST,%0))]Test. %0 has length [r(0)].
+    test Foo
+    > Object says, "Test. Foo has length 3."
 
   In this case, it is a waste to use setq(), since we only use the
   function result once, but if TEST was a complex function being used
   multiple times within the same command, it would be much more efficient
   to use the local register, since TEST would then only be evaluated once.
-
   setq() can thus be used to improve the readability of MUSH code, as
   well as to cut down the amount of time needed to do complex evaluations.
+
+  Swapping the contents of registers can be done without writing to
+  temporary registers by setting both registers at once, so the code:
+
+    think setq(0,foo,1,bar)%q0%q1 - [setq(0,%q1,1,%q0)]%q0%q1
+
+  yields "foobar - barfoo".
 
   See "help SETQ3" for scoping rules of setq().
 
