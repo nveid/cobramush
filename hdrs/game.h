@@ -132,7 +132,8 @@ enum wall_type { WALL_ALL };
 extern void do_wall(dbref player, const char *message, enum wall_type target,
 		    int emit);
 extern void do_page(dbref player, const char *arg1, const char *arg2,
-		    dbref cause, int noeval, int multipage, int override);
+		    dbref cause, int noeval, int multipage, int override,
+		    int has_eq);
 extern void do_page_port(dbref player, const char *arg1, const char *arg2);
 extern void do_think(dbref player, const char *message);
 #define PEMIT_SILENT 0x1

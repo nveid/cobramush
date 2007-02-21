@@ -615,10 +615,11 @@ do_wall(dbref player, const char *message, enum wall_type target, int emit)
  * \param noeval if 1, page/noeval.
  * \param multipage if 1, a page/list; if 0, a page/blind.
  * \param override if 1, page/override.
+ * \param has_eq if 1, the command had an = in it.
  */
 void
 do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
-	int noeval, int multipage, int override)
+	int noeval, int multipage, int override, int has_eq)
 {
   dbref target;
   const char *message;
@@ -644,8 +645,8 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   if (!tbuf2)
     mush_panic("Unable to allocate memory in do_page");
 
-  if (arg2 && *arg2 && *arg1) {
-    /* page to=msg. Always evaluate to, maybe evaluate msg */
+  if (*arg1 && has_eq) {
+    /* page to=[msg]. Always evaluate to, maybe evaluate msg */
     process_expression(tbuf2, &tp2, &arg1, player, cause, cause,
 		       PE_DEFAULT, PT_DEFAULT, NULL);
     *tp2 = '\0';

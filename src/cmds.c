@@ -1093,18 +1093,21 @@ COMMAND (cmd_leave) {
 
 COMMAND (cmd_page) {
   char *t;
+  int has_eq = 0;
   if ((arg_right) && (*arg_right)) {
     t = arg_right;
   } else {
     t = NULL;
   }
+  if (args_raw && *args_raw && strchr(args_raw, '='))
+    has_eq = 1;
   if (SW_ISSET(sw, SWITCH_PORT))
     do_page_port(player, arg_left, t);
   else
     do_page(player, arg_left, t, cause, SW_ISSET(sw, SWITCH_NOEVAL),
 	    !(SW_ISSET(sw, SWITCH_BLIND) ||
 	      (!(SW_ISSET(sw, SWITCH_LIST)) && (BLIND_PAGE))),
-	    SW_ISSET(sw, SWITCH_OVERRIDE));
+	    SW_ISSET(sw, SWITCH_OVERRIDE), has_eq);
 }
 
 COMMAND (cmd_pose) {
