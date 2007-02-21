@@ -2466,6 +2466,29 @@ for an object named "Test", preferring a thing over other types.
   non-hidden players. It's exactly the same as lwho() used by a
   mortal, and is suitable for use on privileged global objects who
   need an unprivileged who-list.
+& ALIAS()
+  alias(<player>[,<new alias>])
+
+  Alias returns the alias of <player>. If multiple aliases are set,
+  alias returns the first component of the alias.
+  
+  If function side effects are allowed, this function, given two arguments,
+  acts just like @alias <object>=<new alias>.
+
+  Related functions: FULLALIAS()
+
+& FULLALIAS()
+  fullalias(<player>)
+
+  fullalias() returns the alias of <player>. It is identical to
+  alias() except when multiple aliases are set, fullalias() returns the
+  complete alias list.
+
+  >"[fullalias(Noltar)]
+  You say, "$;No;Nol;Noli;Nolt"
+
+  Related functions: ALIAS()
+
 & NAME()
   name(<object>[,<new name>])
   name(<player>[,<new name> <password>])
