@@ -2222,8 +2222,9 @@ do_flag_add(dbref player, const char *name, char *args_right[])
 void
 do_flag_alias(dbref player, const char *name, const char *alias)
 {
-  FLAG *f;
+  FLAG *f, *af;
   FLAGSPACE *n;
+  int delete = 0;
   if (!Director(player)) {
     notify(player, T("You don't look like God."));
     return;
@@ -2232,7 +2233,11 @@ do_flag_alias(dbref player, const char *name, const char *alias)
     notify(player, T("You must provide a name for the alias."));
     return;
   }
-  if (strlen(alias) == 1) {
+  if (*alias == '!') {
+    delete = 1;
+    alias++;
+  }
+  if (strlen(alias) <= 1) {
     notify(player, T("Flag aliases must be longer than one character."));
     return;
   }
@@ -2241,10 +2246,10 @@ do_flag_alias(dbref player, const char *name, const char *alias)
     return;
   }
   n = hashfind("FLAG", &htab_flagspaces);
-  f = match_flag_ns(n, alias);
-  if (f) {
+  af = match_flag_ns(n, alias);
+  if (!delete && af) {
     notify_format(player, T("That alias already matches the %s flag."),
-		  f->name);
+		  af->name);
     return;
   }
   f = match_flag_ns(n, name);
@@ -2256,14 +2261,32 @@ do_flag_alias(dbref player, const char *name, const char *alias)
     notify(player, T("That flag is disabled."));
     return;
   }
-  /* Insert the flag in the ptab by the given alias */
-  ptab_start_inserts(n->tab);
-  ptab_insert(n->tab, alias, f);
-  ptab_end_inserts(n->tab);
-  if ((f = match_flag_ns(n, alias)))
-    do_flag_info("FLAG", player, alias);
-  else
-    notify(player, T("Unknown failure adding alias."));
+  if (delete && !af) {
+    notify_format(player, T("That isn't an alias of the %s flag."),
+		  f->name);
+    return;
+  }
+  if (delete) {
+    /* Delete the alias in the ptab if it's really an alias! */
+    if (!strcasecmp(n->flags[f->bitpos]->name, alias)) {
+      notify(player, T("That's the flag's name, not an alias."));
+      return;
+    }
+    ptab_delete(n->tab, alias);
+    if ((af = match_flag_ns(n, alias)))
+	notify(player, T("Unknown failure deleting alias."));
+    else
+      do_flag_info("FLAG", player, f->name);
+  } else {
+    /* Insert the flag in the ptab by the given alias */
+    ptab_start_inserts(n->tab);
+    ptab_insert(n->tab, alias, f);
+    ptab_end_inserts(n->tab);
+    if ((f = match_flag_ns(n, alias)))
+      do_flag_info("FLAG", player, alias);
+    else
+      notify(player, T("Unknown failure adding alias."));
+  }
 }
 
 /** Change a flag's alias. 

@@ -1432,7 +1432,7 @@ See also: PUPPET, DBREF
   All other switches to this command are restricted to God:
     /disable disables a flag, making it invisible and unusable
     /enable re-enables a disabled flag
-    /alias adds a new alias for an existing flag
+    /alias adds a new alias for an existing flag; use !<alias> to delete one.
     /letter changes or removes a single-letter alias for an existing flag.
     /restrict changes flag permissions (see help @flag2)
     /type changes flag type(s) (see help @flag2)
