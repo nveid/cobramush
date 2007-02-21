@@ -472,7 +472,10 @@ COMMAND (cmd_hook) {
     flags = HOOK_IGNORE;
   else if (SW_ISSET(sw, SWITCH_OVERRIDE))
     flags = HOOK_OVERRIDE;
-  else {
+  else if (SW_ISSET(sw, SWITCH_LIST)) {
+    do_hook_list(player, arg_left);
+    return;
+  } else {
     notify(player, T("You must give a switch for @hook"));
     return;
   }

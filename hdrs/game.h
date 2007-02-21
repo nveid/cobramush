@@ -47,6 +47,7 @@ extern int do_signal_qid(dbref signalby, int qid, enum qid_flags qid_flags, int 
 enum hook_type { HOOK_BEFORE, HOOK_AFTER, HOOK_IGNORE, HOOK_OVERRIDE };
 extern void do_hook(dbref player, char *command, char *obj, char *attrname,
 		    enum hook_type flag);
+extern void do_hook_list(dbref player, char *command);
 
 
 /* From compress.c */

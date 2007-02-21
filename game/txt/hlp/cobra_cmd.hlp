@@ -1656,6 +1656,7 @@ See also: HAVEN, page, @lock, @away
 See also: enter, @enter, ENTER_OK, @describe, look, @idescformat
 & @hook
   @hook/<switch> <command>[=<object>, <attribute>]
+  @hook/list <command>
 
   @hook tells the command parser to evaluate given attributes at certain points
   in command evaluation. The possible points, indicated by the proper switch:
@@ -1681,7 +1682,7 @@ See also: enter, @enter, ENTER_OK, @describe, look, @idescformat
   the hooks.
 
   Leaving out the object and attribute clears an existing hook. Directors can
-  see existing hooks with @command.
+  see existing hooks with @command or @hook/list.
 
   See HELP @HOOK2 for an example.
 & @hook2

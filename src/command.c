@@ -158,7 +158,8 @@ COMLIST commands[] = {
    CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_RS_NOPARSE | CMD_T_NOGAGGED, NULL},
   {"@HALT", "ALL", cmd_halt, CMD_T_ANY | CMD_T_EQSPLIT, NULL},
   {"@HIDE", "NO OFF YES ON", cmd_hide, CMD_T_ANY, NULL},
-  {"@HOOK", "AFTER BEFORE IGNORE OVERRIDE", cmd_hook, CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_RS_ARGS,
+  {"@HOOK", "LIST AFTER BEFORE IGNORE OVERRIDE", cmd_hook,
+   CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_RS_ARGS,
    "POWER^SITE"},
   {"@KICK", NULL, cmd_kick, CMD_T_ANY, "POWER^SITE"},
 
@@ -1647,23 +1648,7 @@ COMMAND (cmd_command) {
       *bp = '\0';
       notify_format(player, "Arguments    : %s", buff);
     }
-    if (Site(player)) {
-      if (GoodObject(command->hooks.before.obj))
-	notify_format(player, "@hook/before: #%d/%s",
-		      command->hooks.before.obj,
-		      command->hooks.before.attrname);
-      if (GoodObject(command->hooks.after.obj))
-	notify_format(player, "@hook/after: #%d/%s", command->hooks.after.obj,
-		      command->hooks.after.attrname);
-      if (GoodObject(command->hooks.ignore.obj))
-	notify_format(player, "@hook/ignore: #%d/%s",
-		      command->hooks.ignore.obj,
-		      command->hooks.ignore.attrname);
-      if (GoodObject(command->hooks.override.obj))
-	notify_format(player, "@hook/override: #%d/%s",
-		      command->hooks.override.obj,
-		      command->hooks.override.attrname);
-    }
+    do_hook_list(player, arg_left);
   }
 }
 
@@ -1924,5 +1909,40 @@ do_hook(dbref player, char *command, char *obj, char *attrname,
       mush_free(h->attrname, "hook.attr");
     h->attrname = mush_strdup(strupper(attrname), "hook.attr");
     notify_format(player, T("Hook set for %s"), cmd->name);
+  }
+}
+
+
+/** List command hooks.
+ * \verbatim
+ * This is the top-level function for @hook/list, @list/hooks, and
+ * the hook-listing part of @command.
+ * \endverbatim
+ * \param player the enactor.
+ * \param command command to list hooks on.
+ */
+void
+do_hook_list(dbref player, char *command)
+{
+  COMMAND_INFO *cmd;
+
+  cmd = command_find(command);
+  if (!cmd) {
+    notify(player, T("No such command."));
+    return;
+  }
+  if (Site(player)) {
+    if (GoodObject(cmd->hooks.before.obj))
+      notify_format(player, "@hook/before: #%d/%s",
+		    cmd->hooks.before.obj, cmd->hooks.before.attrname);
+    if (GoodObject(cmd->hooks.after.obj))
+      notify_format(player, "@hook/after: #%d/%s", cmd->hooks.after.obj,
+		    cmd->hooks.after.attrname);
+    if (GoodObject(cmd->hooks.ignore.obj))
+      notify_format(player, "@hook/ignore: #%d/%s",
+		    cmd->hooks.ignore.obj, cmd->hooks.ignore.attrname);
+    if (GoodObject(cmd->hooks.override.obj))
+      notify_format(player, "@hook/override: #%d/%s",
+		    cmd->hooks.override.obj, cmd->hooks.override.attrname);
   }
 }
