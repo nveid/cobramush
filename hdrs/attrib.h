@@ -72,6 +72,8 @@ extern int do_set_atr(dbref thing, char const *RESTRICT atr,
 extern void do_atrlock(dbref player, char const *arg1, char const *arg2, char write_lock);
 extern void do_atrchown(dbref player, char const *arg1, char const *arg2);
 extern int string_to_atrflag(dbref player, const char *p);
+extern int string_to_atrflagsets(dbref player, const char *p, int *setbits,
+				 int *clrbits);
 extern const char *atrflag_to_string(int mask);
 extern void init_atr_name_tree(void);
 

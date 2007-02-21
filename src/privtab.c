@@ -68,6 +68,58 @@ string_to_privs(PRIV *table, const char *str, long int origprivs)
   return ((origprivs | yes) & ~no);
 }
 
+/** Convert a string to 2 sets of privilege bits, privs to set and
+ * privs to clear.
+ * \param table pointer to a privtab.
+ * \param str a space-separated string of privilege names to apply.
+ * \param setprivs pointer to address to store privileges to set.
+ * \param clrprivs pointer to address to store privileges to clear.
+ * \retval 1 string successfully parsed for bits with no errors.
+ * \retval 0 string contained no privs
+ * \retval -1 string at least one name matched no privs.
+ */
+int
+string_to_privsets(PRIV *table, const char *str, int *setprivs, int *clrprivs)
+{
+  PRIV *c;
+  char *p, *r;
+  char tbuf1[BUFFER_LEN];
+  int not;
+  int words = 0;
+  int err = 0;
+  int found = 0;
+
+  *setprivs = *clrprivs = 0;
+  if (!str || !*str)
+    return 0;
+  strcpy(tbuf1, str);
+  r = trim_space_sep(tbuf1, ' ');
+  while ((p = split_token(&r, ' '))) {
+    words++;
+    not = 0;
+    if (*p == '!') {
+      not = 1;
+      if (!*++p) {
+      err = 1;
+      continue;
+      }
+    }
+    for (c = table; c->name; c++) {
+      if (string_prefix(c->name, p)) {
+      found++;
+      if (not)
+        *clrprivs |= c->bits_to_set;
+      else
+        *setprivs |= c->bits_to_set;
+      break;
+      }
+    }
+  }
+  if (err || (words != found))
+    return -1;
+  return 1;
+}
+
 /** Convert a letter string to a set of privilege bits, masked by an original set.
  * Given a privs table, a letter string, and an original set of privileges,
  * return a modified set of privileges by applying the privs in the

@@ -28,6 +28,8 @@ struct priv_info {
 #define PrivShowBits(x) ((x)->bits_to_show)
 
 extern int string_to_privs(PRIV *table, const char *str, long int origprivs);
+extern int string_to_privsets(PRIV *table, const char *str, int *setprivs,
+			      int *clrprivs);
 extern int letter_to_privs(PRIV *table, const char *str, long int origprivs);
 extern const char *privs_to_string(PRIV *table, int privs);
 extern const char *privs_to_letters(PRIV *table, int privs);

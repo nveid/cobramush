@@ -450,9 +450,10 @@ do_chzone(dbref player, char const *name, char const *newobj, int noisy)
 
 /** Structure for af_helper() data. */
 struct af_args {
-  int f;		/**< flag bits */
-  int clear;		/**< True to remove the flag */
-  char *flag;		/**< flag name */
+  int setf;		/**< flag bits to set */
+  int clrf;		/**< flag bits to clear */
+  char *setflags;	/**< list of names of flags to set */
+  char *clrflags;	/**< list of names of flags to clear */
 };
 
 static int
@@ -467,23 +468,25 @@ af_helper(dbref player, dbref thing, dbref parent __attribute__ ((__unused__)),
    * There is one special case - the resetting of the SAFE flag.
    */
   if (!(Can_Write_Attr(player, thing, AL_ATTR(atr)) ||
-	(af->clear && (af->f & AF_SAFE) &&
+	((af->clrf & AF_SAFE) &&
 	 Can_Write_Attr_Ignore_Safe(player, thing, AL_ATTR(atr))))) {
     notify_format(player, T("You cannot change that flag on %s/%s"),
 		  Name(thing), AL_NAME(atr));
     return 0;
   }
 
-  if (af->clear) {
-    AL_FLAGS(atr) &= ~af->f;
+  /* Clear flags first, then set flags */
+  if (af->clrf) {
+    AL_FLAGS(atr) &= ~af->clrf;
     if (!AreQuiet(player, thing))
       notify_format(player, T("%s/%s - %s reset."), Name(thing), AL_NAME(atr),
-		    af->flag);
-  } else {
-    AL_FLAGS(atr) |= af->f;
+		    af->clrflags);
+  }
+  if (af->setf) {
+    AL_FLAGS(atr) |= af->setf;
     if (!AreQuiet(player, thing))
       notify_format(player, T("%s/%s - %s set."), Name(thing), AL_NAME(atr),
-		    af->flag);
+		    af->setflags);
   }
 
   return 1;
@@ -525,21 +528,22 @@ do_attrib_flags(dbref player, const char *obj, const char *atrname,
     return;
   }
 
-  af.clear = 0;
+  p = flag;
+  /* Skip leading spaces */
+  while (*p && isspace((unsigned char) *p))
+    p++;
 
-  /* move past NOT token if there is one */
-  for (p = flag; *p && ((*p == NOT_TOKEN) || isspace((unsigned char) *p)); p++)
-    if (*p == NOT_TOKEN)
-      af.clear = !af.clear;
-
-  if ((af.f = string_to_atrflag(player, p)) < 0) {
+  af.setf = af.clrf = 0;
+  if (string_to_atrflagsets(player, p, &af.setf, &af.clrf) < 0) {
     notify(player, T("Unrecognized attribute flag."));
     return;
   }
-  af.flag = mush_strdup(atrflag_to_string(af.f), "af_flag list");
+  af.clrflags = mush_strdup(atrflag_to_string(af.clrf), "al_flag list");
+  af.setflags = mush_strdup(atrflag_to_string(af.setf), "al_flag list");
   if (!atr_iter_get(player, thing, atrname, 0, af_helper, &af))
     notify(player, T("No attribute found to change."));
-  mush_free((Malloc_t) af.flag, "af_flag list");
+  mush_free((Malloc_t) af.clrflags, "af_flag list");
+  mush_free((Malloc_t) af.setflags, "af_flag list");
 }
 
 

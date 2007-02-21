@@ -295,6 +295,31 @@ string_to_atrflag(dbref player, char const *p)
   return f;
 }
 
+/** Convert a string of attribute flags to a pair of bitmasks.
+ * Given a space-separated string of attribute flags, look them up
+ * and return bitmasks of those to set or clear
+ * if player is permitted to use all of those flags.
+ * \param player the dbref to use for privilege checks.
+ * \param p a space-separated string of attribute flags.
+ * \param setbits pointer to address of bitmask to set.
+ * \param clrbits pointer to address of bitmask to clear.
+ * \return setbits or -1 on error.
+ */
+int
+string_to_atrflagsets(dbref player, char const *p, int *setbits, int *clrbits)
+{
+  int f;
+  *setbits = *clrbits = 0;
+  f = string_to_privsets(attr_privs, p, setbits, clrbits);
+  if (f <= 0)
+    return -1;
+  if (!Prived(player) && ((*setbits & AF_MDARK) || (*clrbits & AF_MDARK)))
+    return -1;
+  if (!See_All(player) && ((*setbits & AF_PRIVILEGE) || (*clrbits & AF_PRIVILEGE)))
+    return -1;
+  return *setbits;
+}
+
 /** Convert an attribute flag bitmask into a list of the full
  * names of the flags.
  * \param mask the bitmask of attribute flags to display.
