@@ -113,6 +113,7 @@ do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
   char *tbuf;
   char const *tp;
   int pe_flags = PE_DEFAULT;
+  int old_args;
 
   /* save our stack */
   for (j = 0; j < 10; j++)
@@ -125,6 +126,10 @@ do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
     global_eval_context.wenv[j] = args[j];
   for (; j < 10; j++)
     global_eval_context.wenv[j] = NULL;
+  if (pe_info) {
+    old_args = pe_info->arg_count;
+    pe_info->arg_count = nargs;
+  }
 
   tp = tbuf = safe_atr_value(attrib);
   if (attrib->flags & AF_DEBUG)
@@ -136,6 +141,8 @@ do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
   /* restore the stack */
   for (j = 0; j < 10; j++)
     global_eval_context.wenv[j] = tptr[j];
+  if (pe_info)
+    pe_info->arg_count = old_args;
 }
 
 /* ARGSUSED */

@@ -87,6 +87,7 @@ struct pe_info {
   int nest_depth;		/**< Depth of function nesting, for DEBUG */
   int call_depth;		/**< Function call counter */
   Debug_Info *debug_strings;	/**< DEBUG infromation */
+  int arg_count;		/**< Number of arguments passed to function */
 };
 
 /* new attribute foo */

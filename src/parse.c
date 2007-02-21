@@ -504,6 +504,7 @@ process_expression(char *buff, char **bp, char const **str,
     pe_info->nest_depth = 0;
     pe_info->call_depth = 0;
     pe_info->debug_strings = NULL;
+    pe_info->arg_count = 0;
   } else {
     old_iter_limit = -1;
   }
@@ -749,6 +750,12 @@ process_expression(char *buff, char **bp, char const **str,
 	  break;
 	case '~':		/* enactor accented name */
 	  safe_str(accented_name(enactor), buff, bp);
+	  break;
+	case '+':		/* argument count */
+	  if (pe_info)
+	    safe_integer(pe_info->arg_count, buff, bp);
+	  else
+	    safe_integer(0, buff, bp);
 	  break;
 	case '0':
 	case '1':
@@ -1230,10 +1237,14 @@ process_expression(char *buff, char **bp, char const **str,
 	    global_fun_recursions++;
 	    pe_info->fun_depth++;
 	    if (fp->flags & FN_BUILTIN) {
+	      int old_nfargs;
 	      global_fun_invocations++;
 	      pe_info->fun_invocations++;
+	      old_nfargs = pe_info->arg_count;
+	      pe_info->arg_count = nfargs;
 	      fp->where.fun(fp, buff, bp, nfargs, fargs, arglens, executor,
 			    caller, enactor, fp->name, pe_info);
+	      pe_info->arg_count = old_nfargs;
 	      if (fp->flags & FN_LOGARGS) {
 		char logstr[BUFFER_LEN];
 		char *logp;
