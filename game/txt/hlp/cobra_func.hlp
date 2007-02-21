@@ -3273,6 +3273,27 @@ for an object named "Test", preferring a thing over other types.
   function sizes should be kept reasonable.
 
   See also: anonymous attributes
+& SORTKEY()
+  sortkey([<obj>/]<attrib>,<list>[,<sort type>[,<delimiter>[,<osep>]]])
+
+  This function creates a list of keys by passing every element of <list>
+  into the u-function given in <attrib>. The list is then sorted according
+  to the sorting method in <sort type>, or is automatically guessed.
+  (As per 'help sorting')
+
+  This is equivalent to:
+    > &munge_sort me=sort(%0,<sort type>)
+    > munge(munge_sort,map(<attrib>,<list>),<list>)
+
+    Only there is no risk with delimiters ocurring within the list.
+
+  A simple example, which sorts players by their names:
+    > @@ #1 is "God", #2 is "Amby", "#3" is "Bob"
+    > &KEY_NAME me=name(%0)
+    > say sortkey(key_name,#1 #2 #3)
+    You say, "#2 #3 #1"
+
+  See also: anonymous attributes
 & SOUNDEX()
   soundex(<word>)
 

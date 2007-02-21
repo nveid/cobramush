@@ -682,7 +682,8 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
     void local_flags(void);
 
 /* funlist.c */
-    void do_gensort(dbref player, char *s[], int n, char *sort_type);
+    void do_gensort(dbref player, char *keys[], char *strs[], int n,
+		    char *sort_type);
 
 /* sig.c */
     /** Type definition for signal handlers */

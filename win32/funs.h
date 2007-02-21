@@ -299,6 +299,7 @@ FUNCTION_PROTO(fun_signal);
 FUNCTION_PROTO(fun_sin);
 FUNCTION_PROTO(fun_sort);
 FUNCTION_PROTO(fun_sortby);
+FUNCTION_PROTO(fun_sortkey);
 FUNCTION_PROTO(fun_soundex);
 FUNCTION_PROTO(fun_soundlike);
 FUNCTION_PROTO(fun_space);

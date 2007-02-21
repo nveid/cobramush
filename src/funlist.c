@@ -760,6 +760,7 @@ typedef void (*makerecord) (s_rec *, dbref player, char *sortflags);
  * its 'key' to sort by. Sort of a hardcode munge.
  */
 struct sort_record {
+  char *ptr;	 /**< NULL except for sortkey */
   char *val;	 /**< The string this is */
   dbref db;	 /**< dbref (default 0, bad is -1) */
   char *str;	 /**< string comparisons */
@@ -1111,7 +1112,7 @@ gencomp(dbref player, char *a, char *b, char *sort_type)
  */
 
 void
-do_gensort(dbref player, char *s[], int n, char *sort_type)
+do_gensort(dbref player, char *keys[], char *strs[], int n, char *sort_type)
 {
   char *ptr;
   static char stype[BUFFER_LEN];
@@ -1137,12 +1138,17 @@ do_gensort(dbref player, char *s[], int n, char *sort_type)
   }
   sp = (s_rec *) mush_malloc(n * sizeof(s_rec), "do_gensort");
   for (i = 0; i < n; i++) {
-    sp[i].val = s[i];
+    sp[i].val = keys[i];
     sp[i].freestr = 0;
     sp[i].db = 0;
+    if (strs) {
+      sp[i].ptr = strs[i];
+    } else {
+      sp[i].ptr = NULL;
+    }
     sp[i].str = NULL;
     if (ltypelist[sorti].isdbs) {
-      sp[i].db = parse_objid(s[i]);
+      sp[i].db = parse_objid(keys[i]);
       if (!RealGoodObject(sp[i].db))
 	sp[i].db = NOTHING;
     }
@@ -1151,7 +1157,10 @@ do_gensort(dbref player, char *s[], int n, char *sort_type)
   qsort((void *) sp, n, sizeof(s_rec), ltypelist[sorti].sorter);
 
   for (i = 0; i < n; i++) {
-    s[i] = sp[i].val;
+    keys[i] = sp[i].val;
+    if (strs) {
+      strs[i] = sp[i].ptr;
+    }
     if (sp[i].freestr)
       mush_free(sp[i].str, "genrecord");
   }
@@ -1181,7 +1190,7 @@ FUNCTION(fun_sort)
 
   nptrs = list2arr(ptrs, MAX_SORTSIZE, args[0], sep);
   sort_type = get_list_type(args, nargs, 2, ptrs, nptrs);
-  do_gensort(executor, ptrs, nptrs, sort_type);
+  do_gensort(executor, ptrs, NULL, nptrs, sort_type);
   arr2list(ptrs, nptrs, buff, bp, outsep);
 }
 
@@ -1249,6 +1258,73 @@ loop:
   }
 }
 
+/* ARGSUSED */
+FUNCTION(fun_sortkey)
+{
+  char *ptrs[MAX_SORTSIZE];
+  char *keys[MAX_SORTSIZE];
+  int nptrs;
+  char *sort_type;
+  char sep;
+  char outsep[BUFFER_LEN];
+  int i;
+  char tbuff[BUFFER_LEN];
+  char *tp;
+  char const *cp;
+  char result[BUFFER_LEN];
+  char *rp;
+  ATTR *attrib;
+  dbref thing;
+
+  /* sortkey(attr,list,sort_type,delim,osep) */
+
+  if (!nargs || !*args[0] || !*args[1])
+    return;
+
+  if (!delim_check(buff, bp, nargs, args, 4, &sep))
+    return;
+
+  if (nargs < 5) {
+    outsep[0] = sep;
+    outsep[1] = '\0';
+  } else
+    strcpy(outsep, args[4]);
+
+  /* Find object and attribute to get sortby function from. */
+  parse_anon_attrib(executor, args[0], &thing, &attrib);
+  if (!GoodObject(thing) || !attrib || !Can_Read_Attr(executor, thing, attrib)) { 
+    free_anon_attrib(attrib);
+    return;
+  }
+  if (!CanEvalAttr(executor, thing, attrib)) {
+    free_anon_attrib(attrib);
+    return;
+  }
+  tp = tbuff;
+  safe_str(atr_value(attrib), tbuff, &tp);
+  *tp = '\0';
+
+  nptrs = list2arr(ptrs, MAX_SORTSIZE, args[1], sep);
+
+  /* Now we make a list of keys */
+  for (i = 0; i < nptrs; i++) {
+    global_eval_context.wenv[0] = (char *) ptrs[i];
+    rp = result;
+    cp = tbuff;
+    process_expression(result, &rp, &cp,
+		       thing, executor, enactor,
+		       PE_DEFAULT, PT_DEFAULT, pe_info);
+    *rp = '\0';
+    keys[i] = mush_strdup(result, "sortkey");
+  }
+
+  sort_type = get_list_type(args, nargs, 3, keys, nptrs);
+  do_gensort(executor, keys, ptrs, nptrs, sort_type);
+  arr2list(ptrs, nptrs, buff, bp, outsep);
+  for (i = 0; i < nptrs; i++) {
+    mush_free(keys[i], "sortkey");
+  }
+}
 
 /* ARGSUSED */
 FUNCTION(fun_sortby)
@@ -1354,8 +1430,8 @@ FUNCTION(fun_setinter)
     osepl = arglens[4];
   }
   /* sort each array */
-  do_gensort(executor, a1, n1, sort_type);
-  do_gensort(executor, a2, n2, sort_type);
+  do_gensort(executor, a1, NULL, n1, sort_type);
+  do_gensort(executor, a2, NULL, n2, sort_type);
 
   /* get the first value for the intersection, removing duplicates */
   x1 = x2 = 0;
@@ -1470,8 +1546,8 @@ FUNCTION(fun_setunion)
   }
 
   /* sort each array */
-  do_gensort(executor, a1, n1, sort_type);
-  do_gensort(executor, a2, n2, sort_type);
+  do_gensort(executor, a1, NULL, n1, sort_type);
+  do_gensort(executor, a2, NULL, n2, sort_type);
 
   /* get the first value for the difference, removing duplicates */
   x1 = x2 = 0;
@@ -1582,8 +1658,8 @@ FUNCTION(fun_setdiff)
   }
 
   /* sort each array */
-  do_gensort(executor, a1, n1, sort_type);
-  do_gensort(executor, a2, n2, sort_type);
+  do_gensort(executor, a1, NULL, n1, sort_type);
+  do_gensort(executor, a2, NULL, n2, sort_type);
 
   /* get the first value for the difference, removing duplicates */
   x1 = x2 = 0;

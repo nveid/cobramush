@@ -602,6 +602,7 @@ FUNTAB flist[] = {
   {"SIGNAL", fun_signal, 2, 3, FN_REG},
   {"SORT", fun_sort, 1, 4, FN_REG},
   {"SORTBY", fun_sortby, 2, 4, FN_REG},
+  {"SORTKEY", fun_sortkey, 2, 5, FN_REG},
   {"SOUNDEX", fun_soundex, 1, 1, FN_REG},
   {"SOUNDSLIKE", fun_soundlike, 2, 2, FN_REG},
   {"SPACE", fun_space, 1, 1, FN_REG},
@@ -766,7 +767,7 @@ list_functions(void)
   }
   /* do_gensort needs a dbref now, but only for sort types that aren't
    * used here anyway */
-  do_gensort((dbref) 0, (char **) ptrs, nptrs, 0);
+  do_gensort((dbref) 0, (char **) ptrs, NULL, nptrs, 0);
   bp = buff;
   safe_str(ptrs[0], buff, &bp);
   for (i = 1; i < nptrs; i++) {
