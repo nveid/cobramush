@@ -1484,9 +1484,11 @@ See also: PUPPET, DBREF
 
 & @function
   @function [<function name>]
-  @function <name>=<obj>,<attrib>[,<min args>, <max args>[,<restrictions>]]
+  @function[/preserve] <name>=<obj>,<attrib>[,<min args>,
+     <max args>[,<restrictions>]]
     or @function <function name>=<object>/<attribute>
   @function/<switch> <function name>
+  @function/restrict <function name>=<restrictions>
   
   When used without any arguments, this command lists all global
   user-defined functions. For Directors and others with the Functions
@@ -1501,22 +1503,28 @@ See also: PUPPET, DBREF
   /disable, to disable a built in function.
   /enable, to re-enable it.
   /delete, to remove a user-defined function.
+  /restrict, to change the restriction flags on an existing function.
 
   Otherwise, this command defines a global function with the name
   <function name>, which evaluates to <attribute> on <object>.
+(continued in help @function2)
+& @function2
   <object> can be anything that the player using the @function command
   controls. <function name> must be 30 characters or less.
 
-(continued in help @function2)
-& @function2
   A function defined using @function works just like any of the normal
   MUSH functions, from the user's perspective. The functions are
   executed by the object, with its powers. 
  
   Functions defined via @function should follow the format used by
   UFUN() - %0 is the first argument passed, %1 is the second argument
-  passed, and so forth. Option third and fourth arguments to @function
+  passed, and so forth. Optional third and fourth arguments to @function
   can be used to set a parser-enforced number of arguments for the function.
+  An optional fifth argument will set restriction flags.
+
+  The /preserve switch, for MUX compatibility, does the same thing as the
+  'localize' restriction - treats the attribute that's evaluated as if it
+  were called with ulocal() instead of u().
   
   Example:
   
@@ -1551,6 +1559,9 @@ See also: PUPPET, DBREF
  you can then make a @function with the same name. 
  @function/restore will delete the @function and turn the built in
  version back on.
+
+ Using @function on an already-added function will delete the old one and
+ install a new function with none of the settings of the old one kept.
 
  For example:
   @function/delete ansi

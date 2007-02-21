@@ -430,11 +430,11 @@ COMMAND (cmd_function) {
       *args_right[2]++ = '\0';
     }
     if (args_right[1] && *args_right[1])
-      do_function(player, arg_left, args_right);
+      do_function(player, arg_left, args_right, SW_ISSET(sw, SWITCH_PRESERVE));
     else if (arg_left && *arg_left)
       do_function_report(player, arg_left);
     else
-      do_function(player, NULL, NULL);
+      do_function(player, NULL, NULL, 0);
     if (split) {
       if (args_right[2])
 	*--args_right[2] = '/';

@@ -1086,9 +1086,11 @@ do_function_restrict(dbref player, const char *name, const char *restriction)
  * \param player the enactor.
  * \param name name of function to add.
  * \param argv array of arguments.
+ * \param preserve Treat the function like it was called with ulocal() instead
+ *  of u().
  */
 void
-do_function(dbref player, char *name, char *argv[])
+do_function(dbref player, char *name, char *argv[], int preserve)
 {
   char tbuf1[BUFFER_LEN];
   char *bp = tbuf1;
@@ -1202,6 +1204,8 @@ do_function(dbref player, char *name, char *argv[])
       fp->flags = apply_restrictions(0, argv[5]);
     else
       fp->flags = 0;
+    if (preserve)
+      fp->flags |= FN_LOCALIZE;
     hashadd(name, fp, &htab_user_function);
 
     /* now add it to the user function table */
@@ -1256,10 +1260,13 @@ do_function(dbref player, char *name, char *argv[])
     } else
       fp->maxargs = 10;
 
+    /* Set new flags */
     if (argv[5] && *argv[5])
       fp->flags = apply_restrictions(0, argv[5]);
     else
       fp->flags = 0;
+    if (preserve)
+      fp->flags |= FN_LOCALIZE;
 
     notify(player, T("Function updated."));
   }

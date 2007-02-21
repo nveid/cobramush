@@ -103,7 +103,7 @@ extern void do_function_restrict(dbref player, const char *name,
 extern void do_function_restore(dbref player, const char *name);
 extern void do_list_functions(dbref player, int lc);
 extern char *list_functions(void);
-extern void do_function(dbref player, char *name, char **argv);
+extern void do_function(dbref player, char *name, char **argv, int preserve);
 extern void do_function_toggle(dbref player, char *name, int toggle);
 extern void do_function_report(dbref player, char *name);
 extern void do_function_delete(dbref player, char *name);
