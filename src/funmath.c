@@ -28,6 +28,9 @@
 #define M_PI 3.14159265358979323846264338327
 #endif
 
+#define EPSILON 0.000000001  /**< limit of precision for float equality */
+#define EQ(x,y) (fabs(x-y) < EPSILON)  /**< floating point equality macro */
+
 static void do_spellnum(char *num, unsigned int len, char **buff,
                         char ***bp);
 static int nval_sort(const void *, const void *);
@@ -199,7 +202,7 @@ FUNCTION(fun_eq)
     safe_str(T(e_nums), buff, bp);
     return;
   }
-  safe_boolean(parse_number(args[0]) == parse_number(args[1]), buff, bp);
+  safe_boolean(EQ(parse_number(args[0]), parse_number(args[1])), buff, bp);
 }
 
 /* ARGSUSED */
@@ -209,7 +212,7 @@ FUNCTION(fun_neq)
     safe_str(T(e_nums), buff, bp);
     return;
   }
-  safe_boolean(parse_number(args[0]) != parse_number(args[1]), buff, bp);
+  safe_boolean(!EQ(parse_number(args[0]), parse_number(args[1])), buff, bp);
 }
 
 /* ARGSUSED */
@@ -234,7 +237,7 @@ FUNCTION(fun_sign)
     return;
   }
   x = parse_number(args[0]);
-  if (x == 0)
+  if (EQ(x, 0))
     safe_chr('0', buff, bp);
   else if (x > 0)
     safe_chr('1', buff, bp);
@@ -762,7 +765,7 @@ FUNCTION(fun_vunit)
   }
   sum = sqrt(sum);
 
-  if (!sum) {
+  if (EQ(sum, 0)) {
     /* zero vector */
     p1 = tbuf;
     safe_chr('0', buff, bp);
@@ -830,7 +833,7 @@ FUNCTION(fun_fmod)
     return;
   }
   y = parse_number(args[1]);
-  if (y == 0) {
+  if (EQ(y, 0)) {
     safe_str(T("#-1 DIVISION BY ZERO"), buff, bp);
     return;
   }
@@ -1020,7 +1023,7 @@ FUNCTION(fun_power)
   }
   num = parse_number(args[0]);
   m = parse_number(args[1]);
-  if (num < 0 && (m != (int) m)) {
+  if (num < 0 && (!EQ(m, (int) m))) {
     safe_str(T("#-1 FRACTIONAL POWER OF NEGATIVE"), buff, bp);
     return;
   }
@@ -1213,7 +1216,7 @@ frac(double v, double *RESTRICT n, double *RESTRICT d, double error)
     } else
       first = 0;
     r = 0.0;
-    if (v * (*d) != *n) {
+    if (!EQ(v * (*d), *n)) {
       r = (N - v * D) / (v * (*d) - *n);
       if (r <= 1.0) {
         t = N;
@@ -1234,7 +1237,7 @@ frac(double v, double *RESTRICT n, double *RESTRICT d, double error)
     epsilon = 1.0 / m * floor(0.5 + m * epsilon);
     if (epsilon <= error)
       return epsilon;
-  } while (r != 0.0);
+  } while (!EQ(r, 0.0));
   return epsilon;
 }
 
@@ -1254,7 +1257,7 @@ FUNCTION(fun_fraction)
   if (n < 0) {
     n = fabs(n);
     sign = 1;
-  } else if (n == 0) {
+  } else if (EQ(n, 0)) {
     safe_chr('0', buff, bp);
     return;
   }
@@ -1873,7 +1876,7 @@ MATH_FUNC(math_div)
     }
     temp = parse_integer(ptr[n]);
 
-    if (temp == 0) {
+    if (EQ(temp, 0)) {
       safe_str(T("#-1 DIVISION BY ZERO"), buff, bp);
       return;
     }

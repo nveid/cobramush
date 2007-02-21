@@ -574,5 +574,5 @@ hash_stats(dbref player, HASHTAB *htab, const char *hname)
 		"%-10s %7d %7d %6d %4d %4d %4d %4d %4d %6.3f %7u", hname,
 		htab->hashsize, htab->entries, longest, lengths[0], lengths[1],
 		lengths[2], lengths[3], lengths[4],
-		totchains == 0.0 ? 0.0 : chainlens / totchains, bytes);
+		totchains > 0 ? chainlens / totchains : 0.0, bytes);
 }
