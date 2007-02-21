@@ -1992,6 +1992,8 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
     mush_panic(T("Couldn't allocate memory in search!"));
   
   for (n = spec.low; n <= spec.high; n++) {
+    if (IsGarbage(n))
+      continue;
     if (spec.owner == ANY_OWNER && !CanSearch(player, Owner(n)))
       continue;
     if (spec.owner != ANY_OWNER && Owner(n) != spec.owner)
