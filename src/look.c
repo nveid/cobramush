@@ -47,7 +47,7 @@ void decompile_atrs(dbref player, dbref thing, const char *name,
 		    const char *pattern, const char *prefix, int skipdef);
 void decompile_locks(dbref player, dbref thing, const char *name, int skipdef);
 
-extern PRIV attr_privs[];
+extern PRIV attr_privs_view[];
 
 static void
 look_exits(dbref player, dbref loc, const char *exit_name)
@@ -336,7 +336,7 @@ look_helper_veiled(dbref player, dbref thing __attribute__ ((__unused__)),
   if (EX_PUBLIC_ATTRIBS &&
       !strcmp(AL_NAME(atr), "DESCRIBE") && !strcmp(pattern, "*"))
     return 0;
-  strcpy(fbuf, privs_to_letters(attr_privs, AL_FLAGS(atr)));
+  strcpy(fbuf, privs_to_letters(attr_privs_view, AL_FLAGS(atr)));
   if (atr_sub_branch(atr))
     strcat(fbuf, "`");
   if (AF_Veiled(atr)) {
@@ -380,7 +380,7 @@ look_helper(dbref player, dbref thing __attribute__ ((__unused__)),
   if (EX_PUBLIC_ATTRIBS &&
       !strcmp(AL_NAME(atr), "DESCRIBE") && !strcmp(pattern, "*"))
     return 0;
-  strcpy(fbuf, privs_to_letters(attr_privs, AL_FLAGS(atr)));
+  strcpy(fbuf, privs_to_letters(attr_privs_view, AL_FLAGS(atr)));
   if (atr_sub_branch(atr))
     strcat(fbuf, "`");
   r = safe_atr_value(atr);
@@ -1446,9 +1446,9 @@ decompile_helper(dbref player, dbref thing __attribute__ ((__unused__)),
       /* Are we different? If so, do as usual */
       int npmflags = AL_FLAGS(ptr) & (~AF_PREFIXMATCH);
       if (AL_FLAGS(atr) != AL_FLAGS(ptr) && AL_FLAGS(atr) != npmflags)
-	privs = privs_to_string(attr_privs, AL_FLAGS(atr));
+	privs = privs_to_string(attr_privs_view, AL_FLAGS(atr));
     } else {
-      privs = privs_to_string(attr_privs, AL_FLAGS(atr));
+      privs = privs_to_string(attr_privs_view, AL_FLAGS(atr));
     }
     if (privs && *privs)
       notify_format(player, "@set %s/%s=%s", dh->name, AL_NAME(atr), privs);

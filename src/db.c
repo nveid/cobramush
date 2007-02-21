@@ -1285,7 +1285,7 @@ get_list(FILE * f, dbref i)
     }
 }
 
-extern PRIV attr_privs[];
+extern PRIV attr_privs_view[];
 
 void
 db_read_attrs(FILE * f, dbref i, int count)
@@ -1306,7 +1306,7 @@ db_read_attrs(FILE * f, dbref i, int count)
      strcpy(name, tmp);
      db_read_this_labeled_dbref(f, "owner", &owner);
      db_read_this_labeled_string(f, "flags", &tmp);
-     flags = string_to_privs(attr_privs, tmp, 0);
+     flags = string_to_privs(attr_privs_view, tmp, 0);
      db_read_this_labeled_number(f, "derefs", &derefs);
 
      if(HAS_COBRADBFLAG(indb_flags,DBF_NEW_ATR_LOCK)) {

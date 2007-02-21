@@ -32,7 +32,7 @@
 #pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
 #endif
 
-extern PRIV attr_privs[];
+extern PRIV attr_privs_view[];
 static lock_type get_locktype(char *str);
 extern struct db_stat_info *get_stats(dbref owner);
 static int lattr_helper(dbref player, dbref thing, dbref parent, char const *pattern,
@@ -432,7 +432,7 @@ FUNCTION(fun_flags)
       safe_str("#-1", buff, bp);
       return;
     }
-    safe_str(privs_to_letters(attr_privs, AL_FLAGS(a)), buff, bp);
+    safe_str(privs_to_letters(attr_privs_view, AL_FLAGS(a)), buff, bp);
     if (atr_sub_branch(a))
       safe_chr('`', buff, bp);
   } else {
@@ -465,7 +465,7 @@ FUNCTION(fun_lflags)
       safe_str("#-1", buff, bp);
       return;
     }
-    safe_str(privs_to_string(attr_privs, AL_FLAGS(a)), buff, bp);
+    safe_str(privs_to_string(attr_privs_view, AL_FLAGS(a)), buff, bp);
   } else {
     /* Object flags, visible to all */
     safe_str(bits_to_string("FLAG", Flags(thing), executor, thing), buff, bp);

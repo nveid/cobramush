@@ -39,7 +39,8 @@ ATTR *catchall;
  */
 StrTree atr_names;
 /** Table of attribute flags. */
-extern PRIV attr_privs[];
+extern PRIV attr_privs_set[];
+extern PRIV attr_privs_view[];
 dbref atr_on_obj = NOTHING;
 
 /** A flag to show if we're in the middle of a @wipe (this changes
@@ -285,7 +286,7 @@ int
 string_to_atrflag(dbref player, char const *p)
 {
   int f;
-  f = string_to_privs(attr_privs, p, 0);
+  f = string_to_privs(attr_privs_set, p, 0);
   if (!f)
     return -1;
   if (!Admin(player) && (f & AF_MDARK))
@@ -311,7 +312,7 @@ string_to_atrflagsets(dbref player, char const *p, int *setbits, int *clrbits)
 {
   int f;
   *setbits = *clrbits = 0;
-  f = string_to_privsets(attr_privs, p, setbits, clrbits);
+  f = string_to_privsets(attr_privs_set, p, setbits, clrbits);
   if (f <= 0)
     return -1;
   if (!Prived(player) && ((*setbits & AF_MDARK) || (*clrbits & AF_MDARK)))
@@ -330,7 +331,7 @@ string_to_atrflagsets(dbref player, char const *p, int *setbits, int *clrbits)
 const char *
 atrflag_to_string(int mask)
 {
-  return privs_to_string(attr_privs, mask);
+  return privs_to_string(attr_privs_view, mask);
 }
 
 /** Utility define for atr_add and can_create_attr */

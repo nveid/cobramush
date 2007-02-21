@@ -38,8 +38,32 @@ typedef struct atr_alias {
 /** Prefix table for standard attribute names */
 PTAB ptab_attrib;
 
-/** Attribute flags */
-PRIV attr_privs[] = {
+/** Attribute flags for setting */
+PRIV attr_privs_set[] = {
+  {"no_command", '$', AF_NOPROG, AF_NOPROG},
+  {"no_inherit", 'i', AF_PRIVATE, AF_PRIVATE},
+  {"private", 'i', AF_PRIVATE, AF_PRIVATE},
+  {"no_clone", 'c', AF_NOCOPY, AF_NOCOPY},
+  {"privilege", 'w', AF_PRIVILEGE, AF_PRIVILEGE},
+  {"visual", 'v', AF_VISUAL, AF_VISUAL},
+  {"mortal_dark", 'm', AF_MDARK, AF_MDARK},
+  {"hidden", 'm', AF_MDARK, AF_MDARK},
+  {"regexp", 'R', AF_REGEXP, AF_REGEXP},
+  {"case", 'C', AF_CASE, AF_CASE},
+  {"locked", '+', AF_LOCKED, AF_LOCKED},
+  {"safe", 'S', AF_SAFE, AF_SAFE},
+  {"prefixmatch", '\0', AF_PREFIXMATCH, AF_PREFIXMATCH},
+  {"veiled", 'V', AF_VEILED, AF_VEILED},
+  {"debug", 'b', AF_DEBUG, AF_DEBUG},
+  {"public", 'p', AF_PUBLIC, AF_PUBLIC},
+  {"nearby", 'n', AF_NEARBY, AF_NEARBY},
+  {"amhear", 'M', AF_MHEAR, AF_MHEAR},
+  {"aahear", 'A', AF_AHEAR, AF_AHEAR},
+  {NULL, '\0', 0, 0}
+};
+
+/** Attribute flags for viewing */
+PRIV attr_privs_view[] = {
   {"no_command", '$', AF_NOPROG, AF_NOPROG},
   {"no_inherit", 'i', AF_PRIVATE, AF_PRIVATE},
   {"pow_inherit", 't', AF_POWINHERIT, AF_POWINHERIT},
@@ -266,7 +290,7 @@ do_attribute_access(dbref player, char *name, char *perms, int retroactive)
     return;
   }
   if (strcasecmp(perms, "none")) {
-    flags = string_to_privs(attr_privs, perms, 0);
+    flags = string_to_privs(attr_privs_set, perms, 0);
     if (!flags) {
       notify(player, T("I don't understand those permissions."));
       return;
@@ -328,7 +352,7 @@ do_attribute_access(dbref player, char *name, char *perms, int retroactive)
   }
 
   notify_format(player, T("%s -- Attribute permissions now: %s"), name,
-		privs_to_string(attr_privs, flags));
+		privs_to_string(attr_privs_view, flags));
 }
 
 
@@ -472,7 +496,8 @@ do_attribute_info(dbref player, char *name)
   }
   notify_format(player, "Attribute: %s", ap == catchall ? "Default Attribute" : AL_NAME(ap));
   notify_format(player,
-		"    Flags: %s", privs_to_string(attr_privs, AL_FLAGS(ap)));
+		"    Flags: %s", privs_to_string(attr_privs_view,
+						 AL_FLAGS(ap)));
   notify_format(player, "  Creator: %s", unparse_dbref(AL_CREATOR(ap)));
   /* Now Locks */
     if(!(AL_RLock(ap) == TRUE_BOOLEXP))

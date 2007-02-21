@@ -47,7 +47,7 @@ static int grep_helper(dbref player, dbref thing, dbref parent,
 		       char const *pattern, ATTR *atr, void *args);
 void do_grep(dbref player, char *obj, char *lookfor, int flag, int insensitive);
 int pay_quota(dbref, int);
-extern PRIV attr_privs[];
+extern PRIV attr_privs_view[];
 
 /** A generic function to generate a formatted string. The
  * return value is a statically allocated buffer.
@@ -1391,7 +1391,7 @@ grep_helper(dbref player, dbref thing __attribute__ ((__unused__)),
     notify_format(player, "%s%s [#%d%s]%s %s",
 		  ANSI_HILITE, AL_NAME(atr),
 		  Owner(AL_CREATOR(atr)),
-		  privs_to_letters(attr_privs, AL_FLAGS(atr)),
+		  privs_to_letters(attr_privs_view, AL_FLAGS(atr)),
 		  ANSI_NORMAL, tbuf1);
   return found;
 }
