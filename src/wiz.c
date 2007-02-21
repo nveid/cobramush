@@ -1978,7 +1978,7 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
     return -1;
   }
 
-  if ((spec.owner != ANY_OWNER && spec.owner != player
+  if ((spec.owner != ANY_OWNER && spec.owner != Owner(player)
       && !(CanSearch(player, spec.owner) || (spec.type == TYPE_PLAYER)))) {
     giveto(player, FIND_COST);
     notify(player, T("You need a search warrant to do that."));
