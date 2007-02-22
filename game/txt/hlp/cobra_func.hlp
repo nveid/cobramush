@@ -2507,6 +2507,24 @@ for an object named "Test", preferring a thing over other types.
   that it will continue to do this for the time being. Don't rely on it.
 
   Related functions: FULLNAME(), ACCNAME(), INAME() 
+& NAMEGRAB()
+& NAMEGRABALL()
+  namegrab(<dbref list>,<name>)
+  namegraball(<dbref list>,<name>)
+
+  The namegrab() function, when given a list of dbrefs and a name, returns
+  the first dbref in the list that would match <name> as if you were
+  checking num() or locate(). An exact match has priority over non-exact matches.
+
+  namegraball() returns all dbrefs whose names would be matched by<name>.
+
+  eg: @@(#0: Room Zero. #1: One. #2: Master Room)
+    > th namegrab(#0 #1 #2,room)
+    #0
+    > th namegrab(#0 #1 #2,master room)
+    #2
+    > th namegraball(#0 #1 #2,room)
+    #0 #2
 & NAND()
   nand(<boolean>, <boolean>,...)
 

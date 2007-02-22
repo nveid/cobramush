@@ -210,6 +210,8 @@ FUNCTION_PROTO(fun_mudname);
 FUNCTION_PROTO(fun_mul);
 FUNCTION_PROTO(fun_munge);
 FUNCTION_PROTO(fun_name);
+FUNCTION_PROTO(fun_namegrab);
+FUNCTION_PROTO(fun_namegraball);
 FUNCTION_PROTO(fun_nand);
 FUNCTION_PROTO(fun_nattr);
 FUNCTION_PROTO(fun_nearby);

@@ -1934,6 +1934,112 @@ FUNCTION(fun_grab)
 }
 
 /* ARGSUSED */
+FUNCTION(fun_namegraball)
+{
+  /* Given a list of dbrefs and a string, it matches the
+   * name of the dbrefs against the string.
+   * grabnameall(#1 #2 #3,god) -> #1
+   */
+
+  char *r, *s, sep;
+  dbref victim;
+  dbref absolute;
+  int first = 1;
+
+  if (!delim_check(buff, bp, nargs, args, 3, &sep))
+    return;
+
+  absolute = parse_dbref(args[1]);
+  if (!RealGoodObject(absolute))
+    absolute = NOTHING;
+
+  if (*args[1]) {
+    s = trim_space_sep(args[0], sep);
+    do {
+      r = split_token(&s, sep);
+      victim = parse_dbref(r);
+      if (!RealGoodObject(victim))
+	continue;               /* Don't bother with garbage */
+      if (!(string_match(Name(victim), args[1]) || (absolute == victim)))
+	continue;
+      if (!can_interact(victim, executor, INTERACT_MATCH))
+	continue;
+      /* It matches, and is interact-able */
+      if (!first)
+	safe_chr(sep, buff, bp);
+      safe_str(r, buff, bp);
+      first = 0;
+    } while (s);
+  } else {
+    /* Pull out all good objects (those that _have_ names) */
+    s = trim_space_sep(args[0], sep);
+    do {
+      r = split_token(&s, sep);
+      victim = parse_dbref(r);
+      if (!RealGoodObject(victim))
+	continue;		/* Don't bother with garbage */
+      if (!can_interact(victim, executor, INTERACT_MATCH))
+	continue;
+      /* It's real, and is interact-able */
+      if (!first)
+	safe_chr(sep, buff, bp);
+      safe_str(r, buff, bp);
+      first = 0;
+    } while (s);
+  }
+}
+
+/* ARGSUSED */
+FUNCTION(fun_namegrab)
+{
+  /* Given a list of dbrefs and a string, it matches the
+   * name of the dbrefs against the string.
+   */
+
+  char *r, *s, sep;
+  dbref victim;
+  dbref absolute;
+  char *exact_res, *res;
+
+  exact_res = res = NULL;
+
+  if (!delim_check(buff, bp, nargs, args, 3, &sep))
+    return;
+
+  absolute = parse_dbref(args[1]);
+  if (!RealGoodObject(absolute))
+    absolute = NOTHING;
+
+  /* Walk the wordstring, until we find the word we want. */
+  s = trim_space_sep(args[0], sep);
+  do {
+    r = split_token(&s, sep);
+    victim = parse_dbref(r);
+    if (!RealGoodObject(victim))
+      continue;                       /* Don't bother with garbage */
+    /* Dbref match has top priority */
+    if ((absolute == victim) && can_interact(victim, executor, INTERACT_MATCH)) {
+      safe_str(r, buff, bp);
+      return;
+    }
+    /* Exact match has second priority */
+    if (!exact_res && !strcasecmp(Name(victim), args[1]) &&
+      can_interact(victim, executor, INTERACT_MATCH)) {
+      exact_res = r;
+    }
+    /* Non-exact match. */
+    if (!res && string_match(Name(victim), args[1]) &&
+      can_interact(victim, executor, INTERACT_MATCH)) {
+      res = r;
+    }
+  } while (s);
+  if (exact_res)
+    safe_str(exact_res, buff, bp);
+  else if (res)
+    safe_str(res, buff, bp);
+}
+
+/* ARGSUSED */
 FUNCTION(fun_match)
 {
   /* compares two strings with possible wildcards, returns the
