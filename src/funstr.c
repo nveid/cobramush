@@ -301,10 +301,17 @@ FUNCTION(fun_mid)
   pos = parse_integer(args[1]);
   len = parse_integer(args[2]);
 
-  if ((pos < 0) || (len < 0)) {
+  if (pos < 0) {
     safe_str(T(e_range), buff, bp);
     free_ansi_string(as);
     return;
+  }
+
+  if (len < 0) {
+    pos = pos + len + 1;
+    if (pos < 0)
+      pos = 0;
+    len = -len;
   }
 
   safe_ansi_string(as, pos, len, buff, bp);
@@ -397,8 +404,7 @@ FUNCTION(fun_strinsert)
 FUNCTION(fun_delete)
 {
   ansi_string *as;
-  int pos, num;
-
+  int pos, pos2, num;
 
   if (!is_integer(args[1]) || !is_integer(args[2])) {
     safe_str(T(e_ints), buff, bp);
@@ -415,14 +421,22 @@ FUNCTION(fun_delete)
 
   as = parse_ansi_string(args[0]);
 
-  if ((size_t) pos > as->len || num <= 0) {
+  if ((size_t) pos > as->len || num == 0) {
     safe_strl(args[0], arglens[0], buff, bp);
     free_ansi_string(as);
     return;
   }
 
+  if (num < 0) {
+    pos2 = pos + 1;
+    pos = pos2 + num;
+    if (pos < 0)
+      pos = 0;
+  } else
+    pos2 = pos + num;
+
   safe_ansi_string(as, 0, pos, buff, bp);
-  safe_ansi_string(as, pos + num, as->len, buff, bp);
+  safe_ansi_string(as, pos2, as->len, buff, bp);
   free_ansi_string(as);
 }
 

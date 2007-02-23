@@ -900,12 +900,15 @@
   Return a modified <string>, with <len> characters starting after the
   character at position <first> deleted. In other words, it copies <first>
   characters, skips <len> characters>, and then copies the remainder of
-  the string.
- 
-  Example:
-    > say [delete(abcdefgh, 3, 2)]
+  the string. If <len> is negative, deletes characters leftwards from <first>.
+  Characters are numbered starting at 0.
+
+  Examples:
+    > say delete(abcdefgh, 3, 2)
     You say, "abcfgh"
- 
+    > say delete(abcdefgh, 3, -2)
+    You say, "abefgh"
+
 & DIE()
   die(<number of times to roll die>, <number of sides on die>[, <show>])
  
@@ -2332,7 +2335,17 @@ for an object named "Test", preferring a thing over other types.
 
   Mid returns a segment of the string, the <length> characters to the
   right of the <first> character.  Note that the first character in a
-  string is numbered zero, and not one.
+  string is numbered zero, and not one. If <length> is negative, it
+  returns characters to the left of the <first> character. The <first>
+  character is always part of the <length> characters.
+
+  Examples:
+    > say mid(foobar, 2, 2)
+    You say, "ob"
+    > say mid(foobar, 2, -2)
+    You say, "oo"
+
+  See also: LEFT(), RIGHT()
 & MIN()
   min(<num1>, <num2>, ..., ...)
 
