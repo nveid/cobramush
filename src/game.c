@@ -709,6 +709,11 @@ do_restart(void)
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = NULL;
 
+  /* Initialize the regexp patterns to nothing */
+  global_eval_context.re_subpatterns = -1;
+  global_eval_context.re_offsets = NULL;
+  global_eval_context.re_from = NULL;
+
   for (thing = 0; thing < db_top; thing++) {
     if (Name(thing) == NULL) {
       if (IsGarbage(thing))

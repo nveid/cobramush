@@ -210,6 +210,9 @@ struct eval_context {
   char ucom[BUFFER_LEN];      /**< evaluated command */
   int break_called;           /**< Has the break command been called? */
   char break_replace[BUFFER_LEN];  /**< What to replace the break with */
+  int re_subpatterns;	      /**< The number of re subpatterns */
+  int *re_offsets;	      /**< The offsets for the subpatterns */
+  char *re_from;	      /**< The positions of the subpatterns */
 };
 
 typedef struct eval_context EVAL_CONTEXT;
@@ -560,6 +563,17 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
     extern void parse_anon_attrib(dbref player, char *str, dbref *thing,
 				  ATTR **attrib);
     extern void free_anon_attrib(ATTR *attrib);
+    typedef struct _ufun_attrib {
+      dbref thing;
+      char contents[BUFFER_LEN];
+      int pe_flags;
+      char *errmess;
+    } ufun_attrib;
+    extern int fetch_ufun_attrib(char *attrname, dbref executor,
+				 ufun_attrib * ufun, int accept_lambda);
+    extern int call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc,
+			 char *ret, dbref executor, dbref enactor,
+			 PE_Info * pe_info);
     extern int member(dbref thing, dbref list);
     extern int recursive_member(dbref disallow, dbref from, int count);
     extern dbref remove_first(dbref first, dbref what);

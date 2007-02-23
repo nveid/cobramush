@@ -42,6 +42,7 @@
 #include "flags.h"
 #include "dbdefs.h"
 #include "attrib.h"
+#include "parse.h"
 #include "lock.h"
 #include "confmagic.h"
 
@@ -166,6 +167,157 @@ free_anon_attrib(ATTR *attrib)
     chunk_delete(attrib->data);
     mush_free(attrib, "anon_attr");
   }
+}
+
+/** Given an attribute [<object>/]<name> pair (which may include #lambda),
+ * fetch its value, owner (thing), and pe_flags, and store in the struct
+ * pointed to by ufun
+ */
+int 
+fetch_ufun_attrib(char *attrname, dbref executor, ufun_attrib * ufun,
+		  int accept_lambda)
+{ 
+  ATTR *attrib;
+  dbref thing;
+  int pe_flags = PE_UDEFAULT;
+    
+  if (!ufun)
+    return 0;		/* We should never NOT receive a ufun. */
+  ufun->errmess = (char *) "";
+    
+  /* find our object and attribute */
+  if (accept_lambda) {
+    parse_anon_attrib(executor, attrname, &thing, &attrib);
+  } else {
+    parse_attrib(executor, attrname, &thing, &attrib);
+  }
+
+  /* Is it valid? */
+  if (!GoodObject(thing)) {
+    ufun->errmess = (char *) "#-1 INVALID OBJECT";
+    free_anon_attrib(attrib);
+    return 0;
+  } else if (!attrib) {
+    ufun->contents[0] = '\0';
+    ufun->thing = thing;
+    ufun->pe_flags = pe_flags;
+    free_anon_attrib(attrib);
+    return 1;
+  } else if (!Can_Read_Attr(executor, thing, attrib)) {
+    ufun->errmess = e_atrperm;
+    free_anon_attrib(attrib);
+    return 0;
+  }
+    
+  /* Can we evaluate it? */
+  if (!CanEvalAttr(executor, thing, attrib)) {
+    ufun->errmess = e_perm;
+    free_anon_attrib(attrib);
+    return 0;
+  } 
+    
+  /* DEBUG attributes */
+  if (AF_Debug(attrib))
+    pe_flags |= PE_DEBUG;
+    
+  /* Populate the ufun object */
+  strncpy(ufun->contents, atr_value(attrib), BUFFER_LEN);
+  ufun->thing = thing;
+  ufun->pe_flags = pe_flags;
+  
+  /* Cleanup */
+  free_anon_attrib(attrib);
+    
+  /* We're good */
+  return 1;
+}
+
+/** Given a ufun, executor, enactor, PE_Info, and arguments for %0-%9,
+ * call the ufun with appropriate permissions on values given for
+ * wenv_args. The value returned is stored in the buffer pointed to
+ * by retval, if given.
+ * \param ufun The ufun_attrib that was initialized by fetch_ufun_attrib
+ * \param wenv_args An array of string values for global_eval_context.wenv
+ * \param wenv_argc The number of wenv args to use.
+ * \param ret If desired, a pointer to a buffer in which the results
+ * of the process_expression are stored in.
+ * \param executor The executor.
+ * \param enactor The enactor.
+ * \param pe_info The pe_info passed to the FUNCTION
+ * \retval 0 success
+ * \retval 1 process_expression failed. (CPU time limit)
+ */
+int
+call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc, char *ret,
+	  dbref executor, dbref enactor, PE_Info * pe_info)   
+{
+  char rbuff[BUFFER_LEN];
+  char *rp;
+  char *old_wenv[10];
+  int old_args;
+  int i;
+  int pe_ret;
+  char const *ap;
+
+  int old_re_subpatterns;
+  int *old_re_offsets;
+  char *old_re_from;
+
+  old_re_subpatterns = global_eval_context.re_subpatterns;
+  old_re_offsets = global_eval_context.re_offsets;
+  old_re_from = global_eval_context.re_from;
+
+  /* Make sure we have a ufun first */
+  if (!ufun)
+    return 1;
+
+  /* If the user doesn't care about the return of the expression,
+   * then use our own rbuff.
+   */
+  if (!ret)
+    ret = rbuff;
+  rp = ret;
+
+  for (i = 0; i < wenv_argc; i++) {
+    old_wenv[i] = global_eval_context.wenv[i];
+    global_eval_context.wenv[i] = wenv_args[i];
+  }
+  for (; i < 10; i++) {
+    old_wenv[i] = global_eval_context.wenv[i];
+    global_eval_context.wenv[i] = NULL;
+  }
+
+  /* Set all the regexp patterns to NULL so they are not
+   * propogated */
+  global_eval_context.re_subpatterns = -1;
+  global_eval_context.re_offsets = NULL;
+  global_eval_context.re_from = NULL;
+
+  /* And now, make the call! =) */
+  if (pe_info) {
+    old_args = pe_info->arg_count;
+    pe_info->arg_count = wenv_argc;
+  }
+
+  ap = ufun->contents;
+  pe_ret = process_expression(ret, &rp, &ap, ufun->thing, executor,
+			      enactor, ufun->pe_flags, PT_DEFAULT, pe_info);
+  *rp = '\0';
+
+  /* Restore the old wenv */
+  for (i = 0; i < 10; i++) {
+    global_eval_context.wenv[i] = old_wenv[i];
+  }
+  if (pe_info) {
+    pe_info->arg_count = old_args;
+  }
+
+  /* Restore regexp patterns */
+  global_eval_context.re_offsets = old_re_offsets;
+  global_eval_context.re_subpatterns = old_re_subpatterns;
+  global_eval_context.re_from = old_re_from;
+
+  return pe_ret;
 }
 
 /** Given an exit, find the room that is its source through brute force.

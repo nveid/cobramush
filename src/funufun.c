@@ -148,31 +148,22 @@ do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
 /* ARGSUSED */
 FUNCTION(fun_ufun)
 {
-  ATTR *attrib;
-  dbref obj;
+  char rbuff[BUFFER_LEN];
+  ufun_attrib ufun;
 
   BEGINOOREF_L
 
-  /* find the user function attribute */
-  parse_attrib(executor, args[0], &obj, &attrib);
-  if (!GoodObject(obj)) {
-    safe_str(T("#-1 INVALID OBJECT"), buff, bp);
-    goto ufun_done;
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 0)) {
+    safe_str(T(ufun.errmess), buff, bp);
+    return;
   }
-  if (attrib && Can_Read_Attr(executor, obj, attrib)) {
-    if (!CanEvalAttr(executor, obj, attrib)) {
-      safe_str(T(e_perm), buff, bp);
-      goto ufun_done;
-    }
-    do_userfn(buff, bp, obj, attrib, nargs - 1, args + 1, executor, caller,
-	      enactor, pe_info);
-    goto ufun_done;
-  } else if (attrib || !Can_Examine(executor, obj)) {
-    safe_str(T(e_atrperm), buff, bp);
-    goto ufun_done;
-  }
-ufun_done:
+
+  call_ufun(&ufun, args + 1, nargs - 1, rbuff, executor, enactor, pe_info);
+
+  safe_str(rbuff, buff, bp);
+
   ENDOOREF_L
+
   return;
 }
 
@@ -182,37 +173,27 @@ FUNCTION(fun_ulocal)
   /* Like fun_ufun, but saves the state of the q0-q9 registers
    * when called
    */
-  ATTR *attrib;
-  dbref obj;
   char *preserve[NUMQ];
+  char rbuff[BUFFER_LEN];
+  ufun_attrib ufun;
+
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 0)) {
+    safe_str(T(ufun.errmess), buff, bp);
+    return;
+  }
 
   BEGINOOREF_L
 
-  /* find the user function attribute */
-  parse_attrib(executor, args[0], &obj, &attrib);
-  if (!GoodObject(obj)) {
-    safe_str(T("#-1 INVALID OBJECT"), buff, bp);
-    ENDOOREF_L
-    return;
-  }
-  if (attrib && Can_Read_Attr(executor, obj, attrib)) {
-    if (!CanEvalAttr(executor, obj, attrib)) {
-      safe_str(T(e_perm), buff, bp);
-      ENDOOREF_L
-      return;
-    }
-    save_global_regs("ulocal.save", preserve);
-    do_userfn(buff, bp, obj, attrib, nargs - 1, args + 1, executor, caller,
-	      enactor, pe_info);
-    restore_global_regs("ulocal.save", preserve);
-    ENDOOREF_L
-    return;
-  } else if (attrib || !Can_Examine(executor, obj)) {
-    safe_str(T(e_atrperm), buff, bp);
-    ENDOOREF_L
-    return;
-  }
+  /* Save global regs */
+  save_global_regs("ulocal.save", preserve);
+
+  call_ufun(&ufun, args + 1, nargs - 1, rbuff, executor, enactor, pe_info);
+  safe_str(rbuff, buff, bp);
+
+  restore_global_regs("ulocal.save", preserve);
+
   ENDOOREF_L
+
   return;
 }
 

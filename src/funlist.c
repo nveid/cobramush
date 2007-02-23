@@ -423,89 +423,48 @@ FUNCTION(fun_fold)
    * can provide a starting point.
    */
 
-  dbref thing;
-  ATTR *attrib;
-  char const *ap;
-  char *abuf, *result, *rp, *rsave;
+  ufun_attrib ufun;
   char *cp;
-  char *tptr[2];
+  char *wenv[2];
   char sep;
   int funccount, per;
-  int pe_flags = PE_DEFAULT;
+  char base[BUFFER_LEN];
+  char result[BUFFER_LEN];
 
   if (!delim_check(buff, bp, nargs, args, 4, &sep))
     return;
 
-  /* find our object and attribute */
-  parse_anon_attrib(executor, args[0], &thing, &attrib);
-
-  if (!GoodObject(thing) || !attrib || !Can_Read_Attr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
     return;
-  }
-  if (!CanEvalAttr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
-    return;
-  }
-
-  /* Now we can go to work */
-  if (AF_Debug(attrib))
-    pe_flags |= PE_DEBUG;
-  result = (char *) mush_malloc(BUFFER_LEN, "string");
-  rsave = (char *) mush_malloc(BUFFER_LEN, "string");
-  if (!result || !rsave)
-    mush_panic("Unable to allocate memory in fun_fold");
-
-  abuf = safe_atr_value(attrib);
-
-  /* save our stack */
-  tptr[0] = global_eval_context.wenv[0];
-  tptr[1] = global_eval_context.wenv[1];
 
   cp = args[1];
 
   /* If we have three or more arguments, the third one is the base case */
   if (nargs >= 3) {
-    global_eval_context.wenv[0] = args[2];
-    global_eval_context.wenv[1] = split_token(&cp, sep);
+    strncpy(base, args[2], BUFFER_LEN);
   } else {
-    global_eval_context.wenv[0] = split_token(&cp, sep);
-    global_eval_context.wenv[1] = split_token(&cp, sep);
+    strncpy(base, split_token(&cp, sep), BUFFER_LEN);
   }
-  rp = result;
-  ap = abuf;
-  process_expression(result, &rp, &ap, thing, executor, enactor,
-		     pe_flags, PT_DEFAULT, pe_info);
-  *rp = '\0';
-  strcpy(rsave, result);
+  wenv[0] = base;
+  wenv[1] = split_token(&cp, sep);
+
+  call_ufun(&ufun, wenv, 2, result, executor, enactor, pe_info);
+
+  strncpy(base, result, BUFFER_LEN);
+
   funccount = pe_info->fun_invocations;
 
   /* handle the rest of the cases */
   while (cp && *cp) {
-    global_eval_context.wenv[0] = rsave;
-    global_eval_context.wenv[1] = split_token(&cp, sep);
-    rp = result;
-    ap = abuf;
-    per = process_expression(result, &rp, &ap, thing, executor, enactor,
-			     pe_flags, PT_DEFAULT, pe_info);
-    *rp = '\0';
+    wenv[1] = split_token(&cp, sep);
+    per = call_ufun(&ufun, wenv, 2, result, executor, enactor, pe_info);
     if (per || (pe_info->fun_invocations >= FUNCTION_LIMIT &&
-		pe_info->fun_invocations == funccount &&
-		!strcmp(rsave, result)))
+		pe_info->fun_invocations == funccount && !strcmp(base, result)))
       break;
     funccount = pe_info->fun_invocations;
-    strcpy(rsave, result);
+    strcpy(base, result);
   }
-  safe_str(rsave, buff, bp);
-
-  /* restore the stack */
-  global_eval_context.wenv[0] = tptr[0];
-  global_eval_context.wenv[1] = tptr[1];
-
-  free((Malloc_t) abuf);
-  mush_free((Malloc_t) result, "string");
-  mush_free((Malloc_t) rsave, "string");
-  free_anon_attrib(attrib);
+  safe_str(base, buff, bp);
 }
 
 /* ARGSUSED */
@@ -567,62 +526,37 @@ FUNCTION(fun_filter)
    * of the list for which the function evaluates to 1.
    */
 
-  dbref thing;
-  ATTR *attrib;
-  char const *ap;
-  char *abuf, result[BUFFER_LEN], *rp;
+  ufun_attrib ufun;
+  char result[BUFFER_LEN];
   char *cp;
-  char *tptr;
+  char *wenv[1];
   char sep;
   int first;
   int check_bool = 0;
   int funccount;
   char *osep, osepd[2] = { '\0', '\0' };
-  int pe_flags = PE_DEFAULT;
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
 
-  if (nargs == 4)
-    osep = args[3];
-  else {
-    osepd[0] = sep;
-    osep = osepd;
-  }
+  osepd[0] = sep;
+  osep = (nargs >= 4) ? args[3] : osepd;
 
   if (strcmp(called_as, "FILTERBOOL") == 0)
     check_bool = 1;
 
   /* find our object and attribute */
-  parse_anon_attrib(executor, args[0], &thing, &attrib);
-
-  if (!GoodObject(thing) || !attrib || !Can_Read_Attr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
     return;
-  }
-  if (!CanEvalAttr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
-    return;
-  }
 
-  if (AF_Debug(attrib))
-    pe_flags |= PE_DEBUG;
-
-  abuf = safe_atr_value(attrib);
-
-  tptr = global_eval_context.wenv[0];
-
+  /* Go through each argument */
   cp = trim_space_sep(args[1], sep);
   first = 1;
   funccount = pe_info->fun_invocations;
   while (cp && *cp) {
-    global_eval_context.wenv[0] = split_token(&cp, sep);
-    ap = abuf;
-    rp = result;
-    if (process_expression(result, &rp, &ap, thing, executor, enactor,
-			   pe_flags, PT_DEFAULT, pe_info))
+    wenv[0] = split_token(&cp, sep);
+    if (call_ufun(&ufun, wenv, 1, result, executor, enactor, pe_info))
       break;
-    *rp = '\0';
     if ((check_bool == 0)
 	? (*result == '1' && *(result + 1) == '\0')
 	: parse_boolean(result)) {
@@ -630,7 +564,7 @@ FUNCTION(fun_filter)
 	first = 0;
       else
 	safe_str(osep, buff, bp);
-      safe_str(global_eval_context.wenv[0], buff, bp);
+      safe_str(wenv[0], buff, bp);
     }
     /* Can't do *bp == oldbp like in all the others, because bp might not
      * move even when not full, if one of the list elements is null and
@@ -639,11 +573,6 @@ FUNCTION(fun_filter)
       break;
     funccount = pe_info->fun_invocations;
   }
-
-  global_eval_context.wenv[0] = tptr;
-
-  free((Malloc_t) abuf);
-  free_anon_attrib(attrib);
 }
 
 /* ARGSUSED */
@@ -2884,78 +2813,50 @@ FUNCTION(fun_map)
    * This function takes delimiters.
    */
 
-  dbref thing;
-  ATTR *attrib;
-  char const *ap;
-  char *asave, *lp;
-  char *tptr[2];
+  ufun_attrib ufun;
+  char *lp;
+  char *wenv[2];
   char place[16];
   int placenr = 1;
   char sep;
   int funccount;
-  char *oldbp;
   char *osep, osepd[2] = { '\0', '\0' };
-  int pe_flags = PE_DEFAULT;
+  char rbuff[BUFFER_LEN];
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
 
-  if (nargs == 4)
-    osep = args[3];
-  else {
-    osepd[0] = sep;
-    osep = osepd;
-  }
+  osepd[0] = sep;
+  osep = (nargs >= 4) ? args[3] : osepd;
 
   lp = trim_space_sep(args[1], sep);
   if (!*lp)
     return;
 
-  /* find our object and attribute */
-  parse_anon_attrib(executor, args[0], &thing, &attrib);
-  if (!GoodObject(thing) || !attrib || !Can_Read_Attr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
     return;
-  }
-  if (!CanEvalAttr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
-    return;
-  }
-  if (AF_Debug(attrib))
-    pe_flags |= PE_DEBUG;
 
   strcpy(place, "1");
-  asave = safe_atr_value(attrib);
 
-  /* save our stack */
-  tptr[0] = global_eval_context.wenv[0];
-  tptr[1] = global_eval_context.wenv[1];
-  global_eval_context.wenv[1] = place;
+  /* Build our %0 args */
+  wenv[0] = split_token(&lp, sep);
+  wenv[1] = place;
 
-  global_eval_context.wenv[0] = split_token(&lp, sep);
-  ap = asave;
-  process_expression(buff, bp, &ap, thing, executor, enactor,
-		     pe_flags, PT_DEFAULT, pe_info);
-  oldbp = *bp;
+  call_ufun(&ufun, wenv, 2, rbuff, executor, enactor, pe_info);
   funccount = pe_info->fun_invocations;
+  safe_str(rbuff, buff, bp);
   while (lp) {
     safe_str(osep, buff, bp);
     strcpy(place, unparse_integer(++placenr));
-    global_eval_context.wenv[0] = split_token(&lp, sep);
-    ap = asave;
-    if (process_expression(buff, bp, &ap, thing, executor, enactor,
-			   pe_flags, PT_DEFAULT, pe_info))
+    wenv[0] = split_token(&lp, sep);
+
+    if (call_ufun(&ufun, wenv, 2, rbuff, executor, enactor, pe_info))
       break;
+    safe_str(rbuff, buff, bp);
     if (*bp == (buff + BUFFER_LEN - 1) && pe_info->fun_invocations == funccount)
       break;
-    oldbp = *bp;
     funccount = pe_info->fun_invocations;
   }
-
-  free((Malloc_t) asave);
-  free_anon_attrib(attrib);
-  global_eval_context.wenv[0] = tptr[0];
-  global_eval_context.wenv[1] = tptr[1];
 }
 
 
@@ -2967,17 +2868,15 @@ FUNCTION(fun_mix)
    * This function takes delimiters.
    */
 
-  dbref thing;
-  ATTR *attrib;
-  char const *ap;
-  char *asave, *lp[10];
-  char *tptr[10];
+  ufun_attrib ufun;
+  char rbuff[BUFFER_LEN];
+  char *lp[10];
+  char *list[10];
   char sep;
   int funccount;
   int n;
   int lists, words;
-  char *oldbp;
-  int pe_flags = PE_DEFAULT;
+  int first = 1;
 
   if (nargs > 3) {		/* Last arg must be the delimiter */
     n = nargs;
@@ -2994,69 +2893,31 @@ FUNCTION(fun_mix)
     lp[n] = trim_space_sep(args[n + 1], sep);
 
   /* find our object and attribute */
-  parse_anon_attrib(executor, args[0], &thing, &attrib);
-  if (!GoodObject(thing) || !attrib || !Can_Read_Attr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
     return;
-  }
-  if (!CanEvalAttr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
-    return;
-  }
-  if (AF_Debug(attrib))
-    pe_flags |= PE_DEBUG;
 
-  asave = safe_atr_value(attrib);
-
-  /* save our stack */
-  save_global_env("fun_mix", tptr);
-
-  words = 0;
-  for (n = 0; n < 10; n++) {
-    if ((n < lists) && lp[n] && *lp[n]) {
-      global_eval_context.wenv[n] = split_token(&lp[n], sep);
-      if (global_eval_context.wenv[n])
-	words++;
-    } else
-      global_eval_context.wenv[n] = NULL;
-  }
-  if (words == 0) {
-    restore_global_env("fun_mix", tptr);
-    free((Malloc_t) asave);
-    free_anon_attrib(attrib);
-    return;
-  }
-  ap = asave;
-  process_expression(buff, bp, &ap, thing, executor, enactor,
-		     pe_flags, PT_DEFAULT, pe_info);
-  oldbp = *bp;
-  funccount = pe_info->fun_invocations;
+  first = 0;
   while (1) {
     words = 0;
-    for (n = 0; n < 10; n++) {
-      if ((n < lists) && lp[n] && *lp[n]) {
-	global_eval_context.wenv[n] = split_token(&lp[n], sep);
-	if (global_eval_context.wenv[n])
+    for (n = 0; n < lists; n++) {
+      if (lp[n] && *lp[n]) {
+	list[n] = split_token(&lp[n], sep);
+	if (list[n])
 	  words++;
-      } else
-	global_eval_context.wenv[n] = NULL;
+      } else {
+	list[n] = NULL;
+      }
     }
-    if (words == 0)
-      break;
-    safe_chr(sep, buff, bp);
-    ap = asave;
-    if (process_expression(buff, bp, &ap, thing, executor, enactor,
-			   pe_flags, PT_DEFAULT, pe_info))
-      break;
-    if (*bp == (buff + BUFFER_LEN - 1) && pe_info->fun_invocations == funccount)
-      break;
-    oldbp = *bp;
+    if (!words)
+      return;
+    if (first)
+      first = 0;
+    else
+      safe_chr(sep, buff, bp);
     funccount = pe_info->fun_invocations;
+    call_ufun(&ufun, list, lists, rbuff, executor, enactor, pe_info);
+    safe_str(rbuff, buff, bp);
   }
-
-  free((Malloc_t) asave);
-  free_anon_attrib(attrib);
-  restore_global_env("fun_mix", tptr);
 }
 
 /* ARGSUSED */
@@ -3168,9 +3029,6 @@ FUNCTION(fun_table)
 
 /* string, regexp, replacement string. Acts like sed or perl's s///g,
 //with an ig version */
-int re_subpatterns = -1;  /**< Number of subpatterns in regexp */
-int *re_offsets;	  /**< Array of offsets to subpatterns */
-char *re_from = NULL;	  /**< Pointer to last match position */
 FUNCTION(fun_regreplace)
 {
   pcre *re;
@@ -3185,9 +3043,16 @@ FUNCTION(fun_regreplace)
   char abuf[BUFFER_LEN], *abp;
   char prebuf[BUFFER_LEN], *prep;
   char postbuf[BUFFER_LEN], *postp;
-
   int flags = 0, all = 0, match_offset = 0, len, funccount;
   int i;
+
+  int old_re_subpatterns;
+  int *old_re_offsets;
+  char *old_re_from;
+
+  old_re_subpatterns = global_eval_context.re_subpatterns;
+  old_re_offsets = global_eval_context.re_offsets;
+  old_re_from = global_eval_context.re_from;
 
   if (called_as[strlen(called_as) - 1] == 'I')
     flags = PCRE_CASELESS;
@@ -3263,9 +3128,9 @@ FUNCTION(fun_regreplace)
 
       /* Now copy in the replacement, putting in captured sub-expressions */
       obp = args[i + 1];
-      re_from = prebuf;
-      re_offsets = offsets;
-      re_subpatterns = subpatterns;
+      global_eval_context.re_from = prebuf;
+      global_eval_context.re_offsets = offsets;
+      global_eval_context.re_subpatterns = subpatterns;
       process_expression(postbuf, &postp, &obp, executor, caller, enactor,
 			 PE_DEFAULT | PE_DOLLAR, PT_DEFAULT, pe_info);
       if ((*bp == (buff + BUFFER_LEN - 1))
@@ -3293,9 +3158,9 @@ FUNCTION(fun_regreplace)
     if (study)
       mush_free((Malloc_t) study, "pcre.extra");
 
-    re_offsets = NULL;
-    re_subpatterns = -1;
-    re_from = NULL;
+    global_eval_context.re_offsets = old_re_offsets;
+    global_eval_context.re_subpatterns = old_re_subpatterns;
+    global_eval_context.re_from = old_re_from;
   }
 
   safe_str(postbuf, buff, bp);

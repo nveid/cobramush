@@ -39,9 +39,9 @@ extern int inum, inum_limit;
 extern char *iter_rep[];
 int global_fun_invocations;
 int global_fun_recursions;
-extern int re_subpatterns;
-extern int *re_offsets;
-extern char *re_from;
+/* extern int re_subpatterns; */
+/* extern int *re_offsets; */
+/* extern char *re_from; */
 extern sig_atomic_t cpu_time_limit_hit;
 extern int cpu_limit_warning_sent;
 extern int iter_break;
@@ -652,10 +652,8 @@ process_expression(char *buff, char **bp, char const **str,
       }
       break;
     case '$':			/* Dollar subs for regedit() */
-      if ((eflags & (PE_DOLLAR | PE_EVALUATE)) != (PE_DOLLAR | PE_EVALUATE)) {
-	safe_chr('$', buff, bp);
-	(*str)++;
-      } else {
+      if ((eflags & (PE_DOLLAR | PE_EVALUATE)) == (PE_DOLLAR | PE_EVALUATE) &&
+	  global_eval_context.re_subpatterns >= 0) {
 	char obuf[BUFFER_LEN];
 	int p = 0;
 
@@ -668,16 +666,34 @@ process_expression(char *buff, char **bp, char const **str,
 	    p *= 10;
 	    p += **str - '0';
 	    (*str)++;
+	    if (isdigit((unsigned char) **str)) {
+	      /* More than 100. Treat this as literal. */
+	      safe_chr('$', buff, bp);
+	      safe_number(p, buff, bp);
+	    }
 	  }
-	} else
+	} else {
+	  safe_chr('$', buff, bp);
 	  break;
+	}
 
-	if (p >= re_subpatterns || re_offsets == NULL || re_from == NULL)
+	if (p >= global_eval_context.re_subpatterns ||
+	    global_eval_context.re_offsets == NULL ||
+	    global_eval_context.re_from == NULL) {
+	  /* It's out of bounds, return */
+	  safe_chr('$', buff, bp);
+	  safe_number(p, buff, bp);
 	  break;
+	}
 
-	pcre_copy_substring(re_from, re_offsets, re_subpatterns, p, obuf,
-			    BUFFER_LEN);
+	pcre_copy_substring(global_eval_context.re_from,
+			    global_eval_context.re_offsets,
+			    global_eval_context.re_subpatterns,
+			    p, obuf, BUFFER_LEN);
 	safe_str(obuf, buff, bp);
+      } else {
+	safe_chr('$', buff, bp);
+	(*str)++;
       }
       break;
     case '%':			/* Percent substitutions */

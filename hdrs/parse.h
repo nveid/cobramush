@@ -183,7 +183,9 @@ int process_expression(char *buff, char **bp, char const **str,
 #define PE_DEBUG                0x00000400
 
 #define PE_DEFAULT (PE_COMPRESS_SPACES | PE_STRIP_BRACES | \
-                    PE_EVALUATE | PE_FUNCTION_CHECK)
+                    PE_DOLLAR | PE_EVALUATE | PE_FUNCTION_CHECK)
+#define PE_UDEFAULT (PE_COMPRESS_SPACES | PE_STRIP_BRACES | \
+		     PE_EVALUATE | PE_FUNCTION_CHECK)
 
 /* PE_COMPRESS_SPACES strips leading and trailing spaces, and reduces sets
  * of internal spaces to one space.
@@ -208,6 +210,9 @@ int process_expression(char *buff, char **bp, char const **str,
  *
  * PE_DEFAULT is the most commonly used set of flags, normally sufficient
  * for calls to process_expression().
+ *
+ * PE_UDEFAULT is PE_DEFAULT without PE_DOLLAR, intended for use in
+ * calling attributes (via u(), mix, step, etc)
  *
  *
  * tflags consists of one or more of the following termination flags:
