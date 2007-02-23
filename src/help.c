@@ -32,7 +32,9 @@ static int help_init = 0;
 static void do_new_spitfile(dbref player, char *arg1, help_file *help_dat);
 static const char *string_spitfile(help_file *help_dat, char *arg1);
 static help_indx *help_find_entry(help_file *help_dat, const char *the_topic);
-static char *list_matching_entries(const char *pattern, help_file *help_dat);
+static char *list_matching_entries(char *pattern, help_file *help_dat,
+				   const char *sep);
+static const char *normalize_entry(help_file *help_dat, char *arg1);
 
 static void help_build_index(help_file *h, int restricted);
 
@@ -70,7 +72,7 @@ COMMAND (cmd_helpcmd) {
 
   if (wildcard(arg_left))
     notify_format(player, T("Here are the entries which match '%s':\n%s"),
-		  arg_left, list_matching_entries(arg_left, h));
+		  arg_left, list_matching_entries(arg_left, h, ", "));
   else
     do_new_spitfile(player, arg_left, h);
 }
@@ -454,23 +456,40 @@ FUNCTION(fun_textfile)
     return;
   }
 
-  if (wildcard(args[1]))
-    safe_str(list_matching_entries(args[1], h), buff, bp);
-  else
+  if (wildcard(args[1])) {
+    const char *entries = list_matching_entries(args[1], h, ", ");
+    if (*entries)
+      safe_str(entries, buff, bp);
+    else
+      safe_str(T("No matching help topics."), buff, bp);
+  } else
     safe_str(string_spitfile(h, args[1]), buff, bp);
 }
 
+/* ARGSUSED */
+FUNCTION(fun_textentries)
+{
+  help_file *h;
+  const char *sep = " ";
+
+  h = hashfind(strupper(args[0]), &help_files);
+  if (!h) {
+    safe_str(T("#-1 NO SUCH FILE"), buff, bp);
+    return;
+  }
+  if (h->admin && !Prived(executor)) {
+    safe_str(T(e_perm), buff, bp);
+    return;
+  }
+  if (nargs > 2)
+    sep = args[2];
+  safe_str(list_matching_entries(args[1], h, sep), buff, bp);
+}
 
 static const char *
-string_spitfile(help_file *help_dat, char *arg1)
+normalize_entry(help_file *help_dat, char *arg1)
 {
-  help_indx *entry = NULL;
-  FILE *fp;
-  char line[LINE_SIZE + 1];
-  char the_topic[LINE_SIZE + 2];
-  size_t n;
-  static char buff[BUFFER_LEN];
-  char *bp;
+  static char the_topic[LINE_SIZE + 2];
 
   if (*arg1 == '\0')
     arg1 = (char *) "help";
@@ -483,12 +502,26 @@ string_spitfile(help_file *help_dat, char *arg1)
     sprintf(the_topic, "&%s", arg1);
   else
     strcpy(the_topic, arg1);
+  return the_topic;
+}
+
+static const char *
+string_spitfile(help_file *help_dat, char *arg1)
+{
+  help_indx *entry = NULL;
+  FILE *fp;
+  char line[LINE_SIZE + 1];
+  char the_topic[LINE_SIZE + 2];
+  size_t n;
+  static char buff[BUFFER_LEN];
+  char *bp;
+
+  strcpy(the_topic, normalize_entry(help_dat, arg1));
 
   if (!help_dat->indx || help_dat->entries == 0)
     return T("#-1 NO INDEX FOR FILE");
 
   entry = help_find_entry(help_dat, the_topic);
-
   if (!entry) {
     return T("#-1 NO ENTRY");
   }
@@ -514,12 +547,13 @@ string_spitfile(help_file *help_dat, char *arg1)
 
 /** Return a string with all help entries that match a pattern */
 static char *
-list_matching_entries(const char *pattern, help_file *help_dat)
+list_matching_entries(char *pattern, help_file *help_dat, const char *sep)
 {
   static char buff[BUFFER_LEN];
   int offset;
   char *bp;
   size_t n;
+  int len;
 
   bp = buff;
 
@@ -528,16 +562,34 @@ list_matching_entries(const char *pattern, help_file *help_dat)
   else
     offset = 0;
 
+  if (!wildcard(pattern)) {
+    /* Quick way out, use the other kind of matching */
+    char the_topic[LINE_SIZE + 2];
+    help_indx *entry = NULL;
+    strcpy(the_topic, normalize_entry(help_dat, pattern));
+    if (!help_dat->indx || help_dat->entries == 0)
+      return T("#-1 NO INDEX FOR FILE");
+    entry = help_find_entry(help_dat, the_topic);
+    if (!entry)
+      return (char *) "";
+    return (char *) (entry->topic + offset);
+  }
+
+  bp = buff;
+
+  if (sep)
+    len = strlen(sep);
+
   for (n = 0; n < help_dat->entries; n++)
     if (quick_wild(pattern, help_dat->indx[n].topic + offset)) {
       safe_str(help_dat->indx[n].topic + offset, buff, &bp);
-      safe_strl(", ", 2, buff, &bp);
+      if (sep)
+	safe_strl(sep, len, buff, &bp);
     }
 
   if (bp > buff)
-    *(bp - 2) = '\0';
+    *(bp - len) = '\0';
   else {
-    safe_str(T("No matching help topics."), buff, &bp);
     *bp = '\0';
   }
 

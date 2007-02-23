@@ -3718,11 +3718,17 @@ for an object named "Test", preferring a thing over other types.
 & TEXTFILE()
 & dynhelp()
   textfile(<type>,<entry>)
+  textentries(<type>,<entry>[,<separator>])
 
   textfile() returns the text of entries from cached text files (such as
   "help", "news", "events", etc.) All whitespace and newlines are included,
   so you may want to edit %r's and squish the result if you plan to use
   the text as a list of words rather than a display.
+
+  textentries() returns the topic names of matching entries. <entry>
+  may include wildcards, in which case a list of matching topic names
+  will be return, separated by the <separator> string if one is
+  provided, and space-separated otherwise.
 
   Examples: 
   > say textfile(help,tel\()

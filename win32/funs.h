@@ -333,6 +333,7 @@ FUNCTION_PROTO(fun_tagwrap);
 FUNCTION_PROTO(fun_tan);
 FUNCTION_PROTO(fun_tel);
 FUNCTION_PROTO(fun_terminfo);
+FUNCTION_PROTO(fun_textentries);
 FUNCTION_PROTO(fun_textfile);
 FUNCTION_PROTO(fun_time);
 FUNCTION_PROTO(fun_timefmt);
