@@ -864,6 +864,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
   char b;
   int switchnum;
   switch_mask sw;
+  char switch_err[BUFFER_LEN], *se;
   int noeval;
   int noevtoken = 0;
   char *retval;
@@ -1051,6 +1052,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
   SW_ZERO(sw);
   swp = switches;
   *swp = '\0';
+  se = switch_err;
 
   t = NULL;
 
@@ -1069,10 +1071,9 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
 	    strcat(swp, " ");
 	  strcat(swp, swtch);
 	} else {
-	  notify_format(player,
+	  if (se == switch_err)
+	    safe_format(switch_err, &se,
 			T("%s doesn't know switch %s."), cmd->name, swtch);
-	  command_parse_free_args;
-	  return NULL;
 	}
       } else {
 	SW_SET(sw, switchnum);
@@ -1080,6 +1081,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     }
   }
 
+  *se = '\0';
   if (!t)
     SW_SET(sw, SWITCH_NONE);
   if (noevtoken)
@@ -1183,6 +1185,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
   retval = NULL;
   if (cmd->func == NULL) {
     do_rawlog(LT_ERR, T("No command vector on command %s."), cmd->name);
+    command_parse_free_args;
     return NULL;
   } else {
     char *saveregs[NUMQ];
@@ -1194,6 +1197,13 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
 	  !one_comm_match(cmd->hooks.override.obj, player,
 			  cmd->hooks.override.attrname, commandraw)) {
 	/* Otherwise, we do hook/before, the command, and hook/after */
+	/* But first, let's see if we had an invalid switch */
+	if (*switch_err) {
+	  notify(player, switch_err);
+	  free_global_regs("hook.regs", saveregs);
+	  command_parse_free_args;
+	  return NULL;
+	}
 	run_hook(player, cause, &cmd->hooks.before, saveregs, 1);
 	cmd->func(cmd, player, cause, sw, string, swp, ap, ls, lsa, rs, rsa, fromport);
 	run_hook(player, cause, &cmd->hooks.after, saveregs, 0);
