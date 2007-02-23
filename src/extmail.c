@@ -1450,6 +1450,7 @@ void
 do_mail(dbref player, char *arg1, char *arg2)
 {
   dbref sender;
+  char *p;
   /* Force player to be a real player, but keep track of the
    * enactor in case we're sending mail, which objects can do
    */
@@ -1486,10 +1487,11 @@ do_mail(dbref player, char *arg1, char *arg2)
       do_mail_send(sender, arg1, arg2, 0, 0, 0);
   } else {
     /* Must be reading or listing mail - no arg2 */
-    if (isdigit((unsigned char) *arg1) && !strchr(arg1, '-'))
-      do_mail_read(player, arg1);
-    else
+    if (((p = strchr(arg1, ':')) && (*(p + 1) == '\0'))
+	|| !(isdigit((unsigned char) *arg1) && !strchr(arg1, '-')))
       do_mail_list(player, arg1);
+    else
+      do_mail_read(player, arg1);
   }
   return;
 }
@@ -2622,13 +2624,20 @@ parse_message_spec(dbref player, const char *s, int *msglow, int *msghigh,
       }
     } else {
       /* f:m */
-      if (!is_integer(p))
-	return 0;
-      *msglow = parse_integer(p);
-      if (*msglow == 0)
-	*msglow = -1;
-      if (msghigh)
-	*msghigh = *msglow;
+      if (!*p) {
+	/* f: */
+	*msglow = 0;
+	if (msghigh)
+	  *msghigh = HUGE_INT;
+      } else {
+	if (!is_integer(p))
+	  return 0;
+	*msglow = parse_integer(p);
+	if (*msglow == 0)
+	  *msglow = -1;
+	if (msghigh)
+	  *msghigh = *msglow;
+      }
     }
     if (*msglow < 0 || (msghigh && *msghigh < 0) || *folder < 0
 	|| *folder > MAX_FOLDERS)
