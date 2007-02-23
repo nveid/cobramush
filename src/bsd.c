@@ -4898,6 +4898,8 @@ how_many_fds(void)
   static int open_max = 0;
 #ifdef WIN32
   int iMaxSocketsAllowed;
+  unsigned short wVersionRequested = MAKEWORD(1, 1);
+  int err;
 #endif
   if (open_max)
     return open_max;
@@ -4914,6 +4916,13 @@ how_many_fds(void)
    * wsadata.iMaxSockets isn't valid for WinSock versions 2.0
    * and later, but we are requesting version 1.1, so it's valid.
    */
+
+  /* Need to init Windows Sockets to get socket data */
+  err = WSAStartup(wVersionRequested, &wsadata);
+  if (err) {
+    printf(T("Error %i on WSAStartup\n"), err);
+    exit(1);
+  }
   iMaxSocketsAllowed = options.max_logins ? (2 * options.max_logins) : 120;
   if (wsadata.iMaxSockets < iMaxSocketsAllowed)
     iMaxSocketsAllowed = wsadata.iMaxSockets;
