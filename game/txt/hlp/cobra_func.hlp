@@ -973,7 +973,7 @@
   Note that add(mul(div(%0,%1),%1),remainder(%0,%1)) always yields %0,
   and add(mul(floordiv(%0,%1),%1),modulo(%0,%1)) also always yields %0.
 
-  See also: MODULO
+  See also: modulo(), fdiv()
 & DOING()
   doing(<player|descriptor>)
 
@@ -1183,6 +1183,8 @@
  
   Returns the quotient of the two numbers. Note that the DIV() and MOD()
   functions cannot be used on floating point numbers.
+
+  See also: div()
 & FILTER()
 & FILTERBOOL()
   filter([<obj>/]<attr>, <list>[,<delimiter>][,<osep>])
@@ -2501,14 +2503,12 @@ for an object named "Test", preferring a thing over other types.
 
 & NAME()
   name(<object>[,<new name>])
-  name(<player>[,<new name> <password>])
  
   Name returns the name of object <object>. For exits, name returns
   the displayed name of the exit.
  
   If function side effects are allowed, this function, given two arguments,
-  acts just like @name <object>=<new name>. Consequently, if renaming
-  a player, you must use the player's password or be God.
+  acts just like @name <object>=<new name>.
 
   name() with no arguments currently returns nothing. This should be an
   error, but enough old code has been written that expects this behavior
@@ -3624,6 +3624,7 @@ for an object named "Test", preferring a thing over other types.
   @switch, while switch() and case() match more like @switch/first.
 
   See HELP SWITCH WILDCARDS for more, and HELP SWITCH2 for examples
+  See also: reswitch(), if()
 & SWITCH2
   Examples of switch() and related functions:
     > say switch(test, *a*, foo, *b*, bar, *t*, neat, baz)
@@ -3771,7 +3772,7 @@ for an object named "Test", preferring a thing over other types.
 
   See also: timefmt(), timestring(), convsecs(), convtime()
 & ETIMEFMT()
-  etimefmt(<format>[, <secs>])
+  etimefmt(<format>, <secs>)
 
   This function is similar to timestring() - it formats an elapsed time
   into days, hours, minutes and seconds. However, its formatting is
