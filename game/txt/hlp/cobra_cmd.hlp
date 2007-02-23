@@ -948,7 +948,7 @@ See also: look, @adescribe
   object, its STARTUP attribute is triggered. If you @destroy a
   GOING object, it is purged immediately.
 
-  Directors may @nuke players. If the DESTROY_POSSESSION config option
+  Directors may @nuke players. If the destroy_possessions config option
   is set (see @config), destroying a player destroys all non-SAFE
   things the player owns, and @chowns SAFE things to God. If not,
   destroying a player @chowns all their objects to God.
@@ -2848,6 +2848,11 @@ See also: @wall, @wizwall
   If <class>=MINDB, only objects with dbrefs of <restriction> or
   higher will be listed. If <class>=MAXDB, only objects with dbrefs
   of <restriction> or lower will be listed.
+
+  If <class>=START, then @search will start returning results at the
+  <restriction>th result.
+
+  If <class>=COUNT, then @search will only return up to <restriction> results.
 
   For the class TYPE=PLAYER, and for  PLAYER=<player-name>, anyone may
   obtain information on any player.  In all other cases, only Directors may
