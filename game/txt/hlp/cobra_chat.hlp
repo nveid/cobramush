@@ -238,7 +238,7 @@ specific indirect lock instead of the default one:
 & CTITLE()
   ctitle(<channel>,<object>)
 
-  Returns <objects> @chan/title on <channel>. You must either
+  Returns <object>'s @chan/title on <channel>. You must either
   be able to examine the object, or it must visible be on a channel
   which you are allowed to join.
 & CWHO()
