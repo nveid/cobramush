@@ -92,8 +92,7 @@ static enum cmatch_type find_channel_partial_on(const char *name, CHAN **chan,
 						dbref player);
 static enum cmatch_type find_channel_partial_off(const char *name, CHAN **chan,
 						 dbref player);
-static char *list_cflags(CHAN *c);
-static char *list_cuflags(CHANUSER *u);
+static char *list_cuflags(CHANUSER *u, int verbose);
 static void channel_join_self(dbref player, const char *name);
 static void channel_leave_self(dbref player, const char *name);
 static void do_channel_who(dbref player, CHAN *chan);
@@ -141,6 +140,13 @@ static PRIV priv_table[] = {
   {"NoCemit", 'C', CHANNEL_NOCEMIT, CHANNEL_NOCEMIT},
   {"Interact", 'I', CHANNEL_INTERACT, CHANNEL_INTERACT},
   {"ChanObj", 'Z', CHANNEL_COBJ, CHANNEL_COBJ},
+  {NULL, '\0', 0, 0}
+};
+
+static PRIV chanuser_priv[] = {
+  {"Quiet", 'Q', CU_QUIET, CU_QUIET},
+  {"Hide", 'H', CU_HIDE, CU_HIDE},
+  {"Gag", 'G', CU_GAG, CU_GAG},
   {NULL, '\0', 0, 0}
 };
 
@@ -2163,8 +2169,8 @@ do_channel_list(dbref player, const char *partname)
   CHANUSER *u;
   char numusers[BUFFER_LEN];
   char cleanname[CHAN_NAME_LEN];
-  const char thirtyblanks[31] = "                              ";
   char blanks[31];
+  int len;
   int numblanks;
 
   if (SUPPORT_PUEBLO)
@@ -2182,9 +2188,21 @@ do_channel_list(dbref player, const char *partname)
 		TAG_START, TAG_END);
       else
 	sprintf(numusers, "%5ld", ChanNumUsers(c));
-      numblanks = strlen(ChanName(c)) - strlen(cleanname);
-      if (numblanks > 0 && numblanks < 31) {
-	strcpy(blanks, thirtyblanks);
+      /* Display length is strlen(cleanname), but actual length is
+       * strlen(ChanName(c)). There are two different cases:
+       * 1. actual length <= 30. No problems.
+       * 2. actual length > 30, we must reduce the number of
+       * blanks we add by the (actual length-30) because our
+       * %-30s is going to overflow as well.
+       */
+      len = strlen(ChanName(c));
+      numblanks = len - strlen(cleanname);
+      if (numblanks > 0 && numblanks < CHAN_NAME_LEN) {
+	memset(blanks, ' ', CHAN_NAME_LEN - 1);
+	if (len > 30)
+	  numblanks -= (len - 30);
+	if (numblanks < 0)
+	  numblanks = 0;
 	blanks[numblanks] = '\0';
       } else {
 	blanks[0] = '\0';
@@ -2219,55 +2237,24 @@ do_channel_list(dbref player, const char *partname)
 }
 
 static char *
-list_cflags(CHAN *c)
+list_cuflags(CHANUSER *u, int verbose)
 {
   static char tbuf1[BUFFER_LEN];
   char *bp;
 
+  /* We have to handle hide separately, since it can be the player */
   bp = tbuf1;
-  if (Channel_Disabled(c))
-    safe_chr('D', tbuf1, &bp);
-  if (Channel_Player(c))
-    safe_chr('P', tbuf1, &bp);
-  if (Channel_Object(c))
-    safe_chr('O', tbuf1, &bp);
-  if (Channel_Admin(c))
-    safe_chr('A', tbuf1, &bp);
-  if (Channel_Director(c))
-    safe_chr('W', tbuf1, &bp);
-  if (Channel_Quiet(c))
-    safe_chr('Q', tbuf1, &bp);
-  if (Channel_CanHide(c))
-    safe_chr('H', tbuf1, &bp);
-  if (Channel_Open(c))
-    safe_chr('o', tbuf1, &bp);
-  if (Channel_NoTitles(c))
-    safe_chr('T', tbuf1, &bp);
-  if (Channel_NoNames(c))
-    safe_chr('N', tbuf1, &bp);
-  if (Channel_NoCemit(c))
-    safe_chr('C', tbuf1, &bp);
-  if (Channel_Interact(c))
-    safe_chr('I', tbuf1, &bp);
-  if(ChanType(c) & CHANNEL_COBJ)
-    safe_chr('Z', tbuf1, &bp);
-  *bp = '\0';
-  return tbuf1;
-}
-
-static char *
-list_cuflags(CHANUSER *u)
-{
-  static char tbuf1[BUFFER_LEN];
-  char *bp;
-
-  bp = tbuf1;
-  if (Chanuser_Gag(u))
-     safe_chr('G', tbuf1, &bp);
-  if (Chanuser_Quiet(u))
-     safe_chr('Q', tbuf1, &bp);
-  if (Chanuser_Hide(u))
-     safe_chr('H', tbuf1, &bp);
+  if (verbose) {
+    if (Chanuser_Hide(u))
+      safe_str("Hide ", tbuf1, &bp);
+    safe_str(privs_to_string(chanuser_priv, CUtype(u) & ~CU_HIDE), tbuf1, &bp);
+    if (bp > tbuf1 && *bp == ' ')
+      bp--;
+  } else {
+    if (Chanuser_Hide(u))
+      safe_chr('H', tbuf1, &bp);
+    safe_str(privs_to_letters(chanuser_priv, CUtype(u) & ~CU_HIDE), tbuf1, &bp);
+  }
   *bp = '\0';
   return tbuf1;
 }
@@ -2332,7 +2319,10 @@ FUNCTION(fun_cflags)
       return;
     }
     if (nargs == 1) {
-      safe_str(list_cflags(c), buff, bp);
+      if (string_prefix(called_as, "CL"))
+	safe_str(privs_to_string(priv_table, ChanType(c)), buff, bp);
+      else
+	safe_str(privs_to_letters(priv_table, ChanType(c)), buff, bp);
       return;
     }
     thing = match_thing(executor, args[1]);
@@ -2349,8 +2339,40 @@ FUNCTION(fun_cflags)
       safe_str(T("#-1 NOT ON CHANNEL"), buff, bp);
       return;
     }
-    safe_str(list_cuflags(u), buff, bp);
+    safe_str(list_cuflags(u, string_prefix(called_as, "CL") ? 1 : 0), buff, bp);
     break;
+  }
+}
+
+/* ARGSUSED */
+FUNCTION(fun_cinfo)
+{
+  /* Can be called as CDESC, CBUFFER, CUSERS, CMSGS */
+  CHAN *c;
+  if (!args[0] || !*args[0]) {
+    safe_str(T("#-1 NO CHANNEL GIVEN"), buff, bp);
+    return;
+  }
+  switch (find_channel(args[0], &c, executor)) {
+  case CMATCH_NONE:
+    safe_str(T("#-1 NO SUCH CHANNEL"), buff, bp);
+    return;
+  case CMATCH_AMBIG:
+    safe_str(T("#-1 AMBIGUOUS CHANNEL NAME"), buff, bp);
+    return;
+  default:
+    if (!Chan_Can_See(c, executor)) {
+      safe_str(T("#-1 NO SUCH CHANNEL"), buff, bp);
+      return;
+    }
+    if (string_prefix(called_as, "CD"))
+      safe_str(ChanTitle(c), buff, bp);
+    else if (string_prefix(called_as, "CB"))
+      safe_integer(BufferQSize(ChanBufferQ(c)), buff, bp);
+    else if (string_prefix(called_as, "CU"))
+      safe_integer(ChanNumUsers(c), buff, bp);
+    else if (string_prefix(called_as, "CM"))
+      safe_integer(ChanNumMsgs(c), buff, bp);
   }
 }
 
@@ -2410,6 +2432,57 @@ FUNCTION(fun_ctitle)
     if (CUtitle(u))
        safe_str(CUtitle(u), buff, bp);
     break;
+  }
+}
+
+/* ARGSUSED */
+FUNCTION(fun_cstatus)
+{ 
+  /* cstatus(<channel>,<object>) returns the object's status on that chan.
+   * You must pass the channel's see-lock, and
+   * either you must either be able to examine <object>, or
+   * you must be Priv_Who or <object> must not be hidden
+   */
+  CHAN *c;
+  CHANUSER *u;
+  dbref thing;
+    
+  if (!args[0] || !*args[0]) {
+    safe_str(T("#-1 NO CHANNEL GIVEN"), buff, bp);
+    return;
+  }   
+  switch (find_channel(args[0], &c, executor)) {
+  case CMATCH_NONE:
+    safe_str(T("#-1 NO SUCH CHANNEL"), buff, bp);
+    return;
+  case CMATCH_AMBIG:
+    safe_str(T("#-1 AMBIGUOUS CHANNEL NAME"), buff, bp);
+    return;
+  default:
+    thing = match_thing(executor, args[1]);
+    if (thing == NOTHING) {
+      safe_str(T(e_match), buff, bp);
+      return;
+    }
+    if (!Chan_Can_See(c, executor)) {
+      safe_str(T("#-1 NO SUCH CHANNEL"), buff, bp);
+      return;
+    }
+    u = onchannel(thing, c);
+    if (!u ||(!IsThing(thing) && !Connected(thing))) {
+      /* Easy, they're not on it or a disconnected player */
+      safe_str("Off", buff, bp);
+      return;
+    }
+    /* They're on the channel, but maybe we can't see them? */
+    if (Chanuser_Hide(u) &&
+	!(Priv_Who(executor) || Can_Examine(executor, thing))) {
+      safe_str("Off", buff, bp);
+      return;
+    }
+    /* We can see them, so we report if they're On or Gag */
+    safe_str(Chanuser_Gag(u) ? "Gag" : "On", buff, bp);
+    return;
   }
 }
 

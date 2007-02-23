@@ -306,12 +306,18 @@ FUNTAB flist[] = {
   {"CASEALL", fun_switch, 3, INT_MAX, FN_NOPARSE},
   {"CAT", fun_cat, 1, INT_MAX, FN_REG},
 #ifdef CHAT_SYSTEM
+  {"CBUFFER", fun_cinfo, 1, 1, FN_REG},
+  {"CDESC", fun_cinfo, 1, 1, FN_REG},
   {"CEMIT", fun_cemit, 2, 3, FN_REG},
   {"CFLAGS", fun_cflags, 1, 2, FN_REG},
   {"CHANNELS", fun_channels, 0, 2, FN_REG},
+  {"CLFLAGS", fun_cflags, 1, 2, FN_REG},
   {"CLOCK", fun_clock, 1, 2, FN_REG},
+  {"CMSGS", fun_cinfo, 1, 1, FN_REG},
   {"COWNER", fun_cowner, 1, 1, FN_REG},
+  {"CSTATUS", fun_cinfo, 1, 1, FN_REG},
   {"CTITLE", fun_ctitle, 2, 2, FN_REG},
+  {"CUSERS", fun_cinfo, 1, 1, FN_REG},
   {"CWHO", fun_cwho, 1, 1, FN_REG},
 #endif /* CHAT_SYSTEM */
   {"CENTER", fun_center, 2, 4, FN_REG},

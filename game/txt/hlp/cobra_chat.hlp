@@ -241,6 +241,25 @@ specific indirect lock instead of the default one:
   Returns <object>'s @chan/title on <channel>. You must either
   be able to examine the object, or it must visible be on a channel
   which you are allowed to join.
+& CSTATUS()
+  cstatus(<channel>,<object>)
+
+  Returns <object>'s status with respect to <channel>, which may be
+  "Off", "On", or "Gag". You must either be able to examine the object,
+  or it must visible be on the channel; "Off" is returned for
+  objects that you can not see on the channel.
+& CDESC()
+& CUSERS()
+& CMSGS()
+& CBUFFER()
+  cdesc(<channel>)
+  cusers(<channel>)
+  cmsgs(<channel>)
+  cbuffer(<channel>)
+
+  Return the description, number of users, number of messages,
+  or buffer size of <channel>, respectively. This information is
+  also displayed in @chan/list.
 & CWHO()
   cwho(<channel>)
  
@@ -255,8 +274,11 @@ specific indirect lock instead of the default one:
   If the third argument is a true value, the channel name will be
   prepended to the message, behaving like @cemit/noisy.
 & CFLAGS()
+& CLFLAGS()
   cflags(<channel>)
   cflags(<channel>,<object>)
+  clflags(<channel>)
+  clflags(<channel>,<object>)
 
   With one argument, cflags() returns a list of flags set on the
   given channel, represented as a string of characters. See
@@ -270,6 +292,9 @@ specific indirect lock instead of the default one:
   You must be able to see that channel and to examine the object
   to use this function. If the object is not on the channel, an
   error is returned.
+
+  The clflags versions return a space-separated list of flag names,
+  rather than a string of flag characters.
 & CHANNELS()
   channels([<delimiter>])
   channels(<object>)
@@ -301,5 +326,6 @@ specific indirect lock instead of the default one:
 & Channel functions
   Channel functions work with the channel system.
 
-  cemit()       cflags()      channels()    clock()      cowner()
-  ctitle()      cwho()
+  cbuffer()     cdesc()       cemit()       cflags()      channels()
+  clflags()     clock()       cmsgs()       cowner()      cstatus()
+  ctitle()      cusers()      cwho()
