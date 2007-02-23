@@ -69,6 +69,7 @@ FUNCTION_PROTO(fun_ctu);
 FUNCTION_PROTO(fun_cwho);
 FUNCTION_PROTO(fun_dbwalker);
 FUNCTION_PROTO(fun_dec);
+FUNCTION_PROTO(fun_decompose);
 FUNCTION_PROTO(fun_decrypt);
 FUNCTION_PROTO(fun_default);
 FUNCTION_PROTO(fun_delete);

@@ -344,6 +344,7 @@ FUNTAB flist[] = {
 #endif
   {"CTIME", fun_ctime, 1, 1, FN_REG},
   {"DEC", fun_dec, 1, 1, FN_REG},
+  {"DECOMPOSE", fun_decompose, 1, -1, FN_REG},
   {"DECRYPT", fun_decrypt, 2, 2, FN_REG},
   {"DEFAULT", fun_default, 2, 2, FN_NOPARSE},
   {"DELETE", fun_delete, 3, 3, FN_REG},

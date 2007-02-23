@@ -10,6 +10,7 @@
 #include "copyrite.h"
 
 #include <string.h>
+#include <ctype.h>
 
 #include "conf.h"
 #include "externs.h"
@@ -1406,6 +1407,63 @@ struct dh_args {
   char const *name;	/**< Decompile object name */
   int skipdef;		/**< Skip default flags on attributes if true */
 };
+
+extern char escaped_chars[UCHAR_MAX + 1];
+
+char *
+decompose_str(char *what)
+{
+  static char value[BUFFER_LEN];
+  char *ptr, *s;
+  int len;
+  int dospace;
+
+  len = strlen(what);
+  /* Go through the string, escaping characters and
+   * turning every other space into %b. */
+
+  s = value;
+  ptr = what;
+  /* Put a \ at the beginning if it won't already be put there,
+   * unless it's a space, which would require %b, %r, or %t anyway */
+  if (!escaped_chars[(unsigned int) *what] && !isspace(*what)) {
+    safe_chr('\\', value, &s);
+  }
+  dospace = 1;
+  for (; *ptr; ptr++) {
+    switch (*ptr) {
+    case ' ':
+      if (dospace) {
+        safe_str("%b", value, &s);
+      } else {
+        safe_chr(' ', value, &s);
+      }
+      dospace = !dospace;
+      break;
+    case '\n':
+      dospace = 0;
+      safe_str("%r", value, &s);
+      break;
+    case '\t':
+      dospace = 0;
+      safe_str("%t", value, &s);
+      break;
+    default:
+      if (escaped_chars[(unsigned int) *ptr]) {
+        safe_chr('\\', value, &s);
+      }
+      safe_chr(*ptr, value, &s);
+      dospace = 0;
+    }
+  }
+  /* Now check the last space. */
+  if (*(s - 1) == ' ') {
+    s -= 1;
+    safe_str("%b", value, &s);
+  }
+  *s = '\0';
+  return value;
+}
 
 static int
 decompile_helper(dbref player, dbref thing __attribute__ ((__unused__)), 	

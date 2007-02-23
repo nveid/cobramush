@@ -273,6 +273,7 @@ enum look_type { LOOK_NORMAL, LOOK_TRANS, LOOK_AUTO, LOOK_CLOUDYTRANS,
 extern void look_room(dbref player, dbref loc, enum look_type style);
 extern void do_look_around(dbref player);
 extern void do_look_at(dbref player, const char *name, int key);
+extern char *decompose_str(char *what);
 
 /* From memcheck.c */
 extern void add_check(const char *ref);

@@ -1117,6 +1117,16 @@ extern char escaped_chars[UCHAR_MAX + 1];
 extern char escaped_chars_s[UCHAR_MAX +1];
 
 /* ARGSUSED */
+FUNCTION(fun_decompose)
+{
+  /* This function simply returns a decompose'd version of
+   * the included string, such that
+   * s(decompose(str)) == str, down to the last space, tab,
+   * and newline. Except for ansi. */
+  safe_str(decompose_str(args[0]), buff, bp);
+}
+
+/* ARGSUSED */
 FUNCTION(fun_secure)
 {
   /* this function smashes all occurences of "unsafe" characters in a string.
