@@ -71,6 +71,9 @@ struct search_spec {
   char name[BUFFER_LEN];	/**< Limit to those prefix-matching this name */
   dbref low;	/**< Limit to dbrefs here or higher */
   dbref high;	/**< Limit to dbrefs here or lower */
+  int start;  /**< Limited results: start at this one. */
+  int count;  /**< Limited results: return this many */
+  int end;    /**< Limited results: return until this one.*/
 };
 
 int tport_dest_ok(dbref player, dbref victim, dbref dest);
@@ -1780,6 +1783,8 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
   strcpy(spec->name, "");
   spec->low = 0;
   spec->high = db_top - 1;
+  spec->start = 1;		/* 1-indexed */
+  spec->count = 0;
 
   /* set limits on who we search */
   if (!owner || !*owner || strcasecmp(owner, "all") == 0)
@@ -1883,6 +1888,18 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
       spec->type = TYPE_PLAYER;
     } else if (string_prefix("name", class)) {
       strcpy(spec->name, restriction);
+    } else if (string_prefix("start", class)) {
+      spec->start = parse_integer(restriction);
+      if (spec->start < 1) {
+	notify(player, T("Invalid start index"));
+	return -1;
+      }
+    } else if (string_prefix("count", class)) {
+      spec->count = parse_integer(restriction);
+      if (spec->count < 1) {
+	notify(player, T("Invalid count index"));
+	return -1;
+      }
     } else if (string_prefix("parent", class)) {
       if (!*restriction) {
 	spec->parent = NOTHING;
@@ -1952,6 +1969,7 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
       return -1;
     }
   }
+  spec->end = spec->start + spec->count;
   return 0;
 }
 
@@ -1965,6 +1983,7 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
   size_t nresults = 0;
   int n;
   struct search_spec spec;
+  int count;
 
   /* make sure player has money to do the search */
   if (!payfor(player, FIND_COST)) {
@@ -2029,6 +2048,16 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
       if (!parse_boolean(tbuf1))
 	continue;
     }
+
+    /* Only include the matching dbrefs from start to start+count */
+    count++;
+    if (count < spec.start) {
+      continue;
+    }
+    if (spec.count && count >= spec.end) {
+      continue;
+    }
+
     if (nresults >= result_size) {
       dbref *newresults;
       result_size *= 2;
