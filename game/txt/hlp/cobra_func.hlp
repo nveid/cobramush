@@ -3878,6 +3878,8 @@ for an object named "Test", preferring a thing over other types.
 
   See also: MERGE()
 & TRIM()
+& TRIMPENN()
+& TRIMTINY()
   trim(<string>[,<character to trim>][,<trim style>])
   trimpenn(<string>[,<character to trim>][,<trim style>])
   trimtiny(<string>[,<trim style>][,<character to trim>])
