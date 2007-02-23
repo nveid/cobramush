@@ -2113,12 +2113,17 @@ for an object named "Test", preferring a thing over other types.
 
   See also: pos()
 & LSEARCH()
+& NLSEARCH()
 & SEARCH()
+& NSEARCH()
 & LSEARCHR()
 & CHILDREN()
+& NCHILDREN()
   lsearch(<player>[, <class>[, <restriction>]])
+  nlsearch(<player>[, <class>[, <restriction>]])
   lsearchr(<player>[, <class>[, <restriction>]])
   children(<object>)
+  nchildren(<object>)
  
   This function is similar to the @search command, except it returns
   just a list of dbref numbers. It is computationally expensive, and
@@ -2135,6 +2140,9 @@ for an object named "Test", preferring a thing over other types.
   children() is exactly the same as lsearch(<me|all>,parent,<object>),
   using "all" for See_All/Search_All players  and "me" for others.
     
+  nlsearch(...) and nchildren(...) return the count of results that
+  would be returned by lsearch() or children() with the same args.
+
   See 'help lsearch2' for more details.
 & LSEARCH2
 & SEARCH2 

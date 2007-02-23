@@ -1292,6 +1292,7 @@ do_search(dbref player, const char *arg1, char **arg3)
 FUNCTION(fun_lsearch)
 {
   int nresults;
+  int return_count = 0;
   dbref *results = NULL;
   int rev = !strcmp(called_as, "LSEARCHR");
 
@@ -1300,18 +1301,26 @@ FUNCTION(fun_lsearch)
     return;
   }
 
-  if (!strcmp(called_as, "CHILDREN")) {
+  if (called_as[0] == 'N') {
+    /* Return the count, not the values */
+    return_count = 1;
+  }
+
+  if (!strcmp(called_as, "CHILDREN") || !strcmp(called_as, "NCHILDREN")) {
     const char *myargs[2];
     myargs[0] = "PARENT";
     myargs[1] = args[0];
     nresults = raw_search(executor, NULL, 2, myargs, &results, pe_info);
-  } else
+  } else {
     nresults =
       raw_search(executor, args[0], nargs - 1, (const char **) (args + 1),
 		 &results, pe_info);
+  }
 
   if (nresults < 0) {
     safe_str("#-1", buff, bp);
+  } else if (return_count) {
+    safe_integer(nresults, buff, bp);
   } else if (nresults == 0) {
     notify(executor, T("Nothing found."));
   } else {

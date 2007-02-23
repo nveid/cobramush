@@ -497,6 +497,7 @@ FUNTAB flist[] = {
   {"NAMEGRABALL", fun_namegraball, 2, 3, FN_REG},
   {"NAND", fun_nand, 1, INT_MAX, FN_REG},
   {"NATTR", fun_nattr, 1, 1, FN_REG},
+  {"NCHILDREN", fun_lsearch, 1, 1, FN_REG},
   {"NCON", fun_dbwalker, 1, 1, FN_REG},
   {"NEXITS", fun_dbwalker, 1, 1, FN_REG},
   {"NPLAYERS", fun_dbwalker, 1, 1, FN_REG},
@@ -508,11 +509,13 @@ FUNTAB flist[] = {
   {"NEARBY", fun_nearby, 2, 2, FN_REG},
   {"NEQ", fun_neq, 2, 2, FN_REG},
   {"NEXT", fun_next, 1, 1, FN_REG},
+  {"NLSEARCH", fun_lsearch, 1, INT_MAX, FN_REG},
   {"NOR", fun_nor, 1, INT_MAX, FN_REG},
   {"NOT", fun_not, 1, 1, FN_REG},
 #ifdef CHAT_SYSTEM 
   {"NSCEMIT", fun_cemit, 2, 3, FN_REG},
 #endif /* CHAT_SYSTEM */
+  {"NSEARCH", fun_lsearch, 1, INT_MAX, FN_REG},
   {"NSEMIT", fun_emit, 1, -1, FN_REG},
   {"NSLEMIT", fun_lemit, 1, -1, FN_REG},
   {"NSOEMIT", fun_oemit, 2, -2, FN_REG},
