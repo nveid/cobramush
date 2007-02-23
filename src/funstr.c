@@ -936,7 +936,7 @@ FUNCTION(fun_center)
   if (lsp >= BUFFER_LEN)
     lsp = rsp = BUFFER_LEN - 1;
 
-  if (!args[2] || !*args[2]) {
+  if ((!args[2] || !*args[2]) && (!args[3] || !*args[3])) {
     /* Fast case for default fill with spaces */
     safe_fill(' ', lsp, buff, bp);
     safe_strl(args[0], arglens[0], buff, bp);
@@ -946,6 +946,10 @@ FUNCTION(fun_center)
 
   /* args[2] contains the possibly ansi, multi-char fill string */
   filllen = ansi_strlen(args[2]);
+  if (!filllen) {
+    safe_str(T("#-1 FILL ARGUMENT MAY NOT BE ZERO-LENGTH"), buff, bp);
+    return;
+  }
   as = parse_ansi_string(args[2]);
   fillq = lsp / filllen;
   fillr = lsp % filllen;
@@ -961,6 +965,10 @@ FUNCTION(fun_center)
   if (nargs > 3) {
     if (args[3] && *args[3]) {
       filllen = ansi_strlen(args[3]);
+      if (!filllen) {
+	safe_str(T("#-1 FILL ARGUMENT MAY NOT BE ZERO-LENGTH"), buff, bp);
+	return;
+      }
       as = parse_ansi_string(args[3]);
       fillq = rsp / filllen;
       fillr = rsp % filllen;
@@ -978,12 +986,19 @@ FUNCTION(fun_center)
     return;
   }
   /* No args[3], so we flip args[2] */
+  filllen = ansi_strlen(args[2]);
+  as = parse_ansi_string(args[2]);
+  fillq = rsp / filllen;
+  fillr = rsp % filllen;
+  fp = fillstr;
+  for (i = 0; i < fillq; i++)
+    safe_ansi_string(as, 0, as->len, fillstr, &fp);
+  safe_ansi_string(as, 0, fillr, fillstr, &fp);
+  *fp = '\0';
+  free_ansi_string(as);
   as = parse_ansi_string(fillstr);
   flip_ansi_string(as);
   safe_ansi_string(as, 0, as->len, buff, bp);
-  /* Is there an extra char left over we need to pad with? */
-  if (rsp > lsp)
-    safe_ansi_string(as, 0, 1, buff, bp);
   free_ansi_string(as);
 }
 
