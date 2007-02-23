@@ -290,7 +290,7 @@ do_attribute_access(dbref player, char *name, char *perms, int retroactive)
     return;
   }
   if (strcasecmp(perms, "none")) {
-    flags = string_to_privs(attr_privs_set, perms, 0);
+    flags = list_to_privs(attr_privs_set, perms, 0);
     if (!flags) {
       notify(player, T("I don't understand those permissions."));
       return;

@@ -22,7 +22,9 @@
 /** Convert a string to a set of privilege bits, masked by an original set.
  * Given a privs table, a string, and an original set of privileges,
  * return a modified set of privileges by applying the privs in the
- * string to the original set of privileges.
+ * string to the original set of privileges. IF A SINGLE WORD STRING
+ * IS GIVEN AND IT ISN'T THE NAME OF A PRIV, PARSE IT AS INDIVIDUAL
+ * PRIV CHARS.
  * \param table pointer to a privtab.
  * \param str a space-separated string of privilege names to apply.
  * \param origprivs the original privileges.
@@ -82,6 +84,53 @@ string_to_privs(PRIV *table, const char *str, long int origprivs)
     return letter_to_privs(table, str, origprivs);
   return ((origprivs | yes) & ~no);
 }
+
+/** Convert a list to a set of privilege bits, masked by an original set.
+ * Given a privs table, a list, and an original set of privileges,
+ * return a modified set of privileges by applying the privs in the
+ * string to the original set of privileges. No prefix-matching is
+ * permitted in this list. 
+ * \param table pointer to a privtab.
+ * \param str a space-separated string of privilege names to apply.
+ * \param origprivs the original privileges.
+ * \return a privilege bitmask.
+ */
+int
+list_to_privs(PRIV *table, const char *str, long int origprivs)
+{ 
+  PRIV *c; 
+  long int yes = 0;
+  long int no = 0;
+  char *p, *r;
+  char tbuf1[BUFFER_LEN];
+  int not;
+  int words = 0;
+
+  if (!str || !*str)
+    return origprivs;
+  strcpy(tbuf1, str);
+  r = trim_space_sep(tbuf1, ' ');
+  while ((p = split_token(&r, ' '))) {
+    words++;
+    not = 0;
+    if (*p == '!') {
+      not = 1;
+      if (!*++p)
+	continue;
+    }
+    for (c = table; c->name; c++) {
+      if (!strcasecmp(c->name, p)) {
+	if (not)
+	  no |= c->bits_to_set;
+	else
+	  yes |= c->bits_to_set;
+	break;
+      }
+    }
+  }
+  return ((origprivs | yes) & ~no);
+}
+
 
 /** Convert a string to 2 sets of privilege bits, privs to set and
  * privs to clear.

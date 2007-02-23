@@ -392,7 +392,7 @@ See also: @success, @osuccess, get, @lock, EXITS, ACTION LISTS
   Used without switches, @attribute shows info about a standard attrib.
 
   @attribute/access adds a new standard attribute into the table,
-  associating it with the given space-separated list of flags.
+  associating it with the given space-separated list of full flag names.
   See 'help @set' for possible flags. A flag list of "none" removes
   all flag associations.
   If the /retroactive switch is added, the flags are assigned to every copy
