@@ -1745,13 +1745,13 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
       strcpy(tbuf1, atr_value(old));
       if (s && (!*s || (strcasecmp(s, tbuf1)
 			&& !ok_player_alias(s, player, thing)))) {
-        notify(player, T("That is not a valid alias."));
+        notify_format(player, T("'%s' is not a valid alias."), s);
         return -1;
       }
     } else {
       /* No old alias */
       if (s && *s && !ok_player_alias(s, player, thing)) {
-        notify(player, T("That is not a valid alias."));
+        notify_format(player, T("'%s' is not a valid alias."), s);
         return -1;
       }
     }
