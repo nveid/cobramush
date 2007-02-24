@@ -120,6 +120,7 @@ hints/a-u-x.sh
 hints/aix.sh
 hints/cygwin.sh
 hints/darwin.sh
+hints/darwin-fink.sh
 hints/dec_osf.sh
 hints/freebsd.sh
 hints/hpux-gcc.sh
