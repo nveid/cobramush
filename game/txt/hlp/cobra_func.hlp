@@ -1137,7 +1137,8 @@
   or used as an attribute for an object (like the description of a mail
   message object).  Since the function preserves the original string, 
   it is, in most cases, a better choice than SECURE().
-  
+
+  See also: decompose(), secure()
 & EVAL()
 & GET_EVAL()
   eval(<object>, <attribute>)
@@ -3121,8 +3122,7 @@ for an object named "Test", preferring a thing over other types.
   can make output slightly ugly, but it's a good way of preventing other
   people from doing nasty things with your objects.
 
-  See also: ESCAPE()
-
+  See also: decompose(), escape()
 & SET()
   set(<object>, <flag>)
   set(<object>/<attribute>, <attribute flag>)

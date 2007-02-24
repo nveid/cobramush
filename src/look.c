@@ -1414,21 +1414,29 @@ char *
 decompose_str(char *what)
 {
   static char value[BUFFER_LEN];
-  char *ptr, *s;
+  char *ptr, *s, *codestart;
+  char ansi_letter;
   int len;
   int dospace;
+  int flag_depth, ansi_depth;
+  int digits;
 
   len = strlen(what);
+  flag_depth = 0;
+  ansi_depth = 0;
+
   /* Go through the string, escaping characters and
    * turning every other space into %b. */
 
   s = value;
   ptr = what;
+#ifdef NEVER
   /* Put a \ at the beginning if it won't already be put there,
    * unless it's a space, which would require %b, %r, or %t anyway */
   if (!escaped_chars[(unsigned int) *what] && !isspace(*what)) {
     safe_chr('\\', value, &s);
   }
+#endif
   dospace = 1;
   for (; *ptr; ptr++) {
     switch (*ptr) {
@@ -1448,6 +1456,155 @@ decompose_str(char *what)
       dospace = 0;
       safe_str("%t", value, &s);
       break;
+    case ESC_CHAR:
+      ptr++;
+      if (!*ptr) {
+	ptr--;
+	break;
+      }
+      /* Check if this is any sort of useful code. */
+      if (*ptr == '[' && *(ptr + 1) && *(ptr + 2)) {
+	codestart = ptr;	/* Save the address of the escape code. */
+	ptr++;
+	digits = 0;		/* Digit count is zero. */
+	/* The following code works in this way:
+	 * 1) If a character is a ;, we are allowed to count 2 more digits
+	 * 2) If the digits count is 3, break out of the "ansi" code.
+	 * 3) If the character is not a number or ;, break out.
+	 * 4) If an 'm' is encountered, the for-loop exits.
+	 * The only non-breaking exit occurs when the code ends with "m".
+	 * Otherwise, we break out with the ptr pointing to the end of
+	 * the invalid code, causing decompose() to ignore it entirely.
+	 */
+	for (; *ptr && (*ptr != 'm'); ptr++) {
+	  if (*ptr == ';') {
+	    if (digits == 0) {	/* No double-;s are allowed. */
+	      digits = 3;
+	      break;
+	    }
+	    digits = 0;
+	  } else if (digits >= 2) {
+	    digits = 3;		/* If we encounter a 3-number code, break out. */
+	    break;
+	  } else if (isdigit(*ptr)) {
+	    digits++;		/* Count the numbers we encounter. */
+	  } else {
+	    digits = 3;
+	    break;
+	  }
+	}
+
+	/* 3 is the break-code. 0 means there's no ANSI at all! */
+	if (!*ptr || digits == 3 || digits == 0) {
+	  break;
+	}
+
+	/* It IS an ansi code! It ends in "m" anyway.
+	 * Set ptr to point to the first digit in the code. We are
+	 * promised at this point that ptr+1 is not NUL.
+	 */
+	ptr = codestart + 1;
+
+	/* Check if the first part of the code is two-digit (color) */
+	if (*(ptr + 1) >= '0' && *(ptr + 1) <= '7') {
+	  if (flag_depth < ansi_depth) {
+	    safe_str(")]", value, &s);
+	    ansi_depth--;
+	  }
+	} else {		/* ansi "flag", inverse, flash, underline, hilight */
+	  flag_depth = ansi_depth + 1;
+	}
+	/* Check to see if this is an 'ansi-reset' code. */
+	if (*ptr == '0' && *(ptr + 1) == 'm') {
+	  for (; ansi_depth > 0; ansi_depth--) {
+	    safe_str(")]", value, &s);
+	  }
+	  flag_depth = 0;
+	  ptr++;
+	  break;
+	}
+
+	ansi_depth++;
+	safe_str("[ansi(", value, &s);
+	dospace = 1;
+
+	/* code for decompiling ansi */
+	for (; isdigit(*ptr) || *ptr == ';'; ptr++) {
+	  if (*ptr == ';')	/* Yes, it is necessary to do it this way. */
+	    ptr++;
+	  /* Break if there is an 'm' here. */
+	  if (!*ptr || !isdigit(*ptr))
+	    break;
+	  /* Check to see if the code is one character long. */
+	  if (*(ptr + 1) == ';' || *(ptr + 1) == 'm') {
+	    /* ANSI flag */
+	    switch (*ptr) {
+	    case '1':
+	      safe_chr('h', value, &s);
+	      break;
+	    case '4':
+	      safe_chr('u', value, &s);
+	      break;
+	    case '5':
+	      safe_chr('f', value, &s);
+	      break;
+	    case '7':
+	      safe_chr('i', value, &s);
+	      break;
+	    default:		/* Not a valid code. */
+	      break;
+	    }
+	  } else {
+	    if (!*(ptr + 1))
+	      break;		/* Sudden string end or lack of real color code. */
+	    ptr++;
+
+	    /* Check if this could be a real color (starts with 3 or 4) */
+	    if (*(ptr - 1) == '3' || *(ptr - 1) == '4') {
+	      switch (*ptr) {
+	      case '0':
+	        ansi_letter = 'x';
+	        break;
+	      case '1':
+	        ansi_letter = 'r';
+	        break;
+	      case '2':
+	        ansi_letter = 'g';
+	        break;
+	      case '3':
+	        ansi_letter = 'y';
+	        break;
+	      case '4':
+	        ansi_letter = 'b';
+	        break;
+	      case '5':
+	        ansi_letter = 'm';
+	        break;
+	      case '6': 
+	        ansi_letter = 'c';
+	        break;
+	      case '7':
+	        ansi_letter = 'w';
+	        break;
+	      default:
+	        break;		/* Not a valid color. */
+	      }
+	      /* If background color, change the letter to a capital. */
+	      if (*(ptr - 1) == '4')
+	        ansi_letter = toupper(ansi_letter);
+	      safe_chr(ansi_letter, value, &s);
+	    }
+	    /* No "else" here: If a two-digit code
+	     * doesn't start with 3 or 4, is isn't ANSI. */
+	  }
+	}
+	safe_chr(',', value, &s);
+      } else {
+	ptr--;
+	/* This shouldn't happen if we only have ansi codes
+	 * So if more dirty things must be added later... */
+      }
+      break;
     default:
       if (escaped_chars[(unsigned int) *ptr]) {
         safe_chr('\\', value, &s);
@@ -1460,6 +1617,9 @@ decompose_str(char *what)
   if (*(s - 1) == ' ') {
     s -= 1;
     safe_str("%b", value, &s);
+  }
+  for (; ansi_depth > 0; ansi_depth--) {
+    safe_str(")]", value, &s);
   }
   *s = '\0';
   return value;
