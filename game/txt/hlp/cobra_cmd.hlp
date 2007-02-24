@@ -3069,7 +3069,7 @@ See also: GENDER, SUBSTITUTION
 
   Example: @sql SHOW TABLES
 
-  See also: sql(), sqlescape()
+  See also: sql(), sqlescape(), mapsql()
 & @squota
   @squota <victim> [= [+|-] <amount>]
 

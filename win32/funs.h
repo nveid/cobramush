@@ -196,6 +196,7 @@ FUNCTION_PROTO(fun_mailstatus);
 FUNCTION_PROTO(fun_mailsubject);
 FUNCTION_PROTO(fun_mailtime);
 FUNCTION_PROTO(fun_map);
+FUNCTION_PROTO(fun_mapsql);
 FUNCTION_PROTO(fun_match);
 FUNCTION_PROTO(fun_matchall);
 FUNCTION_PROTO(fun_max);

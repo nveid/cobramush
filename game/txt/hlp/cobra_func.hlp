@@ -184,7 +184,7 @@
   database to which the MUSH is connected, if SQL support is
   available and enabled.
 
-  sql()         sqlescape()
+  sql()         sqlescape()   mapsql()
 
 & String functions
   String functions take at least one string and return a transformed
@@ -3426,7 +3426,44 @@ for an object named "Test", preferring a thing over other types.
   Example:
     > say [splice(foo bar baz,eek moof gleep,bar)]
     You say, "foo moof baz"
-  
+
+& MAPSQL()
+  mapsql([<object>/]<attribute>,query[, <osep>[, <dofieldnames>])
+
+  Performs an SQL query if the MUSH is configured to connect to an
+  SQL database server. This function requires a WIZARD flag or
+  the Sql_Ok power.
+
+  <query string> is evaluated, so it's useful to either read it from
+  another attribute with u() or use lit() to protect commas. If
+  you will be interpolating user-provided values into the query,
+  be careful to escape them with sqlescape().
+
+  Each row of the result is passed to <attribute>, with columns
+  as %1-%9. %0 is set to the row number, which will start with 1.
+
+  If <dofieldnames> evaluates to a true boolean, then the first call
+  will be with row number 0 and %1-%9 will be set to the field names.
+
+  See "Help mapsql2" for examples.
+  See also: sqlescape(), sql(), @sql
+& MAPSQL2
+
+  > @@ Field, Type, Null?, Key?, Default, Extra
+  > &each_row me=align(<15 <15 <5 <5 <10 <14,%1,%2,%3,%4,%5,%6)
+  > &tabledesc me=mapsql(each_row,describe %0,%r,1)
+  > th u(tabledesc,quotes)
+  Field           Type            Null  Key   Default    Extra
+  quoteid         int(11)               PRI              auto_increment
+  quote           text
+
+  > &each_bb me=(%0) - %1 (%2)
+  > &q me=SELECT bbname, count(*) from bbs group by bbname order by bbname
+  > th mapsql(each_bb,v(q),%r)
+  (1) - Announcements (5)
+  (2) - Advertisements (20)
+  ... etc
+
 & SQL()
   sql(<query string>,[<row delimiter>[,<field delimiter>])
 
@@ -3447,7 +3484,7 @@ for an object named "Test", preferring a thing over other types.
      &SEL_GETID obj = SELECT id FROM mytable WHERE name = '[sqlescape(%0)]'
      &DOIT obj = $do *: ... [setq(0,sql(u(SEL_GETID,%0),~,|))] ...
 
-  See also: sqlescape(), @sql
+  See also: sqlescape(), mapsql(), @sql
 
 & SQLESCAPE()
   sqlescape(<string>)
@@ -3465,7 +3502,7 @@ for an object named "Test", preferring a thing over other types.
 
   You must be a WIZARD or have the Sql_Ok power to use this function.
 
-  See also: sql(), @sql
+  See also: sql(), mapsql(), @sql
 
 & SQRT()
   sqrt(<number>)

@@ -33,8 +33,8 @@
 static MYSQL *mysql_struct = NULL;
 #define MYSQL_RETRY_TIMES 3
 
-static int safe_sql_query(dbref player, char *q_string, char *rowsep,
-			  char *fieldsep, char *buff, char **bp);
+static MYSQL_RES *sql_query(char *query_str, int *affected_rows);
+static void free_sql_query(MYSQL_RES * qres);
 void sql_timer();
 static int sql_init(void);
 #ifdef _SWMP_
@@ -42,7 +42,7 @@ void sql_startup();
 void sqenv_clear(int);
 static int sqllist_check(dbref thing, dbref player, char type, char end, char *str, int just_match);
 int sql_env[2];
-#endif 
+#endif
 static char sql_up = 0;
 
 void
@@ -71,6 +71,14 @@ static int
 sql_init(void)
 {
   int retries = MYSQL_RETRY_TIMES;
+  static time_t last_retry = 0;
+  time_t curtime;
+
+  /* Only retry at most once per minute. */
+  curtime = time(NULL);
+  if (curtime < (last_retry + 60))
+    return 0;
+  last_retry = curtime;
 
   /* If we are already connected, drop and retry the connection, in
    * case for some reason the server went away.
@@ -102,120 +110,168 @@ sql_init(void)
     return 0;
 }
 
-static int
-safe_sql_query(dbref player, char *q_string, char *rowsep, char *fieldsep,
-	       char *buff, char **bp)
+static MYSQL_RES *
+sql_query(char *q_string, int *affected_rows)
 {
   MYSQL_RES *qres;
-  MYSQL_ROW row_p;
-  int num_rows, got_rows, got_fields;
-  int i, j;
+  int fail;
+
+  /* No affected rows by default */
+  *affected_rows = -1;
+
+  /* Make sure we have something to query, first. */
+  if (!q_string || !*q_string)
+    return NULL;
 
   /* If we have no connection, and we don't have auto-reconnect on
-   * (or we try to auto-reconnect and we fail), this is an error
-   * generating a #-1. Notify the player, too, and set the return code.
+   * (or we try to auto-reconnect and we fail), return NULL.
    */
 
   if (!mysql_struct) {
     sql_init();
     if (!mysql_struct) {
-      notify(player, "No SQL database connection.");
-      if (buff)
-	safe_str("#-1", buff, bp);
-      return -1;
+      return NULL;
     }
   }
-  if (!q_string || !*q_string)
-    return 0;
 
-  /* Send the query. */
-  got_rows = mysql_real_query(mysql_struct, q_string, strlen(q_string));
-  if (got_rows && (mysql_errno(mysql_struct) == CR_SERVER_GONE_ERROR)) {
-    /* We got this error because the server died unexpectedly
-     * and it shouldn't have. Try repeatedly to reconnect before
-     * giving up and failing. This induces a few seconds of lag,
-     * depending on number of retries
-     */
+  /* Send the query. If it returns non-zero, we have an error. */
+  fail = mysql_real_query(mysql_struct, q_string, strlen(q_string));
+  if (fail && (mysql_errno(mysql_struct) == CR_SERVER_GONE_ERROR)) {
+    /* If it's CR_SERVER_GONE_ERROR, the server went away.
+     * Try reconnecting. */
     sql_init();
     if (mysql_struct)
-      got_rows = mysql_real_query(mysql_struct, q_string, strlen(q_string));
+      fail = mysql_real_query(mysql_struct, q_string, strlen(q_string));
   }
-  if (got_rows) {
-    notify(player, mysql_error(mysql_struct));
-    if (buff)
-      safe_str("#-1", buff, bp);
-    return -1;
-  }
+  /* If we still fail, it's an error. */
+  if (fail) {
+    return NULL;
+    }
 
-  /* Get results. A silent query (INSERT, UPDATE, etc.) will return NULL */
-  qres = mysql_store_result(mysql_struct);
+  /* Get the result */
+  qres = mysql_use_result(mysql_struct);
   if (!qres) {
     if (!mysql_field_count(mysql_struct)) {
       /* We didn't expect data back, so see if we modified anything */
-      num_rows = mysql_affected_rows(mysql_struct);
-      notify_format(player, "SQL: %d rows affected.", num_rows);
-      return 0;
+      *affected_rows = mysql_affected_rows(mysql_struct);
+      return NULL;
     } else {
       /* Oops, we should have had data! */
-      notify_format(player, "SQL: Error: %s", mysql_error(mysql_struct));
-      return -1;
+      return NULL;
     }
   }
-
-  /* At this point, we know we've done something like SELECT and 
-   * we got results. But just in case...
-   */
-  got_rows = mysql_num_rows(qres);
-  if (!got_rows)
-    return 0;
-  got_fields = mysql_num_fields(qres);
-
-  /* Construct properly-delimited data. */
-  if (buff) {
-    for (i = 0; i < got_rows; i++) {
-      if (i > 0) {
-	safe_str(rowsep, buff, bp);
-      }
-      row_p = mysql_fetch_row(qres);
-      if (row_p) {
-	for (j = 0; j < got_fields; j++) {
-	  if (j > 0) {
-	    safe_str(fieldsep, buff, bp);
-	  }
-	  if (row_p[j] && *row_p[j])
-	    if (safe_str(row_p[j], buff, bp))
-	      goto finished;	/* We filled the buffer, best stop */
-	}
-      }
-    }
-  } else {
-    for (i = 0; i < got_rows; i++) {
-      row_p = mysql_fetch_row(qres);
-      if (row_p) {
-	for (j = 0; j < got_fields; j++) {
-	  if (row_p[j] && *row_p[j]) {
-	    notify(player, tprintf("Row %d, Field %d: %s",
-				   i + 1, j + 1, row_p[j]));
-	  } else {
-	    notify(player, tprintf("Row %d, Field %d: NULL", i + 1, j + 1));
-	  }
-	}
-      } else {
-	notify(player, tprintf("Row %d: NULL", i + 1));
-      }
-    }
-  }
-
-finished:
-  mysql_free_result(qres);
-  return 0;
+  return qres;
 }
 
+void
+free_sql_query(MYSQL_RES * qres)
+{
+  MYSQL_ROW row_p;
+  while ((row_p = mysql_fetch_row(qres)) != NULL) ;
+  mysql_free_result(qres);
+}
+
+FUNCTION(fun_mapsql)
+{
+  MYSQL_RES *qres;
+  MYSQL_ROW row_p;
+  ufun_attrib ufun;
+  char *wenv[10];
+  char *osep = (char *) " ";
+  int affected_rows;
+  int rownum;
+  char numbuff[20];
+  int numfields;
+  char rbuff[BUFFER_LEN];
+  int funccount;
+  int do_fieldnames = 0;
+  int i;
+  MYSQL_FIELD *fields;
+
+  if (!Sql_Ok(executor)) {
+    safe_str(T(e_perm), buff, bp);
+    return;
+  }
+
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
+    return;
+
+  if (nargs > 2) {
+    /* we have an output separator in args[2]. */
+    osep = args[2];
+  }
+
+  if (nargs > 3) {
+    /* args[3] contains a boolean, if we should pass
+     * the field names first. */
+    do_fieldnames = parse_boolean(args[3]);
+  }
+
+  for (i = 0; i < 10; i++)
+    wenv[i] = NULL;
+
+  qres = sql_query(args[1], &affected_rows);
+
+  if (!qres) {
+    if (affected_rows >= 0) {
+      notify_format(executor, "SQL: %d rows affected.", affected_rows);
+    } else if (!mysql_struct) {
+      notify(executor, "No SQL database connection.");
+    } else {
+      notify_format(executor, "SQL: Error: %s", mysql_error(mysql_struct));
+      safe_str("#-1", buff, bp);
+    }
+    return;
+  }
+
+  /* Get results. A silent query (INSERT, UPDATE, etc.) will return NULL */
+  numfields = mysql_num_fields(qres);
+
+  if (do_fieldnames) {
+    fields = mysql_fetch_fields(qres);
+    strncpy(numbuff, unparse_integer(0), 20);
+    wenv[0] = numbuff;
+    for (i = 0; i < numfields && i < 9; i++) {
+      wenv[i + 1] = fields[i].name;
+    }
+    if (call_ufun(&ufun, wenv, i + 1, rbuff, executor, enactor, pe_info))
+      goto finished;
+    safe_str(rbuff, buff, bp);
+  }
+
+  rownum = 0;
+  while ((row_p = mysql_fetch_row(qres)) != NULL) {
+    if (rownum++ > 0 || do_fieldnames) {
+      safe_str(osep, buff, bp);
+    }
+    strncpy(numbuff, unparse_integer(rownum), 20);
+    wenv[0] = numbuff;
+    for (i = 0; (i < numfields) && (i < 9); i++) {
+	wenv[i + 1] = row_p[i];
+      if (!wenv[i + 1])
+	wenv[i + 1] = (char *) "";
+    }
+    /* Now call the ufun. */
+    if (call_ufun(&ufun, wenv, i + 1, rbuff, executor, enactor, pe_info))
+      goto finished;
+    if (safe_str(rbuff, buff, bp) && funccount == pe_info->fun_invocations)
+      goto finished;
+    funccount = pe_info->fun_invocations;
+  }
+finished:
+  free_sql_query(qres);
+}
 
 FUNCTION(fun_sql)
 {
+  MYSQL_RES *qres;
+  MYSQL_ROW row_p;
   char *rowsep = (char *) " ";
   char *fieldsep = (char *) " ";
+  int affected_rows;
+  int rownum;
+  int i;
+  int numfields;
 
   if (!Sql_Ok(executor)) {
     safe_str(T(e_perm), buff, bp);
@@ -232,7 +288,40 @@ FUNCTION(fun_sql)
     fieldsep = args[2];
   }
 
-  safe_sql_query(executor, args[0], rowsep, fieldsep, buff, bp);
+  qres = sql_query(args[0], &affected_rows);
+
+  if (!qres) {
+    if (affected_rows >= 0) {
+      notify_format(executor, "SQL: %d rows affected.", affected_rows);
+    } else if (!mysql_struct) {
+      notify(executor, "No SQL database connection.");
+    } else {
+      notify_format(executor, "SQL: Error: %s", mysql_error(mysql_struct));
+      safe_str("#-1", buff, bp);
+    }
+    return;
+  }
+
+  /* Get results. A silent query (INSERT, UPDATE, etc.) will return NULL */
+  numfields = mysql_num_fields(qres);
+
+  rownum = 0;
+  while ((row_p = mysql_fetch_row(qres)) != NULL) {
+    if (rownum++ > 0) {
+      safe_str(rowsep, buff, bp);
+    }
+    for (i = 0; i < numfields; i++) {
+      if (i > 0) {
+	if (safe_str(fieldsep, buff, bp))
+	  goto finished;
+      }
+      if (row_p[i] && *row_p[i])
+	if (safe_str(row_p[i], buff, bp))
+	  goto finished;	/* We filled the buffer, best stop */
+    }
+  }
+finished:
+  free_sql_query(qres);
 }
 
 
@@ -265,7 +354,45 @@ FUNCTION(fun_sql_escape)
 
 
 COMMAND (cmd_sql) {
-  safe_sql_query(player, arg_left, NULL, NULL, NULL, NULL);
+  MYSQL_RES *qres;
+  MYSQL_ROW row_p;
+  int affected_rows;
+  int rownum;
+  int numfields;
+  char *cell;
+  MYSQL_FIELD *fields;
+  int i;
+
+  qres = sql_query(arg_left, &affected_rows);
+
+  if (!qres) {
+    if (affected_rows >= 0) {
+      notify_format(player, "SQL: %d rows affected.", affected_rows);
+    } else if (!mysql_struct) {
+      notify(player, "No SQL database connection.");
+    } else {
+      notify_format(player, "SQL: Error: %s", mysql_error(mysql_struct));
+    }
+    return;
+  }
+
+  /* Get results. A silent query (INSERT, UPDATE, etc.) will return NULL */
+  numfields = mysql_num_fields(qres);
+  fields = mysql_fetch_fields(qres);
+
+  rownum = 0;
+  while ((row_p = mysql_fetch_row(qres)) != NULL) {
+    rownum++;
+    if (numfields > 0) {
+      for (i = 0; i < numfields; i++) {
+	cell = row_p[i];
+	notify_format(player, "Row %d, Field %s: %s",
+		      rownum, fields[i].name, (cell && *cell) ? cell : "NULL");
+      }
+    } else
+      notify_format(player, "Row %d: NULL", rownum);
+  }
+  free_sql_query(qres);
 }
 #ifdef _SWMP_ /* SWM Protocol */
 /* Do secondly checks on Authentication Table & Query Tables */
@@ -296,10 +423,10 @@ void sql_timer() {
 
 	/* Before we do anything lets delete old shit */
 
-        mysql_query(mysql_struct, tprintf("DELETE FROM auth_t WHERE last < %d", mudtime-1800)); 
+        mysql_query(mysql_struct, tprintf("DELETE FROM auth_t WHERE last < %d", mudtime-1800));
 
 	/* We're connected.. Check Authentication Table */
-	got_rows = mysql_query(mysql_struct, "SELECT * FROM auth_t WHERE authcode=0"); 
+	got_rows = mysql_query(mysql_struct, "SELECT * FROM auth_t WHERE authcode=0");
 
 	if(got_rows != 0) {
 	  do_log(LT_ERR, 0, 0, "SQL-> (%s:%d) %s", __FILE__, __LINE__, mysql_error(mysql_struct));
@@ -314,7 +441,7 @@ void sql_timer() {
      }
 
      got_rows = mysql_num_rows(qres);
-     if(got_rows < 1) 
+     if(got_rows < 1)
 	     goto query_table;
 
      got_fields = mysql_num_fields(qres);
@@ -325,16 +452,16 @@ void sql_timer() {
      }
 
      for(i = 0, row_p = mysql_fetch_row(qres)  ; i < got_rows ; i++, row_p = mysql_fetch_row(qres)) {
-	       if((player = lookup_player(row_p[4])) == NOTHING || 
+	       if((player = lookup_player(row_p[4])) == NOTHING ||
 	       	   !Site_Can_Connect((const char *) row_p[1],player ) ||
 	       	   !password_check(player, (const char *)row_p[5])) {
 			     /* Mark this row as bad auth, can't find user */
 		 j =  -1;
 	       } else j = 1;
 
-	       if( mysql_query(mysql_struct, 
-	       	   tprintf("UPDATE auth_t SET authcode=%d, pass=\"LOGGEDIN\", user=\"%d\" WHERE last = %d AND id = %d", 
-	       	     j, player, atoi(row_p[3]), atoi(row_p[0]))) != 0) 
+	       if( mysql_query(mysql_struct,
+	       	   tprintf("UPDATE auth_t SET authcode=%d, pass=\"LOGGEDIN\", user=\"%d\" WHERE last = %d AND id = %d",
+	       	     j, player, atoi(row_p[3]), atoi(row_p[0]))) != 0)
 		 do_log(LT_ERR, 0, 0, "SQL-> (%s/%d) %s ", __FILE__, __LINE__, mysql_error(mysql_struct));
      }
 
@@ -373,7 +500,7 @@ query_table:
 	sql_env[0] =  atoi(row_p[0]);
 	sql_env[1] = atoi(row_p[1]);
 	/* Load AUTHID we're assosciated with */
-	got_rows2 = mysql_query(mysql_struct, 
+	got_rows2 = mysql_query(mysql_struct,
 	    tprintf("SELECT * FROM auth_t WHERE id = %d", atoi(row_p[1])));
 	if(got_rows2 != 0) {
 	  /* Update Return Result As No Authorized user logged in */
@@ -447,9 +574,9 @@ sqllist_check(dbref thing, dbref player, char type, char end, char *str,
   while (thing != NOTHING) {
     if (atr_comm_match(thing, player, type, end, str, just_match, NULL, NULL, NULL))
       match = 1;
-    else 
+    else
 	match = 0;
-    
+
     thing = Next(thing);
   }
   return (match);
@@ -461,7 +588,7 @@ FUNCTION(fun_sq_respond) {
   MYSQL_RES *qres;
   int got_rows;
 
-  
+
   /* SQL Environment should be set to use this function, if not deny usage */
   if(sql_env[0] == -1 || sql_env[1] == -1) {
     safe_str("#-1 NOTHING TO RESPOND TO", buff, bp);
@@ -473,7 +600,7 @@ FUNCTION(fun_sq_respond) {
     return;
   }
 
-  if(!mysql_struct) { 
+  if(!mysql_struct) {
     sql_init();
     if(!mysql_struct) {
       safe_str("#-1 SQL Server Down", buff, bp);
@@ -482,8 +609,8 @@ FUNCTION(fun_sq_respond) {
   }
 
   /* For some reason we're having some unfreed result here.. */
-  mysql_free_result(mysql_store_result(mysql_struct)); 
-   got_rows = mysql_query(mysql_struct, tprintf("SELECT * FROM query_t WHERE id = %d", sql_env[0])); 
+  mysql_free_result(mysql_store_result(mysql_struct));
+   got_rows = mysql_query(mysql_struct, tprintf("SELECT * FROM query_t WHERE id = %d", sql_env[0]));
   if(got_rows != 0) {
     safe_str(tprintf("#-1 %s", mysql_error(mysql_struct)), buff, bp);
     return;
@@ -491,9 +618,9 @@ FUNCTION(fun_sq_respond) {
   mysql_free_result(mysql_store_result(mysql_struct));
 
   /* Ok.. We do Exist, now Update */
-  
-  got_rows = 
-    mysql_query(mysql_struct, tprintf("UPDATE query_t SET io = 0, query = \"%s\" WHERE id = %d", args[0], sql_env[0])); 
+
+  got_rows =
+    mysql_query(mysql_struct, tprintf("UPDATE query_t SET io = 0, query = \"%s\" WHERE id = %d", args[0], sql_env[0]));
 
   if(got_rows != 0) {
     safe_format(buff, bp, "#-1 %s", mysql_error(mysql_struct));
@@ -529,6 +656,11 @@ void sql_timer() {
 /* Oops, no SQL */
 
 FUNCTION(fun_sql)
+{
+  safe_str(T(e_disabled), buff, bp);
+}
+
+FUNCTION(fun_mapsql)
 {
   safe_str(T(e_disabled), buff, bp);
 }

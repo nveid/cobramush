@@ -476,6 +476,7 @@ FUNTAB flist[] = {
   {"MAILSUBJECT", fun_mailsubject, 1, 2, FN_REG},
   {"MAILTIME", fun_mailtime, 1, 2, FN_REG},
   {"MAP", fun_map, 2, 4, FN_REG},
+  {"MAPSQL", fun_mapsql, 2, 4, FN_REG},
   {"MATCH", fun_match, 2, 3, FN_REG},
   {"MATCHALL", fun_matchall, 2, 4, FN_REG},
   {"MAX", fun_max, 1, INT_MAX, FN_REG},
