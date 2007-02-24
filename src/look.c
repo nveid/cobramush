@@ -490,7 +490,7 @@ look_room(dbref player, dbref loc, enum look_type style)
       }
     }
     tag("HR");
-    tag_wrap("FONT", "SIZE=+3", unparse_room(player, loc));
+    tag_wrap("FONT", "SIZE=+2", unparse_room(player, loc));
     PEND;
     notify_by(loc, player, pbuff);
   }
@@ -791,7 +791,7 @@ do_examine(dbref player, const char *name, enum exam_type flag, int all)
   }
   if (ok) {
     PUSE;
-    tag_wrap("FONT", "SIZE=+3", object_header(player, thing));
+    tag_wrap("FONT", "SIZE=+2", object_header(player, thing));
     PEND;
     notify(player, pbuff);
     if (FLAGS_ON_EXAMINE)
