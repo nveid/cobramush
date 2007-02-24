@@ -60,7 +60,7 @@ int command_lock(const char *name, const char *lock);
 COMLIST commands[] = {
 
   {"@COMMAND",
-   "ADD ALIAS DELETE EQSPLIT LOCK LSARGS RSARGS NOEVAL ON OFF QUIET ENABLE DISABLE RESTRICT",
+   "ADD ALIAS DELETE EQSPLIT LOCK LSARGS RSARGS NOEVAL ON OFF QUIET ENABLE DISABLE RESTRICT NOPARSE",
    cmd_command,
    CMD_T_PLAYER | CMD_T_EQSPLIT, NULL },
   {"@@", NULL, cmd_null, CMD_T_ANY | CMD_T_NOPARSE, NULL},
@@ -1504,11 +1504,15 @@ COMMAND (cmd_command) {
   }
   if (SW_ISSET(sw, SWITCH_ADD)) {
     int flags = CMD_T_ANY;
-    flags |= SW_ISSET(sw, SWITCH_NOEVAL) ? CMD_T_NOPARSE : 0;
+    flags |= SW_ISSET(sw, SWITCH_NOPARSE) ? CMD_T_NOPARSE : 0;
     flags |= SW_ISSET(sw, SWITCH_RSARGS) ? CMD_T_RS_ARGS : 0;
     flags |= SW_ISSET(sw, SWITCH_LSARGS) ? CMD_T_LS_ARGS : 0;
     flags |= SW_ISSET(sw, SWITCH_LSARGS) ? CMD_T_LS_ARGS : 0;
     flags |= SW_ISSET(sw, SWITCH_EQSPLIT) ? CMD_T_EQSPLIT : 0;
+    if (SW_ISSET(sw, SWITCH_NOEVAL))
+      notify(player,
+	     T
+	     ("WARNING: /NOEVAL no longer creates a Noparse command.\n         Use /NOPARSE if that's what you meant."));
     do_command_add(player, arg_left, flags);
     return;
   }

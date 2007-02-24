@@ -621,14 +621,14 @@ See also: @create
   Additional switches are used in @command that only apply when used
   with @command/add. These switches are:
 
-  /noeval    : The command does not evaluate arguments passed to it.
+  /noparse   : The command does not evaluate arguments passed to it.
   /eqsplit   : The parser parses leftside and rightside
   /lsargs    : Comma-separated arguments on the left side are parsed.
   /rsargs    : In conjunction with eqsplit, the right-side arguments,
                comma-separated, are parsed individually and passed
                to the $-command in @hook/override.
 
-  Any command added without the /noeval switch is provided with the
+  Any command added without the /noparse switch is provided with the
   /noeval switch itself, so if you @command/add foo, then foo's arguments
   are parsed by default, but you can call foo/noeval. Note: the $-command
   needs to make allowances for the /noeval switch in it's matching.
