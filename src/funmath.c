@@ -31,8 +31,8 @@
 #define EPSILON 0.000000001  /**< limit of precision for float equality */
 #define EQ(x,y) (fabs(x-y) < EPSILON)  /**< floating point equality macro */
 
-static void do_spellnum(char *num, unsigned int len, char **buff,
-                        char ***bp);
+static void do_spellnum(char *num, unsigned int len, char **buff, char ***bp);
+static void do_ordinalize(char **buff, char ***bp);
 static int nval_sort(const void *, const void *);
 static NVAL find_median(NVAL *, int);
 
@@ -1425,6 +1425,40 @@ do_spellnum(char *num, unsigned int len, char **buff, char ***bp)
   }
 }                               /* do_spellnum */
 
+/** Convert the end of a spelled number string to ordinal form. */
+static void
+do_ordinalize(char **buff, char ***bp)
+{
+  char *p;
+  int i, len;
+  static const char *singles[] = { "one", "two", "three", "four",
+    "five", "six", "seven", "eight", "nine"
+  };
+  static const char *singleths[] = { "first", "second", "third", "fourth",
+    "fifth", "sixth", "seventh", "eighth", "ninth"
+  };
+  /* Examine the end of the string */
+  for (i = 0; i < 9; i++) {
+    len = strlen(singles[i]);
+    p = **bp - len;
+    if ((p >= *buff) && !strncasecmp(p, singles[i], len)) {
+      **bp = p;
+      safe_str(singleths[i], *buff, *bp);
+      return;		/* done */
+    }
+  }
+  /* The string didn't end with a single. How about a y? */
+  p = **bp - 1;
+  if ((p >= *buff) && (*p == 'y')) {
+    **bp = p;
+    safe_str("ieth", *buff, *bp);
+    return;
+  }
+  /* Ok, tack on th */
+  safe_str("th", *buff, *bp);
+}
+
+
 /** adds zeros to the beginning of the string, untill its length is 
  * a multiple of 3.
  */
@@ -1452,7 +1486,9 @@ FUNCTION(fun_spellnum)
   *pnumber = args[0], *pnum1, *pnum2 = NULL;    /* part 1 and 2 of the number respectively */
   unsigned int len, m, minus = 0,       /* is the number negative? */
       dot = 0, len1, len2;      /* length of part 1 and 2 respectively */
+  int ordinal_mode;
 
+  ordinal_mode = (strcmp(called_as, "ORDINAL") == 0);
   pnumber = trim_space_sep(args[0], ' ');
 
   /* Is the number negative? */
@@ -1476,6 +1512,11 @@ FUNCTION(fun_spellnum)
   for (m = 0; m < len; m++) {
 
     if (*pnumber == '.') {
+      if (ordinal_mode) {
+	/* Only integers may be ordinalized */
+	safe_str(T(e_int), buff, bp);
+	return;
+      }
       if (dot) {
         safe_str(T(e_num), buff, bp);
         return;
@@ -1511,6 +1552,12 @@ FUNCTION(fun_spellnum)
     if (minus)
       safe_str("negative ", buff, bp);
     do_spellnum(pnum1, len1, &buff, &bp);
+  }
+
+  if (ordinal_mode) {
+    /* In this case, we're done right here. */
+    do_ordinalize(&buff, &bp);
+    return;
   }
 
   if (len2 > 0) {

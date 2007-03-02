@@ -3413,6 +3413,17 @@ for an object named "Test", preferring a thing over other types.
   spellnum(<number>)
 
   Given a number, return its written-out representation in words.
+
+  See also: ordinal()
+& ORDINAL()
+  ordinal(<integer>)
+
+  Given an integer, return its written-out ordinal representation in words.
+
+  > think ordinal(1)
+  first
+
+  See also: spellnum()
 & SPLICE()
   splice(<list1>, <list2>, <word>[, <delimiter>])
   
