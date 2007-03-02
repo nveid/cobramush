@@ -14,3 +14,143 @@ CobraMUSH Version 0.73
  Fixes:
    * All fixes from 0.72 stable development series
 
+ Imported from PennMUSH:
+   * Added ordinal() [AEJ]
+   * Added wildgrep() and wildgrepi() [AEJ]
+   * Removed hints/cygwin.sh [AEJ]
+   * Added hints/darwin-fink.sh [AEJ]
+   * /noeval switch for @command is now named /noparse [AEJ]
+   * Pueblo font sizes not so huge for room names [AEJ]
+   * mapsql() function; refactored SQL [AEJ]
+   * decompose() now handles ANSI sequences and does not always include an
+     opening backslash [AEJ]
+   * Parser updates: ufun() refactoring and process_expression() changes
+     to parse for regular expression pattern captures by default [AEJ]
+   * Added decompose() [AEJ]
+   * When one alias in a list is invalid, it is specifically reported [AEJ]
+   * @mail <n>: now lists all messages in folder n instead of viewing
+     them all [AEJ]
+   * delete() can use a negative argument a la MUX [AEJ]
+   * Help fixes [AEJ]
+   * Win32 compatibility fixes [AEJ]
+   * Fixed crash bug in page [AEJ]
+   * @attrib/access no longer treats unmatched flag names as a set of
+     flag characters [AEJ]
+   * Help fixes [AEJ]
+   * nsearch(), nlsearch(), and nchildren() functions [AEJ]
+   * New @search classes: start and count [AEJ]
+   * Added help pointers for trimpenn() and trimtiny() [AEJ]
+   * Added help pointers for trimpenn() and trimtiny() [AEJ]
+   * center() improvements [AEJ]
+   * Errors in matching switches to commands are ignored when the command is
+     hook/ignored or hook/overridden [AEJ]
+   * cdesc(), cusers(), cmsgs(), cbuffer(), cstatus(), and clflags() [AEJ]
+   * Small help change [AEJ]
+   * textentries() [AEJ]
+   * namegrab() and namegraball() [AEJ]
+   * Floating point comparison improvements [AEJ]
+   * Floating point comparison improvements [AEJ]
+   * page player= now pages with a blank line instead of paging the
+     last-paged player with the new player name [AEJ]
+   * %+ now only records argument counts for ufuns, not for built-in
+     functions [AEJ]
+   * Improved help on parallel setq() [AEJ]
+   * Rooms may now search their owners [AEJ]
+   * lsearch() could return garbage objects [AEJ]
+   * lsearch() didn't refund pennies [AEJ]
+   * When variable exits fail, the enactor is told what the destination
+     would have been [AEJ]
+   * Improved error message for setq()/setr() with an odd number of
+     arguments [AEJ]
+   * Leaving out filler argument to align() now defaults it to a space [AEJ]
+   * @function/preserve adds localize restriction; @function/restrict
+     added to help [AEJ]
+   * Added FIXED restriction to "home" command in restrictcnf.dst [AEJ]
+   * Removed unnecessary/wrong "home" restriction [AEJ]
+   * hastype() can now take a list of types to check [AEJ]
+   * @NAMEFORMAT receives the default name as %1 [AEJ]
+   * A percent sign followed by a space or placed at the end of the
+     line will be parsed to itself [AEJ]
+   * sortkey() function [AEJ]
+   * Small help fix [AEJ]
+   * Setting attribute flags by character alias did not work [AEJ]
+   * Players could set the 'internal' attribute flag [AEJ]
+   * Setting and resetting multiple attribute flags at once is now more
+     flexible [AEJ]
+   * Added help for alias() and fullalias() [AEJ]
+   * @flag/alias flag=!alias deletes an alias [AEJ]
+   * @hook/list [AEJ]
+   * Changed Wizard to privileged in a comment [AEJ]
+   * Relaxed restrictions on function and command names [AEJ]
+   * %+ is the number of arguments to the current function [AEJ]
+   * Made restart.dst handle Windows line-endings better [AEJ] 
+   * Added help for @invformat [AEJ]
+   * @attribute/access now handles "none" privilege [AEJ]
+   * restrictcnf.dst now tells people how to disable the chat and mail
+     systems [AEJ]
+   * TZ attribute is now visual by default [AEJ]
+   * Players may have multiple aliases; added alias() and fullalias()
+     functions [AEJ]
+   * new function restriction 'localize' causes q-registers to be saved
+     and restored around the function as if localize() or ulocal() were
+     used; aliased to 'ulocal' restriction [AEJ]
+   * flip() and reverse() no longer require commas to be escaped [AEJ]
+   * Search improvements from PennMUSH 1.8.1p0 [AEJ] 
+   * "home" is now a regular command [AEJ]
+   * extract()'s second and third arguments are now optional; default
+     to 1 [AEJ] 
+   * attrib_set() [AEJ]
+   * center() can have multi-character fills and different left and right
+     fills [AEJ]
+   * setq()/setr() parallel register setting [AEJ]
+   * FIXED players may no longer teleport through exits [AEJ]
+   * switchinc.c update [AEJ]
+   * GENCOMP code from PennMUSH [AEJ]
+   * Moved several global variables to GLOBALTAB, as per PennMUSH [AEJ]
+   * @decompile/prefix [AEJ]
+   * fix to English-style matching where numbers were treated like
+     adjectives (3 was treated as 3rd) [AEJ]
+   * Passwords are now masked in command.log [AEJ]
+   * Missed one change to make garbage not have a modified time [AEJ]
+   * Added keepalive_timeout configuration option; fixed SO_KEEPALIVE [AEJ]
+   * More PennMUSH-related copyright updates [AEJ]
+   * Misc. PennMUSH-related FAQ/README changes [AEJ]
+   * when objects are nuked, creation time is set to 0 to avoid objid
+     interference [AEJ]
+   * Misc. Penn-related help fixes [AEJ]
+   * Added help for @debugforwardlist [AEJ]
+   * Combined and simplified FreeBSD hints file [AEJ]
+   * Fixed MAILER in options.h.dist [AEJ]
+   * Clarified ancestors in help [AEJ]
+   * Updated PennMUSH developers lists [AEJ] 
+   * Added old PennMUSH changes files to MANIFEST [AEJ]
+   * On FreeBSD amd64 systems (and possibly others), connections could
+     break after about 32 connections [AEJ]
+   * SHS encryption should now work on 64-bit architectures that define
+     uint32_t [AEJ]
+   * noflagcopy switch for @cpattr and @mvattr now works [AEJ]
+   * allow multi-character row and field separators in sql() and fix
+     double-parsing of those separators [AEJ]
+   * better messages when attempting to wipe SAFE attributes [AEJ]
+   * infinite loop in fraction() fixed [AEJ]
+   * Typo fix from previous patch [AEJ]
+   * lock() didn't set user-defined locks properly [AEJ]
+   * Added Penn's current CHANGES.* files [AEJ]
+   * sql() without a field delimiter defaults to space instead of row
+     delimiter [AEJ]
+   * Typo fix in README.SQL [AEJ]
+   * Fixed a log message for lock_command [AEJ]
+   * @config/set of some invalid options would return success [AEJ]
+   * @flag/add of a flag that is a unique prefix of another flag wouldn't
+     work [AEJ]
+   * Added all existing PennMUSH versions to pennvOLD.hlp [AEJ]
+   * Help fixes from 1.8.0p7 [AEJ]
+   * Cleaned up line endings in filecopy.c; fix to MinGW reboot [AEJ]
+   * Added pennv180.hlp [AEJ]
+   * Win32 portability fixes [AEJ]
+   * restart script more portable [AEJ]
+   * lsearch() with no results no longer returns #-1; error still gets
+     you #-1 [AEJ]
+   * Improved messages for @link of exits [AEJ]
+   * Fixed initialization of attribute flags [AEJ]
+
