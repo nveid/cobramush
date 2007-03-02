@@ -12,7 +12,8 @@ echo "that all files are up-to-date"
 # Step 2: determine version
 echo "Determining version..."
 VERSION=`grep VERSION hdrs/version.h | sed 's/^.*"\(.*\)".*$/\1/'`
-echo "Version is $VERSION"
+BRANCH=`grep VBRANCH hdrs/version.h | sed 's/^.*"\(.*\)".*$/\1/'`
+echo "Version is $VERSION, branch is $BRANCH"
 
 # Step 3: copy everything into a temporary directory
 WD=`pwd`
@@ -30,7 +31,12 @@ rm x??
 
 # Step 4: make tarball
 echo "Making tarball..."
-TARBALL="cobramush-$VERSION.tar.gz"
+if [ "$BRANCH" = "release" ]; then
+    BRANCHNAME=""
+else
+    BRANCHNAME="-$BRANCH"
+fi
+TARBALL="cobramush-$VERSION$BRANCHNAME.tar.gz"
 tar -czf "$WD/$TARBALL" cobramush
 
 # Step 5: clean up
