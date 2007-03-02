@@ -1,0 +1,21 @@
+?RCS: $Id: d_force_ipv4.U 1.1 Sat, 17 Mar 2001 14:16:55 -0600 dunemush $
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:05:39  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_force_ipv4: Myread cat cc ccflags rm Setvar libs ldflags
+?MAKE:	-pick add $@ %<
+?S:d_force_ipv4:
+?S:	This variable allows us to force the use of ipv4 rather than ipv6.
+?S:.
+?C:FORCE_IPV4:
+?C:	If defined, this system will not use IPv6. Necessary for Openbsd.
+?C:.
+?H:#$d_force_ipv4 FORCE_IPV4	/**/
+?H:.
+?T:val
+?LINT:set d_force_ipv4
+: Do nothing by default
+val="$undef"
+set d_force_ipv4; eval $setvar
+

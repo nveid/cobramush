@@ -1,0 +1,41 @@
+?RCS: $Id: d_assert.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:05:39  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_assert: Myread cat cc ccflags rm Setvar libs ldflags
+?MAKE:	-pick add $@ %<
+?S:d_assert:
+?S:	This variable is set if the system has the assert() macro
+?S:.
+?C:HAS_ASSERT:
+?C:	If defined, this system has the assert() macro.
+?C:.
+?H:#$d_assert HAS_ASSERT	/**/
+?H:.
+?T:val
+?LINT:set d_assert
+: see if we have the assert macro
+echo " "
+echo "Let's see if I can assert() myself." >&4
+	$cat >d_assert.c <<EOCP
+#include <assert.h>
+#include <stdlib.h>
+
+int main()
+{
+	assert(1);
+}
+EOCP
+
+if $cc $ccflags $ldflags d_assert.c -o d_assert $libs >/dev/null 2>&1; then
+		val="$define"
+		set d_assert; eval $setvar
+		echo "Looks like I can." >&4
+else
+		val="$undef"
+		set d_assert; eval $setvar
+		echo "Nope, I need assertiveness training." >&4
+fi
+$rm -f d_assert*
+

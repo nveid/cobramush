@@ -1,0 +1,93 @@
+?RCS: $Id: d_fpsetround.U 1.2 Wed, 17 Mar 2004 16:02:04 -0600 dunemush $
+?RCS:
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: d_fpsetround.U,v $
+?RCS:
+?MAKE:d_fpsetround d_fpsetmask i_floatingpoint: Loc test Csym Setvar Inhdr cc ccflags libs rm cat test ldflags
+?MAKE:	-pick add $@ %<
+?S:d_fpsetround:
+?S:	This variable conditionally defines the HAS_FPSETROUND symbol,
+?S:	indicating we have fpsetround(), a FreeBSD thing, mostly.
+?S:.
+?S:d_fpsetmask:
+?S:	This variable conditionally defines the HAS_FPSETMASK symbol,
+?S:	indicating we have fpsetmask(), a FreeBSD thing, mostly.
+?S:.
+?S:i_floatingpoint:
+?S:	This variable conditionally defines the I_FLOATINGPOINT symbol, which
+?S:	indicates whether a C program should include <floatingpoint.h>,
+?S:	a FreeBSD thing, mostly.
+?S:.
+?C:HAS_FPSETROUND:
+?C:	This symbol, if defined, indicates that the crypt routine is available
+?C:	to encrypt passwords and the like.
+?C:.
+?C:I_FLOATINGPOINT:
+?C:	This symbol, if defined, indicates that <crypt.h> can be included.
+?C:.
+?H:#$d_fpsetround HAS_FPSETROUND		/**/
+?H:.
+?H:#$d_fpsetmask HAS_FPSETMASK		/**/
+?H:.
+?H:#$i_floatingpoint I_FLOATINGPOINT		/**/
+?H:.
+?LINT:set d_fpsetround d_fpsetmask i_floatingpoint
+?T:val
+echo " "
+: see if floatingpoint.h can be included
+set floatingpoint.h i_floatingpoint
+eval $inhdr
+
+: see if fpsetround exists
+$cat >test_fpsetround.c <<'EOCP'
+#$i_floatingpoint I_FLOATINGPOINT
+#ifdef I_FLOATINGPOINT
+#include <floatingpoint.h>
+#endif
+
+int main() {
+	fpsetround(FP_RN);
+}
+EOCP
+
+if ($cc $ccflags $ldflags -o test_fpsetround test_fpsetround.c $libs \
+	&& ./test_fpsetround) >/dev/null 2>&1 ; then
+	echo 'fpsetround() is around (and found).' >&4
+	val="$define"
+else
+	echo 'no fpsetround(). No problem.' >&4
+        val="$undef"
+fi
+set d_fpsetround
+eval $setvar
+
+: see if fpsetmask exists
+$cat >test_fpsetmask.c <<'EOCP'
+#$i_floatingpoint I_FLOATINGPOINT
+#ifdef I_FLOATINGPOINT
+#include <floatingpoint.h>
+#endif
+
+int main() {
+	fpsetmask(0L);
+}
+EOCP
+
+if ($cc $ccflags $ldflags -o test_fpsetmask test_fpsetmask.c $libs && \
+	./test_fpsetmask) >/dev/null 2>&1 ; then
+	echo 'fpsetmask() is up to the task.' >&4
+	val="$define"
+else
+	echo 'no fpsetmask(). No problem.' >&4
+        val="$undef"
+fi
+set d_fpsetmask
+eval $setvar
+
+$rm -f test_fpset* core
+

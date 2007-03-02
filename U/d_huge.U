@@ -1,0 +1,225 @@
+?RCS: $Id: d_huge.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:05:39  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_huge_val d_huge d_maxint d_int_max d_maxdouble: Myread cat cc ccflags rm Setvar libs i_values i_limits ldflags
+?MAKE:	-pick add $@ %<
+?S:d_huge_val:
+?S:	This variable is set if the system defines the HUGE_VAL constant.
+?S:.
+?S:d_huge:
+?S:	This variable is set if the system defines the HUGE constant.
+?S:.
+?S:d_maxint:
+?S:	This variable is set if the system defines the MAXINT constant.
+?S:.
+?S:d_int_max:
+?S:	This variable is set if the system defines the INT_MAX constant.
+?S:.
+?S:d_maxdouble:
+?S:	This variable is set if the system defines the MAXDOUBLE constant.
+?S:.
+?C:HAS_HUGE_VAL:
+?C:	If defined, this system has the HUGE_VAL constant. We like this,
+?C:	and don't bother defining the other floats below if we find it.
+?C:.
+?C:HAS_HUGE:
+?C:	If defined, this system has the HUGE constant. We like this, and
+?C:	don't bother defining the other floats below if we find it.
+?C:.
+?C:HAS_INT_MAX:
+?C:	If defined, this system has the INT_MAX constant. 
+?C:.
+?C:HAS_MAXINT:
+?C:	If defined, this system has the MAXINT constant. 
+?C:.
+?C:HAS_MAXDOUBLE:
+?C:	If defined, this system has the MAXDOUBLE constant. 
+?C:.
+?H:#$d_huge_val HAS_HUGE_VAL	/**/
+?H:.
+?H:#$d_huge HAS_HUGE	/**/
+?H:.
+?H:#$d_int_max HAS_INT_MAX	/**/
+?H:.
+?H:#$d_maxint HAS_MAXINT	/**/
+?H:.
+?H:#$d_maxdouble HAS_MAXDOUBLE	/**/
+?H:.
+?M:parse_integer: HAS_HUGE HAS_HUGE_VAL HAS_MAXINT HAS_MAXDOUBLE HAS_INT_MAX
+?M:#ifdef HAS_HUGE_VAL
+?M:#define HUGE_DOUBLE	HUGE_VAL
+?M:#else
+?M:#ifdef HAS_HUGE
+?M:#define HUGE_DOUBLE	HUGE
+?M:#else
+?M:#ifdef HAS_MAXDOUBLE
+?M:#define HUGE_DOUBLE	MAXDOUBLE
+?M:#else
+?M:#define HUGE_DOUBLE	2000000000
+?M:#endif
+?M:#endif
+?M:#endif
+?M:#ifdef HAS_INT_MAX
+?M:#define HUGE_INT	INT_MAX
+?M:#else
+?M:#ifdef HAS_MAXINT
+?M:#define HUGE_INT	MAXINT
+?M:#else
+?M:#define HUGE_INT	2000000000
+?M:#endif
+?M:#endif
+?M:.
+?T:val
+?LINT:set d_huge d_huge_val d_maxint d_maxdouble
+: see if we have HUGE, HUGE_VAL, MAXINT, or MAXDOUBLE
+echo " "
+echo "Let's try to figure out a really big double." >&4
+	$cat >d_huge.c <<EOCP
+#include <stdio.h>
+#include <math.h>
+#$i_values I_VALUES
+#$i_limits I_LIMITS
+#ifdef I_LIMITS
+#include <limits.h>
+#else
+#ifdef I_VALUES
+#include <values.h>
+#endif
+#endif
+
+int main()
+{
+	printf("%f\n",HUGE_VAL);
+}
+EOCP
+	if $cc $ccflags $ldflags d_huge.c -o d_huge $libs >/dev/null 2>&1; then
+		val="$define"
+		set d_huge_val; eval $setvar
+		val="$undef"
+		set d_huge; eval $setvar
+		set d_maxdouble; eval $setvar
+		echo "Great. Your system defines HUGE_VAL." >&4
+	else
+		val="$undef"
+		set d_huge_val; eval $setvar
+		echo "Your system doesn't have HUGE_VAL. Maybe HUGE?" >&4
+	$cat >d_huge.c <<EOCP
+#include <stdio.h>
+#include <math.h>
+#$i_values I_VALUES
+#$i_limits I_LIMITS
+#ifdef I_LIMITS
+#include <limits.h>
+#else
+#ifdef I_VALUES
+#include <values.h>
+#endif
+#endif
+int main()
+{
+	printf("%f\n",HUGE);
+}
+EOCP
+
+	if $cc $ccflags $ldflags d_huge.c -o d_huge $libs >/dev/null 2>&1; then
+		val="$define"
+		set d_huge; eval $setvar
+		val="$undef"
+		set d_maxdouble; eval $setvar
+		echo "Good. Your system defines HUGE." >&4
+	else
+		val="$undef"
+		set d_huge; eval $setvar
+		echo "Hmm. Your system doesn't define HUGE. MAX_DOUBLE?" >&4
+		$cat >d_huge.c <<EOCP
+#include <stdio.h>
+#include <math.h>
+#$i_limits I_LIMITS
+#ifdef I_LIMITS
+#include <limits.h>
+#else
+#$i_values I_VALUES
+#ifdef I_VALUES
+#include <values.h>
+#endif
+#endif
+int main()
+{
+	printf("%f\n",MAX_DOUBLE);
+}
+EOCP
+
+		if $cc $ccflags $ldflags d_huge.c -o d_huge $libs >/dev/null 2>&1; then
+			val="$define"
+			echo "Ok, you've got MAXDOUBLE." >&4
+		else
+			val="$undef"
+			echo "Nope, no MAXDOUBLE either. We'll guess one." >&4
+		fi
+		set d_maxdouble; eval $setvar
+	fi
+fi
+
+
+echo " "
+echo "Let's try to figure out a really big int, too." >&4
+		$cat >d_huge.c <<EOCP
+#include <stdio.h>
+#include <math.h>
+#$i_limits I_LIMITS
+#ifdef I_LIMITS
+#include <limits.h>
+#else
+#$i_values I_VALUES
+#ifdef I_VALUES
+#include <values.h>
+#endif
+#endif
+int main()
+{
+	printf("%d\n",INT_MAX);
+}
+EOCP
+
+if $cc $ccflags $ldflags d_huge.c -o d_huge $libs >/dev/null 2>&1; then
+	val="$define"
+	set d_int_max; eval $setvar
+	val="$undef"
+	set d_maxint; eval $setvar
+	echo "Ok, you've got INT_MAX." >&4
+else
+	val="$undef"
+	echo "No INT_MAX. Maybe MAXINT?" >&4
+	set d_int_max; eval $setvar
+	$cat >d_huge.c <<EOCP
+#include <stdio.h>
+#include <math.h>
+#$i_limits I_LIMITS
+#ifdef I_LIMITS
+#include <limits.h>
+#else
+#$i_values I_VALUES
+#ifdef I_VALUES
+#include <values.h>
+#endif
+#endif
+int main()
+{
+	printf("%d\n",MAXINT);
+}
+EOCP
+	if $cc $ccflags $ldflags d_huge.c -o d_huge $libs >/dev/null 2>&1; then
+		val="$define"
+		echo "Ok, you've got MAXINT." >&4
+		set d_maxint; eval $setvar
+	else
+		val="$undef"
+		echo "No MAXINT. I give up. I'll take a guess." >&4
+		set d_maxint; eval $setvar
+	fi
+fi
+
+$rm -f d_huge*
+

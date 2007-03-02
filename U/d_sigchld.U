@@ -1,0 +1,74 @@
+?RCS: $Id: d_sigchld.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:05:39  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_sigchld d_sigcld: Myread cat cc ccflags rm Setvar libs ldflags
+?MAKE:	-pick add $@ %<
+?S:d_sigchld:
+?S:	This variable is set if the system defines SIGCHLD
+?S:.
+?S:d_sigcld:
+?S:	This variable is set if the system defines SIGCLD (the SysV
+?S:	version of SIGCHLD)
+?S:.
+?C:HAS_SIGCHLD:
+?C:	If defined, this system has the SIGCHLD constant. 
+?C:.
+?C:HAS_SIGCLD:
+?C:	If defined, this system has the SIGCLD constant (SysVish SIGCHLD).
+?C:.
+?H:#$d_sigchld HAS_SIGCHLD	/**/
+?H:.
+?H:#$d_sigcld HAS_SIGCLD	/**/
+?H:.
+?M:SIGCHLD: HAS_SIGCHLD
+?M:#ifndef HAS_SIGCHLD
+?M:#define SIGCHLD	SIGCLD
+?M:#endif
+?M:.
+?M:SIGCLD: HAS_SIGCLD
+?M:#ifndef HAS_SIGCLD
+?M:#define SIGCLD	SIGCHLD
+?M:#endif
+?M:.
+?T:val
+?LINT:set d_sigchld d_sigcld
+: see if we have SIGCHLD, SIGCLD, or both
+echo " "
+echo "How should a child signal a parent?" >&4
+$cat >d_sigchld.c <<EOCP
+#include <signal.h>
+#include <stdio.h>
+int main()
+{
+	printf("%d\n",SIGCHLD);
+}
+EOCP
+if $cc $ccflags $ldflags d_sigchld.c -o d_sigchld $libs >/dev/null 2>&1; then
+	val="$define"
+	set d_sigchld; eval $setvar
+	echo "SIGCHLD works."
+else
+	val="$undef"
+	set d_sigchld; eval $setvar
+	echo "SIGCHLD doesn't work."
+fi
+
+$cat >d_sigchld.c <<EOCP
+#include <signal.h>
+#include <stdio.h>
+int main()
+{
+	printf("%d\n",SIGCLD);
+}
+EOCP
+if $cc $ccflags $ldflags d_sigchld.c -o d_sigchld $libs >/dev/null 2>&1; then
+	val="$define"
+	set d_sigcld; eval $setvar
+	echo "SIGCLD works."
+else
+	val="$undef"
+	set d_sigcld; eval $setvar
+	echo "SIGCLD doesn't work."
+fi

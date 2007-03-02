@@ -1,0 +1,53 @@
+?RCS: $Id: d_random.U 1.4 Fri, 15 Feb 2002 16:56:28 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: Based on d_strchr.U
+?RCS:
+?MAKE:d_random d_lrand48 d_rand: Inlibc
+?MAKE:	-pick add $@ %<
+?S:d_random:
+?S:	This variable conditionally defines HAS_RANDOM if random() is there
+?S:.
+?S:d_lrand48:
+?S:	This conditionally defines HAS_LRAND48 if lrand45() is there
+?S:.
+?S:d_rand:
+?S:	This conditionally defines HAS_RAND if rand() is there
+?S:.
+?C:HAS_RANDOM:
+?C:	Have we got random(), our first choice for number generation?
+?C:.
+?C:HAS_LRAND48:
+?C:	Have we got lrand48(), our second choice?
+?C:.
+?C:HAS_RAND:
+?C:	Have we got rand(), our last choice?
+?C:.
+?H:#$d_random HAS_RANDOM	/**/
+?H:#$d_lrand48 HAS_LRAND48	/**/
+?H:#$d_rand HAS_RAND	/**/
+?H:.
+?M:random: HAS_RANDOM HAS_LRAND48 HAS_RAND
+?M:#ifndef HAS_RANDOM
+?M:#ifndef random
+?M:#ifdef HAS_LRAND48
+?M:#define random lrand48
+?M:#define srandom srand48
+?M:#else
+?M:#ifdef HAS_RAND
+?M:#define random rand
+?M:#define srandom srand
+?M:#endif
+?M:#endif
+?M:#endif
+?M:#endif
+?M:.
+?LINT:set d_lrand48 d_rand d_random
+: random, lrand48, or rand
+set random d_random
+eval $inlibc
+set lrand48 d_lrand48
+eval $inlibc
+set rand d_rand
+eval $inlibc
+

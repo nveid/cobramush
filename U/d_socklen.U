@@ -1,0 +1,38 @@
+?MAKE: d_socklen: libs sockethdr i_systypes i_syssock cc ccflags ldflags Setvar
+?MAKE:	-pick add $@ %<
+?S:d_socklen:
+?S:	This variable is set if the system defines the socklen_t type.
+?S:.
+?C:HAS_SOCKLEN_T:
+?C:	If defined, this system has the socklen_t type.
+?C:.
+?H:#$d_socklen HAS_SOCKLEN_T	/**/
+?H:.
+?LINT:set d_socklen
+: see if we have socklen_t.
+echo " "
+$cat >d_socklen.c <<EOCP
+#$i_systypes I_SYS_TYPES
+#$i_syssock I_SYS_SOCKET
+#ifdef I_SYS_TYPES
+#include <sys/types.h>
+#endif
+#ifdef I_SYS_SOCKET
+#include <sys/socket.h>
+#endif
+#include <stdio.h>
+main()
+{
+	socklen_t test = 1;
+	printf("%d\n",test);
+}
+EOCP
+if $cc $ccflags $ldflags d_socklen.c -o d_socklen $libs >/dev/null 2>&1; then
+	val="$define"
+	set d_socklen; eval $setvar
+	echo "socklen_t works." >&4
+else
+	val="$undef"
+	set d_socklen; eval $setvar
+	echo "socklen_t doesn't work. Using int." >&4
+fi

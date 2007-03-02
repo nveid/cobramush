@@ -1,0 +1,50 @@
+?MAKE:d_ipv6: test cc cat ccflags ldflags libs i_systypes i_syssock i_niin i_sysin
+?MAKE:	-pick add $@ %<
+?S:d_ipv6:
+?S:	This variable is set if the system defines the sockaddr_in6 struct.
+?S: and AF_INET6. We can't rely on just AF_INET6 being defined.
+?S:.
+?C:HAS_IPV6:
+?C:	If defined, this system has the sockaddr_in6 struct and AF_INET6.
+?C: We can't rely on just AF_INET6 being defined.
+?C:.
+?H:#$d_ipv6 HAS_IPV6	/**/
+?H:.
+?LINT:set d_ipv6
+: see if we have struct sockaddr_in6.
+echo " "
+$cat >d_ipv6.c <<EOCP
+#$i_systypes I_SYS_TYPES
+#$i_syssock I_SYS_SOCK
+#$i_niin I_NETINET_IN
+#$i_sysin I_SYS_IN
+#ifdef I_SYS_TYPES
+#include <sys/types.h>
+#endif
+#ifdef I_SYS_SOCK
+#include <sys/socket.h>
+#endif
+#ifdef I_NETINET_IN
+#include <netinet/in.h>
+#else
+#ifdef I_SYS_IN
+#include <sys/in.h>
+#endif
+#endif
+#include <stdio.h>
+main()
+{
+	struct sockaddr_in6 test;
+	int foo = AF_INET6;
+	printf("%d\n", foo);
+}
+EOCP
+if $cc $ccflags $ldflags d_ipv6.c -o d_ipv6 $libs >/dev/null 2>&1; then
+	val="$define"
+	set d_ipv6; eval $setvar
+	echo "IPv6 structures found." >&4
+else
+	val="$undef"
+	set d_ipv6; eval $setvar
+	echo "No IPv6 structures found. No problem." >&4
+fi

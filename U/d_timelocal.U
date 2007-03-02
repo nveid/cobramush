@@ -1,0 +1,22 @@
+?RCS: $Id: d_timelocal.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS:
+?MAKE:d_timelocal: Inlibc
+?MAKE:	-pick add $@ %<
+?S:d_timelocal:
+?S:	This variable conditionally defines the HAS_TIMELOCAL symbol, which
+?S:	indicates that the timelocal() routine exists. 
+?S:.
+?C:HAS_TIMELOCAL:
+?C:	This symbol, if defined, indicates that the timelocal() routine is
+?C:	available.
+?C:.
+?H:#$d_timelocal HAS_TIMELOCAL		/**/
+?H:.
+?LINT:set d_timelocal
+: see if timelocal exists
+set timelocal d_timelocal
+eval $inlibc
+

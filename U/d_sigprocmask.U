@@ -1,0 +1,58 @@
+?RCS: $Id: d_sigprocmask.U 1.1 Wed, 29 Nov 2000 11:35:38 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 2000 Shawn Wagner
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS:
+?MAKE:d_sigprocmask: Csym Setvar cat cc ccflags ldflags libs rm _o
+?MAKE:	-pick add $@ %<
+?S:d_sigprocmask:
+?S:	This variable conditionally defines the HAS_SIGPROCMASK symbol, which
+?S:	indicates that the POSIX sigprocmask() routine is available.
+?S:.
+?C:HAS_SIGPROCMASK:
+?C:	This symbol, if defined, indicates that POSIX's sigprocmask() routine
+?C:	is available.
+?C:.
+?H:#$d_sigprocmask HAS_SIGPROCMASK	/**/
+?H:.
+?T:val
+?LINT:set d_sigprocmask
+echo " "
+: see if we have sigprocmask
+if set sigprocmask val -f d_sigprocmask; eval $csym; $val; then
+	echo 'sigprocmask() found.' >&4
+	val="$define"
+else
+	echo 'sigprocmask NOT found.' >&4
+	val="$undef"
+fi
+?X:
+?X: Solaris 2.5_x86 with SunWorks Pro C 3.0.1 doesn't have a complete
+?X: sigaction structure if compiled with cc -Xc.  This compile test
+?X: will fail then.  <doughera@lafcol.lafayette.edu>
+?X:
+$cat > set.c <<'EOP'
+#include <stdio.h>
+#include <sys/types.h>
+#include <signal.h>
+main()
+{
+  sigset_t mask, oldmask;
+  sigprocmask(SIG_SETMASK, &mask, &oldmask);
+}
+EOP
+if $cc $ccflags $ldflags -o set set.c $libs >/dev/null 2>&1; then
+	:
+else
+	echo "But you don't seem to have a working sigprocmask." >&4
+	val="$undef"
+fi
+set d_sigprocmask; eval $setvar
+$rm -f set set$_o set.c
+

@@ -1,0 +1,48 @@
+?RCS: $Id: cdecl.U 1.3 Wed, 17 Mar 2004 16:02:04 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:cdecl: Myread cat cc ccflags rm
+?MAKE:	-pick add $@ %<
+?S:cdecl:
+?S:	Defined to be __cdecl if the compiler can handle a __cdecl keyword 
+?S:	to specify C-style argument passing conventions. Otherwise defined
+?S:	as nothing. Basically MS VC++.
+?S:.
+?C:WIN32_CDECL:
+?C:	Defined as __cdecl if the compiler can handle that keyword to specify
+?C:	C-style argument passing conventions. This allows MS VC++
+?C:	on Win32 to use the __fastcall convention for everything else
+?C:	and get a performance boost. Any compiler with a brain (read:
+?C:	not MS VC) handles this optimization automatically without such a
+?C:	kludge. On these systems, this is defined as nothing.
+?C:.
+?H:#define WIN32_CDECL $cdecl
+?H:.
+: check for a __cdecl use
+echo " "
+$cat >test_cdecl.c <<'EOCP'
+#include <stdio.h>
+#include <stdlib.h>
+#define WIN32_CDECL __cdecl
+
+int WIN32_CDCEL main(int argc, char **argv) {
+	exit(0);
+}
+EOCP
+
+if ($cc $ccflags -o test_cdecl test_cdecl.c && ./test_cdecl) >/dev/null 2>&1 ; then
+    cdecl='__cdecl'
+    echo 'Your compiler likes __cdecl as a keyword.' >&4
+else
+    cdecl=''
+    echo "Your compiler doesn't grok __cdecl - it probably has a brain." >&4
+fi
+$rm -f test_cdecl* core
+

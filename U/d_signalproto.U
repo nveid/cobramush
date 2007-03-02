@@ -1,0 +1,78 @@
+?RCS: $Id: d_signalproto.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: d_keepsig.U,v $
+?RCS: Revision 3.0.1.3  1995/01/11  15:26:25  ram
+?RCS: patch45: protected "sh -c" within backquotes for Linux and SGI
+?RCS:
+?RCS: Revision 3.0.1.2  1994/10/29  16:13:59  ram
+?RCS: patch36: call ./bsd explicitely instead of relying on PATH
+?RCS:
+?RCS: Revision 3.0.1.1  1993/10/16  13:48:47  ram
+?RCS: patch12: comment for SIGNALS_KEPT was the other way round
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:06:26  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_signalproto: cat cc ccflags rm Guess echo Setvar prototype signal_t ldflags
+?MAKE:	-pick add $@ %<
+?S:d_signalproto:
+?S:	This variable tells us if we can safely prototype signal() as follows:
+?S:	Signal_t(*Sigfunc) _((int));
+?S:	extern Sigfunc signal _((int signo, Sigfunc func));
+?S:.
+?C:CAN_PROTOTYPE_SIGNAL:
+?C:	This symbol is defined if we can safely prototype our rewritten
+?C:	signal() function as:
+?C:	Signal_t(*Sigfunc) _((int));
+?C:	extern Sigfunc signal _((int signo, Sigfunc func));
+?C:.
+?H:#$d_signalproto CAN_PROTOTYPE_SIGNAL	/**/
+?H:.
+?LINT:set d_signalproto
+: can we prototype signal ourselves
+val="$undef"
+echo " "
+echo "Checking to see if we can declare or prototype signal()..." >&4
+if test ${prototype} = "$define"; then
+  $cat >try.c <<EOCP
+#include <stdio.h>
+#include <signal.h>
+#ifdef signal
+#undef signal
+#endif
+typedef ${signal_t} (*Sigfunc) (int);
+extern Sigfunc signal (int signo, Sigfunc func);
+int main()
+{ printf("no op\n"); }
+EOCP
+else
+  $cat >try.c <<EOCP
+#include <stdio.h>
+#include <signal.h>
+#ifdef signal
+#undef signal
+#endif
+typedef ${signal_t} (*Sigfunc) ();
+extern Sigfunc signal ();
+int main()
+{ printf("no op\n"); }
+EOCP
+fi
+if $cc -o try $ccflags $ldflags try.c >/dev/null 2>&1; then
+	$echo "Looks like we can."
+	val="$define";
+else
+	$echo "Looks like we can't."
+fi
+set d_signalproto
+eval $setvar
+$rm -f try*
+

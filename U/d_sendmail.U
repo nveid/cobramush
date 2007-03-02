@@ -1,0 +1,32 @@
+?RCS: $Id: d_sendmail.U 1.2 Tue, 30 Sep 2003 18:01:23 -0500 dunemush $
+?RCS:
+?RCS:
+?MAKE:d_sendmail : sendmail Setvar Oldconfig Csym Loc test
+?MAKE:	-pick add $@ %<
+?S:d_sendmail:
+?S:	This variable is defined if sendmail is available.
+?S:.
+?C:SENDMAIL:
+?C:	This symbol contains the full pathname to sendmail.
+?C:.
+?C:HAS_SENDMAIL:
+?C:	If defined, we have sendmail.
+?C:.
+?H:#$d_sendmail HAS_SENDMAIL	/**/
+?H:#define SENDMAIL	"$sendmail"
+?H:.
+?W:%<:SENDMAIL HAS_SENDMAIL
+?LINT:set d_sendmail
+: have we got sendmail?
+echo " "
+echo "Checking to see if we can use sendmail..."
+if $test -f $sendmail; then
+        echo "Looks like sendmail is in $sendmail"
+	val="$define"
+else
+	echo "Nope, out of luck."
+	val="$undef"
+fi
+set d_sendmail
+eval $setvar
+

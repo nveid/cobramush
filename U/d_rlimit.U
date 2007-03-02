@@ -1,0 +1,27 @@
+?RCS: $Id: d_rlimit.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS:
+?X:	We may need to include <sys/resource.h> and <sys/time.h> FIXME
+?X:INC: i_sysresrc i_systime
+?MAKE:d_rlimit: Inlibc
+?MAKE:	-pick add $@ %<
+?S:d_rlimit:
+?S:	This variable conditionally defines the HAS_GETRLIMIT symbol, which
+?S:	indicates that the getrlimit() routine exists.  The getrlimit() routine
+?S:	supports getting resource limits, and there should be a setrlimit() too
+?S:	We probably need to include <sys/resource.h> and <sys/time.h>.
+?S:.
+?C:HAS_GETRLIMIT (RLIMIT GETRLIMIT):
+?C:	This symbol, if defined, indicates that the getrlimit() routine is
+?C:	available to get resource limits. Probably means setrlimit too.
+?C:	Inclusion of <sys/resource.h> and <sys/time.h> may be necessary.
+?C:.
+?H:#$d_rlimit HAS_GETRLIMIT		/**/
+?H:.
+?LINT:set d_rlimit
+: see if getrlimit exists
+set getrlimit d_rlimit
+eval $inlibc
+

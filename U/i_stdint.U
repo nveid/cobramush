@@ -1,0 +1,32 @@
+?RCS: $Id$
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS:
+?MAKE:i_stdint: test Inlibc Cppsym Guess Setvar Findhdr
+?MAKE:	-pick add $@ %<
+?S:i_stdint:
+?S:	This variable conditionally defines the I_STDINT symbol, which
+?S:	indicates to the C program that it should include <stdint.h>.
+?S:.
+?C:I_STDINT:
+?C:	This symbol, if defined, indicates that the program should include
+?C:	<stdint.h>.
+?C:.
+?H:#$i_stdint I_STDINT		/**/
+?H:.
+?LINT:set i_stdint
+: see if this is a stdint system
+val="$undef"
+if $test "`./findhdr stdint.h`"; then
+	val="$define"
+	echo "<stdint.h> found." >&4
+fi
+echo " "
+set i_stdint; eval $setvar

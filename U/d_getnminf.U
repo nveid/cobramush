@@ -1,0 +1,49 @@
+?RCS:
+?RCS: Copyright (c) 2000, Shawn Wagner
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:d_getnminf: cat cc ccflags rm ldflags libs Inlibc
+?MAKE:	-pick add $@ %<
+?S:d_getnminf (d_getnminf):
+?S:	This variable conditionally defines the HAS_GETNAMEINFO symbol, which
+?S:	indicates to the C program that the getnameinfo() routine is available
+?S:	to lookup host names in one data base or another..
+?S:.
+?C:HAS_GETNAMEINFO (GETNAMEINFO):
+?C:	This symbol, if defined, indicates that the getnameinfo() routine is
+?C:	available to lookup host names in some data base or other.
+?C:.
+?H:#$d_getnminf HAS_GETNAMEINFO		/**/
+?H:.
+?LINT:set d_getnminf
+: see if getnameinfo exists - along with constants we use
+set getnameinfo d_getnminf
+eval $inlibc
+
+if test $d_getnminf = 'define'; then
+
+echo " "
+$cat >test_getnminf.c <<EOCP
+#include <netdb.h>
+int main(int argc, char **argv) {
+  int i;
+  i = NI_MAXHOST + NI_MAXSERV + NI_NOFQDN + NI_NUMERICHOST + NI_NAMEREQD;
+  i += NI_NUMERICSERV + NI_DGRAM;
+}
+EOCP
+
+if $cc $ccflags $ldflags -o test_getnminf test_getnminf.c $libs >/dev/null 2>&1 ; then
+    d_getnminf='define'
+    echo "You've got getnameinfo and the netdb constants." >&4
+else
+    d_getnminf='undef'
+    echo "You've got getnameinfo but not the NI_* constants! Broken!" >&4
+fi
+$rm -f test_getnminf* core
+
+fi

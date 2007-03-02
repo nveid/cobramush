@@ -1,0 +1,64 @@
+?RCS: $Id$
+?RCS:
+?RCS:
+?MAKE:libmysqlclient d_mysql: test Loc libpth _a cc ccflags ldflags libs rm cat
+?MAKE:	-pick add $@ %<
+?S:libmysqlclient:
+?S:	This variable contains the argument to pass to the loader in order
+?S:	to get the ssl library routines.  If there is no mysql
+?S:	library, it is null.
+?S:.
+?S:d_mysql:
+?S:     Defined if mysql client libraries are available.
+?S:.
+?C:HAS_MYSQL:
+?C:     Defined if mysql client libraries are available.
+?C:.
+?H:#$d_mysql HAS_MYSQL /**/
+?H:.
+?T:xxx
+: see if we should include -lmysqlclient
+echo " "
+
+d_mysql="$undef"
+
+if $test "x$no_mysql" = "x"; then
+
+  libmysqlclient="-lmysqlclient"
+
+  $cat > test_mysql.c <<EOM
+#include <stdio.h>
+#include <stdlib.h>
+#include <mysql/mysql.h>
+#include <mysql/errmsg.h>
+
+int main(int argc, char **argv) {
+   printf("Your mysql is version %s\n",mysql_get_client_info());
+   exit(0);
+}
+EOM
+
+  if $cc $ccflags $ldflags -o test_mysql test_mysql.c $libs $libmysqlclient >/dev/null 2>&1 ;
+  then
+      echo 'You have mysql...' >&4
+      version=`./test_mysql`
+      if $test $? -eq 0; then
+	echo "$version" >&4
+        d_mysql="$define"
+      else
+        echo "...but my test program didn't run correctly." >&4
+        libmysqlclient=''
+      fi
+  else
+      echo "You don't seem to have mysql." >&4
+      libmysqlclient=''
+  fi
+  $rm -f test_mysql* core
+
+else
+
+  echo "Skipping mysql tests." >&4
+  libmysqlclient=''
+
+fi
+

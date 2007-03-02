@@ -1,0 +1,33 @@
+?RCS: $Id: i_netdb.U 1.1 Mon, 26 Mar 2001 15:51:56 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: i_netdb.U,v $
+?RCS: Revision 3.0  1993/08/18  12:08:34  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?X:
+?X:	Look whether <netdb.h> needs to be included
+?X:
+?MAKE:i_netdb: Inhdr
+?MAKE:	-pick add $@ %<
+?S:i_netdb:
+?S:	This variable conditionally defines the I_NETDB symbol,
+?S:	and indicates whether a C program can include <errno.h>.
+?S:.
+?C:I_NETDB:
+?C:	This symbol, if defined, indicates to the C program that it can
+?C:	include <errno.h>.
+?C:.
+?H:#$i_netdb I_NETDB		/**/
+?H:.
+?LINT:set i_netdb
+: see if netdb.h can be included
+set netdb.h i_netdb
+eval $inhdr

@@ -1,0 +1,47 @@
+?RCS: $Id: d_uptime.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: d_uptime.U,v $
+?RCS: Revision 3.0.1.2  1993/10/16  13:49:20  ram
+?RCS: patch12: added support for HAS_INDEX
+?RCS: patch12: added magic for index() and rindex()
+?RCS:
+?RCS: Revision 3.0.1.1  1993/09/13  16:05:26  ram
+?RCS: patch10: now only defines HAS_STRCHR, no macro remap of index (WAD)
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:07:32  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_uptime : Setvar Oldconfig Csym uptime test
+?MAKE:	-pick add $@ %<
+?S:d_uptime:
+?S:	This variable conditionally defines UPTIME_PATH if the uptime
+?S:	program is available.
+?S:.
+?C:UPTIME_PATH:
+?C:	This symbol gives the full path to the uptime(1) program if
+?C:	it exists on the system. If not, this symbol is undefined.
+?C:.
+?C:HAS_UPTIME:
+?C:	This symbol is defined if uptime(1) is available.
+?C:.
+?H:#$d_uptime HAS_UPTIME	/**/
+?H:#define UPTIME_PATH "$uptime"
+?H:.
+?LINT:set d_uptime
+: uptime
+echo " "
+if $test -x $uptime ; then
+	val="$define"
+else
+	val="$undef"
+fi
+set d_uptime; eval $setvar
+

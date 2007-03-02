@@ -1,0 +1,33 @@
+?RCS: $Id: i_nl_types.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: i_nl_types.U,v $
+?RCS: Revision 3.0  1993/08/18  12:08:34  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?X:
+?X:	Look whether <nl_types.h> can be included
+?X:
+?MAKE:i_nl_types: Inhdr
+?MAKE:	-pick add $@ %<
+?S:i_nl_types:
+?S:	This variable conditionally defines the I_NL_TYPES symbol,
+?S:	and indicates whether a C program can include <nl_types.h>.
+?S:.
+?C:I_NL_TYPES:
+?C:	This symbol, if defined, indicates to the C program that it can
+?C:	include <nl_types.h>.
+?C:.
+?H:#$i_nl_types I_NL_TYPES		/**/
+?H:.
+?LINT:set i_nl_types
+: see if nl_types.h can be included
+set nl_types.h i_nl_types
+eval $inhdr

@@ -1,0 +1,61 @@
+?RCS: $Id$
+?RCS:
+?RCS: Revision 3.0  1993/08/18  12:05:39  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_uint32_t: Myread cat cc ccflags rm Setvar libs i_stdint ldflags
+?MAKE:	-pick add $@ %<
+?S:d_uint32_t:
+?S:	This variable is set if the system defines the uint32_t type.
+?S:.
+?C:HAS_UINT32_T:
+?C:	If defined, this system has the uint32_t type.
+?C:.
+?H:#$d_uint32_t HAS_UINT32_T	/**/
+?H:.
+?T:val
+?LINT:set d_uint32_t
+: see if we have uint32_t
+echo "Let's try to figure out a really big double." >&4
+echo " "
+	$cat >d_uint32.c <<EOCP
+#include <stdio.h>
+#$i_stdint I_STDINT
+#ifdef I_STDINT
+#include <stdint.h>
+#endif
+
+int main()
+{
+  uint32_t a;
+  a = 2*2*2*2;
+  a *= a; /* 2^8 */
+  a *= a; /* 2^16 */
+  a *= a; /* 2^32 */
+  a += 1; /* 2^32 + 1 */
+  if (a == 1)
+    printf("ok\n");
+  else
+    printf("not ok\n");
+}
+EOCP
+
+if $cc $ccflags $ldflags d_uint32.c -o d_uint32 $libs >/dev/null 2>&1; then
+          val=`./d_uint32`
+          if test $val = "ok" ; then
+		val="$define"
+		set d_uint32_t; eval $setvar
+		echo "You have uint32_t." >&4
+	  else
+		val="$undef"
+		set d_uint32_t; eval $setvar
+		echo "You don't have uint32_t, hope you're a 32 bit machine." >&4
+	  fi
+else
+	  val="$undef"
+	  set d_uint32_t; eval $setvar
+	  echo "I can't tell if you have uint32_t, hope you're a 32 bit machine." >&4
+fi
+
+$rm -f d_uint32*
+

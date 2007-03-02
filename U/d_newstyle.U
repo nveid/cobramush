@@ -1,0 +1,41 @@
+?RCS: $Id: d_newstyle.U 1.2 Sat, 30 Jun 2001 08:59:12 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:d_newstyle: Myread cat cc ccflags rm ldflags
+?MAKE:	-pick add $@ %<
+?S:d_newstyle:
+?S:	Defined if new-style function definitions are allowable.
+?S:.
+?C:CAN_NEWSTYLE:
+?C:	Defined if new-style function definitions are allowable.
+?C:	If they are, we can avoid some warnings that you get if
+?C:	you declare char arguments in a prototype and use old-style
+?C:	function definitions, which implicitly promote them to ints.
+?C:.
+?H:#$d_newstyle CAN_NEWSTYLE /**/
+?H:.
+: check for a new-style definitions
+echo " "
+$cat >test_newstyle.c <<'EOCP'
+#include <stdio.h>
+int main(int argc, char **argv) {
+	exit(0);
+}
+EOCP
+
+if $cc $ccflags $ldflags -o test_newstyle test_newstyle.c >/dev/null 2>&1 ; then
+    d_newstyle='define'
+    echo 'Your compiler accepts new-style function definitions.' >&4
+else
+    d_newstyle='undef'
+    echo "Your compiler DOESN'T accept new-style function definitions." >&4
+fi
+$rm -f test_newstyle* core
+

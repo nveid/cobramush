@@ -1,0 +1,46 @@
+?RCS: $Id: d_argsinfp.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:d_argsinfp: Myread cat cc ccflags rm ldflags
+?MAKE:	-pick add $@ %<
+?S:d_argsinfp:
+?S:	Defined if new-style function definitions are allowable.
+?S:.
+?C:CAN_TAKE_ARGS_IN_FP:
+?C:	Defined if the compiler prefers that function pointer parameters
+?C:	in prototypes include the function's arguments, rather than 
+?C:	nothing (that is, int (*fun)(int) rather than int(*fun)().
+?C:.
+?H:#$d_argsinfp CAN_TAKE_ARGS_IN_FP /**/
+?H:.
+: check for ok to use function ptr arguments in prototypes
+echo " "
+$cat >test_argsinfp.c <<'EOCP'
+#include <stdio.h>
+int myfun(int);
+int fun(int (*func)(int)); 
+int fun2(int, int (*prevfun)(int(*func)(int)));
+int fun (int (*func)(int)) { int a = 1; return func(a); }
+int myfun(int x) { return x - 1; }
+
+int main(int argc, char **argv) {
+ exit(fun(myfun));
+} 
+EOCP
+
+if $cc $ccflags $ldflags -o test_argsinfp test_argsinfp.c >/dev/null 2>&1 ; then
+    d_argsinfp='define'
+    echo 'Your compiler prefers arguments in function pointers in prototypes.' >&4
+else
+    d_argsinfp='undef'
+    echo "Your compiler prefers no arguments in function pointers in prototypes." >&4
+fi
+$rm -f test_argsinfp* core
+

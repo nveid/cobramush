@@ -1,0 +1,52 @@
+?RCS: $Id: d_getdate.U 1.4 Mon, 04 Dec 2000 10:36:58 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 2000, Shawn Wagner
+?RCS: 
+?RCS:
+?MAKE:d_getdate: Inlibc cc ccflags ldflags libs rm cat i_string
+?MAKE:	-pick add $@ %<
+?S:d_getdate:
+?S:	This variable conditionally defines the HAS_GETDATE symbol, which
+?S:	indicates that the getdate() routine exists.  The getdate() routine
+?S:	turns date strings into struct tm's.
+?S:.
+?C:HAS_GETDATE:
+?C:	This symbol, if defined, indicates that the getdate() routine is
+?C:	available to convert date strings into struct tm's.
+?C:.
+?H:#$d_getdate HAS_GETDATE		/**/
+?H:.
+?LINT:set d_getdate
+: see if getdate exists
+set getdate d_getdate
+eval $inlibc
+
+if test $d_getdate = 'define'; then
+$cat >test_getdate.c <<EOCP
+#ifdef I_STRING
+#include <string.h>
+#else
+#include <strings.h>
+#endif
+#include <ctype.h>
+#ifdef __GNUC__
+/* Required to get the getdate() prototype on glibc. */
+#define __USE_XOPEN_EXTENDED
+#endif
+#include <time.h>
+int main(int argc, char **argv) {
+  int i;
+  i = getdate_err;
+}
+EOCP
+
+if $cc $ccflags $ldflags -o test_getdate test_getdate.c $libs >/dev/null 2>&1 ; then
+    d_getdate='define'
+else
+    d_getdate='undef'
+    echo "You may have getdate, but it's broken." >&4
+fi
+$rm -f test_getdate* core
+
+fi
+

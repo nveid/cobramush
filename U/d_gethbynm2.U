@@ -1,0 +1,27 @@
+?RCS:
+?RCS: Copyright (c) 2000, Shawn Wagner
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:d_gethbynm2: Inlibc
+?MAKE:	-pick add $@ %<
+?S:d_gethbynm2 (d_gethbynm2):
+?S:	This variable conditionally defines the HAS_GETHOSTBYNAME2 symbol, which
+?S:	indicates to the C program that the gethostbyname2() function is 
+?S: available to resolve hostnames.  
+?S:.
+?C:HAS_GETHOSTBYNAME2:
+?C:	This symbol, if defined, indicates that the gethostbyname2() 
+?C: function is available to resolve hostnames.
+?C:.
+?H:#$d_gethbynm2 HAS_GETHOSTBYNAME2		/**/
+?H:.
+?LINT:set d_gethbynm2
+: see if gethostbyname2 exists
+set gethostbyname2 d_gethbynm2
+eval $inlibc
+

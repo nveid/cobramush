@@ -1,0 +1,31 @@
+?RCS: $Id: i_arpanameser.U 1.1 Thu, 01 Feb 2001 14:47:02 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: i_arpanameser.U,v $
+?RCS: Revision 3.0  1993/08/18  12:08:15  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:i_arpanameser: Inhdr
+?MAKE:	-pick add $@ %<
+?S:i_arpanameser:
+?S:	This variable conditionally defines the I_ARPA_NAMESER symbol,
+?S:	and indicates whether a C program should include <arpa/nameser.h>.
+?S:.
+?C:I_ARPA_NAMESER:
+?C:	This symbol, if defined, indicates to the C program that it should
+?C:	include <arpa/nameser.h> to get nameser_addr and friends declarations.
+?C:.
+?H:#$i_arpanameser	I_ARPA_NAMESER		/**/
+?H:.
+?LINT:set i_arpanameser
+: see if arpa/nameser.h has to be included
+set arpa/nameser.h i_arpanameser
+eval $inhdr
+

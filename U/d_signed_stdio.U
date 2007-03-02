@@ -1,0 +1,56 @@
+?RCS: $Id: d_signed_stdio.U 1.1 Thu, 20 Jul 2000 17:42:54 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:d_signed_stdio: Myread cat cc ccflags rm ldflags
+?MAKE:	-pick add $@ %<
+?S:d_signed_stdio:
+?S:	Defined if file desriptors in the stdio library are signed chars,
+?S:	rather than unsigned chars, for example, in SunOS 4.1.x.
+?S:	This is bad, because descriptors > 127 break.
+?S:.
+?C:HAS_SIGNED_STDIO:
+?C:	Defined if file desriptors in the stdio library are signed chars,
+?C:	rather than unsigned chars, for example, in SunOS 4.1.x.
+?C:	This is bad, because descriptors > 127 break.
+?C:.
+?H:#$d_signed_stdio HAS_SIGNED_STDIO /**/
+?H:.
+: check for broken brain-damaged signed char stdio calls.
+echo " "
+echo "Let's see if your stdio uses signed chars instead of unsigned for fd's..." >&4
+
+$cat >test_signed_stdio.c <<'EOCP'
+#include <stdio.h>
+int main() {
+  FILE foo;
+  foo._file = 128;
+  if (foo._file == 128)
+    printf("undef\n"); /* good stdio */
+  else
+    printf("define\n"); /* bad stdio */
+}
+EOCP
+
+if $cc $ccflags $ldflags -o test_signed_stdio test_signed_stdio.c >/dev/null 2>&1 ; then
+    d_signed_stdio=`./test_signed_stdio`
+    if test $d_signed_stdio = define ; then
+	echo "Alas, you've got signed char stdio. Have to work around that." >&4
+    else
+   	echo "Cool. Your stdio uses unsigned chars like it should." >&4
+    fi
+else
+	$cat <<EOM
+(My program won't work, so your stdio probably doesn't support _file.
+ The good news is that means it's probably using unsigned chars like it should)
+EOM
+    d_signed_stdio='undef'
+fi
+$rm -f test_signed_stdio* core
+

@@ -1,0 +1,41 @@
+?RCS: $Id: d_textdomain.U 1.2 Wed, 13 Sep 2000 14:49:45 -0500 dunemush $
+?RCS:
+?RCS: Copyright (c) 1995, Alan Schwartz
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?MAKE:d_textdomain: Myread cat cc ccflags rm ldflags libs i_libintl
+?MAKE:	-pick add $@ %<
+?S:d_textdomain:
+?S:	Defined if textdomain() is available.
+?S:.
+?C:HAS_TEXTDOMAIN:
+?C:	Defined if textdomain is available().
+?C:.
+?H:#$d_textdomain HAS_TEXTDOMAIN /**/
+?H:.
+: check for a new-style definitions
+echo " "
+$cat >test_textdomain.c <<EOCP
+#$i_libintl I_LIBINTL
+#ifdef I_LIBINTL
+#include <libintl.h>
+#endif
+int main(int argc, char **argv) {
+   return (int) textdomain ("");
+}
+EOCP
+
+if $cc $ccflags $ldflags -o test_textdomain test_textdomain.c $libs >/dev/null 2>&1 ; then
+    d_textdomain='define'
+    echo 'Mabuhay! You seem to have textdomain for translations.' >&4
+else
+    d_textdomain='undef'
+    echo "You don't seem to have textdomain. Sayang." >&4
+fi
+$rm -f test_textdomain* core
+

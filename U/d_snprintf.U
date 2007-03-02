@@ -1,0 +1,39 @@
+?RCS: $Id: d_snprintf.U 1.1 Thu, 01 Feb 2001 14:47:02 -0600 dunemush $
+?RCS:
+?RCS: Copyright (c) 1991-1993, Raphael Manfredi
+?RCS: 
+?RCS: You may redistribute only under the terms of the Artistic Licence,
+?RCS: as specified in the README file that comes with the distribution.
+?RCS: You may reuse parts of this distribution only within the terms of
+?RCS: that same Artistic Licence; a copy of which may be found at the root
+?RCS: of the source tree for dist 3.0.
+?RCS:
+?RCS: $Log: d_snprintf.U,v $
+?RCS: Revision 3.0  1993/08/18  12:07:59  ram
+?RCS: Baseline for dist 3.0 netwide release.
+?RCS:
+?MAKE:d_snprintf: Guess cat +cc +ccflags Csym Setvar
+?MAKE:	-pick add $@ %<
+?S:d_snprintf:
+?S:	This variable conditionally defines the HAS_SNPRINTF symbol, which
+?S:	indicates to the C program that the snprintf() routine is available.
+?S:.
+?C:HAS_SNPRINTF:
+?C:	This symbol, if defined, indicates that the snprintf routine is 
+?C:	available. If not, we use sprintf, which is less safe.
+?C:.
+?H:#$d_snprintf HAS_SNPRINTF	/**/
+?H:.
+?LINT:set d_snprintf
+: see if snprintf exists
+echo " "
+if set snprintf val -f d_snprintf; eval $csym; $val; then
+	echo 'snprintf() found.' >&4
+	val="$define"
+else
+	echo 'snprintf() NOT found.' >&4
+	val="$undef"
+fi
+set d_snprintf
+eval $setvar
+

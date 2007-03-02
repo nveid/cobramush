@@ -1,0 +1,62 @@
+?RCS: $Id: libssl.U 1.5 Tue, 08 Jun 2004 13:29:25 -0500 dunemush $
+?RCS:
+?RCS:
+?MAKE:libssl d_openssl: test Loc libpth _a cc ccflags ldflags libs rm cat
+?MAKE:	-pick add $@ %<
+?S:libssl:
+?S:	This variable contains the argument to pass to the loader in order
+?S:	to get the ssl library routines.  If there is no openssl
+?S:	library, it is null.
+?S:.
+?S:d_openssl:
+?S:     Defined if openssl 0.9.6+ is available.
+?S:.
+?C:HAS_OPENSSL:
+?C:     Defined if openssl 0.9.6+ is available.
+?C:.
+?H:#$d_openssl HAS_OPENSSL /**/
+?H:.
+?T:xxx
+: see if we should include -lssl and -lcrypto
+echo " "
+
+d_openssl="$undef"
+
+if $test "x$no_openssl" = "x"; then
+
+  libssl="-lssl -lcrypto"
+
+  $cat > test_ssl.c <<EOM
+#include <stdio.h>
+#include <stdlib.h>
+#include <openssl/opensslv.h>
+int main(int argc, char **argv) {
+   printf("Your openssl is version %lx\n",OPENSSL_VERSION_NUMBER);
+   exit(OPENSSL_VERSION_NUMBER < 0x00906000L);
+}
+EOM
+
+  if $cc $ccflags $ldflags -o test_ssl test_ssl.c $libs $libssl >/dev/null 2>&1 ;
+  then
+      echo 'You have openssl...' >&4
+      version=`./test_ssl`
+      if $test $? -eq 0; then
+	echo '...and at least version 0.9.6. Great.' >&4
+	d_openssl="$define"
+      else
+	echo '...but not version 0.9.6 or later.' >&4
+	libssl=''
+      fi
+  else
+      echo "You don't seem to have openssl." >&4
+      libssl=''
+  fi
+  $rm -f test_ssl* core
+
+else
+
+  echo "Skipping openssl tests." >&4
+  libssl=''
+
+fi
+

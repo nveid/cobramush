@@ -1,0 +1,78 @@
+?MAKE:d_tcl i_tcl: Loc test xlibpth libpth Csym Setvar Inhdr libs
+?MAKE:	-pick add $@ %<
+?S:d_tcl:
+?S:	This variable conditionally defines the TCL symbol, which
+?S:	indicates to the C program that the tcl library is available.
+?S:.
+?S:i_tcl:
+?S:	This variable conditionally defines the I_TCL symbol, which
+?S:	indicates whether a C program should include <tcl.h>
+?S:.
+?C:HAS_TCL:
+?C:	This symbol, if defined, indicates that the tcl library is available
+?C:.
+?C:I_TCL:
+?C:	This symbol, if defined, indicates that <tcl.h> can be included.
+?C:.
+?H:?%<:/* HAS_TCL:
+?H:?%<: *  This symbol, if defined, means we have the tcl library
+?H:?%<: */
+?H:?%<:#$d_tcl HAS_TCL		/**/
+?H:.
+?H:?%<:/* I_TCL:
+?H:?%<: *  This symbol, if defined, means we have the <tcl.h> include file
+?H:?%<: */
+?H:?%<:#$i_tcl I_TCL		/**/
+?H:.
+?W:d_tcl:HAS_TCL I_TCL
+?LINT:set d_tcl i_tcl
+?T:val
+: see if tcl exists
+echo " "
+ok=0
+
+if $test -f src/tcl.c -o -f ../src/tcl.c ; then
+  echo "I'm tickled pink - we have the penn TCL source." >&4
+  echo "Let's see if we have TCL." >&4
+
+: see if tcl.h can be included
+  set tcl.h i_tcl
+  eval $inhdr
+  if $test $i_tcl = "$define"; then
+    echo "We have tcl.h, that's a start." >&4
+    : see if the tcl library was found earlier
+    case $libs in 
+      *tcl*)   val="$define"
+               set d_tcl
+               eval $setvar
+	       echo "We have the TCL library, too." >&4
+               ok=1
+  	   ;;
+      *)       echo "Oops, no TCL library. Check your TCL installation." >&4
+	   ;;
+    esac
+  else
+    echo "I can't find tcl.h. Check your TCL installation." >&4
+  fi
+fi
+
+if $test $ok = 0; then
+  nlibs=""
+  for l in $libs; do
+    case $l in 
+      *tcl*) ;;
+      *dl*) ;;
+      *ld*) ;;
+      *) nlibs="$nlibs$l " ;;
+    esac
+  done
+  libs="$nlibs"
+  val="$undef"
+  set d_tcl
+  eval $setvar
+  val="$undef"
+  set i_tcl
+  eval $setvar
+else
+  echo "TCL will be compiled and included." >&4
+fi
