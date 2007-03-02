@@ -1934,6 +1934,8 @@ FUNCTION(fun_isdbref)
 FUNCTION(fun_grep)
 {
   char *tp;
+  int wild;
+  int sensitive;
 
   dbref it = match_thing(executor, args[0]);
   if (!GoodObject(it)) {
@@ -1949,8 +1951,10 @@ FUNCTION(fun_grep)
     safe_str(T("#-1 INVALID GREP PATTERN"), buff, bp);
     return;
   }
-  tp = grep_util(executor, it, args[1], args[2], arglens[2],
-		 strcmp(called_as, "GREP"));
+
+  sensitive = !strcmp(called_as, "GREP") || !strcmp(called_as, "WILDGREP");
+  wild = !strcmp(called_as, "WILDGREPI") || !strcmp(called_as, "WILDGREP");
+  tp = grep_util(executor, it, args[1], args[2], sensitive, wild);
   add_check("fun_grep.attr_list");
   safe_str(tp, buff, bp);
   mush_free((Malloc_t) tp, "fun_grep.attr_list");

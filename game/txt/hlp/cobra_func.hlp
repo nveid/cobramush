@@ -1483,23 +1483,23 @@ Continued in HELP FOREACH2
   See also: match(), matchall(), grab(), regmatch()
 & GREP()
 & REGREP()
-  grep(<object>,<attrs>,<pattern>)
+  grep(<object>,<attrs>,<substring>)
+  wildgrep(<object>,<attrs>,<pattern>)
   regrep(<object>,<attrs>,<regexp>)
-  grepi(<object>,<attrs>,<pattern>)
+  grepi(<object>,<attrs>,<substring>)
   regrepi(<object>,<attrs>,<regexp>)
+  wildgrepi(<object>,<attrs>,<pattern>)
   
   These functions return a list of attributes on <object> containing
-  <pattern> (or matching <regexp>).  <attrs> is a wildcard pattern for
-  attribute names to search.
-
-  The list returned is similar to that returned by @grep/list
-  <object>/<attrs>=<pattern>
+  <substring>, matching the wildcard <pattern>, or matching the regular
+  expression <regexp>.  <attrs> is a wildcard pattern for attribute
+  names to search.
 
   Parsing _does_ occur before this function is invoked. Therefore,
-  "special" characters will need to be escaped out.  In grep(), 
-  <pattern> is NOT wildcard matched.
+  "special" characters will need to be escaped out.
 
-  grep()/regrep() are case-sensitive. grepi()/regrepi() are case-insensitive.
+  grep()/wildgrep()/regrep() are case-sensitive.
+  grepi()/wildgrepi()/regrepi() are case-insensitive.
 & GT()
   gt(<num>,<num>)
 

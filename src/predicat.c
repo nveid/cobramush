@@ -1287,9 +1287,8 @@ do_verb(dbref player, dbref cause, char *arg1, char **argv)
 struct guh_args {
   char *buff;		/**< Buffer for output */
   char *bp;		/**< Pointer to buff's current position */
-  char *lookfor;	/**< String to grep for */
-  int len;		/**< Length of lookfor */
-  int insensitive;	/**< If 1, case-insensitive match; if 0, sensitive */
+  char *lookfor;	/**< Pattern to grep for */
+  int sensitive;	/**< If 1, case-sensitive match; if 0, insensitive */
 };
 
 static int
@@ -1300,14 +1299,16 @@ grep_util_helper(dbref player __attribute__ ((__unused__)),
 		 __attribute__ ((__unused__)), ATTR *atr, void *args)
 {
   struct guh_args *guh = args;
-  int found;
+  int found = 0;
   char *s;
+  int len;
 
   s = (char *) atr_value(atr);	/* warning: static */
+  len = strlen(guh->lookfor);
   found = 0;
   while (*s && !found) {
-    if ((!guh->insensitive && !strncmp(guh->lookfor, s, guh->len)) ||
-	(guh->insensitive && !strncasecmp(guh->lookfor, s, guh->len)))
+    if ((guh->sensitive && !strncmp(guh->lookfor, s, len)) ||
+	(!guh->sensitive && !strncasecmp(guh->lookfor, s, len)))
       found = 1;
     else
       s++;
@@ -1320,29 +1321,48 @@ grep_util_helper(dbref player __attribute__ ((__unused__)),
   return found;
 }
 
+static int
+wildgrep_util_helper(dbref player __attribute__ ((__unused__)),
+		     dbref thing __attribute__ ((__unused__)),
+		     dbref parent __attribute__ ((__unused__)),
+		     char const *pattern
+		     __attribute__ ((__unused__)), ATTR *atr, void *args)
+{
+  struct guh_args *guh = args;
+  int found = 0;
+
+  if (quick_wild_new(guh->lookfor, atr_value(atr), guh->sensitive)) {
+    if (guh->bp != guh->buff)
+      safe_chr(' ', guh->buff, &guh->bp);
+    safe_str(AL_NAME(atr), guh->buff, &guh->bp);
+    found = 1;
+  }
+  return found;
+}
+
 /** Utility function for grep funtions/commands.
  * This function returns a list of attributes on an object that
  * match a name pattern and contain another string.
  * \param player the enactor.
  * \param thing object to check attributes on.
- * \param pattern wildcard pattern for attributes to check.
+ * \param pattern wildcard or substring pattern for attributes to check.
  * \param lookfor string to find within each attribute.
- * \param len length of lookfor.
- * \param insensitive if 1, case-insensitive matching; if 0, case-sensitive.
+ * \param sensitive if 1, case-sensitive matching; if 0, case-insensitive.
+ * \param wild if 1, wildcard matching, if 0, substring
  * \return string containing list of attribute names with matching data.
  */
 char *
 grep_util(dbref player, dbref thing, char *pattern, char *lookfor,
-	  int len, int insensitive)
+	  int sensitive, int wild)
 {
   struct guh_args guh;
 
   guh.buff = (char *) mush_malloc(BUFFER_LEN + 1, "grep_util.buff");
   guh.bp = guh.buff;
   guh.lookfor = lookfor;
-  guh.len = len;
-  guh.insensitive = insensitive;
-  (void) atr_iter_get(player, thing, pattern, 0, grep_util_helper, &guh);
+  guh.sensitive = sensitive;
+  (void) atr_iter_get(player, thing, pattern, 0, wild ? wildgrep_util_helper
+		      : grep_util_helper, &guh);
   *guh.bp = '\0';
   return guh.buff;
 }
@@ -1442,7 +1462,7 @@ do_grep(dbref player, char *obj, char *lookfor, int flag, int insensitive)
     if (!atr_iter_get(player, thing, pattern, 0, grep_helper, &gh))
       notify(player, T("No matching attributes."));
   } else {
-    tp = grep_util(player, thing, pattern, lookfor, len, insensitive);
+    tp = grep_util(player, thing, pattern, lookfor, !insensitive, 0);
     notify_format(player, T("Matches of '%s' on %s(#%d): %s"), lookfor,
 		  Name(thing), thing, tp);
     mush_free((Malloc_t) tp, "grep_util.buff");

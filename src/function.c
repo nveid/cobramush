@@ -672,6 +672,8 @@ FUNTAB flist[] = {
   {"WAIT", fun_wait, 2, 2, FN_NOPARSE},
   {"WHERE", fun_where, 1, 1, FN_REG},
   {"WIDTH", fun_width, 1, 1, FN_REG},
+  {"WILDGREP", fun_grep, 3, 3, FN_REG},
+  {"WILDGREPI", fun_grep, 3, 3, FN_REG},
   {"WIPE", fun_wipe, 1, 1, FN_REG},
   {"WORDPOS", fun_wordpos, 2, 3, FN_REG},
   {"WORDS", fun_words, 1, 2, FN_REG},
