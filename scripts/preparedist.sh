@@ -7,7 +7,7 @@ cd ..
 
 # Step 1: run metaconfig
 echo "Running metaconfig to generate Configure and config_h.SH..."
-metaconfig
+metaconfig -M
 
 # Step 2: generate changes.txt
 echo "Generating changes.txt..."
