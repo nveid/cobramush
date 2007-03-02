@@ -118,7 +118,6 @@ hdrs/strtree.h
 hdrs/version.h
 hints/a-u-x.sh
 hints/aix.sh
-hints/cygwin.sh
 hints/darwin.sh
 hints/darwin-fink.sh
 hints/dec_osf.sh
