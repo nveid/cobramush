@@ -150,7 +150,8 @@
  * argument ("get the recipient address from the message header To:").
  * If it doesn't, you could probably write a wrapper for it.
  * Example: #define MAILER "/full/path/to/other/mailer"
-#define MAILER /* */
+ */
+#define MAILER "" /* */
 
 
 /*--------------------- CobraMUSH Options ------------------------*/
