@@ -12,4 +12,5 @@ CobraMUSH Version 0.72p3
     * Fixed do_chan_title crash [AEJ]
     * Many 64-bit (amd64) compatibility and warning fixes [AEJ]
     * Fixed MAILER in options.h.dist [AEJ]
+    * Fixed initialization of attribute flags [AEJ]
 
