@@ -132,4 +132,10 @@ safe_atr_value(ATTR *atr)
 #define AL_WLock(alist)		((alist)->write_lock)
 #define AL_RLock(alist)		((alist)->read_lock)
 
+/* Errors from ok_player_alias */
+#define OPAE_SUCCESS	1
+#define OPAE_INVALID	-1
+#define OPAE_TOOMANY	-2
+#define OPAE_NULL	-3
+
 #endif				/* __ATTRIB_H */
