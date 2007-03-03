@@ -15,6 +15,20 @@ CobraMUSH Version 0.73
    * All fixes from 0.72 stable development series
 
  Imported from PennMUSH:
+   * Better error messages for invalid function restrictions [AEJ]
+   * Command and function names may now start with punctuation characters [AEJ]
+   * Better attribute-related error messages [AEJ]
+   * 'unsigned char'-related warning fixups [AEJ]
+   * Better message from restart when mush.cnf is not found [AEJ]
+   * Various %c weirdness [AEJ]
+   * Better error messages from @alias [AEJ]
+   * Track_Money objects with No_Pay still reported coins lost to queue
+     costs even though they didn't pay them [AEJ]
+   * regmatch()/regedit() improved subpattern-to-%q syntax [AEJ]
+   * Updated pcre [AEJ]
+   * Updated README.mingw to reflect removed NT_TCP [AEJ]
+   * Removed NT_TCP [AEJ]
+   * Removed hints/cygwin.sh from MANIFEST [AEJ]
    * Added ordinal() [AEJ]
    * Added wildgrep() and wildgrepi() [AEJ]
    * Removed hints/cygwin.sh [AEJ]
