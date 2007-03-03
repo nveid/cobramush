@@ -650,8 +650,10 @@ do_top(int ncom)
 
   for (i = 0; i < ncom; i++) {
 
-    if (!qfirst)
+    if (!qfirst) {
+      strcpy(global_eval_context.ccom, "");
       return i;
+    }
     /* We must dequeue before execution, so that things like
      * queued @kick or @ps get a sane queue image.
      */

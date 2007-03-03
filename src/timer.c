@@ -234,6 +234,7 @@ dispatch(void)
     global_eval_context.cplr = NOTHING;
     strcpy(global_eval_context.ccom, "purge");
     purge();
+    strcpy(global_eval_context.ccom, "");
   }
 
   if (options.dbck_counter <= mudtime) {
@@ -242,6 +243,7 @@ dispatch(void)
     global_eval_context.cplr = NOTHING;
     strcpy(global_eval_context.ccom, "dbck");
     dbck();
+    strcpy(global_eval_context.ccom, "");
   }
 
   if (idle_counter <= mudtime) {
@@ -257,6 +259,7 @@ dispatch(void)
     global_eval_context.cplr = NOTHING;
     strcpy(global_eval_context.ccom, "dump");
     fork_and_dump(1);
+    strcpy(global_eval_context.ccom, "");
     flag_broadcast(0, "ON-VACATION", "%s",
 		   T
 		   ("Your ON-VACATION flag is set! If you're back, clear it."));
@@ -274,6 +277,7 @@ dispatch(void)
     global_eval_context.cplr = NOTHING;
     strcpy(global_eval_context.ccom, "warnings");
     run_topology();
+    strcpy(global_eval_context.ccom, "");
   }
 #ifdef MUSHCRON
   if((mudtime % 60) == 0)

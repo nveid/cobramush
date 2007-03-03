@@ -2826,6 +2826,7 @@ announce_connect(dbref player, int isnew, int num)
     global_eval_context.wnxt[j] = NULL;
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = NULL;
+  strcpy(global_eval_context.ccom, "");
 
   /* do the person's personal connect action */
   (void) queue_attribute(player, "ACONNECT", player);
@@ -2896,6 +2897,7 @@ announce_disconnect(dbref player)
       global_eval_context.wnxt[j] = NULL;
     for (j = 0; j < NUMQ; j++)
       global_eval_context.rnxt[j] = NULL;
+    strcpy(global_eval_context.ccom, "");
 
     /* Setup all connect information as info to pass */
     (void) queue_attribute(player, "ADISCONNECT", player);
