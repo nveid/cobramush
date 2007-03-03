@@ -244,10 +244,10 @@ unsigned char *
 compress(char const *s)
 {
   const unsigned char *p;
-  static unsigned char buf[BUFFER_LEN];
+  static char buf[BUFFER_LEN];
 
   p = (unsigned char *) s;
-  b = buf;
+  b = (unsigned char *) buf;
 
   wordpos = 0;
 

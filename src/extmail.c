@@ -127,7 +127,7 @@ static char *status_chars(MAIL *mp);
 static char *status_string(MAIL *mp);
 static int sign(int x);
 static char *get_message(MAIL *mp);
-static char *get_compressed_message(MAIL *mp);
+static unsigned char *get_compressed_message(MAIL *mp);
 static char *get_subject(MAIL *mp);
 static char *get_sender(MAIL *mp, int full);
 static int was_sender(dbref player, MAIL *mp);
@@ -177,16 +177,16 @@ get_message(MAIL *mp)
 }
 
 /* Return the compressed text of a @mail in a static buffer */
-static char *
+static unsigned char *
 get_compressed_message(MAIL *mp)
 {
-  unsigned static char text[BUFFER_LEN * 2];
+  static unsigned char text[BUFFER_LEN * 2];
 
   if (!mp)
     return NULL;
 
-  chunk_fetch(mp->msgid, text, sizeof text);
-  return (char *) text;
+  chunk_fetch(mp->msgid, (unsigned char *) text, sizeof text);
+  return text;
 }
 
 /* Return the subject of a mail message, or (no subject) */
@@ -772,11 +772,12 @@ do_mail_fwd(dbref player, char *msglist, char *tolist)
 	    if (!temp) {
 	      notify(player, T("MAIL: You can't reply to nonexistant mail."));
 	    } else {
-	      char tbuf1[BUFFER_LEN], tbuf2[BUFFER_LEN];
+	      char tbuf1[BUFFER_LEN];
+	      unsigned char tbuf2[BUFFER_LEN];
 	      strcpy(tbuf1, uncompress(mp->subject));
-	      strcpy(tbuf2, get_compressed_message(mp));
-	      send_mail(player, temp->from, tbuf1, tbuf2, M_FORWARD | M_REPLY,
-			1, 0);
+	      u_strcpy(tbuf2, get_compressed_message(mp));
+	      send_mail(player, temp->from, tbuf1, (char *) tbuf2,
+			M_FORWARD | M_REPLY, 1, 0);
 	      num_recpts++;
 	    }
 	  } else {
@@ -791,10 +792,11 @@ do_mail_fwd(dbref player, char *msglist, char *tolist)
 	    if (!GoodObject(target) || !IsPlayer(target)) {
 	      notify_format(player, T("No such unique player: %s."), current);
 	    } else {
-	      char tbuf1[BUFFER_LEN], tbuf2[BUFFER_LEN];
+	      char tbuf1[BUFFER_LEN];
+	      unsigned char tbuf2[BUFFER_LEN];
 	      strcpy(tbuf1, uncompress(mp->subject));
-	      strcpy(tbuf2, get_compressed_message(mp));
-	      send_mail(player, target, tbuf1, tbuf2, M_FORWARD, 1, 0);
+	      u_strcpy(tbuf2, get_compressed_message(mp));
+	      send_mail(player, target, tbuf1, (char *) tbuf2, M_FORWARD, 1, 0);
 	      num_recpts++;
 	    }
 	  }
@@ -1088,7 +1090,7 @@ real_send_mail(dbref player, dbref target, char *subject, char *message,
     }
     *nm = '\0';
     text = compress(newmsg);
-    len = strlen((char *) text) + 1;
+    len = u_strlen(text) + 1;
     newp->msgid = chunk_create(text, len, 1);
     free(text);
     mush_free((Malloc_t) newmsg, "string");
@@ -2064,7 +2066,7 @@ load_mail(FILE * fp)
     tbuf = compress(getstring_noalloc(fp));
   }
   text = compress(getstring_noalloc(fp));
-  len = strlen((char *) text) + 1;
+  len = u_strlen(text) + 1;
   mp->msgid = chunk_create(text, len, 1);
   free(text);
   if (mail_flags & MDBF_SUBJECT)
@@ -2098,7 +2100,7 @@ load_mail(FILE * fp)
     else
       tbuf = NULL;
     text = compress(getstring_noalloc(fp));
-    len = strlen((char *) text) + 1;
+    len = u_strlen(text) + 1;
     mp->msgid = chunk_create(text, len, 1);
     free(text);
     if (tbuf)

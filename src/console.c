@@ -1602,8 +1602,9 @@ handle_telnet(DESC *d, unsigned char **q, unsigned char *qend)
     if (*q >= qend)
       return -1;
     else {
-      static char ayt_reply[] = "\r\n*** AYT received, I'm here ***\r\n";
-      queue_newwrite(d, (unsigned char *) ayt_reply, strlen(ayt_reply));
+      static unsigned char ayt_reply[] =
+	"\r\n*** AYT received, I'm here ***\r\n";
+      queue_newwrite(d, (unsigned char *) ayt_reply, u_strlen(ayt_reply));
       process_output(d);
     }
     break;
