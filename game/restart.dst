@@ -36,7 +36,7 @@ echo Running from `pwd`
 
 if [ ! -f "$CONF_FILE" ]; then
   echo "CONF_FILE doesn't exist. It's: $CONF_FILE"
-  echo "Create $CONF_FILE from $GAMEDIR/mushcnf.dst"
+  echo "Create $CONF_FILE from $GAMEDIR/mushcnf.dst and run 'make update'"
   exit 1
 fi
 
