@@ -225,25 +225,6 @@ static int handle_telnet(DESC *d, unsigned char **q, unsigned char *qend);
 static const char *empabb(dbref);
 static int do_su_exit(DESC *d);
 
-#ifdef NT_TCP
-/* for Windows NT IO-completion-port method of TCP/IP - NJG */
-
-/* Windows NT TCP/IP routines written by Nick Gammon <nick@gammon.com.au> */
-
-#include <process.h>
-HANDLE CompletionPort;		/* IOs are queued up on this port */
-SOCKET MUDListenSocket;		/* for our listening thread */
-DWORD dwMUDListenThread;	/* thread handle for listening thread */
-SOCKADDR_IN saServer;		/* for listening thread */
-void __cdecl MUDListenThread(void *pVoid);	/* the listening thread */
-DWORD platform;			/* which version of Windows are we using? */
-OVERLAPPED lpo_aborted;		/* special to indicate a player has finished TCP IOs */
-OVERLAPPED lpo_shutdown;	/* special to indicate a player should do a shutdown */
-void ProcessWindowsTCP(void);	/* handle NT-style IOs */
-CRITICAL_SECTION cs;		/* for thread synchronisation */
-#endif
-
-
 static const char *create_fail =
   "Either there is already a player with that name, or that name is illegal.";
 static const char *password_fail = "The password is invalid (or missing).";
@@ -448,41 +429,6 @@ init_rlimit(void)
 }
 #endif				/* HAS_GETRLIMIT */
 
-#ifdef NT_TCP
-BOOL
-IsValidAddress(const void *lp, UINT nBytes, BOOL bReadWrite)
-{
-  return (lp != NULL &&
-	  !IsBadReadPtr(lp, nBytes) &&
-	  (!bReadWrite || !IsBadWritePtr((LPVOID) lp, nBytes)));
-
-}
-
-BOOL
-GetErrorMessage(const DWORD dwError, LPTSTR lpszError, const UINT nMaxError)
-{
-
-  LPTSTR lpBuffer;
-  BOOL bRet =
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		  NULL,
-		  dwError,
-		  0,
-		  (LPTSTR) & lpBuffer,
-		  0,
-		  NULL);
-
-  if (bRet == FALSE)
-    *lpszError = '\0';
-  else {
-    lstrcpyn(lpszError, lpBuffer, nMaxError);
-    LocalFree(lpBuffer);
-  }
-  return bRet;
-}
-
-#endif
-
 #ifndef BOOLEXP_DEBUGGING
 #ifdef WIN32SERVICES
 /* Under WIN32, MUSH is a "service", so we just start a thread here.
@@ -524,22 +470,6 @@ main(int argc, char **argv)
     }
   }
 #endif				/* WIN32 */
-
-#ifdef NT_TCP
-
-/* Find which version of Windows we are using - Completion ports do */
-/* not work with Windows 95/98 */
-
-  {
-    OSVERSIONINFO VersionInformation;
-
-    VersionInformation.dwOSVersionInfoSize = sizeof(VersionInformation);
-    GetVersionEx(&VersionInformation);
-    platform = VersionInformation.dwPlatformId;
-    printf(T("Running under Windows %s\n"),
-	   platform == VER_PLATFORM_WIN32_NT ? "NT" : "95/98");
-  }
-#endif
 
 #ifdef HAS_GETRLIMIT
   init_rlimit();		/* unlimit file descriptors */
@@ -640,65 +570,6 @@ main(int argc, char **argv)
 #endif
 #endif
   load_reboot_db();
-#ifdef NT_TCP
-
-  /* If we are running Windows NT we must create a completion port, */
-  /* and start up a listening thread for new connections */
-
-  if (platform == VER_PLATFORM_WIN32_NT) {
-    int nRet;
-
-    /* create initial IO completion port, so threads have something to wait on */
-
-    CompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 1);
-
-    if (!CompletionPort) {
-      char sMessage[200];
-      GetErrorMessage(GetLastError(), sMessage, sizeof sMessage);
-      printf("Error %ld (%s) on CreateIoCompletionPort\n",
-	     GetLastError(), sMessage);
-      WSACleanup();		/* clean up */
-      exit(1);
-    }
-
-    InitializeCriticalSection(&cs);
-
-    /* Create a TCP/IP stream socket */
-    MUDListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    /* Fill in the the address structure */
-    saServer.sin_port = htons((u_short) TINYPORT);
-    saServer.sin_family = AF_INET;
-    saServer.sin_addr.s_addr = INADDR_ANY;
-
-    /* bind our name to the socket */
-    nRet = bind(MUDListenSocket, (LPSOCKADDR) & saServer, sizeof saServer);
-
-    if (nRet) {
-      printf("Error %ld on Win32: bind\n", WSAGetLastError());
-      WSACleanup();		/* clean up */
-      exit(1);
-    }
-    /* Set the socket to listen */
-    nRet = listen(MUDListenSocket, SOMAXCONN);
-
-    if (nRet) {
-      printf("Error %ld on Win32: listen\n", WSAGetLastError());
-      WSACleanup();		/* clean up */
-      exit(1);
-    }
-    /* Create the MUD listening thread */
-    dwMUDListenThread = _beginthread(MUDListenThread, 0,
-				     (void *) (SOCKET) MUDListenSocket);
-
-    if (dwMUDListenThread == -1) {
-      printf("Error %ld on _beginthread\n", errno);
-      WSACleanup();		/* clean up */
-      exit(1);
-    }
-    do_rawlog(LT_ERR, T("Listening (NT-style) on port %d"), TINYPORT);
-  }
-#endif				/* NT_TCP */
 
   shovechars((Port_t) TINYPORT, (Port_t) SSLPORT);
 #ifdef CSRI
@@ -762,13 +633,6 @@ main(int argc, char **argv)
 #endif				/* HAS_RUSAGE */
 
   do_rawlog(LT_ERR, T("MUSH shutdown completed."));
-
-#ifdef NT_TCP
-
-  /* critical section not needed any more */
-  if (platform == VER_PLATFORM_WIN32_NT)
-    DeleteCriticalSection(&cs);
-#endif
 
   closesocket(sock);
 #ifdef WIN32
@@ -1016,22 +880,19 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 #endif
   unsigned long input_ready, output_ready;
 
-#ifdef NT_TCP
-  if (platform != VER_PLATFORM_WIN32_NT)
-#endif
-    if (!restarting) {
-      sock = make_socket(port, NULL, NULL, MUSH_IP_ADDR);
-      if (sock >= maxd)
-	maxd = sock + 1;
+  if (!restarting) {
+    sock = make_socket(port, NULL, NULL, MUSH_IP_ADDR);
+    if (sock >= maxd)
+      maxd = sock + 1;
 #ifdef HAS_OPENSSL
-      if (sslport) {
-	sslsock = make_socket(sslport, NULL, NULL, SSL_IP_ADDR);
-	ssl_master_socket = ssl_setup_socket(sslsock);
-	if (sslsock >= maxd)
-	  maxd = sslsock + 1;
-      }
-#endif
+    if (sslport) {
+      sslsock = make_socket(sslport, NULL, NULL, SSL_IP_ADDR);
+      ssl_master_socket = ssl_setup_socket(sslsock);
+      if (sslsock >= maxd)
+	maxd = sslsock + 1;
     }
+#endif
+  }
   our_gettimeofday(&last_slice);
 
   avail_descriptors = how_many_fds() - 4;
@@ -1106,15 +967,6 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
       slice_timeout.tv_sec = 0;
     if (slice_timeout.tv_usec < 0)
       slice_timeout.tv_usec = 0;
-
-#ifdef NT_TCP
-
-    /* for Windows NT, we handle IOs in a separate function for simplicity */
-    if (platform == VER_PLATFORM_WIN32_NT) {
-      ProcessWindowsTCP();
-      continue;
-    }				/* end of NT_TCP and Windows NT */
-#endif
 
     FD_ZERO(&input_set);
     FD_ZERO(&output_set);
@@ -1590,16 +1442,6 @@ static void
 shutdownsock(DESC *d)
 {
   char tbuf1[BUFFER_LEN];
-#ifdef NT_TCP
-
-  /* don't close down the socket twice */
-  if (d->bConnectionShutdown)
-    return;
-  /* make sure we don't try to initiate or process any outstanding IOs */
-  d->bConnectionShutdown = TRUE;
-  d->bConnectionDropped = TRUE;
-#endif
-
   if (d->connected) {
     do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Logout by %s(#%d)"),
 	   d->descriptor, d->addr, d->ip, Name(d->player), d->player);
@@ -1632,41 +1474,8 @@ shutdownsock(DESC *d)
   }
   process_output(d);
   clearstrings(d);
-#ifdef NT_TCP
-
-  if (platform == VER_PLATFORM_WIN32_NT) {
-    /* cancel any pending reads or writes on this socket */
-
-    if (!CancelIo((HANDLE) d->descriptor)) {
-      char sMessage[200];
-      GetErrorMessage(GetLastError(), sMessage, sizeof sMessage);
-      printf("Error %ld (%s) on CancelIo\n", GetLastError(), sMessage);
-    }
-    /* post a notification that it is safe to free the descriptor */
-    /* we can't free the descriptor here (below) as there may be some */
-    /* queued completed IOs that will crash when they refer to a descriptor */
-    /* (d) that has been freed. */
-
-    if (!PostQueuedCompletionStatus(CompletionPort, 0, (DWORD) d, &lpo_aborted)) {
-      char sMessage[200];
-      DWORD nError = GetLastError();
-      GetErrorMessage(nError, sMessage, sizeof sMessage);
-      printf
-	("Error %ld (%s) on PostQueuedCompletionStatus in shutdownsock\n",
-	 nError, sMessage);
-    }
-  }
-#endif
   shutdown(d->descriptor, 2);
   closesocket(d->descriptor);
-#ifdef NT_TCP
-
-  /* protect removing the descriptor from our linked list from */
-  /* any interference from the listening thread */
-  if (platform == VER_PLATFORM_WIN32_NT)
-    EnterCriticalSection(&cs);
-#endif
-
   if (d->prev)
     d->prev->next = d->next;
   else				/* d was the first one! */
@@ -1681,13 +1490,6 @@ shutdownsock(DESC *d)
   }
 #endif
 
-#ifdef NT_TCP
-  /* safe to allow the listening thread to continue now */
-  if (platform == VER_PLATFORM_WIN32_NT)
-    LeaveCriticalSection(&cs);
-  else
-    /* we cannot free the strings or descriptor if we have queued IOs */
-#endif
   {
     freeqs(d);
     mush_free(d->ttype, "terminal description");
@@ -1749,31 +1551,11 @@ initializesock(int s, char *addr, char *ip, int use_ssl
   d->ssl = NULL;
   d->ssl_state = 0;
 #endif
-#ifdef NT_TCP
-  /* protect adding the descriptor from the linked list from */
-  /* any interference from socket shutdowns */
-  if (platform == VER_PLATFORM_WIN32_NT)
-    EnterCriticalSection(&cs);
-#endif
-
   if (descriptor_list)
     descriptor_list->prev = d;
   d->next = descriptor_list;
   d->prev = NULL;
   descriptor_list = d;
-
-#ifdef NT_TCP
-  /* ok to continue now */
-  if (platform == VER_PLATFORM_WIN32_NT)
-    LeaveCriticalSection(&cs);
-  d->OutboundOverlapped.hEvent = NULL;
-  d->InboundOverlapped.hEvent = NULL;
-  d->InboundOverlapped.Offset = 0;
-  d->InboundOverlapped.OffsetHigh = 0;
-  d->bWritePending = FALSE;	/* no write pending yet */
-  d->bConnectionShutdown = FALSE;	/* not shutdown yet */
-  d->bConnectionDropped = FALSE;	/* not dropped yet */
-#else
   d->width = 78;
   d->height = 24;
 #ifdef HAS_OPENSSL
@@ -1789,7 +1571,6 @@ initializesock(int s, char *addr, char *ip, int use_ssl
 #endif
   test_telnet(d);
   welcome_user(d);
-#endif
   for(n = 0; n < MAX_SNOOPS; n++)
     d->snooper[n] = -1;
   return d;
@@ -3187,12 +2968,6 @@ close_sockets(void)
       perror("shutdown");
     closesocket(d->descriptor);
   }
-#ifdef NT_TCP
-  /* shutdown listening thread */
-  if (platform == VER_PLATFORM_WIN32_NT)
-    closesocket(MUDListenSocket);
-#endif
-
 }
 
 /** Give everyone the boot.
@@ -3844,7 +3619,7 @@ announce_disconnect(dbref player)
     (void) queue_attribute(player, "ADISCONNECT", player);
     /* do the person's division */
     if (GoodObject(SDIV(player).object))
-      (void) queue_attribute(SDIV(player).object, "ACONNECT", player);
+      (void) queue_attribute(SDIV(player).object, "ADISCONNECT", player);
     if (ROOM_CONNECTS)
       if (IsRoom(loc) || IsThing(loc)) {
 	(void) queue_attribute(loc, "ADISCONNECT", player);
@@ -5239,274 +5014,6 @@ load_reboot_db(void)
   flag_broadcast(0, 0, T("GAME: Reboot finished."));
 }
 
-
-#ifdef NT_TCP
-
-/* --------------------------------------------------------------------------- */
-/* Thread to listen on MUD port - for Windows NT */
-/* --------------------------------------------------------------------------- */
-void __cdecl
-MUDListenThread(void *pVoid)
-{
-  SOCKET MUDListenSocket = (SOCKET) pVoid;
-  SOCKET socketClient;
-  union sockaddr_u addr;
-  int nLen;
-  socklen_t addr_len;
-  struct hostname_info *hi;
-  char *socket_ident;
-  char *chp;
-  BOOL b;
-  char tbuf1[BUFFER_LEN];
-  char tbuf2[BUFFER_LEN];
-  char *bp;
-  DESC *d;
-  printf(T("Starting MUD listening thread ...\n"));
-  /* Loop forever accepting connections */
-  while (TRUE) {
-
-    /* Block on accept() */
-    nLen = sizeof(SOCKADDR_IN);
-    socketClient = accept(MUDListenSocket, (LPSOCKADDR) & addr, &nLen);
-    if (socketClient == INVALID_SOCKET) {
-      /* parent thread closes the listening socket */
-      /* when it wants this thread to stop. */
-      break;
-    }
-    /* We have a connection */
-    /*  */
-
-    bp = tbuf2;
-    addr_len = sizeof(addr);
-    hi = ip_convert(&addr.addr, addr_len);
-    safe_str(hi ? hi->hostname : "", tbuf2, &bp);
-    *bp = '\0';
-    bp = tbuf1;
-    if (USE_IDENT) {
-      int timeout = IDENT_TIMEOUT;
-      socket_ident = ident_id(socketClient, &timeout);
-      if (socket_ident) {
-	/* Truncate at first non-printable character */
-	for (chp = socket_ident; *chp && isprint((unsigned char) *chp); chp++) ;
-	*chp = '\0';
-	safe_str(socket_ident, tbuf1, &bp);
-	safe_chr('@', tbuf1, &bp);
-	free(socket_ident);
-      }
-    }
-
-    hi = hostname_convert(&addr.addr, addr_len);
-    safe_str(hi ? hi->hostname : "", tbuf1, &bp);
-    *bp = '\0';
-    if (Forbidden_Site(tbuf1) || Forbidden_Site(tbuf2)) {
-      if (!Deny_Silent_Site(tbuf1, AMBIGUOUS)
-	  || !Deny_Silent_Site(tbuf2, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0, T("[%d/%s] Refused connection (remote port %s)"),
-	       socketClient, tbuf1, hi->port);
-      }
-      shutdown(socketClient, 2);
-      closesocket(socketClient);
-      continue;
-    }
-    do_log(LT_CONN, 0, 0, T("[%d/%s] Connection opened."), socketClient, tbuf1);
-    d = initializesock(socketClient, tbuf1, tbuf2, 0);
-    printf(T("[%d/%s] Connection opened.\n"), socketClient, tbuf1);
-/* add this socket to the IO completion port */
-    CompletionPort = CreateIoCompletionPort((HANDLE) socketClient,
-					    CompletionPort, (DWORD) d, 1);
-    if (!CompletionPort) {
-      char sMessage[200];
-      GetErrorMessage(GetLastError(), sMessage, sizeof sMessage);
-      printf
-	("Error %ld (%s) on CreateIoCompletionPort for socket %ld\n",
-	 GetLastError(), sMessage, socketClient);
-      shutdownsock(d);
-      continue;
-    }
-/* welcome the user - we can't do this until the completion port is created
-*/
-
-    test_telnet(d);
-    welcome_user(d);
-/* do the first read */
-    b = ReadFile((HANDLE) socketClient,
-		 d->input_buffer,
-		 sizeof(d->input_buffer) - 1, NULL, &d->InboundOverlapped);
-    if (!b && GetLastError() != ERROR_IO_PENDING) {
-      shutdownsock(d);
-      continue;
-    }
-  }				/* end of while loop */
-
-  printf(T("End of MUD listening thread ...\n"));
-}				/* end of MUDListenThread */
-
-
-/*
-   This is called from within shovechars when it needs to see if any IOs have
-   completed for the Windows NT version.
-
-   The 4 sorts of IO completions are:
-
-   1. Outstanding read completing (there should always be an outstanding read)
-   2. Outstanding write completing
-   3. A special "shutdown" message to tell us to shutdown the socket
-   4. A special "aborted" message to tell us the socket has shut down, and we
-   can now free the descriptor.
-
-   The latter 2 are posted by the application by PostQueuedCompletionStatus
-   when it is necessary to signal these "events".
-
-   The reason for posting the special messages is to shut down sockets in an
-   orderly way.
-
- */
-void
-ProcessWindowsTCP(void)
-{
-  LPOVERLAPPED lpo;
-  DWORD nbytes;
-  BOOL b;
-  DWORD nError;
-  DESC *d;
-  time_t now;
-  /* pull out the next completed IO, waiting 50 ms for it if necessary */
-  b = GetQueuedCompletionStatus(CompletionPort, &nbytes, (LPDWORD) & d, &lpo, 50);	/* twentieth-second timeout */
-  nError = GetLastError();
-  /* ignore timeouts and cancelled IOs */
-  if (!b && (nError == WAIT_TIMEOUT || nError == ERROR_OPERATION_ABORTED)) {
-    /* process queued commands */
-    do_top(options.queue_chunk);
-    return;
-  }
-
-  /* shutdown this descriptor if wanted */
-  if (lpo == &lpo_shutdown) {
-    shutdownsock(d);		/* shut him down */
-    return;
-  }
-  /* *now* we can free the descriptor (posted by shutdownsock) */
-  if (lpo == &lpo_aborted) {
-    freeqs(d);
-    mush_free((Malloc_t) d, "descriptor");
-    return;
-  }
-  /* if address of descriptor is bad - don't try using it */
-
-  if (!IsValidAddress(d, sizeof(DESC), TRUE)) {
-    printf("Invalid descriptor %08lX on GetQueuedCompletionStatus\n", d);
-    return;
-  }
-  /* bad IO - shut down this client */
-
-  if (!b) {
-    shutdownsock(d);
-    return;
-  }
-  /* see if read completed */
-
-  if (lpo == &d->InboundOverlapped && !d->bConnectionDropped) {
-
-    /* zero length IO completion means connection dropped by client */
-
-    if (nbytes == 0) {
-      shutdownsock(d);
-      return;
-    }
-    now = mudtime;
-    if((d->last_time - now) >= 10) {
-      queue_attribute(d->player, "AUNIDLE", d->player);
-    } else notify_format(d->player, "WHAT?!?! debug: %d", (d->last_time - now) );
-
-    if(difftime(mudtime, d->last_time) >= 300) {
-      d->idle_total += difftime(mudtime, d->last_time);
-      d->unidle_times++;
-    }
-    d->last_time = now;
-
-    /* process the player's input */
-    process_input_helper(d, d->input_buffer, nbytes);
-    /* now fire off another read */
-    b = ReadFile((HANDLE) d->descriptor,
-		 d->input_buffer,
-		 sizeof(d->input_buffer) - 1, NULL, &d->InboundOverlapped);
-    if (!b && GetLastError() != ERROR_IO_PENDING) {
-      d->bConnectionDropped = TRUE;	/* do no more reads */
-      /* post a notification that the descriptor should be shutdown */
-      if (!PostQueuedCompletionStatus
-	  (CompletionPort, 0, (DWORD) d, &lpo_shutdown)) {
-	char sMessage[200];
-	DWORD nError = GetLastError();
-	GetErrorMessage(nError, sMessage, sizeof sMessage);
-	printf
-	  ("Error %ld (%s) on PostQueuedCompletionStatus in ProcessWindowsTCP (read)\n",
-	   nError, sMessage);
-	shutdownsock(d);
-      }
-      return;
-    }
-  }
-  /* end of read completing */
-  /* see if write completed */
-  else if (lpo == &d->OutboundOverlapped && !d->bConnectionDropped) {
-    struct text_block **qp, *cur;
-    DWORD nBytes;
-    qp = &d->output.head;
-    if ((cur = *qp) == NULL)
-      d->bWritePending = FALSE;
-    else {			/* here if there is more to write */
-
-      /* if buffer too long, write what we can and queue up the rest */
-
-      if (cur->nchars <= sizeof(d->output_buffer)) {
-	nBytes = cur->nchars;
-	memcpy(d->output_buffer, cur->start, nBytes);
-	if (!cur->nxt)
-	  d->output.tail = qp;
-	*qp = cur->nxt;
-	free_text_block(cur);
-      }
-      /* end of able to write the lot */
-      else {
-	nBytes = sizeof(d->output_buffer);
-	memcpy(d->output_buffer, cur->start, nBytes);
-	cur->nchars -= nBytes;
-	cur->start += nBytes;
-      }				/* end of buffer too long */
-
-      d->OutboundOverlapped.Offset = 0;
-      d->OutboundOverlapped.OffsetHigh = 0;
-      b = WriteFile((HANDLE) d->descriptor,
-		    d->output_buffer, nBytes, NULL, &d->OutboundOverlapped);
-      d->bWritePending = FALSE;
-      if (!b)
-	if (GetLastError() == ERROR_IO_PENDING)
-	  d->bWritePending = TRUE;
-	else {
-	  d->bConnectionDropped = TRUE;	/* do no more reads */
-	  /* post a notification that the descriptor should be shutdown */
-	  if (!PostQueuedCompletionStatus
-	      (CompletionPort, 0, (DWORD) d, &lpo_shutdown)) {
-	    char sMessage[200];
-	    DWORD nError = GetLastError();
-	    GetErrorMessage(nError, sMessage, sizeof sMessage);
-	    printf
-	      ("Error %ld (%s) on PostQueuedCompletionStatus in ProcessWindowsTCP (write)\n",
-	       nError, sMessage);
-	    shutdownsock(d);
-	  }
-	  return;
-	}
-    }				/* end of more to write */
-
-  }
-
-  /* end of write completing */
-  /* process queued commands */
-  do_top(options.active_q_chunk);
-}
-
-#endif
 
 /* Syntax: @snoop[/list] [!]<descriptor>
  */  

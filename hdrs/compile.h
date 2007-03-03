@@ -66,9 +66,6 @@
  */
 
 #ifdef WIN32SERVICES
-#ifndef NT_TCP
-#define exit(arg) Win32_Exit (arg)
-#endif
 void NORETURN WIN32_CDECL Win32_Exit(int exit_code);
 #endif
 

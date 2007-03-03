@@ -92,12 +92,6 @@
  */
 #define INFO_SLAVE /* */
 
-/* Windows NT users may uncomment this define to get the native network i/o
- * thread model instead of the bsd socket layer, for vastly better
- * performance. Doesn't work on Win 95/98. By Nick Gammon
- */
-/* #define NT_TCP /* */
-
 /*------------------------- MUSH Features ----------------------*/
 
 /* Comment this out if you don't wish to use the built-in mail system.
