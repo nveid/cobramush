@@ -1074,11 +1074,14 @@ restrict_function(const char *name, const char *restriction)
 void
 do_function_restrict(dbref player, const char *name, const char *restriction)
 {
+  FUN *fp;
+  unsigned int flags;
+
   if (!Global_Funcs(player)) {
     notify(player, T("Permission denied."));
     return;
   }
-  if (!name) {
+  if (!name || !*name) {
     notify(player, T("Restrict what function?"));
     return;
   }
@@ -1089,7 +1092,7 @@ do_function_restrict(dbref player, const char *name, const char *restriction)
   if (restrict_function(name, restriction))
     notify(player, T("Restrictions modified."));
   else
-    notify(player, T("Restrict attempt failed."));
+    notify(player, T("Restrictions modified."));
 }
 
 

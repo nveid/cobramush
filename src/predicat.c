@@ -911,7 +911,8 @@ ok_command_name(const char *name)
   case '&':
     return 0;
   default:
-    if (!isupper((unsigned char) *name) && !isdigit((unsigned char) *name))
+    if (!isupper((unsigned char) *name) && !isdigit((unsigned char) *name)
+	&& !ispunct((unsigned char) *name))
       return 0;
   }
   /* Everything else must be printable and non-space, and we need
@@ -956,7 +957,7 @@ ok_function_name(const char *name)
   case '&':
     return 0;
   default:
-    if (!isupper((unsigned char) *name))
+    if (!isupper((unsigned char) *name) && !ispunct((unsigned char) *name))
       return 0;
   }
   /* Everything else must be printable and non-space, and we need
