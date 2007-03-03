@@ -233,6 +233,10 @@ extern void parse_que(dbref player, const char *command, dbref cause);
 extern void div_parse_que(dbref division, const char *command, dbref called_division, dbref player);
 extern int queue_attribute_base
   (dbref executor, const char *atrname, dbref enactor, int noparent);
+extern ATTR *queue_attribute_getatr(dbref executor, const char *atrname,
+				    int noparent);
+extern int queue_attribute_useatr(dbref executor, ATTR *a, dbref enactor);
+
 /** Queue the code in an attribute, including parent objects */
 #define queue_attribute(a,b,c) queue_attribute_base(a,b,c,0)
 /** Queue the code in an attribute, excluding parent objects */

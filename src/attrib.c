@@ -31,6 +31,15 @@
 #pragma warning( disable : 4761)        /* disable warning re conversion */
 #endif
 
+/** Attribute error - too many attribs */
+#define AE_TOOMANY -4
+/** Attribute error - invalid name */
+#define AE_BADNAME -3
+/** Attribute error - attempt to overwrite a safe attribute */
+#define AE_SAFE -2
+/** Attribute error - general failure */
+#define AE_ERROR -1
+
 /* Catchall Attribute any non-standard attributes will conform to this */
 ATTR *catchall;
 
@@ -389,7 +398,7 @@ can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
 
   if (Cannot_Write_This_Attr(player, atr, obj, 1, ns_chk, lock_owner)) {
     free_atr_locks(atr);
-    return 0;
+    return AE_ERROR;
   }
 
   free_atr_locks(atr);
@@ -414,7 +423,7 @@ can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
     if (Cannot_Write_This_Attr(player, atr, obj, 1, ns_chk, lock_owner)) {
       free_atr_locks(atr);
       missing_name[0] = '\0';
-      return 0;
+      return AE_ERROR;
     }
     free_atr_locks(atr);
     *p = '`';
@@ -425,7 +434,7 @@ can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
     do_log(LT_ERR, player, obj,
            T("Attempt by %s(%d) to create too many attributes on %s(%d)"),
            Name(player), player, Name(obj), obj);
-    return 0;
+    return AE_TOOMANY;
   }
 
   return 1;
@@ -529,13 +538,6 @@ atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   }
 }
 
-/** Attribute error - invalid name */
-#define AE_BADNAME -3
-/** Attribute error - attempt to overwrite a safe attribute */
-#define AE_SAFE -2
-/** Attribute error - general failure */
-#define AE_ERROR -1
-
 /** Add an attribute to an object, safely.
  * \verbatim
  * This is the function that should be called in hardcode to add
@@ -590,9 +592,10 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
 
   /* make a new atr, if needed */
   if (!ptr) {
-    if (!can_create_attr(player, thing, atr, flags)) {
+    int res = can_create_attr(player, thing, atr, flags);
+    if (res < 0) {
       ooref = tooref;
-      return AE_ERROR;
+      return res;
     }
 
     strcpy(missing_name, atr);
@@ -1841,6 +1844,9 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
                       missing_name);
     } else
       notify(player, T("That attribute cannot be changed by you."));
+    return 0;
+  } else if (res == AE_TOOMANY) {
+    notify(player, T("Too many attributes on that object to add another."));
     return 0;
   } else if (!res) {
     notify(player, T("No such attribute to reset."));
