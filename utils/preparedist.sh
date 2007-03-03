@@ -10,6 +10,7 @@ cd ..
 
 # Step 1: set appropriate scripts executable
 echo "Setting scripts executable..."
+chmod 755 utils/makedist.sh
 chmod 755 utils/customize.pl
 chmod 755 utils/make_access_cnf.sh
 chmod 755 utils/mkvershlp.pl
