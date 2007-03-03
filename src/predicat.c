@@ -832,6 +832,7 @@ ok_player_name(const char *name, dbref player, dbref thing)
  * \param thing player who is being aliased.
  * \retval 1 alias is valid for players.
  * \retval 0 alias is not valid for players.
+ * \return One of the OPAE_* constants defined in hdrs/attrib.h
  */
 int
 ok_player_alias(const char *alias, dbref player, dbref thing)
@@ -840,7 +841,7 @@ ok_player_alias(const char *alias, dbref player, dbref thing)
   int cnt = 0;
 
   if (!alias || !*alias)
-    return 0;
+    return OPAE_NULL;
 
   strncpy(tbuf1, alias, BUFFER_LEN - 1);
   tbuf1[BUFFER_LEN - 1] = '\0';
@@ -850,12 +851,16 @@ ok_player_alias(const char *alias, dbref player, dbref thing)
     while (sp && *sp && *sp == ' ')
       sp++;
     if (!sp || !*sp)
-      return 0;			/* No null aliases */
+      return OPAE_NULL;			/* No null aliases */
     if (!ok_player_name(sp, player, thing))
-      return 0;
+      return OPAE_INVALID;
     cnt++;
   }
-  return ((cnt <= MAX_ALIASES) || Director(player));
+  if (Director(player))
+    return OPAE_SUCCESS;
+  if (cnt > MAX_ALIASES)
+    return OPAE_TOOMANY;
+  return OPAE_SUCCESS;
 }
 
 
