@@ -1089,8 +1089,15 @@ do_function_restrict(dbref player, const char *name, const char *restriction)
     notify(player, T("Do what with the function?"));
     return;
   }
-  if (restrict_function(name, restriction))
-    notify(player, T("Restrictions modified."));
+  fp = func_hash_lookup(name);
+  if (!fp) {
+    notify(player, T("No such function."));
+    return;
+  }
+  flags = fp->flags;
+  fp->flags = apply_restrictions(flags, restriction);
+  if (fp->flags == flags)
+    notify(player, T("Restrictions unchanged."));
   else
     notify(player, T("Restrictions modified."));
 }
