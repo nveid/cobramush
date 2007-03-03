@@ -106,7 +106,7 @@ $echo "};" >> ../src/temp.$$.c
 $echo ""
 
 # NUM_BYTES from command.h * 8.
-if [ $snum -gt 160 ]; then
+if [ $snum -gt 176 ]; then
     $echo "You have too many switches defined!"
 fi
 
