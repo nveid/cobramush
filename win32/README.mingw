@@ -43,9 +43,8 @@ Last update: Saturday, 28 February 2004
     and edit options.h as desired, keeping the following
     suggestions in mind:
 
-    a. Do *NOT* define NT_TCP
-    b. Use MALLOC_PACKE 0
-    c. Do *NOT* define INFO_SLAVE 
+    a. Use MALLOC_PACKAGE 0
+    b. Do *NOT* define INFO_SLAVE 
 
     Hopefully the last be changed in the future.
 
