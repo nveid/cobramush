@@ -133,25 +133,6 @@ static int under_limit = 1;
         for(d = descriptor_list;(d);d=(d)->next) \
           if((d)->connected)
 
-#ifdef NT_TCP
-/* for Windows NT IO-completion-port method of TCP/IP - NJG */
-
-/* Windows NT TCP/IP routines written by Nick Gammon <nick@gammon.com.au> */
-
-#include <process.h>
-HANDLE CompletionPort;		/* IOs are queued up on this port */
-SOCKET MUDListenSocket;		/* for our listening thread */
-DWORD dwMUDListenThread;	/* thread handle for listening thread */
-SOCKADDR_IN saServer;		/* for listening thread */
-void __cdecl MUDListenThread(void *pVoid);	/* the listening thread */
-DWORD platform;			/* which version of Windows are we using? */
-OVERLAPPED lpo_aborted;		/* special to indicate a player has finished TCP IOs */
-OVERLAPPED lpo_shutdown;	/* special to indicate a player should do a shutdown */
-void ProcessWindowsTCP(void);	/* handle NT-style IOs */
-CRITICAL_SECTION cs;		/* for thread synchronisation */
-#endif
-
-
 static const char *flushed_message = "\r\n<Output Flushed>\x1B[0m\r\n";
 
 extern DESC *descriptor_list;
@@ -1489,82 +1470,6 @@ int
 queue_newwrite(DESC *d, const unsigned char *b, int n)
 {
   int space;
-
-#ifdef NT_TCP
-
-  /* queue up an asynchronous write if using Windows NT */
-  if (platform == VER_PLATFORM_WIN32_NT) {
-
-    struct text_block **qp, *cur;
-    DWORD nBytes;
-    BOOL bResult;
-
-    /* don't write if connection dropped */
-    if (d->bConnectionDropped)
-      return n;
-
-    /* add to queue - this makes sure output arrives in the right order */
-    add_to_queue(&d->output, b, n);
-    d->output_size += n;
-
-    /* if we are already writing, exit and wait for IO completion */
-    if (d->bWritePending)
-      return n;
-
-    /* pull head item out of queue - not necessarily the one we just put in */
-    qp = &d->output.head;
-
-    if ((cur = *qp) == NULL)
-      return n;			/* nothing in queue - rather strange, but oh well. */
-
-
-    /* if buffer too long, write what we can and queue up the rest */
-
-    if (cur->nchars <= sizeof(d->output_buffer)) {
-      nBytes = cur->nchars;
-      memcpy(d->output_buffer, cur->start, nBytes);
-      if (!cur->nxt)
-	d->output.tail = qp;
-      *qp = cur->nxt;
-      free_text_block(cur);
-    }
-    /* end of able to write the lot */
-    else {
-      nBytes = sizeof(d->output_buffer);
-      memcpy(d->output_buffer, cur->start, nBytes);
-      cur->nchars -= nBytes;
-      cur->start += nBytes;
-    }				/* end of buffer too long */
-
-    d->OutboundOverlapped.Offset = 0;
-    d->OutboundOverlapped.OffsetHigh = 0;
-
-    bResult = WriteFile((HANDLE) d->descriptor,
-			d->output_buffer, nBytes, NULL, &d->OutboundOverlapped);
-
-    d->bWritePending = FALSE;
-
-    if (!bResult)
-      if (GetLastError() == ERROR_IO_PENDING)
-	d->bWritePending = TRUE;
-      else {
-	d->bConnectionDropped = TRUE;	/* do no more writes */
-	/* post a notification that the descriptor should be shutdown */
-	if (!PostQueuedCompletionStatus
-	    (CompletionPort, 0, (DWORD) d, &lpo_shutdown)) {
-	  char sMessage[200];
-	  DWORD nError = GetLastError();
-	  GetErrorMessage(nError, sMessage, sizeof sMessage);
-	  printf
-	    ("Error %ld (%s) on PostQueuedCompletionStatus in queue_newwrite\n",
-	     nError, sMessage);
-	  boot_desc(d);
-	}
-      }				/* end of had write */
-    return n;
-
-  }				/* end of NT TCP/IP way of doing it */
-#endif
 
   space = MAX_OUTPUT - d->output_size - n;
   if (space < SPILLOVER_THRESHOLD) {

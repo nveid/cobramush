@@ -1645,11 +1645,7 @@ show_compile_options(dbref player)
   notify(player, T(" DNS and ident lookups are handled by the MUSH process."));
 #endif
 
-#ifdef NT_TCP
-  notify(player, T(" Windows NT native TCP/IP networking functions in use."));
-#else
   notify(player, T(" BSD sockets networking in use."));
-#endif
 
   notify(player, T(" Floating point functions are enabled."));
 
