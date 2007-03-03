@@ -416,14 +416,27 @@ queue_attribute_base(dbref executor, const char *atrname, dbref enactor,
 		     int noparent)
 {
   ATTR *a;
+
+  a = queue_attribute_getatr(executor, atrname, noparent);
+  if (!a)
+    return 0;
+  queue_attribute_useatr(executor, a, enactor);
+  return 1;
+}
+
+ATTR *
+queue_attribute_getatr(dbref executor, const char *atrname, int noparent)
+{
+  return (noparent ? atr_get_noparent(executor, strupper(atrname)) :
+	  atr_get(executor, strupper(atrname)));
+}
+
+int
+queue_attribute_useatr(dbref executor, ATTR *a, dbref enactor)
+{
   char *start, *command;
   dbref powinherit = NOTHING;
   dbref local_ooref;
-
-  a = (noparent ? atr_get_noparent(executor, strupper(atrname)) :
-       atr_get(executor, strupper(atrname)));
-  if (!a)
-    return 0;
   if(AL_FLAGS(a) & AF_POWINHERIT)
     powinherit = atr_on_obj;
   start = safe_atr_value(a);
@@ -454,6 +467,7 @@ queue_attribute_base(dbref executor, const char *atrname, dbref enactor,
   global_parent_depth[1] = NOTHING;
   return 1;
 }
+
 
 /** Queue an entry on the wait or semaphore queues.
  * This function creates and adds a queue entry to the wait queue
