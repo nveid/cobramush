@@ -3043,6 +3043,7 @@ FUNCTION(fun_regreplace)
   char abuf[BUFFER_LEN], *abp;
   char prebuf[BUFFER_LEN], *prep;
   char postbuf[BUFFER_LEN], *postp;
+  pcre *old_re_code;
   int flags = 0, all = 0, match_offset = 0, len, funccount;
   int i;
 
@@ -3128,6 +3129,7 @@ FUNCTION(fun_regreplace)
 
       /* Now copy in the replacement, putting in captured sub-expressions */
       obp = args[i + 1];
+      global_eval_context.re_code = re;
       global_eval_context.re_from = prebuf;
       global_eval_context.re_offsets = offsets;
       global_eval_context.re_subpatterns = subpatterns;
@@ -3158,6 +3160,7 @@ FUNCTION(fun_regreplace)
     if (study)
       mush_free((Malloc_t) study, "pcre.extra");
 
+    global_eval_context.re_code = old_re_code;
     global_eval_context.re_offsets = old_re_offsets;
     global_eval_context.re_subpatterns = old_re_subpatterns;
     global_eval_context.re_from = old_re_from;
@@ -3177,11 +3180,7 @@ FUNCTION(fun_regmatch)
  * the results of a regexp pattern match into a set of r()-registers.
  *
  * regmatch(string, pattern, list of registers)
- * If the number of matches exceeds the registers, those bits are tossed
- * out.
- * If -1 is specified as a register number, the matching bit is tossed.
- * Therefore, if the list is "-1 0 3 5", the regexp $0 is tossed, and
- * the regexp $1, $2, and $3 become r(0), r(3), and r(5), respectively.
+ * Registers are by position (old way) or name:register (new way)
  *
  */
   int i, nqregs, curq;
@@ -3221,18 +3220,39 @@ FUNCTION(fun_regmatch)
     subpatterns = 33;
   nqregs = list2arr(qregs, NUMQ, args[2], ' ');
   for (i = 0; i < nqregs; i++) {
-    if (qregs[i] && qregs[i][0] && !qregs[i][1] &&
-	((qindex = qreg_indexes[(unsigned char) qregs[i][0]]) != -1))
+    char *regname;
+    char *named_subpattern = NULL;
+    int subpattern = 0;
+    if ((regname = strchr(qregs[i], ':'))) {
+      /* subexpr:register */
+      *regname++ = '\0';
+      if (is_strict_integer(qregs[i]))
+	subpattern = parse_integer(qregs[i]);
+      else
+	named_subpattern = qregs[i];
+    } else {
+      /* Get subexpr by position in list */
+      subpattern = i;
+      regname = qregs[i];
+    }
+
+    if (regname && regname[0] && !regname[1] &&
+	((qindex = qreg_indexes[(unsigned char) regname[0]]) != -1))
       curq = qindex;
     else
       curq = -1;
     if (curq < 0 || curq >= NUMQ)
       continue;
+
     if (subpatterns < 0)
       global_eval_context.renv[curq][0] = '\0';
+    else if (named_subpattern)
+      pcre_copy_named_substring(re, args[0], offsets, subpatterns,
+				named_subpattern,
+				global_eval_context.renv[curq], BUFFER_LEN);
     else
-      pcre_copy_substring(args[0], offsets, subpatterns, i, global_eval_context.renv[curq],
-			  BUFFER_LEN);
+      pcre_copy_substring(args[0], offsets, subpatterns, subpattern,
+			  global_eval_context.renv[curq], BUFFER_LEN);
   }
   mush_free((Malloc_t) re, "pcre");
 }

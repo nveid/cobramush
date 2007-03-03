@@ -656,7 +656,10 @@ process_expression(char *buff, char **bp, char const **str,
 	  global_eval_context.re_subpatterns >= 0) {
 	char obuf[BUFFER_LEN];
 	int p = 0;
+        char subspace[BUFFER_LEN];
+        char *named_substring = NULL;
 
+        obuf[0] = '\0';
 	(*str)++;
 	/* Check the first two characters after the $ for a number */
 	if (isdigit((unsigned char) **str)) {
@@ -672,24 +675,48 @@ process_expression(char *buff, char **bp, char const **str,
 	      safe_number(p, buff, bp);
 	    }
 	  }
+	  /* Look for a named subexpression */
+	} else if (**str == '<') {
+	  char *nbuf = subspace;
+	  (*str)++;
+	  for (; *str && **str != '>'; (*str)++)
+	    safe_chr(**str, subspace, &nbuf);
+	  *nbuf = '\0';
+	  if (*str)
+	    (*str)++;
+	  if (is_strict_integer(subspace))
+	    p = abs(parse_integer(subspace));
+	  else
+	    named_substring = subspace;
 	} else {
 	  safe_chr('$', buff, bp);
 	  break;
 	}
 
-	if (p >= global_eval_context.re_subpatterns ||
+	if ((!named_substring && p >= global_eval_context.re_subpatterns) ||
 	    global_eval_context.re_offsets == NULL ||
 	    global_eval_context.re_from == NULL) {
 	  /* It's out of bounds, return */
 	  safe_chr('$', buff, bp);
-	  safe_number(p, buff, bp);
+	  if (named_substring)
+	    safe_format(buff, bp, "<%s>", named_substring);
+	  else
+	    safe_integer(p, buff, bp);
 	  break;
 	}
 
-	pcre_copy_substring(global_eval_context.re_from,
-			    global_eval_context.re_offsets,
-			    global_eval_context.re_subpatterns,
-			    p, obuf, BUFFER_LEN);
+	if (named_substring) {
+	  pcre_copy_named_substring(global_eval_context.re_code,
+				    global_eval_context.re_from,
+				    global_eval_context.re_offsets,
+				    global_eval_context.re_subpatterns,
+				    named_substring, obuf, BUFFER_LEN);
+	} else {
+	  pcre_copy_substring(global_eval_context.re_from,
+			      global_eval_context.re_offsets,
+			      global_eval_context.re_subpatterns,
+			      p, obuf, BUFFER_LEN);
+	}
 	safe_str(obuf, buff, bp);
       } else {
 	safe_chr('$', buff, bp);

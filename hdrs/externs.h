@@ -199,6 +199,7 @@ extern char ucbuff[];
 #endif
 
 /* From cque.c */
+struct real_pcre;
 struct eval_context {
   char *wenv[10];                 /**< working environment (%0-%9) */
   char renv[NUMQ][BUFFER_LEN];    /**< working registers q0-q9,qa-qz */
@@ -210,6 +211,7 @@ struct eval_context {
   char ucom[BUFFER_LEN];      /**< evaluated command */
   int break_called;           /**< Has the break command been called? */
   char break_replace[BUFFER_LEN];  /**< What to replace the break with */
+  struct real_pcre *re_code;		  /**< The compiled re */
   int re_subpatterns;	      /**< The number of re subpatterns */
   int *re_offsets;	      /**< The offsets for the subpatterns */
   char *re_from;	      /**< The positions of the subpatterns */

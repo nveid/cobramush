@@ -710,6 +710,7 @@ do_restart(void)
     global_eval_context.rnxt[j] = NULL;
 
   /* Initialize the regexp patterns to nothing */
+  global_eval_context.re_code = NULL;
   global_eval_context.re_subpatterns = -1;
   global_eval_context.re_offsets = NULL;
   global_eval_context.re_from = NULL;
