@@ -250,7 +250,7 @@ pay_queue(dbref player, const char *command)
     notify(Owner(player), T("Not enough money to queue command."));
     return 0;
   }
-  if (estcost != QUEUE_COST && Track_Money(Owner(player))) {
+  if (!NoPay(player) && (estcost != QUEUE_COST) && Track_Money(Owner(player))) {
     char *preserve_wnxt[10];
     char *preserve_rnxt[NUMQ];
     char *val_wnxt[10];
