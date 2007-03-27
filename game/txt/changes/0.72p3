@@ -7,6 +7,7 @@ CobraMUSH Version 0.72p3
 
   Version 0.72p3 is a bugfix/maintenance release of version 0.72.
   It is the third bugfix/maintenance release in that series.
+  It was released on March 27, 2007.
 
   Fixes:
     * Fixed do_chan_title crash [AEJ]
