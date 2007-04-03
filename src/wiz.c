@@ -64,6 +64,7 @@ struct search_spec {
   int type;	/**< Limit to this type */
   dbref parent;	/**< Limit to children of this parent */
   dbref zone;	/**< Limit to those in this zone */
+  dbref division;	/**< Limit to those in this division */
   char flags[BUFFER_LEN];	/**< Limit to those with these flags */
   char lflags[BUFFER_LEN];	/**< Limit to those with these flags */
   char powers[BUFFER_LEN];	/**< Limit to those with these powers */
@@ -1783,7 +1784,7 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
   int n;
   const char *class, *restriction;
 
-  spec->zone = spec->parent = spec->owner = ANY_OWNER;
+  spec->zone = spec->parent = spec->owner = spec->division = ANY_OWNER;
   spec->type = NOTYPE;
   strcpy(spec->flags, "");
   strcpy(spec->lflags, "");
@@ -1878,6 +1879,8 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
 	spec->type = TYPE_ROOM;
       } else if (string_prefix("players", restriction)) {
 	spec->type = TYPE_PLAYER;
+      } else if (string_prefix("divisions", restriction)) {
+        spec->type = TYPE_DIVISION;
       } else {
 	notify(player, T("Unknown type."));
 	return -1;
@@ -1895,6 +1898,9 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
     } else if (string_prefix("players", class)) {
       strcpy(spec->name, restriction);
       spec->type = TYPE_PLAYER;
+    } else if (string_prefix("divisions", class)) {
+      strcpy(spec->name, restriction);
+      spec->type = TYPE_DIVISION;
     } else if (string_prefix("name", class)) {
       strcpy(spec->name, restriction);
     } else if (string_prefix("start", class)) {
@@ -1936,6 +1942,20 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
       if (!GoodObject(spec->zone)) {
 	notify(player, T("Unknown zone."));
 	return -1;
+      }
+    } else if (string_prefix("division", class)) {
+      if (!*restriction) {
+        spec->division = NOTHING;
+        continue;
+      }
+      if (!is_objid(restriction)) {
+        notify(player, T("Unknown division."));
+        return -1;
+      }
+      spec->division = parse_objid(restriction);
+      if (!GoodObject(spec->division) || !IsDivision(spec->division)) {
+        notify(player, T("Unknown division."));
+        return -1;
       }
     } else if (string_prefix("eval", class)) {
       strcpy(spec->eval, restriction);
@@ -2029,6 +2049,8 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
     if (spec.type != NOTYPE && Typeof(n) != spec.type)
       continue;
     if (spec.zone != ANY_OWNER && Zone(n) != spec.zone)
+      continue;
+    if (spec.division != ANY_OWNER && Division(n) != spec.division)
       continue;
     if (spec.parent != ANY_OWNER && Parent(n) != spec.parent)
       continue;
