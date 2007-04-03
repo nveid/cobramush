@@ -20,7 +20,6 @@ chmod 755 utils/update.pl
 # Step 2: run metaconfig
 echo "Running metaconfig to generate Configure and config_h.SH..."
 metaconfig -M
-rm Obsolete
 
 # Step 3: generate changes.txt
 echo "Generating changes.txt..."
