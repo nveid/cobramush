@@ -1,7 +1,7 @@
 /**
  * \file db.c
  *
- * \brief Loading and saving the PennMUSH object database.
+ * \brief Loading and saving the CobraMUSH object database.
  *
  *
  */
@@ -1700,6 +1700,9 @@ db_read(FILE * f)
     return -1;
   }
   indb_flags = ((getref(f) - 2) / 256) - 5;
+  /* give us some brains.. for if we're using the flagfile or not */
+  if(!use_flagfile)
+    flagdb_flags = indb_flags;
   /* if you want to read in an old-style database, use an earlier
    * patchlevel to upgrade.
    */
