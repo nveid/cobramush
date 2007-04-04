@@ -1625,7 +1625,7 @@ do_chat(dbref player, CHAN *chan, const char *arg1)
     } else if(RPMODE(player) && !Can_RPCHAT(player)) {
 	    notify(player, T("You can't do that in RPMODE."));
 	    return;
-#endif
+#endif /* RPMODE_SYS */
     }
   }
 
@@ -1743,7 +1743,7 @@ do_cemit(dbref player, const char *name, const char *msg, int flags)
     } else if(RPMODE(player) && !Can_RPCHAT(player)) {
 	    notify(player, T("You can't do that in RPMODE."));
 	    return;
-#endif
+#endif /* RPMODE_SYS */
     }
   }
 
@@ -2853,7 +2853,11 @@ do_channel_who(dbref player, CHAN *chan)
       if (IsThing(who))
 	safe_format(tbuf1, &bp, "(#%d)", who);
       sf = 0;
-      if (Chanuser_Hide(u) || Chanuser_Gag(u) || (RPMODE(u->who) && !Can_RPCHAT(u->who))) {
+      if (Chanuser_Hide(u) || Chanuser_Gag(u)
+#ifdef RPMODE_SYS
+	||  (RPMODE(u->who) && !Can_RPCHAT(u->who))
+#endif /* RPMODE_SYS */
+	  ) {
 	      safe_str(" (", tbuf1, &bp);
 	      sf++;
       }
@@ -2866,11 +2870,13 @@ do_channel_who(dbref player, CHAN *chan)
 	 safe_str("gagging", tbuf1, &bp);
 	 sf++;
       }
+#ifdef RPMODE_SYS
       if(RPMODE(u->who) && !Can_RPCHAT(u->who)) {
 	      if(sf > 1) safe_chr(',', tbuf1, &bp);
 	      safe_str("rpgag", tbuf1, &bp);
 	      sf++;
       }
+#endif /* RPMODE_SYS */
       if(sf > 0)
 	      safe_chr(')', tbuf1, &bp);
     }
@@ -3317,7 +3323,10 @@ na_channel(dbref current, void *data)
     nu = u->next;
     cont = (!GoodObject(current) ||
 	    (nac->checkquiet && Chanuser_Quiet(u)) ||
-	    Chanuser_Gag(u) ||  (RPMODE(current) && !Can_RPCHAT(current))
+	    Chanuser_Gag(u)
+#ifdef RPMODE_SYS
+	   ||  (RPMODE(current) && !Can_RPCHAT(current))
+#endif
 	    || (IsPlayer(current) && !Connected(current)));
   } while (cont);
   nac->u = nu;
