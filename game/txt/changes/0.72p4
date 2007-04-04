@@ -9,4 +9,4 @@ CobraMUSH Version 0.72p4
   It is the fourth bugfix/maintenance release in that series.
 
   Fixes:
-
+    * Flags stored in the main database were not being loaded correctly. [RLB]
