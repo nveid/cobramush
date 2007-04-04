@@ -1,2 +1,2 @@
-#define VERSION "0.72p3"
-#define VBRANCH "release"
+#define VERSION "0.72p4"
+#define VBRANCH "stable"
