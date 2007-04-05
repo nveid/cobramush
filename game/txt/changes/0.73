@@ -171,4 +171,5 @@ CobraMUSH Version 0.73
    * Improved messages for @link of exits [AEJ]
    * Fixed initialization of attribute flags [AEJ]
    * SQL support is now reported via @config compile. [RLB]
+   * Player aliases may now be supplied to @pemit/list. [RLB]
 

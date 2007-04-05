@@ -440,7 +440,7 @@ do_pemit_list(dbref player, char *list, const char *message, int flags)
   l = trim_space_sep(list, ' ');
 
   while ((p = split_token(&l, ' '))) {
-    who = noisy_match_result(player, p, NOTYPE, MAT_ABSOLUTE);
+    who = noisy_match_result(player, p, NOTYPE, MAT_PLAYER | MAT_ABSOLUTE);
     if (GoodObject(who) && okay_pemit(player, who)) {
       if (nospoof && Nospoof(who)) {
 	if (Paranoid(who)) {
