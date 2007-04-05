@@ -1945,13 +1945,18 @@ Continued in HELP ITER2
     01234567"
  
 & LINK()
-  link(<name>, <destination>)
+  link(<name>, <destination> [, <preserve>])
  
   This function links object <name> to <destination>. While normally
   used on exits, it has all of the other capabilities of @link as well.
   It returns nothing.
 
+  An optional boolean supplied third argument may given indicating 
+  behavior similar to @link/preserve.
+
   This is a side-effect function and may not be enabled on some MUSHes.
+
+  See Also: @link
 & LIST()
   list(<option>)
  
