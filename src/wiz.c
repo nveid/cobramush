@@ -65,6 +65,7 @@ struct search_spec {
   dbref parent;	/**< Limit to children of this parent */
   dbref zone;	/**< Limit to those in this zone */
   dbref division;	/**< Limit to those in this division */
+  dbref subdivision;	/**< Limit to those in this division's subdivisions */
   char flags[BUFFER_LEN];	/**< Limit to those with these flags */
   char lflags[BUFFER_LEN];	/**< Limit to those with these flags */
   int search_powers;		/**< If set, apply powers restriction */
@@ -1959,6 +1960,20 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
         notify(player, T("Unknown division."));
         return -1;
       }
+    } else if (string_prefix("subdivision", class)) {
+      if (!*restriction) {
+        spec->subdivision = NOTHING;
+        continue;
+      }
+      if (!is_objid(restriction)) {
+        notify(player, T("Unknown division."));
+        return -1;
+      }
+      spec->subdivision = parse_objid(restriction);
+      if (!GoodObject(spec->subdivision) || !IsDivision(spec->subdivision)) {
+        notify(player, T("Unknown division."));
+        return -1;
+      }
     } else if (string_prefix("eval", class)) {
       strcpy(spec->eval, restriction);
     } else if (string_prefix("ethings", class) ||
@@ -2057,6 +2072,9 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
     if (spec.zone != ANY_OWNER && Zone(n) != spec.zone)
       continue;
     if (spec.division != ANY_OWNER && Division(n) != spec.division)
+      continue;
+    if (spec.subdivision != ANY_OWNER
+	&& !(div_inscope(spec.subdivision, n) && SDIV(n).object != NOTHING))
       continue;
     if (spec.parent != ANY_OWNER && Parent(n) != spec.parent)
       continue;
