@@ -208,6 +208,7 @@ db_grow(dbref newtop)
       o->division.powergroups = NULL;
       o->warnings = 0;
       o->modification_time = o->creation_time = mudtime;
+      o->lastmod = NULL;
       o->attrcount = 0;
       initialized++;
     }
