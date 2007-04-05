@@ -175,4 +175,6 @@ CobraMUSH Version 0.73
    * SQL support is now reported via @config compile. [RLB]
    * Player aliases may now be supplied to @pemit/list. [RLB]
    * Width() and height() take optional second argument for defaults. [RLB]
+   * Unique() removes contiguous duplicates in lists. [RLB]
+   * NextDbref() now returns the next object to be created. [RLB]
 

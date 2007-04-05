@@ -1651,6 +1651,71 @@ FUNCTION(fun_setdiff)
 
 #define CACHE_SIZE 8  /**< Maximum size of the lnum cache */
 
+FUNCTION(fun_unique)
+{
+  char sep;
+  char **a1, **a2;
+  int n1, x1, x2;
+  char *sort_type = ALPHANUM_LIST;
+  int osepl = 0;
+  char *osep = NULL, osepd[2] = { '\0', '\0' };
+
+  /* if no lists, then no work */
+  if (!*args[0])
+    return;
+
+  if (!delim_check(buff, bp, nargs, args, 3, &sep))
+    return;
+
+  a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
+
+  if (!a1)
+    mush_panic("Unable to allocate memory in fun_unique");
+
+  /* make array out of the list */
+  n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
+
+  a2 = mush_malloc(n1 * sizeof(char *), "ptrarray");
+  if (!a2)
+    mush_panic("Unable to allocate memory in fun_unique");
+
+  if (nargs >= 2)
+    sort_type = get_list_type_noauto(args, nargs, 2);
+
+  if (sort_type == UNKNOWN_LIST)
+    sort_type = ALPHANUM_LIST;
+
+  if (nargs < 4) {
+    osepd[0] = sep;
+    osep = osepd;
+    if (sep)
+      osepl = 1;
+  } else if (nargs == 4) {
+    osep = args[3];
+    osepl = arglens[3];
+  }
+
+
+  a2[0] = a1[0];
+  for (x1 = x2 = 1; x1 < n1; x1++) {
+    if (gencomp(executor, a1[x1], a2[x2 - 1], sort_type) == 0)
+      continue;
+    a2[x2] = a1[x1];
+    x2++;
+  }
+
+  for (x1 = 0; x1 < x2; x1++) {
+    if (x1 > 0)
+      safe_strl(osep, osepl, buff, bp);
+    safe_str(a2[x1], buff, bp);
+  }
+
+  mush_free(a1, "ptrarray");
+  mush_free(a2, "ptrarray");
+
+}
+
+
 /* ARGSUSED */
 FUNCTION(fun_lnum)
 {
