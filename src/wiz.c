@@ -1976,7 +1976,6 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
       spec->type = TYPE_PLAYER;
     } else if (string_prefix("powers", class)) {
       div_pbits tmpbits;
-      int i;
       /* Handle the checking later.  */
       if (!restriction || !*restriction) {
 	notify(player, T("You must give a list of power names."));
@@ -1984,8 +1983,7 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
       }
       spec->search_powers = 1;
       tmpbits = string_to_dpbits(restriction);
-      for (i = 0; i < DP_BYTES; i++)
-        spec->powers[i] = tmpbits[i];
+      memcpy(spec->powers, tmpbits, DP_BYTES);
       mush_free(tmpbits, "POWER_SPOT");
     } else if (string_prefix("flags", class)) {
       /* Handle the checking later.  */
