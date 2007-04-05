@@ -167,4 +167,5 @@ CobraMUSH Version 0.73
      you #-1 [AEJ]
    * Improved messages for @link of exits [AEJ]
    * Fixed initialization of attribute flags [AEJ]
+   * SQL support is now reported via @config compile. [RLB]
 

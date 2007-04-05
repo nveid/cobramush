@@ -1638,6 +1638,9 @@ show_compile_options(dbref player)
 #ifdef HAS_OPENSSL
   notify(player, T(" The MUSH was compiled with SSL support."));
 #endif
+#ifdef HAS_MYSQL
+  notify(player, T(" The MUSH was compiled with SQL support."));
+#endif
 
 #ifdef INFO_SLAVE
   notify(player, T(" DNS and ident lookups are handled by a slave process."));
