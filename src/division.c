@@ -650,10 +650,8 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
             switch (ycode) {
             case YES:
               GIVE_DPBIT(player, power->flag_yes);
-              break;
             case YESLTE:
               GIVE_DPBIT(player, power->flag_lte);
-              break;
             case YESLT:
               GIVE_DPBIT(player, power->flag_lt);
               break;
@@ -1040,10 +1038,8 @@ rem_pg_from_player(dbref player, POWERGROUP * powergroup)
         switch (ycode) {
         case YES:
           GIVE_DPBIT(player, power->flag_yes);
-          break;
         case YESLTE:
           GIVE_DPBIT(player, power->flag_lte);
-          break;
         case YESLT:
           GIVE_DPBIT(player, power->flag_lt);
           break;
@@ -1790,10 +1786,8 @@ division_empower(dbref exec, dbref target, const char *arg2)
     switch (flag) {
     case YES:
       GIVE_DPBIT(target, power->flag_yes);
-      break;
     case YESLTE:
       GIVE_DPBIT(target, power->flag_lte);
-      break;
     case YESLT:
       GIVE_DPBIT(target, power->flag_lt);
       break;
@@ -2016,7 +2010,6 @@ adjust_powers(dbref obj, dbref to)
         switch (plev) {
         case YESLTE:
           GIVE_DPBIT(obj, power->flag_lte);
-          break;
         case YESLT:
           GIVE_DPBIT(obj, power->flag_lt);
           break;
@@ -2257,6 +2250,8 @@ convert_object_powers(dbref dbnum, int opbts)
     if (opbts & pconv_ptab[i].Op) {     /* give them the power in its new 'full yes' form */
       power = find_power(pconv_ptab[i].Name);
       GIVE_DPBIT(dbnum, power->flag_yes);
+      GIVE_DPBIT(dbnum, power->flag_lte);
+      GIVE_DPBIT(dbnum, power->flag_lt);
     }
 
   if (opbts & IS_GUEST) {
