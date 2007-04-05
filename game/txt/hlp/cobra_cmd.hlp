@@ -2652,10 +2652,11 @@ See also: give
 
 See also @emit, @oemit, @remit, NOSPOOF, and SPOOFING.
 & @poll
-  @poll <poll question>
-  This Director-only command sets the "poll" - the Doing question. If
-  "@poll" is used by itself, the question is reset to the default
-  string "Doing". It can also be used by those with the poll @power.
+  @poll [<poll question>]
+
+  This command requiring the poll power sets the "poll", the Doing
+  question on the WHO, the poll questoin can also be reset to the 
+  string "Doing" by simply typing the command with no argument attached.
 
 See also: @doing, WHO, DOING
 & @poor
