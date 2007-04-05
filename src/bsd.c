@@ -4242,6 +4242,8 @@ FUNCTION(fun_width)
     safe_str(T("#-1 FUNCTION REQUIRES ONE ARGUMENT"), buff, bp);
   else if ((match = lookup_desc(executor, args[0])))
     safe_integer(match->width, buff, bp);
+  else if (args[1])
+    safe_str(args[1], buff, bp);
   else
     safe_str("78", buff, bp);
 }
@@ -4253,6 +4255,8 @@ FUNCTION(fun_height)
     safe_str(T("#-1 FUNCTION REQUIRES ONE ARGUMENT"), buff, bp);
   else if ((match = lookup_desc(executor, args[0])))
     safe_integer(match->height, buff, bp);
+  else if (args[1])
+    safe_str(args[1], buff, bp);
   else
     safe_str("24", buff, bp);
 }
