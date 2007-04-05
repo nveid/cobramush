@@ -1900,7 +1900,7 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
     } else if (string_prefix("players", class)) {
       strcpy(spec->name, restriction);
       spec->type = TYPE_PLAYER;
-    } else if (string_prefix("divisions", class)) {
+    } else if (!strcasecmp("divisions", class)) {
       strcpy(spec->name, restriction);
       spec->type = TYPE_DIVISION;
     } else if (string_prefix("name", class)) {
