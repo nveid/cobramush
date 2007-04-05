@@ -477,6 +477,16 @@ FUNCTION(fun_lflags)
 #endif
 
 /* ARGSUSED */
+FUNCTION(fun_nextdbref)
+{
+  if (first_free != NOTHING) {
+    safe_dbref(first_free, buff, bp);
+  } else {
+    safe_dbref(db_top, buff, bp);
+  }
+}
+
+/* ARGSUSED */
 FUNCTION(fun_num)
 {
   safe_dbref(match_thing(executor, args[0]), buff, bp);
