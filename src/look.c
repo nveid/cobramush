@@ -836,7 +836,8 @@ do_examine(dbref player, const char *name, enum exam_type flag, int all)
     if (!IsPlayer(thing)) {
       notify_format(player, T("Last Modification: %s"),
 		    show_time(ModTime(thing), 0));
-      if((Owner(thing) == Owner(player) )|| Director(player))
+      if(((Owner(thing) == Owner(player)) || Director(player))
+		&& LastMod(thing))
         notify_format(player, T("Modified: %s"), LastMod(thing));
     }
   }
