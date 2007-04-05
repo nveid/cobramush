@@ -4,6 +4,8 @@ CobraMUSH Version 0.73
   interest to the user.
   (See 'changes entries' for a list of all versions.)
 
+ Minor:
+   * Improved how power bitfields are stored. [RLB]
  Flags:
    * LEAVE_BEHIND - When a player leaves the location of 
      someone they're flowing with this flag it unfollows
