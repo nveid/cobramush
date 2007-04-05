@@ -67,7 +67,8 @@ struct search_spec {
   dbref division;	/**< Limit to those in this division */
   char flags[BUFFER_LEN];	/**< Limit to those with these flags */
   char lflags[BUFFER_LEN];	/**< Limit to those with these flags */
-  char powers[BUFFER_LEN];	/**< Limit to those with these powers */
+  int search_powers;		/**< If set, apply powers restriction */
+  unsigned char powers[BUFFER_LEN];	/**< Limit to those with these powers */
   char eval[BUFFER_LEN];	/**< Limit to those where this evals true */
   char name[BUFFER_LEN];	/**< Limit to those prefix-matching this name */
   dbref low;	/**< Limit to dbrefs here or higher */
@@ -1788,7 +1789,8 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
   spec->type = NOTYPE;
   strcpy(spec->flags, "");
   strcpy(spec->lflags, "");
-  strcpy(spec->powers, "");
+  spec->search_powers = 0;
+  DPBIT_ZERO(spec->powers);
   strcpy(spec->eval, "");
   strcpy(spec->name, "");
   spec->low = 0;
@@ -1973,12 +1975,18 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
       strcpy(spec->eval, restriction);
       spec->type = TYPE_PLAYER;
     } else if (string_prefix("powers", class)) {
+      div_pbits tmpbits;
+      int i;
       /* Handle the checking later.  */
       if (!restriction || !*restriction) {
 	notify(player, T("You must give a list of power names."));
 	return -1;
       }
-      strcpy(spec->powers, restriction);
+      spec->search_powers = 1;
+      tmpbits = string_to_dpbits(restriction);
+      for (i = 0; i < DP_BYTES; i++)
+        spec->powers[i] = tmpbits[i];
+      mush_free(tmpbits, "POWER_SPOT");
     } else if (string_prefix("flags", class)) {
       /* Handle the checking later.  */
       if (!restriction || !*restriction) {
@@ -2060,9 +2068,16 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
       continue;
     if (*spec.lflags && !flaglist_check_long("FLAG", player, n, spec.lflags, 1))
       continue;
-    if (*spec.powers
-	&& !flaglist_check_long("POWER", player, n, spec.powers, 1))
-      continue;
+    if (spec.search_powers) {
+      int i;
+      if (!DPBITS(n))
+        continue;
+      for (i = 0; i < (8 * DP_BYTES); i++)
+        if (DPBIT_ISSET(spec.powers, i) && !HAS_DPBIT(n, i))
+          break;
+      if (i < (8 * DP_BYTES))
+        continue;
+    }
     if (*spec.eval) {
       char *ebuf1;
       const char *ebuf2;
