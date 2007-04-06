@@ -16,4 +16,6 @@ CobraMUSH Version 0.72p4
     * Improved PennMUSH to CobraMUSH flag conversion code for flags that are
       set to be of 'ANY' type. [RLB]
     * Fixed a bug related to uninitialized lastmod entries [AEJ]
+    * Fixed SHS 64-bit incompatability, to allow password encryption
+      to work properly on 64-bit platforms [AEJ]
 
