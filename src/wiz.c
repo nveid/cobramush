@@ -1786,7 +1786,8 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
   int n;
   const char *class, *restriction;
 
-  spec->zone = spec->parent = spec->owner = spec->division = ANY_OWNER;
+  spec->zone = spec->parent = spec->owner = ANY_OWNER;
+  spec->division = spec->subdivision = ANY_OWNER;
   spec->type = NOTYPE;
   strcpy(spec->flags, "");
   strcpy(spec->lflags, "");
