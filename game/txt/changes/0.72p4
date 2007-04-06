@@ -14,4 +14,6 @@ CobraMUSH Version 0.72p4
       statements, causing all non-privileged players to be rpgagged on
       channels. [RLB]
     * Fixed a bug related to uninitialized lastmod entries [AEJ]
+    * Fixed SHS 64-bit incompatability, to allow password encryption
+      to work properly on 64-bit platforms [AEJ]
 
