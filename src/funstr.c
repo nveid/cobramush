@@ -2115,3 +2115,198 @@ FUNCTION(fun_align)
   }
   return;
 }
+
+
+FUNCTION(fun_speak)
+{
+  ufun_attrib transufun;
+  ufun_attrib nullufun;
+  dbref speaker;
+  char *speaker_str;
+  char *open, *close;
+  int transform = 0, null = 0, say = 0;
+  char *wenv[3];
+  int funccount;
+  int fragment = 0;
+  char *say_string;
+  char *string;
+  char rbuff[BUFFER_LEN];
+
+  speaker = match_thing(executor, args[0]);
+  if (speaker == NOTHING || speaker == AMBIGUOUS) {
+    safe_str(T(e_match), buff, bp);
+    return;
+  }
+  speaker_str = unparse_dbref(speaker);
+
+  if (!args[1] || !*args[1])
+    return;
+
+  string = args[1];
+
+  if (nargs > 2 && *args[2] != '\0' && *args[2] != ' ')
+    say_string = args[2];
+  else
+    say_string = (char *) "says,";
+
+  BEGINOOREF_L
+  if (nargs > 3) {
+    if (args[3] != '\0') {
+      /* we have a transform attr */
+      transform = 1;
+      if (!fetch_ufun_attrib(args[3], executor, &transufun, 1)) {
+	ENDOOREF_L
+	safe_str(T(e_atrperm), buff, bp);
+	return;
+      }
+      if (nargs > 4) {
+	if (args[4] != '\0') {
+	  /* we have an attr to use when transform returns an empty string */
+	  null = 1;
+	  if (!fetch_ufun_attrib(args[4], executor, &nullufun, 1)) {
+	    ENDOOREF_L
+	    safe_str(T(e_atrperm), buff, bp);
+	    return;
+	  }
+	}
+      }
+    }
+  }
+
+  if (nargs < 6 || args[5] == '\0')
+    open = (char *) "\"";
+  else
+    open = args[5];
+  if (nargs < 7 || args[6] == '\0')
+    close = open;
+  else
+    close = args[6];
+
+  switch (*string) {
+  case ':':
+    safe_str(Name(speaker), buff, bp);
+    string++;
+    if (*string == ' ') {
+      /* semipose it instead */
+      while (*string == ' ')
+	string++;
+    } else
+      safe_chr(' ', buff, bp);
+    break;
+  case ';':
+    string++;
+    safe_str(Name(speaker), buff, bp);
+    if (*string == ' ') {
+      /* pose it instead */
+      safe_chr(' ', buff, bp);
+      while (*string == ' ')
+	string++;
+    }
+    break;
+  case '|':
+    string++;
+    break;
+  case '"':
+    if (CHAT_STRIP_QUOTE)
+      string++;
+  default:
+    say = 1;
+    break;
+  }
+
+  if (!transform || (!say && !strstr(string, open))) {
+    /* nice and easy */
+    if (say)
+      safe_format(buff, bp, "%s %s \"%s\"", Name(speaker), say_string, string);
+    else
+      safe_str(string, buff, bp);
+    ENDOOREF_L
+    return;
+  }
+
+
+  if (say && !strstr(string, close)) {
+    /* the whole string has to be transformed */
+    wenv[0] = string;
+    wenv[1] = speaker_str;
+    wenv[2] = unparse_integer(fragment);
+    if (call_ufun(&transufun, wenv, 3, rbuff, executor, enactor, pe_info)) {
+      ENDOOREF_L
+      return;
+    }
+    if (strlen(rbuff) > 0) {
+      safe_format(buff, bp, "%s %s %s", Name(speaker), say_string, rbuff);
+      ENDOOREF_L
+      return;
+    } else if (null == 1) {
+      wenv[0] = speaker_str;
+      wenv[1] = unparse_integer(fragment);
+      if (call_ufun(&nullufun, wenv, 2, rbuff, executor, enactor, pe_info)) {
+	ENDOOREF_L
+	return;
+      }
+      safe_str(rbuff, buff, bp);
+      ENDOOREF_L
+      return;
+    }
+  } else {
+    /* only transform portions of string between open and close */
+    char *speech;
+    int indx;
+    int finished = 0;
+    int delete = 0;
+
+    if (say) {
+      safe_str(Name(speaker), buff, bp);
+      safe_chr(' ', buff, bp);
+      safe_str(say_string, buff, bp);
+      safe_chr(' ', buff, bp);
+    }
+    funccount = pe_info->fun_invocations;
+    while (!finished && ((say && fragment == 0 && (speech = string))
+			 || (speech = strstr(string, open)))) {
+      fragment++;
+      indx = string - speech;
+      if (indx < 0)
+	indx *= -1;
+      if (string != NULL && strlen(string) > 0 && indx > 0)
+	safe_strl(string, indx, buff, bp);
+      if (!say || fragment > 1)
+	speech = speech + strlen(open);	/* move past open char */
+      /* find close-char */
+      string = strstr(speech, close);
+      if (!string || !(string = string + strlen(close))) {
+	/* no close char, or nothing after it; we're at the end! */
+	finished = 1;
+      }
+      delete = (string == NULL ? strlen(speech) : strlen(speech) -
+		(strlen(string) + strlen(close)));
+      speech = chopstr(speech, delete);
+      wenv[0] = speech;
+      wenv[1] = speaker_str;
+      wenv[2] = unparse_integer(fragment);
+      if (call_ufun(&transufun, wenv, 3, rbuff, executor, enactor, pe_info))
+	break;
+      if (*bp == (buff + BUFFER_LEN - 1) &&
+	  pe_info->fun_invocations == funccount)
+	break;
+      funccount = pe_info->fun_invocations;
+      if ((null == 1) && (strlen(rbuff) == 0)) {
+	wenv[0] = speaker_str;
+	wenv[1] = unparse_integer(fragment);
+	if (call_ufun(&nullufun, wenv, 2, rbuff, executor, enactor, pe_info))
+	  break;
+      }
+      if (strlen(rbuff) > 0) {
+	safe_str(rbuff, buff, bp);
+      }
+      if (*bp == (buff + BUFFER_LEN - 1) &&
+	  pe_info->fun_invocations == funccount)
+	break;
+    }
+    if (string != NULL && strlen(string) > 0) {
+      safe_str(string, buff, bp);	/* remaining string (not speech, so not t) */
+    }
+  }
+  ENDOOREF_L
+}

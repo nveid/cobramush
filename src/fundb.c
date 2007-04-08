@@ -1612,6 +1612,36 @@ FUNCTION(fun_pmatch)
   }
 }
 
+/* ARGUSED */
+FUNCTION(fun_namelist)
+{
+
+  int first = 1;
+  char *current;
+  dbref target;
+  const char *start;
+
+  start = args[0];
+  while (start && *start) {
+    if (!first)
+      safe_str(" ", buff, bp);
+    first = 0;
+    current = next_in_list(&start);
+    if (*current == '*')
+      current = current + 1;
+    target = lookup_player(current);
+    if (!GoodObject(target))
+      target = visible_short_page(executor, current);
+    if (target == NOTHING) {
+      safe_str("#-1", buff, bp);
+    } else if (target == AMBIGUOUS) {
+      safe_str("#-2", buff, bp);
+    } else {
+      safe_dbref(target, buff, bp);
+    }
+  }
+}
+
 /* ARGSUSED */
 FUNCTION(fun_locate)
 {

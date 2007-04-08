@@ -206,6 +206,74 @@ FUNCTION(fun_etimefmt)
 }
 
 /* ARGSUSED */
+FUNCTION(fun_stringsecs)
+{
+  int secs;
+  if (etime_to_secs(args[0], &secs))
+    safe_integer(secs, buff, bp);
+  else
+    safe_str(T("#-1 INVALID TIMESTRING"), buff, bp);
+}
+
+/** Convert an elapsed time string (3d 2h 1m 10s) to seconds.
+ * \param str1 a time string.
+ * \param secs pointer to an int to fill with number of seconds.
+ * \retval 1 success.
+ * \retval 0 failure.
+ */
+int
+etime_to_secs(char *str1, int *secs)
+{
+  /* parse the result from timestring() back into a number of seconds */
+  char str2[BUFFER_LEN];
+  int i;
+
+  *secs = 0;
+  while (str1 && *str1) {
+    while (*str1 == ' ')
+      str1++;
+    i = 0;
+    while (isdigit((unsigned char) *str1)) {
+      str2[i] = *str1;
+      str1++;
+      i++;
+    }
+    if (i == 0) {
+      return 0;			/* No numbers given */
+    }
+    str2[i] = '\0';
+    if (!*str1) {
+      *secs += parse_integer(str2);	// no more chars, just add seconds and stop
+      break;
+    }
+    switch (*str1) {
+    case 'd':
+    case 'D':
+      *secs += (parse_integer(str2) * 86400);	// days
+      break;
+    case 'h':
+    case 'H':
+      *secs += (parse_integer(str2) * 3600);	// hours
+      break;
+    case 'm':
+    case 'M':
+      *secs += (parse_integer(str2) * 60);	// minutes
+      break;
+    case 's':
+    case 'S':
+    case ' ':
+      *secs += parse_integer(str2);	// seconds
+      break;
+    default:
+      return 0;
+    }
+    str1++;			// move past the time char
+  }
+  return 1;
+}
+
+
+/* ARGSUSED */
 FUNCTION(fun_timestring)
 {
   /* Convert seconds to #d #h #m #s
