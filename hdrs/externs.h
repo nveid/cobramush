@@ -65,6 +65,9 @@ extern dbref short_page(const char *match);
 extern dbref visible_short_page(dbref player, const char *match);
 extern void do_doing(dbref player, const char *message);
 
+/* from funtime.c */
+extern int etime_to_secs(char *str1, int *secs);
+
 /* the following symbols are provided by game.c */
 extern void process_command(dbref player, char *command,
 			    dbref cause, dbref realcause, int from_port);

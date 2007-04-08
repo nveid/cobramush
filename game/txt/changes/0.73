@@ -177,4 +177,8 @@ CobraMUSH Version 0.73
    * Width() and height() take optional second argument for defaults. [RLB]
    * Unique() removes contiguous duplicates in lists. [RLB]
    * NextDbref() now returns the next object to be created. [RLB]
+   * Added Ulambda(). [RLB]
+   * Add Speak(). [RLB]
+   * Added namelist(). [RLB]
+   * Added stringsecs(). [RLB]
 

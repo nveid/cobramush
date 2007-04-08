@@ -113,13 +113,17 @@
   Dbref functions return a dbref or list of dbrefs related to some value
   on an object.
   
-  children()    con()         entrances()   exit()        followers()   
-  following()   home()        lcon()        lexits()      loc()         
-  locate()      lparent()     lplayers()    lsearch()     lvcon()       
-  lvexits()     lvplayers()   next()        num()         owner()       
-  parent()      pmatch()      rloc()        rnum()        room()        
-  where()       zone()
-  
+  children()                con()                     entrances()
+  exit()                    followers()               following()
+  home()                    lcon()                    lexits()
+  loc()                     locate()                  lparent()
+  lplayers()                lsearch()                 lvcon()
+  lvexits()                 lvplayers()               namelist()
+  next()                    num()                     owner()
+  parent()                  pmatch()                  rloc()
+  rnum()                    room()                    where()
+  zone()
+
   See also: DBREF
 & Information functions
   Information functions return values related to objects or the game.
@@ -208,7 +212,7 @@
   
   convsecs()    convutcsecs() convtime()    ctime()       etimefmt()
   isdaylight()  mtime()       restarttime() secs()        starttime()
-  time()        timefmt()     timestring()  utctime()   
+  stringsecs()  time()        timefmt()     timestring()  utctime()   
 
 & Utility functions
   These functions don't quite fit into any other category.
@@ -2544,6 +2548,15 @@ for an object named "Test", preferring a thing over other types.
   that it will continue to do this for the time being. Don't rely on it.
 
   Related functions: FULLNAME(), ACCNAME(), INAME() 
+& NAMELIST()
+  namelist(<player-list>)
+
+  Namelist takes a list of players of the form used by the page
+  command and returns a corresponding list of dbrefs.
+
+  >"[namelist(#1 Javelin "ringo spar" bogus)]
+  You say, "#1 #7 #56 #-1"
+ 
 & NAMEGRAB()
 & NAMEGRABALL()
   namegrab(<dbref list>,<name>)
@@ -3427,6 +3440,151 @@ for an object named "Test", preferring a thing over other types.
   Prints <number> number of spaces. Useful for times when you want to
   be able to use lots of spaces to separate things. For example,
   "a[space(5)]b  would print, "Amberyl says, "a     b"".
+
+& SPEAK()
+  speak(<speaker>, <string>[, <say string>
+                  [, [<transform obj>/]<transform attr>
+                  [, [<isnull obj>/]<isnull attr>[, <open>[, <close>]]]]])
+
+  This function is used to format speech-like constructs, and is
+  capable of transforming text within a speech string; it is useful for
+  implementing "language code" and the like.
+
+  When only <speaker> and <string> are given, this function formats
+  <string> as if it were speech from <speaker>, as follows.
+
+  If <string> is...  the resulting string is...
+  :<pose>            <speaker's name> <pose>
+  : <pose>           <speaker's name><pose>
+  ;<pose>            <speaker's name><pose>
+  |<emit>            <emit>
+  "<speech>          <speaker's name> says, "<speech>"
+  <speech>           <speaker's name> says, "<speech>"
+
+  If <say string> is specified, it is used instead of "says," / "says".
+
+  Continued in 'help Speak2'.
+& SPEAK2
+
+  Examples:
+
+    > say [name(me)]
+    You say, "Wizard"
+    > @emit [speak(me, :tests.)]
+    Wizard tests.
+    > @emit [speak(me, : 's testing.)]
+    Wizard's testing.
+    > @emit [speak(me, ;'s testing.)]
+    Wizard's testing.
+    > @emit [speak(me, |Test.)]
+    Test.
+    > @emit [speak(me, "Test.)]
+    Wizard says, "Test."
+    > @emit [speak(me, Test.)]
+    Wizard says, "Test."
+    > @emit [speak(me, Test., yells:)]
+    Wizard yells: "Test."
+
+  Continued in 'help Speak3'.
+
+& SPEAK3
+  If <transform> is specified (an object/attribute pair or attribute,
+  as with map() and similar functions), the speech portions of <string>
+  are passed through the transformation function.
+
+  Speech is delimited by double-quotes (i.e., "text"), or by the
+  specified <open> and <close> strings. For instance, if you wanted
+  <<text>> to denote text to be transformed, you would specify <open>
+  as << and close as >> in the function call. Only the portions of the
+  string between those delimiters are transformed. If <close> is not
+  specified, it defaults to <open>.
+
+  The transformation function receives the speech text as %0, the
+  dbref of <speaker> as %1, and the speech fragment number as %2.
+  For non-say input strings (i.e., for an original <string> beginning
+  with the :, ;, or | tokens), fragments are numbered starting with 1;
+  otherwise, fragments are numbered starting with 0. (A fragment is
+  a chunk of speech text within the overall original input string.)
+
+  Continued in 'help Speak4'.
+
+& SPEAK4
+  Examples:
+
+  > @va me = "Fragment %2 is: %0"
+  > @emit speak(me, test, ,va)
+  Wizard says, "Fragment 0 is: test"
+  > @emit speak(me, "test, ,va)
+  Wizard says, "Fragment 0 is: test"
+  > @emit speak(me, "test, yells:, va)
+  Wizard yells: "Fragment 0 is: test"
+  > @emit speak(me, :tests. "Hi.", ,va)
+  Wizard tests. "Fragment 1 is: Hi."
+  > @emit speak(me, : 's testing. "Hi.", ,va)
+  Wizard's testing. "Fragment 1 is: Hi."
+  > @emit speak(me, ;'s testing. "Hi.", ,va)
+  Wizard's testing. "Fragment 1 is: Hi."
+  > @emit speak(me, |This is a test. "Hi.", ,va)
+  This is a test. "Fragment 1 is: Hi."
+  > @emit speak(me, :tests. "Hi." And... "Bye." The end., ,va)
+  Wizard tests. "Fragment 1 is: Hi." And... "Fragment 2 is: Bye." The end.
+  > @emit speak(me, :tests. "Hi." And... <<Bye.>> The end., ,va, , <<, >>)
+  Wizard tests. "Hi." And... "Fragment 1 is: Bye." The end.
+
+  Continued in 'help Speak5'.
+& SPEAK5
+  If the result of transforming a given speech fragment is a null string,
+  and <isnull> is specified (an object/attribute pair or attribute),
+  that function is used evaluate an alternative result, with %0 as
+  the dbref of <speaker>, and %1 as the speech fragment number.
+
+  The <isnull> functionality can be useful for gracefully handling cases
+  where speech may be processed down to nothing, such as with language
+  code where no words are successfully translated.
+
+  Consider this example, where the speech string may be randomly removed:
+
+  > &MUTTER_FN me = [ifelse(rand(2),"%0",)]
+  > &NONE_FN me = [capstr(subj(%0))] mutters something.
+  > @emit speak(me, :tests. "Hello there.", mutters:, MUTTER_FN, NONE_FN)
+  Wizard tests. "Hello there."
+  OR
+  Wizard tests. He mutters something.
+
+  Continued in 'help Speak6'.
+& SPEAK6
+  Elegantly handling an empty string when the type of speech is a plain say
+  is a bit more difficult. In order to facilitate this, when the speech type
+  is a plain say, the '<speaker> says,' is only prepended to the output if
+  the transformation of the first speech fragment produces something
+  non-null. Also note that quotes are not placed around such speech
+  automatically, to allow the user's code to insert whatever is appropriate.
+
+  Below is a more elegant version of the mutter example. Here, we find
+  the use for say-speech fragments being numbered starting from 0 rather
+  than 1 -- if the speech fragment number is 0, we know we haven't
+  given any output yet.
+
+  > &MUTTER_FN me = [ifelse(rand(2),"%0",)]
+  > &NONE_FN me = [switch(%1,0,name(%0),capstr(subj(%0)))] mutters something.
+  > @emit speak(me, Hello there., mutters:, MUTTER_FN, NONE_FN)
+  Wizard mutters: "Hello there."
+  OR
+  Wizard mutters something.
+
+  Continued in 'help Speak7'.
+& SPEAK7
+  Here's another example, where words between + signs are reversed,
+  but those within double-quotes are untouched (demonstrating a technique
+  useful in something where you want to allow users to mix ordinary speech
+  with transformed speech).
+
+  > &REV_FN me = [switch(%2,0,backwards,[capstr(subj(%1))] says backwards)],
+                 "[revwords(%0)]"
+  > @emit speak(me,:tests. "Normal speech." +Mixed up speech+ Success!, ,
+                REV_FN, ,+)
+  Wizard tests. "Normal speech." He says backwards, "speech up Mixed" Success!
+
 & SPELLNUM()
   spellnum(<number>)
 
@@ -3954,6 +4112,18 @@ for an object named "Test", preferring a thing over other types.
   You say, "0d  0h  5m  1s"
   > say [timestring(301,2)]
   You say, "00d 00h 05m 01s"
+
+& STRINGSECS()
+  stringsecs(<timestring>)
+
+  The stringsecs() function takes a string of the form produced by
+  timestring() and converts it back into seconds.
+
+  Example:
+  > say [stringsecs(5m 1s)]
+  You say, "301"
+
+See also: timestring(), etimefmt()
 
 & TR()
   tr(<string>,<find>,<replace>)

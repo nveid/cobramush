@@ -168,6 +168,29 @@ FUNCTION(fun_ufun)
 }
 
 /* ARGSUSED */
+FUNCTION(fun_ulambda)
+{
+  char rbuff[BUFFER_LEN];
+  ufun_attrib ufun;
+
+  BEGINOOREF_L
+
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1)) {
+    safe_str(T(ufun.errmess), buff, bp);
+    ENDOOREF_L
+    return;
+  }
+
+  call_ufun(&ufun, args + 1, nargs - 1, rbuff, executor, enactor, pe_info);
+
+  safe_str(rbuff, buff, bp);
+
+  ENDOOREF_L
+  return;
+}
+
+
+/* ARGSUSED */
 FUNCTION(fun_ulocal)
 {
   /* Like fun_ufun, but saves the state of the q0-q9 registers
