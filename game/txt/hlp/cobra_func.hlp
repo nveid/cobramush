@@ -4188,3 +4188,16 @@ for an object named "Test", preferring a thing over other types.
   function tries to change the zone on the object before reporting it.
 
   See also: ZONES
+& ZWHO()
+& ZMWHO()
+  zwho(<zone> [, <viewer> ] )
+  zmwho(<zone>)
+
+  These functions return the dbrefs of the players online in a particular
+  zone. Supplying viewer to zwho will show the players the supplied viewer
+  can actually see on by normally typing WHO.
+
+  ZMwho() will show the minimal amount of players online that the lowliest
+  of mortals would actually be able to see.
+
+  See also: lwho()
