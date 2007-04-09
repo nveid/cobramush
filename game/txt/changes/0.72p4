@@ -22,3 +22,4 @@ CobraMUSH Version 0.72p4
       to work properly on 64-bit platforms [AEJ]
     * zwho() and zmwho() were insecure and did not properely do permissions checks
       on if the victim could actually see the people online or not. [RLB]
+    * Typo in Wizard's max and auto power lists on default for the Nuke power. [RLB]
