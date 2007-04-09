@@ -4122,7 +4122,7 @@ FUNCTION(fun_zwho)
   DESC *d;
   dbref zone, victim;
   int first;
-  int powered = (strcmp(called_as, "ZMWHO") && Priv_Who(executor) || (Inherit_Powers(executor) && Priv_Who(Owner(executor))));
+  int powered = (strcmp(called_as, "ZMWHO") && Priv_Who(executor));
   first = 1;
 
   zone = match_thing(executor, args[0]);
@@ -4139,7 +4139,7 @@ FUNCTION(fun_zwho)
     return;
   }
 
-  if (!GoodObject(zone) || !(eval_lock(victim, zone, Zone_Lock) || CanModify(victim,zone))) {
+  if (!GoodObject(zone) || !(eval_lock(victim, zone, Zone_Lock) || CanSee(victim,zone))) {
     safe_str(T(e_perm), buff, bp);
     return;
   }
@@ -4154,8 +4154,8 @@ FUNCTION(fun_zwho)
     powered = 0;
 
   DESC_ITER_CONN(d) {
-    if (!Hidden(d) || powered) {
-      if (Zone(Location(d->player)) == zone) {
+    if (Zone(Location(d->player)) == zone &&
+	(!Hidden(d) || (powered && CanSee(victim, d->player))) ) {
 	if (first) {
 	  first = 0;
 	} else {
@@ -4163,7 +4163,6 @@ FUNCTION(fun_zwho)
 	}
 	safe_dbref(d->player, buff, bp);
       }
-    }
   }
 }
 
