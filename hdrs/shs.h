@@ -18,7 +18,10 @@ typedef unsigned char BYTE;
 typedef long LONG;
 #else
 typedef unsigned char BYTE;
-typedef unsigned long LONG;
+#ifdef HAS_UINT32_T
+typedef uint32_t LONG;
+#else
+typedef unsigned int LONG;
 #endif
 #endif
 
