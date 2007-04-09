@@ -122,6 +122,7 @@ extern void decompile_flags(dbref player, dbref thing, const char *name);
 #define NOTYPE          0xFFFF
 
 #define ALLTYPES (0 | TYPE_ROOM | TYPE_THING | TYPE_EXIT | TYPE_PLAYER | TYPE_DIVISION)
+#define ALL_PENNMUSH_TYPES (0 | TYPE_ROOM | TYPE_THING | TYPE_EXIT | TYPE_PLAYER)
 
 
 

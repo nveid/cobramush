@@ -13,5 +13,7 @@ CobraMUSH Version 0.72p4
     * Parts of the RPMODE_SYS were not appropriately enclosed in ifdef
       statements, causing all non-privileged players to be rpgagged on
       channels. [RLB]
+    * Improved PennMUSH to CobraMUSH flag conversion code for flags that are
+      set to be of 'ANY' type. [RLB]
     * Fixed a bug related to uninitialized lastmod entries [AEJ]
 
