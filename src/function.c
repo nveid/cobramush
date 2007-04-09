@@ -625,6 +625,7 @@ FUNTAB flist[] = {
   {"SOUNDEX", fun_soundex, 1, 1, FN_REG},
   {"SOUNDSLIKE", fun_soundlike, 2, 2, FN_REG},
   {"SPACE", fun_space, 1, 1, FN_REG},
+  {"SPEAK", fun_speak, 2, 7, FN_REG},
   {"SPELLNUM", fun_spellnum, 1, 1, FN_REG},
   {"SPLICE", fun_splice, 3, 4, FN_REG},
 #ifdef _SWMP_
