@@ -1191,12 +1191,12 @@ do_function(dbref player, char *name, char *argv[], int preserve)
     return;
   }
   /* find the object. For some measure of security, the player must
-   * be able to examine it.
+   * be able to controls it.
    */
   if ((thing = noisy_match_result(player, argv[1], NOTYPE, MAT_EVERYTHING))
       == NOTHING)
     return;
-  if (!Can_Examine(player, thing)) {
+  if(controls(player, thing)) {
     notify(player, T("No permission to examine object."));
     return;
   }
