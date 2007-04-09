@@ -9,6 +9,7 @@ CobraMUSH Version 0.73
    * Adding Global functions now requires the executor have
      controlling ability over the object the function is on. [RLB]
    * Slight formatting fix for privileged WHO [AEJ]
+   * netmud and console are now built from the same source [AEJ]
  Flags:
    * LEAVE_BEHIND - When a player leaves the location of 
      someone they're flowing with this flag it unfollows
