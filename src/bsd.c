@@ -3492,7 +3492,7 @@ dump_users(DESC *call_by, char *match, int doing)
 		    ShowAnsi(call_by->player) ? ANSI_NORMAL : "");
     queue_string(call_by, tbuf2);
   } else {
-    sprintf(tbuf2, "%s%-16s %6s %9s %5s %5s Des  Host%s\n", ShowAnsi(call_by->player) ? ANSI_HILITE : "",
+    sprintf(tbuf2, "%s%-16s %6s %9s %5s %5s Des   Host%s\n", ShowAnsi(call_by->player) ? ANSI_HILITE : "",
 	    T("Player Name"), T("Loc #"), T("On For"), T("Idle"), T("Cmds"), ShowAnsi(call_by->player) ? ANSI_NORMAL : "");
     queue_string(call_by, tbuf2);
   }
