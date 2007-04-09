@@ -586,10 +586,10 @@ main(int argc, char **argv)
   }
 #endif
 #ifdef HAS_TEXTDOMAIN
-  textdomain("pennmush");
+  textdomain("cobramush");
 #endif
 #ifdef HAS_BINDTEXTDOMAIN
-  bindtextdomain("pennmush", "../po");
+  bindtextdomain("cobramush", "../po");
 #endif
 
   /* Build the locale-dependant tables used by PCRE */

@@ -222,6 +222,8 @@ int unfindable(dbref);
 
 #define HAS_COBRADBFLAG(x,y)	(!(x & DBF_TYPE_GARBAGE) && (x & y)) /* Macro exists so cobra & penn dbflags can exist as same DBFs */
 
+#define IS_COBRA_DB(x) (!(x & DBF_TYPE_GARBAGE))
+
 /* Reboot DB flag macros - these should be defined whether or not the
  * corresponding system option is defined 
  * They are successive binary numbers
