@@ -3143,6 +3143,9 @@ visible_short_page(dbref player, const char *match)
 
 /* LWHO() function - really belongs elsewhere but needs stuff declared here */
 
+FUNCTION(fun_nwho) {
+}
+
 /* ARGSUSED */
 FUNCTION(fun_lwho)
 {

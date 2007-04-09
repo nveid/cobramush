@@ -677,7 +677,7 @@
   connection as indicated by WHO. 
 
   The caller can use the function on himself, but using on any other
-  player requires privileged power such as Wizard, Royalty or SEE_ALL.
+  player requires special powers.
 
   See also: Connection Functions
 & SENT()
@@ -2237,16 +2237,21 @@ for an object named "Test", preferring a thing over other types.
   function.
 & LWHO()
   lwho()
+  lwho(<viewer>)
+  lwhoid(<viewer>)
 
-  This returns a list of the dbref numbers for all currently-connected
+  lwho() returns a list of the dbref numbers for all currently-connected
   players. When mortals use this function, the dbref numbers of DARK
-  directors or royalty do NOT appear on the dbref list.
+  privileged players do NOT appear on the dbref list.
 
   If lwho() is given an argument, and used by an object that can see
   DARK and Hidden players, lwho() returns the output of lwho() from
   <viewer>'s point of view.
 
-  See also: mwho()
+  lwohid() returns a list of objid's instead.
+
+See also: mwho(), xwho()
+
 & MAP()
   map([<object>/]<attribute>,<list>[,<delim>][, <osep>])
   
@@ -2506,11 +2511,15 @@ for an object named "Test", preferring a thing over other types.
   See also: anonymous attributes
 & MWHO()
   mwho()
+  mwhoid()
 
   This returns a list of the dbref numbers for all current-connected,
   non-hidden players. It's exactly the same as lwho() used by a
   mortal, and is suitable for use on privileged global objects who
   need an unprivileged who-list.
+
+  mwhoid() gives a list of objids instead of dbrefs.
+
 & ALIAS()
   alias(<player>[,<new alias>])
 
@@ -2644,6 +2653,14 @@ for an object named "Test", preferring a thing over other types.
 
   Returns the dbref number of the object, which must be in the same 
   room as the object executing num.
+& NWHO()
+  nwho()
+
+  This returns a count of all currently-connected players. When
+  mortals use this function, DARK privileged players are NOT counted.
+
+See also: lwho(), nmwho(), xwho()
+
 & OBJ()
   obj(<object>)
 
@@ -4563,6 +4580,25 @@ See also: timestring(), etimefmt()
   inputs is equivalent to true(1).  See BOOLEAN VALUES.
 
   See also: and(), or(), not(), nor()
+& XWHO()
+  xwho(<start>, <count>)
+  xmwho(<start>, <count>)
+  xwhoid(<start>, <count>)
+  xmwhoid(<start>, <count>)
+
+  xwho() fetches <count> or fewer player dbrefs from the list of connected
+  players. It is useful when the number of players connected causes lwho()
+  or pemits in +who $-commands to exceed buffer limits.
+
+  It is equivalent to extract(lwho(),<start>,<count>).
+
+  xmwho() is identical, except it is limited to non-DARK and non-HIDE
+  players.
+
+  xwhoid() and xmwhoid() return objids instead of dbrefs.
+
+See also: lwho(), mwho(), nwho()
+
 & ZEMIT()
   zemit(<zone>, <message>)
   nszemit(<zone>, <message>)

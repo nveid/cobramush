@@ -227,6 +227,7 @@ FUNCTION_PROTO(fun_nor);
 FUNCTION_PROTO(fun_not);
 FUNCTION_PROTO(fun_null);
 FUNCTION_PROTO(fun_num);
+FUNCTION_PROTO(fun_nwho);
 FUNCTION_PROTO(fun_obj);
 FUNCTION_PROTO(fun_objeval);
 FUNCTION_PROTO(fun_objid);

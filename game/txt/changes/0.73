@@ -181,4 +181,6 @@ CobraMUSH Version 0.73
    * Add Speak(). [RLB]
    * Added namelist(). [RLB]
    * Added stringsecs(). [RLB]
+   * Added nwho(), xwho(), xmwho(), xwhoid(), xmwhoid(). [RLB]
+   * Added mwhoid(), lwhoid(). [RLB]
 
