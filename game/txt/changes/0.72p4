@@ -8,6 +8,8 @@ CobraMUSH Version 0.72p4
   Version 0.72p4 is a bugfix/maintenance release of version 0.72.
   It is the fourth bugfix/maintenance release in that series.
 
+  Helpfiles:
+    * Missing zwho/zmwho() helpfiles written. [RLB]
   Fixes:
     * Flags stored in the main database were not being loaded correctly. [RLB]
     * Parts of the RPMODE_SYS were not appropriately enclosed in ifdef
@@ -18,4 +20,5 @@ CobraMUSH Version 0.72p4
     * Fixed a bug related to uninitialized lastmod entries [AEJ]
     * Fixed SHS 64-bit incompatability, to allow password encryption
       to work properly on 64-bit platforms [AEJ]
-
+    * zwho() and zmwho() were insecure and did not properely do permissions checks
+      on if the victim could actually see the people online or not. [RLB]
