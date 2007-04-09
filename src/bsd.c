@@ -3860,15 +3860,31 @@ visible_short_page(dbref player, const char *match)
 
 /* LWHO() function - really belongs elsewhere but needs stuff declared here */
 
+FUNCTION(fun_nwho) {
+  DESC *d;
+  int count = 0;
+  int powered = (*(called_as + 1) != 'M') && Priv_Who(executor);
+
+  DESC_ITER_CONN(d) {
+    if (!Hidden(d) || (powered && CanSee(executor, d->player)))
+      count++;
+  }
+  safe_integer(count, buff, bp);
+}
+
 /* ARGSUSED */
 FUNCTION(fun_lwho)
 {
   DESC *d;
   dbref victim;
-  int first, powered = (*called_as == 'L') && Priv_Who(executor);
+  int first;
+  int start, count;
+  int powered = !(strchr(called_as, 'M') != NULL) && Priv_Who(executor);
+  int xwho = *called_as == 'X';
+  int objid = strchr(called_as, 'D') != NULL;
 
   first = 1;
-  if(nargs && args[0] && *args[0]) {
+  if(!xwho && nargs && args[0] && *args[0]) {
     if(!powered) {
       safe_str(T(e_perm), buff, bp);
       return;
@@ -3885,14 +3901,41 @@ FUNCTION(fun_lwho)
     if(!Priv_Who(victim))
       powered = 0;
   } else victim = executor;
-  
+ 
+  if(xwho) {
+      if (!is_strict_integer(args[0]) || !is_strict_integer(args[1])) {
+	safe_str(T(e_int), buff, bp);
+	return;
+      }
+
+    start = parse_integer(args[0]) - 1;
+    count = parse_integer(args[1]);
+    /* Reset values to be in range if they're not */
+    if(start < 0)
+      start = 0;
+    if(count < 1)
+      count = 1;
+  }
+
   DESC_ITER_CONN(d) {
     if (!Hidden(d) || (powered && CanSee(victim,d->player))) {
+      if(xwho && start) {
+	start--;
+	continue;
+      } else if(xwho && !count)
+	break;
+      else if(xwho && count)
+	count--;
+
       if (first)
 	first = 0;
       else
 	safe_chr(' ', buff, bp);
       safe_dbref(d->player, buff, bp);
+      if(objid) {
+	safe_chr(':', buff, bp);
+	safe_integer(CreTime(d->player), buff, bp);
+      }
     }
   }
 }
