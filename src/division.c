@@ -128,9 +128,9 @@ static struct powergroup_text_t predefined_powergroups[] = {
   /* PowerGroup Name */
   {"Wizard",
    /* Max Powers */
-   "Announce Attach BCreate Boot Builder Can_NsPemit Cemit Chat Chown Combat Cron DAnnounce Division EAnnounce Economy Empire Empower GFuncs Halt Hide Idle Join Level Link Login MailAdmin Many_Attribs Modify:LTE Newpass:LTE NoPay NoQuota Nukte:LTE Open Pass_Locks PCreate PEmit Poll Privilege PrivWho ProgLock Program Powergroup:lt Pueblo_Send Queue Quota RCACHE Remote RPChat RPEmit RPTel Search See_All See_Queue SetQuotas Site SQL_Ok Summon Tel_Place Tel_Thing @SU:LTE",
+   "Announce Attach BCreate Boot Builder Can_NsPemit Cemit Chat Chown Combat Cron DAnnounce Division EAnnounce Economy Empire Empower GFuncs Halt Hide Idle Join Level Link Login MailAdmin Many_Attribs Modify:LTE Newpass:LTE NoPay NoQuota Nuke:LTE Open Pass_Locks PCreate PEmit Poll Privilege PrivWho ProgLock Program Powergroup:lt Pueblo_Send Queue Quota RCACHE Remote RPChat RPEmit RPTel Search See_All See_Queue SetQuotas Site SQL_Ok Summon Tel_Place Tel_Thing @SU:LTE",
    /* Auto Powers */
-   "Announce Attach BCreate Boot Builder Can_NsPemit Cemit Chat Chown Combat Cron DAnnounce Division EAnnounce Empire Empower GFuncs Halt Hide Idle Join Level Link Login MailAdmin Many_Attribs Modify:LTE Newpass:LTE NoPay NoQuota Nukte:LTE Open PCreate PEmit Poll Powergroup:lt Privilege PrivWho ProgLock Program Pueblo_Send Queue Quota RCACHE Remote RPChat RPEmit RPTel Search See_All See_Queue SetQuotas Site SQL_Ok Summon Tel_Place Tel_Thing @SU:LTE"},
+   "Announce Attach BCreate Boot Builder Can_NsPemit Cemit Chat Chown Combat Cron DAnnounce Division EAnnounce Empire Empower GFuncs Halt Hide Idle Join Level Link Login MailAdmin Many_Attribs Modify:LTE Newpass:LTE NoPay NoQuota Nuke:LTE Open PCreate PEmit Poll Powergroup:lt Privilege PrivWho ProgLock Program Pueblo_Send Queue Quota RCACHE Remote RPChat RPEmit RPTel Search See_All See_Queue SetQuotas Site SQL_Ok Summon Tel_Place Tel_Thing @SU:LTE"},
 
   /* PowerGroup Name */
   {"Royalty",
