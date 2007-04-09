@@ -89,8 +89,10 @@
 #undef INFO_SLAVE
 #endif
 
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
 #include <sys/uio.h>
+#endif
 #endif
 
 #include "externs.h"
@@ -113,8 +115,10 @@
 #include "strtree.h"
 #include "log.h"
 #include "pcre.h"
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
 #include "myssl.h"
+#endif
 #endif
 #include "mymalloc.h"
 #include "extmail.h"
@@ -174,10 +178,12 @@ char errlog[BUFFER_LEN];	/**< Name of the error log file */
 
 /* Default Connection flags for certain clients
  */
+#ifndef COMPILE_CONSOLE
 static CLIENT_DEFAULTS client_maps[]  = {
   {"TINYFUGUE", CONN_PROMPT},
   {NULL, -1}
 };
+#endif
 
 
 /** Is this descriptor connected to a telnet-compatible terminal? */
@@ -205,6 +211,7 @@ static CLIENT_DEFAULTS client_maps[]  = {
  */
 
 /* Telnet codes */
+#ifndef COMPILE_CONSOLE
 #define IAC		255	/**< interpret as command: */
 #define GOAHEAD		249	/**< Go Ahead command */
 #define NOP		241	/**< no operation */
@@ -222,6 +229,7 @@ static CLIENT_DEFAULTS client_maps[]  = {
 static void test_telnet(DESC *d);
 static void setup_telnet(DESC *d);
 static int handle_telnet(DESC *d, unsigned char **q, unsigned char *qend);
+#endif /* COMPILE_CONSOLE */
 static const char *empabb(dbref);
 static int do_su_exit(DESC *d);
 
@@ -233,9 +241,11 @@ static const char *register_fail =
 static const char *register_success =
   "Registration successful! You will receive your password by email.";
 static const char *shutdown_message = "Going down - Bye";
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
 static const char *ssl_shutdown_message = 
   "GAME: SSL connections must be dropped, sorry.";
+#endif
 #endif
 /** Where we save the descriptor info across reboots. */
 #define REBOOTFILE              "reboot.db"
@@ -262,20 +272,23 @@ dummy_msgs()
 
 DESC *descriptor_list = NULL;	/**< The linked list of descriptors */
 
+#ifndef COMPILE_CONSOLE
 static int sock;
 #ifdef HAS_OPENSSL
 static int sslsock = 0;
 SSL *ssl_master_socket = NULL;	/**< Master SSL socket for ssl port */
 #endif
-static int ndescriptors = 0;
 #ifdef WIN32
 static WSADATA wsadata;
 #endif
-int restarting = 0;	/**< Are we restarting the server after a reboot? */
 static int maxd = 0;
+#endif /* COMPILE_CONSOLE */
+int restarting = 0;	/**< Are we restarting the server after a reboot? */
+static int ndescriptors = 0;
 
 extern const unsigned char *tables;
 
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
 static fd_set info_pending;
 static int info_slave;
@@ -283,6 +296,7 @@ Pid_t info_slave_pid = -1;	/**< Process id of the info_slave process */
 int info_slave_state = 0;	/**< State of the info_slave process */
 static int info_query_spill, info_reap_spill;
 static time_t info_queue_time = 0;
+#endif
 #endif
 
 sig_atomic_t signal_shutdown_flag = 0;	/**< Have we caught a shutdown signal? */
@@ -313,12 +327,16 @@ static long int msec_diff(struct timeval *now, struct timeval *then);
 static struct timeval *msec_add(struct timeval *t, int x);
 static void update_quotas(struct timeval *last, struct timeval *current);
 
+#ifdef COMPILE_CONSOLE
+static void shovechars(void);
+#else /* COMPILE_CONSOLE */
 static int how_many_fds(void);
 static void shovechars(Port_t port, Port_t sslport);
 static int test_connection(int newsock);
 #ifndef INFO_SLAVE
 static DESC *new_connection(int oldsock, int *result, int use_ssl);
 #endif
+#endif /* COMPILE_CONSOLE */
 
 static void clearstrings(DESC *d);
 
@@ -556,8 +574,10 @@ main(int argc, char **argv)
 
   set_signals();
 
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
   make_info_slave();
+#endif
 #endif
 
   /* go do it */
@@ -571,7 +591,11 @@ main(int argc, char **argv)
 #endif
   load_reboot_db();
 
+#ifdef COMPILE_CONSOLE
+  shovechars();
+#else
   shovechars((Port_t) TINYPORT, (Port_t) SSLPORT);
+#endif
 #ifdef CSRI
 #ifdef CSRI_DEBUG
   mal_verify(1);
@@ -594,8 +618,10 @@ main(int argc, char **argv)
   close_sockets();
   sql_shutdown();
 
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
   kill_info_slave();
+#endif
 #endif
 
 #ifdef WIN32SERVICES
@@ -634,7 +660,9 @@ main(int argc, char **argv)
 
   do_rawlog(LT_ERR, T("MUSH shutdown completed."));
 
+#ifndef COMPILE_CONSOLE
   closesocket(sock);
+#endif
 #ifdef WIN32
 #ifdef WIN32SERVICES
   shutdown_checkpoint();
@@ -856,7 +884,11 @@ bad_empabb_value:
 
 
 static void
+#ifdef COMPILE_CONSOLE
+shovechars()
+#else
 shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
+#endif
 {
   /* this is the main game loop */
 
@@ -868,6 +900,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
   int found;
   int queue_timeout;
   DESC *d, *dnext;
+#ifndef COMPILE_CONSOLE
 #ifndef INFO_SLAVE
   DESC *newd;
   int result;
@@ -878,8 +911,12 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
   socklen_t addr_len;
   int newsock;
 #endif
+#endif /* COMPILE_CONSOLE */
   unsigned long input_ready, output_ready;
 
+#ifdef COMPILE_CONSOLE
+  d = initializesock(0, "localhost", "127.0.0.1", 0);
+#else
   if (!restarting) {
     sock = make_socket(port, NULL, NULL, MUSH_IP_ADDR);
     if (sock >= maxd)
@@ -893,8 +930,10 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
     }
 #endif
   }
+#endif /* COMPILE_CONSOLE */
   our_gettimeofday(&last_slice);
 
+#ifndef COMPILE_CONSOLE
   avail_descriptors = how_many_fds() - 4;
 #ifdef INFO_SLAVE
   avail_descriptors -= 2;	/* reserve some more for setting up the slave */
@@ -903,6 +942,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 
   /* done. print message to the log */
   do_rawlog(LT_ERR, "%d file descriptors available.", avail_descriptors);
+#endif /* COMPILE_CONSOLE */
   do_rawlog(LT_ERR, "RESTART FINISHED.");
 
   our_gettimeofday(&then);
@@ -970,6 +1010,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 
     FD_ZERO(&input_set);
     FD_ZERO(&output_set);
+#ifndef COMPILE_CONSOLE
     if (ndescriptors < avail_descriptors)
       FD_SET(sock, &input_set);
 #ifdef HAS_OPENSSL
@@ -980,17 +1021,37 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
     if (info_slave_state > 0)
       FD_SET(info_slave, &input_set);
 #endif
+#endif /* COMPILE_CONSOLE */
     for (d = descriptor_list; d; d = d->next) {
       if (d->input.head) {
 	timeout.tv_sec = slice_timeout.tv_sec;
 	timeout.tv_usec = slice_timeout.tv_usec;
+#ifdef COMPILE_CONSOLE
+      } else {
+	if(d->descriptor == 0)
+	  FD_SET(STDIN_FILENO, &input_set);
+	else
+	  FD_SET(d->descriptor, &input_set);
+      }
+      if (d->output.head) {
+	if(d->descriptor == 0)
+	  FD_SET(STDOUT_FILENO, &output_set);
+	else
+	  FD_SET(d->descriptor, &output_set);
+      }
+#else /* COMPILE_CONSOLE */
       } else
 	FD_SET(d->descriptor, &input_set);
       if (d->output.head)
 	FD_SET(d->descriptor, &output_set);
+#endif /* COMPILE_CONSOLE */
     }
 
+#ifdef COMPILE_CONSOLE
+    found = select(2, &input_set, &output_set, (fd_set *) 0, &timeout);
+#else
     found = select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout);
+#endif
     if (found < 0) {
 #ifdef WIN32
       if (found == SOCKET_ERROR && WSAGetLastError() != WSAEINTR)
@@ -1001,6 +1062,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 	perror("select");
 	return;
       }
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
       now = mudtime;
       if (info_slave_state == 2 && now > info_queue_time + 30) {
@@ -1011,6 +1073,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 	    query_info_slave(newsock);
       }
 #endif
+#endif /* COMPILE_CONSOLE */
     } else {
       /* if !found then time for robot commands */
 
@@ -1021,6 +1084,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 	do_top(options.active_q_chunk);
       }
       now = mudtime;
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
       if (info_slave_state > 0 && FD_ISSET(info_slave, &input_set)) {
 	if (info_slave_state == 1)
@@ -1086,8 +1150,33 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
       }
 #endif
 #endif
+#endif /* COMPILE_CONSOLE */
       for (d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
+#ifdef COMPILE_CONSOLE
+	if (d->descriptor == 0) {
+	  input_ready = FD_ISSET(STDIN_FILENO, &input_set);
+	  output_ready = FD_ISSET(STDOUT_FILENO, &output_set);
+	} else {
+	  input_ready = FD_ISSET(d->descriptor, &input_set);
+	  output_ready = FD_ISSET(d->descriptor, &output_set);
+	}
+	if (input_ready) {
+	  if (!process_input(d, output_ready)) {
+	    shutdownsock(d);
+	    if(d->descriptor == 0)
+	      return;
+	    continue;
+	  }
+	}
+	if (output_ready) {
+	  if (!process_output(d)) {
+	    shutdownsock(d);
+	    if (d->descriptor == 0)
+	      return;
+	  }
+	}
+#else /* COMPILE_CONSOLE */
 	input_ready = FD_ISSET(d->descriptor, &input_set);
 	output_ready = FD_ISSET(d->descriptor, &output_set);
 	if (input_ready) {
@@ -1101,11 +1190,13 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 	    shutdownsock(d);
 	  }
 	}
+#endif /* COMPILE_CONSOLE */
       }
     }
   }
 }
 
+#ifndef COMPILE_CONSOLE
 static int
 test_connection(int newsock)
 {
@@ -1120,7 +1211,6 @@ test_connection(int newsock)
   }
   return newsock;
 }
-
 
 #ifndef INFO_SLAVE
 static DESC *
@@ -1183,6 +1273,7 @@ new_connection(int oldsock, int *result, int use_ssl)
   return initializesock(newsock, tbuf1, tbuf2, use_ssl);
 }
 #endif
+#endif /* COMPILE_CONSOLE */
 
 static void
 clearstrings(DESC *d)
@@ -1442,6 +1533,10 @@ static void
 shutdownsock(DESC *d)
 {
   char tbuf1[BUFFER_LEN];
+#ifdef COMPILE_CONSOLE
+  int i;
+#endif
+
   if (d->connected) {
     do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Logout by %s(#%d)"),
 	   d->descriptor, d->addr, d->ip, Name(d->player), d->player);
@@ -1474,6 +1569,68 @@ shutdownsock(DESC *d)
   }
   process_output(d);
   clearstrings(d);
+#ifdef COMPILE_CONSOLE
+  if (d->descriptor != 0) {
+    shutdown(d->descriptor, 2);
+    closesocket(d->descriptor);
+  } else {
+    freeqs(d);
+    d->input_handler = do_command;
+    d->connected = 0;
+    d->connected_at = mudtime;
+    d->output_prefix = 0;
+    d->output_suffix = 0;
+    d->output_size = 0;
+    d->output.head = 0;
+    d->player = 0;
+    d->output.tail = &d->output.head;
+    d->input.head = 0;
+    d->input.tail = &d->input.head;
+    d->raw_input = 0;
+    d->raw_input_at = 0;
+    d->quota = COMMAND_BURST_SIZE;
+    d->last_time = mudtime;
+    d->idle_total = 0;
+    d->unidle_times = 0;
+    d->cmds = 0;
+    d->hide = 0;
+    d->doing[0] = '\0';
+    d->mailp = NULL;
+    strncpy(d->addr, "localhost", 100);
+    d->addr[99] = '\0';
+    strncpy(d->ip, "127.0.0.1", 100);
+    d->ip[99] = '\0';
+    d->conn_flags = CONN_DEFAULT;
+    d->input_chars = 0;
+    d->output_chars = 0;
+    d->ttype = mush_strdup("unknown", "terminal description");
+    d->checksum[0] = '\0';
+    d->su_exit_path = NULL;
+    d->pinfo.object = NOTHING;
+    d->pinfo.atr = NULL;
+    d->pinfo.lock = 0;
+    d->pinfo.function = NULL;
+    d->width = 78;
+    d->height = 24;
+    welcome_user(d);
+    for (i = 0; i < MAX_SNOOPS; i++)
+      d->snooper[i] = -1;
+  }
+  if (d->descriptor != 0) {
+    if (d->prev)
+      d->prev->next = d->next;
+    else				/* d was the first one! */
+      descriptor_list = d->next;
+    if (d->next)
+      d->next->prev = d->prev;
+  }
+
+  if(d->descriptor != 0) {
+    freeqs(d);
+    mush_free(d->ttype, "terminal description");
+    mush_free((Malloc_t) d, "descriptor");
+  }
+#else /* COMPILE_CONSOLE */
   shutdown(d->descriptor, 2);
   closesocket(d->descriptor);
   if (d->prev)
@@ -1495,6 +1652,7 @@ shutdownsock(DESC *d)
     mush_free(d->ttype, "terminal description");
     mush_free((Malloc_t) d, "descriptor");
   }
+#endif /* COMPILE_CONSOLE */
 
   ndescriptors--;
 }
@@ -1547,9 +1705,11 @@ initializesock(int s, char *addr, char *ip, int use_ssl
   d->pinfo.atr = NULL;
   d->pinfo.lock = 0;
   d->pinfo.function = NULL;
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   d->ssl = NULL;
   d->ssl_state = 0;
+#endif
 #endif
   if (descriptor_list)
     descriptor_list->prev = d;
@@ -1558,6 +1718,7 @@ initializesock(int s, char *addr, char *ip, int use_ssl
   descriptor_list = d;
   d->width = 78;
   d->height = 24;
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   if (use_ssl && sslsock) {
     d->ssl = ssl_listen(d->descriptor, &d->ssl_state);
@@ -1570,12 +1731,14 @@ initializesock(int s, char *addr, char *ip, int use_ssl
   }
 #endif
   test_telnet(d);
+#endif /* COMPILE_CONSOLE */
   welcome_user(d);
   for(n = 0; n < MAX_SNOOPS; n++)
     d->snooper[n] = -1;
   return d;
 }
 
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
 static void
 make_info_slave(void)
@@ -1958,6 +2121,7 @@ kill_info_slave(void)
   }
 }
 #endif
+#endif /* COMPILE_CONSOLE */
 
 
 
@@ -1973,6 +2137,7 @@ process_output(DESC *d)
 {
   struct text_block **qp, *cur;
   int cnt;
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   int input_ready = 0;
 #endif
@@ -2026,8 +2191,14 @@ process_output(DESC *d)
     }
   }
 #endif
+#endif /* COMPILE_CONSOLE */
 
   for (qp = &d->output.head; ((cur = *qp) != NULL);) {
+#ifdef COMPILE_CONSOLE
+    if (d->descriptor == 0)
+      cnt = write(STDOUT_FILENO, cur->start, cur->nchars);
+    else
+#else /* COMPILE_CONSOLE */
 #ifdef HAS_OPENSSL
     if (d->ssl) {
       cnt = 0;
@@ -2037,6 +2208,7 @@ process_output(DESC *d)
 	return 1;		/* Need to retry */
     } else {
 #endif
+#endif /* COMPILE_CONSOLE */
       cnt = send(d->descriptor, cur->start, cur->nchars, 0);
       if (cnt < 0) {
 #ifdef WIN32
@@ -2051,8 +2223,10 @@ process_output(DESC *d)
 	  return 1;
 	return 0;
       }
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
     }
+#endif
 #endif
     d->output_size -= cnt;
     d->output_chars += cnt;
@@ -2088,6 +2262,7 @@ save_command(DESC *d, const unsigned char *command)
   add_to_queue(&d->input, command, u_strlen(command) + 1);
 }
 
+#ifndef COMPILE_CONSOLE
 static void
 test_telnet(DESC *d)
 {
@@ -2328,6 +2503,7 @@ handle_telnet(DESC *d, unsigned char **q, unsigned char *qend)
   }
   return 1;
 }
+#endif /* COMPILE_CONSOLE */
 
 static void
 process_input_helper(DESC *d, char *tbuf1, int got)
@@ -2365,6 +2541,7 @@ process_input_helper(DESC *d, char *tbuf1, int got)
     } else if (*q == '\b') {
       if (p > d->raw_input)
 	p--;
+#ifndef COMPILE_CONSOLE
     } else if ((unsigned char) *q == IAC) {	/* Telnet option foo */
       if (q >= qend)
 	break;
@@ -2373,6 +2550,7 @@ process_input_helper(DESC *d, char *tbuf1, int got)
 	if (p < pend && isprint(*q))
 	  *p++ = *q;
       }
+#endif /* COMPILE_CONSOLE */
     } else if (p < pend && isprint(*q)) {
       *p++ = *q;
     }
@@ -2395,6 +2573,7 @@ process_input(DESC *d, int output_ready __attribute__ ((__unused__)))
 
   errno = 0;
 
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   if (d->ssl) {
     /* Insure that we're not in a state where we need an SSL_handshake() */
@@ -2438,7 +2617,16 @@ process_input(DESC *d, int output_ready __attribute__ ((__unused__)))
     }
   } else {
 #endif
+#endif /* COMPILE_CONSOLE */
+
+#ifdef COMPILE_CONSOLE
+    if (d->descriptor == 0)
+      got = read(STDIN_FILENO, tbuf1, sizeof tbuf1);
+    else
+      got = recv(d->descriptor, tbuf1, sizeof tbuf1, 0);
+#else /* COMPILE_CONSOLE */
     got = recv(d->descriptor, tbuf1, sizeof tbuf1, 0);
+#endif /* COMPILE_CONSOLE */
     if (got <= 0) {
       /* At this point, select() says there's data waiting to be read from
        * the socket, but we shouldn't assume that read() will actually get it
@@ -2453,8 +2641,10 @@ process_input(DESC *d, int output_ready __attribute__ ((__unused__)))
       else
 	return 0;
     }
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   }
+#endif
 #endif
 
   process_input_helper(d, tbuf1, got);
@@ -2956,6 +3146,18 @@ close_sockets(void)
 
   for (d = descriptor_list; d; d = dnext) {
     dnext = d->next;
+#ifdef COMPILE_CONSOLE
+    if(d->descriptor == 0) {
+      write(STDOUT_FILENO, T(shutdown_message), strlen(T(shutdown_message)));
+      write(STDOUT_FILENO, "\r\n", 2);
+    } else {
+      send(d->descriptor, T(shutdown_message), strlen(T(shutdown_message)), 0);
+      send(d->descriptor, "\r\n", 2, 0);
+      if (shutdown(d->descriptor, 2) < 0)
+	perror("shutdown");
+      closesocket(d->descriptor);
+    }
+#else /* COMPILE_CONSOLE */
     send(d->descriptor, T(shutdown_message), strlen(T(shutdown_message)), 0);
     send(d->descriptor, "\r\n", 2, 0);
 #ifdef HAS_OPENSSL
@@ -2968,6 +3170,7 @@ close_sockets(void)
     if (shutdown(d->descriptor, 2) < 0)
       perror("shutdown");
     closesocket(d->descriptor);
+#endif /* COMPILE_CONSOLE */
   }
 }
 
@@ -3185,12 +3388,14 @@ reaper(int sig __attribute__ ((__unused__)))
   while ((pid = wait3(&my_stat, WNOHANG, 0)) > 0)
 #endif
   {
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
     if (info_slave_pid > -1 && pid == info_slave_pid) {
       do_rawlog(LT_ERR, T("info_slave on pid %d exited!"), pid);
       info_slave_state = 0;
       info_slave_pid = -1;
     } else
+#endif
 #endif
     if (forked_dump_pid > -1 && pid == forked_dump_pid) {
       /* Most failures are handled by the forked mush already */
@@ -3317,11 +3522,15 @@ dump_users(DESC *call_by, char *match, int doing)
 		time_format_1(now - d->connected_at),
 		time_format_2(now - d->last_time), csite ? d->cmds : 0,
 		csite ? d->descriptor : 0,
+#ifdef COMPILE_CONSOLE
+		' ',
+#else /* COMPILE_CONSOLE */
 #ifdef HAS_OPENSSL
 		d->ssl ? 'S' : ' ',
 #else
 		' ',
 #endif
+#endif /* COMPILE_CONSOLE */
 		csite ? d->addr : "---");
 	tbuf1[78] = '\0';
 	if (Dark(d->player)) {
@@ -3339,11 +3548,15 @@ dump_users(DESC *call_by, char *match, int doing)
 		time_format_1(now - d->connected_at),
 		time_format_2(now - d->last_time), csite ? d->cmds : 0,
 		csite ? d->descriptor : 0,
+#ifdef COMPILE_CONSOLE
+		' ',
+#else /* COMPILE_CONSOLE */
 #ifdef HAS_OPENSSL
 		d->ssl ? 'S' : ' ',
 #else
 		' ',
 #endif
+#endif /* COMPILE_CONSOLE */
 
 		csite ? d->input_chars : 0, csite ? d->output_chars : 0,
 		csite ? d->output_size : 0);
@@ -3382,11 +3595,15 @@ dump_users(DESC *call_by, char *match, int doing)
 		"#-1",
 		time_format_1(now - d->connected_at),
 		time_format_2(now - d->last_time), d->cmds, d->descriptor,
+#ifdef COMPILE_CONSOLE
+			      ' ',
+#else /* COMPILE_CONSOLE */
 		#ifdef HAS_OPENSSL
 		              d->ssl ? 'S' : ' ',
 		#else
 		              ' ',
 		#endif
+#endif /* COMPILE_CONSOLE */
 
 		d->addr);
 	tbuf1[78] = '\0';
@@ -3396,11 +3613,15 @@ dump_users(DESC *call_by, char *match, int doing)
 		T("Connecting..."), "#-1",
 		time_format_1(now - d->connected_at),
 		time_format_2(now - d->last_time), d->cmds, d->descriptor,
+#ifdef COMPILE_CONSOLE
+			      ' ',
+#else /* COMPILE_CONSOLE */
 		#ifdef HAS_OPENSSL
 		              d->ssl ? 'S' : ' ',
 		#else
 		              ' ',
 		#endif
+#endif /* COMPILE_CONSOLE */
 		d->input_chars, d->output_chars, d->output_size);
       }
 #ifdef COLOREDWHO
@@ -3860,6 +4081,7 @@ visible_short_page(dbref player, const char *match)
 
 /* LWHO() function - really belongs elsewhere but needs stuff declared here */
 
+/* ARGSUSED */
 FUNCTION(fun_nwho) {
   DESC *d;
   int count = 0;
@@ -4258,6 +4480,9 @@ FUNCTION(fun_ssl)
   /* Return the status of the ssl flag on the least idle descriptor we
    * find that matches the player's dbref.
    */
+#ifdef COMPILE_CONSOLE
+  safe_boolean(0, buff, bp);
+#else /* COMPILE_CONSOLE */
 #ifdef HAS_OPENSSL
   DESC *match;
   if (!sslsock) {
@@ -4275,6 +4500,7 @@ FUNCTION(fun_ssl)
 #else
   safe_boolean(0, buff, bp);
 #endif
+#endif /* COMPILE_CONSOLE */
 }
 
 FUNCTION(fun_width)
@@ -4315,9 +4541,11 @@ FUNCTION(fun_terminfo)
 	safe_str(" pueblo", buff, bp);
       if (match->conn_flags & CONN_TELNET)
 	safe_str(" telnet", buff, bp);
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
       if (sslsock && match->ssl)
 	safe_str(" ssl", buff, bp);
+#endif
 #endif
     } else
       safe_str(T(e_perm), buff, bp);
@@ -4709,6 +4937,12 @@ f_close(stream)
 #define fclose(x) f_close(x)
 #endif				/* SUN_OS */
 
+#ifdef COMPILE_CONSOLE
+void
+close_ssl_connections(void)
+{
+}
+#else /* COMPILE_CONSOLE */
 static int
 how_many_fds(void)
 {
@@ -4802,6 +5036,7 @@ close_ssl_connections(void)
   options.ssl_port = 0;
 }
 #endif
+#endif /* COMPILE_CONSOLE */
 
 
 /** Dump the descriptor list to our REBOOTFILE so we can restore it on reboot.
@@ -4827,8 +5062,13 @@ dump_reboot_db(void)
     }
     /* Write out the reboot db flags here */
     fprintf(f, "V%ld\n", flags);
+#ifdef COMPILE_CONSOLE
+    putref(f, 0);
+    putref(f, 0);
+#else /* COMPILE_CONSOLE */
     putref(f, sock);
     putref(f, maxd);
+#endif /* COMPILE_CONSOLE */
     /* First, iterate through all descriptors to get to the end
      * we do this so the descriptor_list isn't reversed on reboot
      */
@@ -4911,10 +5151,15 @@ load_reboot_db(void)
     ungetc(c, f);
   }
 
+#ifdef COMPILE_CONSOLE
+  val = getref(f);
+  val = getref(f);
+#else /* COMPILE_CONSOLE */
   sock = getref(f);
   val = getref(f);
   if (val > maxd)
     maxd = val;
+#endif /* COMPILE_CONSOLE */
 
   while ((val = getref(f)) != 0) {
     ndescriptors++;
@@ -4991,9 +5236,11 @@ load_reboot_db(void)
     d->raw_input_at = NULL;
     d->quota = options.starting_quota;
     d->mailp = NULL;
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
     d->ssl = NULL;
     d->ssl_state = 0;
+#endif
 #endif
     if (d->conn_flags & CONN_CLOSE_READY) {
       /* This isn't really an open descriptor, we're just tracking
@@ -5048,6 +5295,7 @@ load_reboot_db(void)
   DESC_ITER_CONN(d) {
     d->mailp = find_exact_starting_point(d->player);
   }
+#ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   if (SSLPORT) {
     sslsock = make_socket(SSLPORT, NULL, NULL, SSL_IP_ADDR);
@@ -5055,6 +5303,7 @@ load_reboot_db(void)
     if (sslsock >= maxd)
       maxd = sslsock + 1;
   }
+#endif
 #endif
 
   fclose(f);
@@ -5240,8 +5489,12 @@ COMMAND(cmd_su) {
 	if ((d->player == player) && (!match || (d->last_time > match->last_time))) 
 	  match = d;
       /* We're only entering using a password at this moment */
+#ifdef COMPILE_CONSOLE
+	queue_newwrite(match, (unsigned char *) T("Password: "), 13);
+#else /* COMPILE_CONSOLE */
 	queue_newwrite(match, (unsigned char *) tprintf(T("Password: %c%c"),
 							IAC, GOAHEAD), 13);
+#endif /* COMPILE_CONSOLE */
 	if(!PromptConnection(match))
 	  queue_newwrite(match, (unsigned char *) "\r\n", 3);
 
@@ -5292,8 +5545,12 @@ COMMAND(cmd_su) {
 	  notify(player, T("Your HAVEN flag is set.  You cannot receive pages."));
       } else {
 	/* Part 3b.  Put guy in password program */
+#ifdef COMPILE_CONSOLE
+	queue_newwrite(match, (unsigned char *) T("Password: "), 13);
+#else /* COMPILE_CONSOLE */
 	queue_newwrite(match, (unsigned char *) tprintf(T("Password: %c%c"),
 							IAC, GOAHEAD), 13);
+#endif /* COMPILE_CONSOLE */
 	if(!PromptConnection(match))
 	  queue_newwrite(match, (unsigned char *) "\r\n", 3);
 

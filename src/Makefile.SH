@@ -68,7 +68,7 @@ C_FILES=access.c atr_tab.c attrib.c boolexp.c bsd.c bufferq.c \
 	myssl.c notify.c parse.c pcre.c player.c plyrlist.c \
 	predicat.c privtab.c prog.o ptab.c rob.c rplog.c services.c set.c shs.c  \
 	sig.c speech.c sql.c strdup.c strtree.c  strutil.c tables.c timer.c unparse.c  \
-	utils.c version.c warnings.c  wild.c wiz.c console.c
+	utils.c version.c warnings.c  wild.c wiz.c
 
 
 H_FILES = ../config.h ../confmagic.h ../hdrs/ansi.h ../hdrs/atr_tab.h \
@@ -238,6 +238,10 @@ portmsg: portmsg.c
 compress.o: comp_h.c comp_w.c comp_w8.c
 version.o: ../hdrs/buildinf.h
 cmds.o: ../hdrs/funs.h ../hdrs/cmds.h
+
+# CobraMUSH no-network console
+console.o:	bsd.c
+	$(CC) $(CFLAGS) -DCOMPILE_CONSOLE -o console.o -c bsd.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -541,6 +545,45 @@ conf.o: ../hdrs/game.h
 conf.o: ../hdrs/attrib.h
 conf.o: ../hdrs/help.h
 conf.o: ../hdrs/function.h
+console.o: ../hdrs/copyrite.h
+console.o: ../config.h
+console.o: ../hdrs/conf.h
+console.o: ../options.h
+console.o: ../hdrs/mushtype.h
+console.o: ../hdrs/htab.h
+console.o: ../hdrs/externs.h
+console.o: ../hdrs/compile.h
+console.o: ../hdrs/dbdefs.h
+console.o: ../hdrs/mushdb.h
+console.o: ../hdrs/flags.h
+console.o: ../hdrs/ptab.h
+console.o: ../hdrs/division.h
+console.o: ../hdrs/chunk.h
+console.o: ../hdrs/bufferq.h
+console.o: ../confmagic.h
+console.o: ../hdrs/lock.h
+console.o: ../hdrs/boolexp.h
+console.o: ../hdrs/help.h
+console.o: ../hdrs/match.h
+console.o: ../hdrs/ansi.h
+console.o: ../hdrs/pueblo.h
+console.o: ../hdrs/parse.h
+console.o: ../hdrs/access.h
+console.o: ../hdrs/command.h
+console.o: ../hdrs/switches.h
+console.o: ../hdrs/version.h
+console.o: ../hdrs/patches.h
+console.o: ../hdrs/mysocket.h
+console.o: ../hdrs/ident.h
+console.o: ../hdrs/strtree.h
+console.o: ../hdrs/log.h
+console.o: ../hdrs/pcre.h
+console.o: ../hdrs/myssl.h
+console.o: ../hdrs/mymalloc.h
+console.o: ../hdrs/extmail.h
+console.o: ../hdrs/attrib.h
+console.o: ../hdrs/game.h
+console.o: ../hdrs/dbio.h
 cque.o: ../hdrs/copyrite.h
 cque.o: ../config.h
 cque.o: ../hdrs/conf.h
