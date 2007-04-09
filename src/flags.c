@@ -498,8 +498,12 @@ flag_read(FILE * in)
   db_read_this_labeled_string(in, "type", &tmp);
   if(!strcmp(tmp, "ANY"))
     f->type = ALLTYPES;
-  else
+  else {
     f->type = string_to_privs(type_privs, tmp, 0);
+    /* Check to See if we're converting from Penn.. if so, change their Any to include our Any */
+    if(!IS_COBRA_DB(flagdb_flags) && f->type == ALL_PENNMUSH_TYPES)
+      f->type = ALLTYPES;
+  }
   db_read_this_labeled_string(in, "perms", &tmp);
   f->perms = string_to_privs(flag_privs, tmp, 0);
   db_read_this_labeled_string(in, "negate_perms", &tmp);
@@ -711,6 +715,8 @@ init_flag_table(const char *ns)
     return;
   }
 
+  do_rawlog(LT_ERR, T("Initializing flag table."));
+
   ptab_init(n->tab);
   /* do regular flags first */
   for (f = n->flag_table; f->name; f++) {
@@ -727,6 +733,8 @@ init_flag_table(const char *ns)
 		T("FLAG INIT: flag alias %s matches no known flag."), a->alias);
   }
   flag_add_additional();
+
+  do_rawlog(LT_ERR, T("Flag table initialization complete."));
 }
 
 /* This is where the developers will put flag_add statements to create
