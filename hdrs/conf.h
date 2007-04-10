@@ -191,7 +191,6 @@ struct options_table {
   dbref base_room;	/**< Room which floating checks consider as the base */
   dbref default_home;	/**< Home for the homeless */
   int use_dns;		/**< Should we use DNS lookups? */
-  int safer_ufun;	/**< Should we require security for ufun calls? */
   char dump_warning_1min[256];	/**< 1 minute nonforking dump warning message */
   char dump_warning_5min[256];	/**< 5 minute nonforking dump warning message */
   int noisy_whisper;	/**< Does whisper default to whisper/noisy? */
@@ -407,7 +406,6 @@ int cf_time(const char *opt, const char *val, void *loc, int maxval,
 #define NO_FORK (!options.forking_dump)
 #define PLAYER_NAME_SPACES (options.player_name_spaces)
 #define MAX_ALIASES (options.max_aliases)
-#define SAFER_UFUN (options.safer_ufun)
 #define NOISY_WHISPER (options.noisy_whisper)
 #define POSSESSIVE_GET (options.possessive_get)
 #define POSSGET_ON_DISCONNECTED (options.possessive_get_d)

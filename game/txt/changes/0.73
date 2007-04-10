@@ -10,6 +10,10 @@ CobraMUSH Version 0.73
      controlling ability over the object the function is on. [RLB]
    * Slight formatting fix for privileged WHO [AEJ]
    * netmud and console are now built from the same source [AEJ]
+   * do_reboot moved to bsd.c to allow netmud/console compiling to
+     happen more smoothly. [RLB]
+   * safer_ufun config option support removed.  Behavior is to now act
+     as if safer_ufun is always on. [RLB]
  Flags:
    * LEAVE_BEHIND - When a player leaves the location of 
      someone they're flowing with this flag it unfollows

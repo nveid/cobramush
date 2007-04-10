@@ -183,7 +183,7 @@ static CLIENT_DEFAULTS client_maps[]  = {
   {"TINYFUGUE", CONN_PROMPT},
   {NULL, -1}
 };
-#endif
+#endif /* COMPILE_CONSOLE */
 
 
 /** Is this descriptor connected to a telnet-compatible terminal? */
@@ -5671,4 +5671,63 @@ static int do_su_exit(DESC *d) {
       notify(d->player, T("Your HAVEN flag is set.  You cannot receive pages."));
     return 1;
   } else return 0;
+}
+
+/* this should be in wiz.c but console.c likes it here better */
+
+/** Reboot the game without disconnecting players.
+ * \verbatim
+ * This implements @shutdown/reboot, which performs a dump, saves
+ * information about which player is associated with which socket,
+ * and then re-execs the mush process without closing the sockets.
+ * \endverbatim
+ * \param player the enactor.
+ * \param flag if 0, normal dump; if 1, paranoid dump.
+ */
+void
+do_reboot(dbref player, int flag)
+{
+  if (player == NOTHING) {
+    flag_broadcast(0, 0,
+		   T
+		   ("GAME: Reboot w/o disconnect from game account, please wait."));
+  } else {
+    flag_broadcast(0, 0,
+		   T
+		   ("GAME: Reboot w/o disconnect by %s, please wait."),
+		   Name(Owner(player)));
+  }
+  if (flag) {
+    globals.paranoid_dump = 1;
+    globals.paranoid_checkpt = db_top / 5;
+    if (globals.paranoid_checkpt < 1)
+      globals.paranoid_checkpt = 1;
+  }
+#ifdef HAS_OPENSSL
+  close_ssl_connections();
+#endif
+  sql_shutdown();
+  shutdown_queues();
+  fork_and_dump(0);
+#ifndef PROFILING
+#ifndef WIN32
+  /* Some broken libcs appear to retain the itimer across exec!
+   * So we make sure that if we get a SIGPROF in our next incarnation,
+   * we ignore it until our proper handler is set up.
+   */
+  ignore_signal(SIGPROF);
+#endif
+#endif
+  dump_reboot_db();
+#if !defined(COMPILE_CONSOLE) && defined(INFO_SLAVE)
+  kill_info_slave();
+#endif
+  local_shutdown();
+  end_all_logs();
+#ifndef WIN32
+  execl("netmush", "netmush", confname, NULL);
+#else
+  execl("cobramush.exe", "cobramush.exe", "/run", NULL);
+#endif				/* WIN32 */
+  exit(1);			/* Shouldn't ever get here, but just in case... */
 }
