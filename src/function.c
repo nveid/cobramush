@@ -1197,8 +1197,8 @@ do_function(dbref player, char *name, char *argv[], int preserve)
   if ((thing = noisy_match_result(player, argv[1], NOTYPE, MAT_EVERYTHING))
       == NOTHING)
     return;
-  if(controls(player, thing)) {
-    notify(player, T("No permission to examine object."));
+  if(!controls(player, thing)) {
+    notify(player, T("Permission denied."));
     return;
   }
   /* we don't need to check if the attribute exists. If it doesn't,
