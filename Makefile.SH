@@ -32,7 +32,7 @@ fi
 : Protect any dollar signs and backticks that you do not want interpreted
 : by putting a backslash in front.  You may delete these comments.
 $spitshell >Makefile <<!GROK!THIS!
-# Makefile for PennMUSH 
+# Makefile for CobraMUSH 
 
 # - System configuration - #
 
@@ -229,12 +229,13 @@ clean:
 	(cd game; rm -f netmush console info_slave)
 
 distclean: 
-	(cd src; make distclean)
-	(cd hdrs; rm -f *.orig *~ \#* *.rej *.bak funs.h cmds.h)
-	(cd utils; rm -f *.orig *~ \#* *.rej *.bak)
-	(cd game; rm -rf *.log netmush console info_slave *.orig *.rej *~ *.bak mush.cnf)
+	(cd hdrs; rm -f *.orig *~ \#* *.rej *.bak funs.h cmds.h buildinf.h patches.h)
+	(cd utils; rm -f *.orig *~ \#* *.rej *.bak mkcmds.sh)
+	(cd game; rm -rf *.log netmush info_slave *.orig *.rej *~ *.bak mush.cnf)
 	(cd os2; rm -rf *.rej *.orig *~ *.bak)
+	(cd src; make distclean; rm -f Makefile)
 	(cd game/txt; make clean)
+	(rm -rf .config Makefile config.h config.sh options.h)
 
 totallyclean: distclean 
 	(cd hdrs; rm -rf *.rej)

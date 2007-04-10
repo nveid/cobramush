@@ -23,8 +23,8 @@
 
 #ifdef WIN32SERVICES
 
-#define THIS_SERVICE "PennMUSH"
-#define THIS_SERVICE_DISPLAY "PennMUSH for Win32"
+#define THIS_SERVICE "CobraMUSH"
+#define THIS_SERVICE_DISPLAY "CobraMUSH for Win32"
 
 int WIN32_CDECL main(int argc, char **argv);
 void mainthread(int argc, char **argv);
@@ -130,14 +130,14 @@ main(argc, argv)
 
      */
 
-    fprintf(stderr, T("Attempting to start PennMUSH as a service ...\n"));
+    fprintf(stderr, T("Attempting to start CobraMUSH as a service ...\n"));
     if (!StartServiceCtrlDispatcher(dispatchTable)) {
       fprintf(stderr,
 	      T
 	      ("Unable to start service, assuming running console-mode application.\n"));
       fprintf(stderr,
 	      T
-	      ("You can save time on the next invocation by specifying: pennmush /run\n"));
+	      ("You can save time on the next invocation by specifying: cobramush /run\n"));
       worker_thread(NULL);
     }
   }				/*  end of argc == 1 */

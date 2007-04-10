@@ -187,4 +187,5 @@ CobraMUSH Version 0.73
    * Added stringsecs(). [RLB]
    * Added nwho(), xwho(), xmwho(), xwhoid(), xmwhoid(). [RLB]
    * Added mwhoid(), lwhoid(). [RLB]
+   * make distclean is now more throughough. [RLB]
 

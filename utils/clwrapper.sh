@@ -11,7 +11,7 @@ while test $# -gt 0; do
 		shift
 		case "x$1" in
 		x*.o) args="$args /Fo$1";;
-		xnetmud) outfile="/out:PennMUSH.exe";;
+		xnetmud) outfile="/out:CobraMUSH.exe";;
 		x*) outfile="/out:$1.exe";;
 		esac
 		shift

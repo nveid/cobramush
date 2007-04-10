@@ -1773,7 +1773,7 @@ do_reboot(dbref player, int flag)
 #ifndef WIN32
   execl("netmush", "netmush", confname, NULL);
 #else
-  execl("pennmush.exe", "pennmush.exe", "/run", NULL);
+  execl("cobramush.exe", "cobramush.exe", "/run", NULL);
 #endif				/* WIN32 */
   exit(1);			/* Shouldn't ever get here, but just in case... */
 }

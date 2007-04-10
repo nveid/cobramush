@@ -159,7 +159,6 @@ src/comp_w.c
 src/comp_w8.c
 src/compress.c
 src/conf.c
-src/console.c
 src/cque.c
 src/create.c
 src/cron.c
