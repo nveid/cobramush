@@ -392,8 +392,6 @@ COBRA_CONF conftable[] = {
    "flags"}
   ,
 
-  {"safer_ufun", cf_bool, &options.safer_ufun, 2, 0, "funcs"}
-  ,
   {"function_side_effects", cf_bool, &options.function_side_effects, 2, 0,
    "funcs"}
   ,
@@ -1133,7 +1131,6 @@ conf_default_set(void)
   strcpy(options.channel_flags, "");
   options.warn_interval = 3600;
   options.use_dns = 1;
-  options.safer_ufun = 1;
   strcpy(options.dump_warning_1min,
 	 T("GAME: Database will be dumped in 1 minute."));
   strcpy(options.dump_warning_5min,

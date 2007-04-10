@@ -214,7 +214,7 @@ extern dbref first_free;	/* pointer to free list */
 
 
 /* This is carefully ordered, from most to least likely. Hopefully. */
-#define CanEval(x,y)    (!(SAFER_UFUN) || !Admin(y) || God(x) || \
+#define CanEval(x,y)    (!Admin(y) || God(x) || \
         ((Director(x) || (Admin(x) && !Director(y))) && !God(y)))
 
 /* AF_PUBLIC overrides SAFER_UFUN */
