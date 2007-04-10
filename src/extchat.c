@@ -2369,9 +2369,12 @@ FUNCTION(fun_cinfo)
     }
     if (string_prefix(called_as, "CD"))
       safe_str(ChanTitle(c), buff, bp);
-    else if (string_prefix(called_as, "CB"))
-      safe_integer(BufferQSize(ChanBufferQ(c)), buff, bp);
-    else if (string_prefix(called_as, "CU"))
+    else if (string_prefix(called_as, "CB")) {
+      if(ChanBufferQ(c) != NULL)
+	safe_integer(BufferQSize(ChanBufferQ(c)), buff, bp);
+      else 
+	safe_chr('0', buff, bp);
+    } else if (string_prefix(called_as, "CU"))
       safe_integer(ChanNumUsers(c), buff, bp);
     else if (string_prefix(called_as, "CM"))
       safe_integer(ChanNumMsgs(c), buff, bp);

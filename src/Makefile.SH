@@ -27,7 +27,7 @@ fi
 : Protect any dollar signs and backticks that you do not want interpreted
 : by putting a backslash in front.  You may delete these comments.
 $spitshell >Makefile <<!GROK!THIS!
-# Makefile for PennMUSH
+# Makefile for CobraMUSH
 
 ###############################################################################
 #         You shouldn't have to change anything in this file.                 #
