@@ -407,12 +407,14 @@ static const char *time_format_1(long int dt);
 static const char *time_format_2(long int dt);
 
 void inactivity_check(void);
+#ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
 static void make_info_slave(void);
 static void promote_info_slave(void);
 static void query_info_slave(int fd);
 static void reap_info_slave(void);
 void kill_info_slave(void);
+#endif
 #endif
 void reopen_logs(void);
 void load_reboot_db(void);
