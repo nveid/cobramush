@@ -192,4 +192,5 @@ CobraMUSH Version 0.73
    * Added nwho(), xwho(), xmwho(), xwhoid(), xmwhoid(). [RLB]
    * Added mwhoid(), lwhoid(). [RLB]
    * make distclean is now more throughough. [RLB]
+   * FIXED flag restriction on 'home' is now entirely in restrict.cnf [AEJ]
 

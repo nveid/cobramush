@@ -489,10 +489,7 @@ COMMAND (cmd_huh_command) {
 COMMAND (cmd_home) {
   if (!Mobile(player))
     return;
-  if (Fixed(player))
-    notify(player, T("You can't do that IC!"));
-  else
-    do_move(player, "home", MOVE_NORMAL);
+  do_move(player, "home", MOVE_NORMAL);
 }
 
 COMMAND (cmd_kick) {
