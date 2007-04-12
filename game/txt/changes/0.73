@@ -4,7 +4,7 @@ CobraMUSH Version 0.73
   interest to the user.
   (See 'changes entries' for a list of all versions.)
 
- Minor:
+ Minor changes:
    * Improved how power bitfields are stored. [RLB]
    * Adding Global functions now requires the executor have
      controlling ability over the object the function is on. [RLB]
@@ -191,6 +191,6 @@ CobraMUSH Version 0.73
    * Added stringsecs(). [RLB]
    * Added nwho(), xwho(), xmwho(), xwhoid(), xmwhoid(). [RLB]
    * Added mwhoid(), lwhoid(). [RLB]
-   * make distclean is now more throughough. [RLB]
+   * make distclean is now more thorough. [RLB]
    * FIXED flag restriction on 'home' is now entirely in restrict.cnf [AEJ]
 
