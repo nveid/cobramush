@@ -194,4 +194,5 @@ CobraMUSH Version 0.73
    * make distclean is now more thorough. [RLB]
    * FIXED flag restriction on 'home' is now entirely in restrict.cnf [AEJ]
    * @chan/list works better for people who increase CHAN_NAME_LEN [AEJ]
+   * locate() can take multiple types and prefer all of them [AEJ]
 
