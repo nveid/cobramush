@@ -61,6 +61,7 @@ FUNCTION_PROTO(fun_cor);
 FUNCTION_PROTO(fun_cos);
 FUNCTION_PROTO(fun_cowner);
 FUNCTION_PROTO(fun_create);
+FUNCTION_PROTO(fun_crecall);
 FUNCTION_PROTO(fun_crplog);
 FUNCTION_PROTO(fun_cstatus);
 FUNCTION_PROTO(fun_ctime);

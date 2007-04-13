@@ -3220,6 +3220,117 @@ FUNCTION(fun_cemit)
   do_cemit(executor, args[0], args[1], flags);
 }
 
+/* ARGSUSED */
+FUNCTION(fun_crecall)
+{
+  CHAN *chan;
+  CHANUSER *u;
+  int start = -1, num_lines = 10;
+  char *p = NULL, *buf, *name;
+  time_t timestamp;
+  char *stamp;
+  dbref speaker;
+  int type;
+  int first = 1;
+  char sep;
+  int showstamp = 0;
+
+  name = args[0];
+  if (!name || !*name) {
+    safe_str(T("#-1 NO SUCH CHANNEL"), buff, bp);
+    return;
+  }
+
+  if (!args[1] || !*args[1]) {
+    /* nothing */
+  } else if (is_integer(args[1])) {
+    num_lines = parse_integer(args[1]);
+    if (num_lines == 0)
+      num_lines = INT_MAX;
+  } else {
+    safe_str(T(e_int), buff, bp);
+    return;
+  }
+  if (!args[2] || !*args[2]) {
+    /* nothing */
+  } else if (is_integer(args[2])) {
+    start = parse_integer(args[2]) - 1;
+  } else {
+    safe_str(T(e_int), buff, bp);
+    return;
+  }
+
+  if (!delim_check(buff, bp, nargs, args, 4, &sep))
+    return;
+
+  if (nargs > 4 && args[4] && *args[4])
+    showstamp = parse_boolean(args[4]);
+
+  if (num_lines < 0) {
+    safe_str(T(e_uint), buff, bp);
+    return;
+  }
+
+  test_channel(executor, name, chan);
+  if (!Chan_Can_See(chan, executor)) {
+    if (onchannel(executor, chan))
+      safe_str(T(e_perm), buff, bp);
+    else
+      safe_str(T("#-1 NO SUCH CHANNEL"), buff, bp);
+    return;
+  }
+
+  u = onchannel(executor, chan);
+  if (!u &&!Chan_Can_Access(chan, executor)) {
+    safe_str(T(e_perm), buff, bp);
+    return;
+  }
+
+  if (!ChanBufferQ(chan)) {
+    safe_str(T("#-1 NO RECALL BUFFER"), buff, bp);
+    return;
+  }
+
+  if (start < 0)
+    start = BufferQNum(ChanBufferQ(chan)) - num_lines;
+  if (isempty_bufferq(ChanBufferQ(chan))
+      || BufferQNum(ChanBufferQ(chan)) <= start) {
+    safe_str(T(e_range), buff, bp);
+    return;
+  }
+
+  while (start > 0) {
+    buf = iter_bufferq(ChanBufferQ(chan), &p, &speaker, &type, &timestamp);
+    start--;
+  }
+  while ((buf = iter_bufferq(ChanBufferQ(chan), &p, &speaker, &type,
+			     &timestamp)) && num_lines > 0) {
+    if (first)
+      first = 0;
+    else
+      safe_chr(sep, buff, bp);
+    if (Nospoof(executor) && GoodObject(speaker)) {
+      char *nsmsg = ns_esnotify(speaker, na_one, &executor,
+				Paranoid(executor) ? 1 : 0);
+      if (!showstamp)
+	safe_format(buff, bp, T("%s %s"), nsmsg, buf);
+      else {
+	stamp = show_time(timestamp, 0);
+	safe_format(buff, bp, T("[%s] %s %s"), stamp, nsmsg, buf);
+      }
+      mush_free(nsmsg, "string");
+    } else {
+      if (!showstamp)
+	safe_str(buf, buff, bp);
+      else {
+	stamp = show_time(timestamp, 0);
+	safe_format(buff, bp, T("[%s] %s"), stamp, buf);
+      }
+    }
+    num_lines--;
+  }
+}
+
 COMMAND (cmd_cemit) {
   int spflags = !strcmp(cmd->name, "@NSCEMIT") ? PEMIT_SPOOF : 0;
   SPOOF(player, cause, sw);
