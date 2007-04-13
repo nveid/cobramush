@@ -1666,26 +1666,26 @@ FUNCTION(fun_locate)
   }
 
   /* find out our preferred match type and flags */
-  pref_type = NOTYPE;
+  pref_type = 0;
   for (p = args[2]; *p; p++) {
     switch (*p) {
     case 'N':
-      pref_type = NOTYPE;
+      pref_type |= NOTYPE;
       break;
     case 'E':
-      pref_type = TYPE_EXIT;
+      pref_type |= TYPE_EXIT;
       break;
     case 'P':
-      pref_type = TYPE_PLAYER;
+      pref_type |= TYPE_PLAYER;
       break;
     case 'R':
-      pref_type = TYPE_ROOM;
+      pref_type |= TYPE_ROOM;
       break;
     case 'T':
-      pref_type = TYPE_THING;
+      pref_type |= TYPE_THING;
       break;
     case 'D':
-      pref_type = TYPE_DIVISION;
+      pref_type |= TYPE_DIVISION;
       break;
     case 'L':
       keys = 1;
@@ -1734,6 +1734,8 @@ FUNCTION(fun_locate)
       break;
     }
   }
+  if (!pref_type)
+    pref_type = NOTYPE;
 
   if (keys)
     match_flags = MAT_CHECK_KEYS;
@@ -1749,7 +1751,7 @@ FUNCTION(fun_locate)
     return;
   }
 
-  if (force_type && pref_type != NOTYPE && !(Typeof(item) == pref_type)) {
+  if (force_type && !(Typeof(item) & pref_type)) {
     safe_dbref(NOTHING, buff, bp);
     return;
   }
