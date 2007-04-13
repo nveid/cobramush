@@ -323,6 +323,15 @@ specific indirect lock instead of the default one:
   @clock.
 
   See also: @clock
+& CRECALL()
+  crecall(<channel>[, <lines> [, <start line> [, <osep> [, <timestamps?> ]]]])
+
+  This function is the functional form of @chan/recall, and returns a
+  string containing the recalled lines from the channel, separated by
+  <osep>. If <timestamps?> is a true value, the recalled lines will
+  include their timestamps; otherwise, they will not.
+
+  See also: @channel3
 & Channel functions
   Channel functions work with the channel system.
 
