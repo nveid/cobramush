@@ -221,22 +221,26 @@ FUNCTION(fun_default)
   char *dp;
   const char *sp;
   char mstr[BUFFER_LEN];
+  int i;
   /* find our object and attribute */
-  dp = mstr;
-  sp = args[0];
-  process_expression(mstr, &dp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
-  *dp = '\0';
-  parse_attrib(executor, mstr, &thing, &attrib);
-  if (GoodObject(thing) && attrib && Can_Read_Attr(executor, thing, attrib)) {
-    /* Ok, we've got it */
-    dp = safe_atr_value(attrib);
-    safe_str(dp, buff, bp);
-    free(dp);
-    return;
+  for (i = 1; i < nargs; i++) {
+    mstr[0] = '\0';
+    dp = mstr;
+    sp = args[i - 1];
+    process_expression(mstr, &dp, &sp, executor, caller, enactor, PE_DEFAULT,
+		       PT_DEFAULT, pe_info);
+    *dp = '\0';
+    parse_attrib(executor, mstr, &thing, &attrib);
+    if (GoodObject(thing) && attrib && Can_Read_Attr(executor, thing, attrib)) {
+      /* Ok, we've got it */
+      dp = safe_atr_value(attrib);
+      safe_str(dp, buff, bp);
+      free(dp);
+      return;
+    }
   }
-  /* We couldn't get it. Evaluate args[1] and return it */
-  sp = args[1];
+  /* We couldn't get it. Evaluate the last arg and return it */
+  sp = args[nargs - 1];
   process_expression(buff, bp, &sp, executor, caller, enactor,
 		     PE_DEFAULT, PT_DEFAULT, pe_info);
   return;

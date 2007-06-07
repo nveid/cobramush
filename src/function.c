@@ -347,7 +347,7 @@ FUNTAB flist[] = {
   {"DEC", fun_dec, 1, 1, FN_REG},
   {"DECOMPOSE", fun_decompose, 1, -1, FN_REG},
   {"DECRYPT", fun_decrypt, 2, 2, FN_REG},
-  {"DEFAULT", fun_default, 2, 2, FN_NOPARSE},
+  {"DEFAULT", fun_default, 2, INT_MAX, FN_NOPARSE},
   {"DELETE", fun_delete, 3, 3, FN_REG},
   {"DIE", fun_die, 2, 3, FN_REG},
   {"DIG", fun_dig, 1, 3, FN_REG},

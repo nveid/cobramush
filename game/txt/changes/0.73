@@ -198,4 +198,5 @@ CobraMUSH Version 0.73
    * crecall() [AEJ]
    * @poll with no argument now displays the current poll; use
      @poll/clear to clear it [AEJ]
+   * default() can take multiple attributes to try in order [AEJ]
 

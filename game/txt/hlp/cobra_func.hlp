@@ -886,15 +886,15 @@
   the string and the same password.
 
 & DEFAULT()
-  Function:  default([<obj>/]<attr>,<default case>)
+  Function:  default([<obj>/]<attr>,[[<obj>]/<attr>,...]<default case>)
  
-  This function returns the value of <obj>/<attr>, as if retrieved via
-  the get() function, if the attribute exists and is readable by you.
-  Otherwise, it evaluates the default case, and returns that.
-  Note that the default case is only evaluated if the attribute does
-  not exist or cannot be read. Note further than an empty attribute
-  counts as an existing attribute.
- 
+  This function returns the value of the first possible <obj>/<attr>,
+  as if retrieved via the get() function, if the attribute exists and
+  is readable by you.  Otherwise, it evaluates the default case, and
+  returns that.  Note that the default case is only evaluated if the
+  attribute does not exist or cannot be read.  Note further that an
+  empty attribute counts as an existing attribute.
+
   This is useful for code that needs to return the value of an attribute,
   or an error message or default case, if that attribute does not exist.
  
