@@ -14,8 +14,6 @@ CobraMUSH Version 0.73
      happen more smoothly. [RLB]
    * safer_ufun config option support removed.  Behavior is to now act
      as if safer_ufun is always on. [RLB]
-   * @poll with no argument now displays the current poll; use
-     @poll/clear to clear it [AEJ]
  Flags:
    * LEAVE_BEHIND - When a player leaves the location of 
      someone they're flowing with this flag it unfollows
@@ -198,4 +196,6 @@ CobraMUSH Version 0.73
    * @chan/list works better for people who increase CHAN_NAME_LEN [AEJ]
    * locate() can take multiple types and prefer all of them [AEJ]
    * crecall() [AEJ]
+   * @poll with no argument now displays the current poll; use
+     @poll/clear to clear it [AEJ]
 
