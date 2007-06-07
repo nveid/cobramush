@@ -229,7 +229,7 @@ COMLIST commands[] = {
 
   {"@PEMIT", "LIST CONTENTS SILENT NOISY NOEVAL SPOOF", cmd_pemit,
    CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_NOGAGGED, NULL},
-  {"@POLL", NULL, cmd_poll, CMD_T_ANY, NULL},
+  {"@POLL", "CLEAR", cmd_poll, CMD_T_ANY, NULL},
   {"@POOR", NULL, cmd_poor, CMD_T_ANY, NULL},
   {"@POWER", "ALIAS LIST ADD DELETE", cmd_power, CMD_T_ANY | CMD_T_EQSPLIT , NULL},
   {"@POWERGROUP", "AUTO MAX ADD DELETE LIST RAW", cmd_powergroup, CMD_T_ANY | CMD_T_EQSPLIT, NULL},
