@@ -301,7 +301,7 @@ COMMAND (cmd_disable) {
 
 COMMAND (cmd_doing) {
   if (SW_ISSET(sw, SWITCH_HEADER))
-    do_poll(player, arg_left);
+    do_poll(player, arg_left, 0);
   else
     do_doing(player, arg_left);
 }
@@ -745,7 +745,7 @@ COMMAND (cmd_pemit) {
 }
 
 COMMAND (cmd_poll) {
-  do_poll(player, arg_left);
+  do_poll(player, arg_left, SW_ISSET(sw, SWITCH_CLEAR));
 }
 
 COMMAND (cmd_poor) {

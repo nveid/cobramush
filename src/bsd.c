@@ -3999,16 +3999,30 @@ do_doing(dbref player, const char *message)
  * \endverbatim
  * \param player the enactor.
  * \param message the message to set.
+ * \param clear true if the poll should be reset to the default 'Doing'
  */
 void
-do_poll(dbref player, const char *message)
+do_poll(dbref player, const char *message, int clear)
 {
   int i;
+
+  if ((!message || !*message) && !clear) {
+    /* Just display the poll. */
+    notify_format(player, T("The current poll is: %s"), poll_msg);
+    return;
+  }
 
   if (!Change_Poll(player)) {
     notify(player, T("Who do you think you are, Gallup?"));
     return;
   }
+
+  if (clear) {
+    strcpy(poll_msg, "Doing");
+    notify(player, T("Poll reset."));
+    return;
+  }
+
   strncpy(poll_msg, remove_markup(message, NULL), DOING_LEN - 1);
   for (i = 0; i < DOING_LEN; i++) {
     if ((poll_msg[i] == '\r') || (poll_msg[i] == '\n') ||
@@ -4020,10 +4034,10 @@ do_poll(dbref player, const char *message)
   if (strlen(message) >= DOING_LEN) {
     poll_msg[DOING_LEN - 1] = 0;
     notify_format(player,
-		  T("Poll set. %zu characters lost."),
+		  T("Poll set to '%s'. %zu characters lost."), poll_msg,
 		  strlen(message) - (DOING_LEN - 1));
   } else
-    notify(player, T("Poll set."));
+    notify_format(player, T("Poll set to: %s"), poll_msg);
   do_log(LT_WIZ, player, NOTHING, T("Poll Set to '%s'."), poll_msg);
 }
 

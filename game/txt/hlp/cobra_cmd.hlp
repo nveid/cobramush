@@ -2652,11 +2652,14 @@ See also: give
 
 See also @emit, @oemit, @remit, NOSPOOF, and SPOOFING.
 & @poll
-  @poll [<poll question>]
+  @poll
+  @poll <poll question>
+  @poll/clear
 
-  This command requiring the poll power sets the "poll", the Doing
-  question on the WHO, the poll questoin can also be reset to the 
-  string "Doing" by simply typing the command with no argument attached.
+  This command manipulates the message at the top of WHO/DOING. By itself,
+  it displays the current poll. Those with sufficient power can set
+  or clear the message by using the second or third forms, respectively.
+  Clearing the message sets it to the default, 'Doing'.
 
 See also: @doing, WHO, DOING
 & @poor

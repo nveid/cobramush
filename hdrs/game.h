@@ -27,7 +27,7 @@ extern void fcache_load(dbref player);
 extern void hide_player(dbref player, int hide);
 enum motd_type { MOTD_MOTD, MOTD_DOWN, MOTD_FULL, MOTD_LIST };
 extern void do_motd(dbref player, enum motd_type key, const char *message);
-extern void do_poll(dbref player, const char *message);
+extern void do_poll(dbref player, const char *message, int clear);
 /* From cque.c */
 extern int do_wait
   (dbref player, dbref cause, char *arg1, char *cmd, int until, char finvoc);
