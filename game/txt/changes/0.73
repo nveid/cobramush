@@ -199,4 +199,6 @@ CobraMUSH Version 0.73
    * @poll with no argument now displays the current poll; use
      @poll/clear to clear it [AEJ]
    * default() can take multiple attributes to try in order [AEJ]
+   * attrib_set(obj/attr,) with EMPTY_ATTRS off sets the attribute to a
+     single space [AEJ]
 
