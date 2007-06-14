@@ -1,9 +1,0 @@
-Bugs that aren't our fault, but might bite people with old compilers:
-
-* Ralph Melton reports that compiling with gcc 2.5.8 under SunOS 4.1.1
-  using -O optimization and forking dumps causes the dump process to
-  crash. Removing -O fixes the problem; so might using a more recent gcc.
-* Javelin has confirmed that compiling with gcc 2.7.2.3 under Linux 2.2.16
-  using -O optimization causes ansi(rh,a) to crash. Removing -O fixes
-  the problem; so might using a more recent gcc
-
