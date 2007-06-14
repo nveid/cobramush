@@ -1,12 +1,13 @@
 ============================================================================
-                         Internationalization in 17.x
+                  Internationalization in CobraMUSH
 ============================================================================
 
-PennMUSH 1.7.3 and later have extensive support for running in non-English
-environments. There are two parts to this. First, what the mush considers
-to be valid characters, what's upper-case, what's lower-case, how they
-are sorted, and so on. The second is translating the messages produced
-by the game into another language. (Helpfiles aren't currently translated.)
+PennMUSH 1.7.3 and later, and therefore all versions of CobraMUSH,  have
+extensive support for running in non-English environments. There are two
+parts to this. First, what the mush considers to be valid characters, what's
+upper-case, what's lower-case, how they are sorted, and so on. The second is
+translating the messages produced by the game into another language.
+(Helpfiles aren't currently translated.)
 
 Several languages are currently supported to one degree or another.
 If your favorite language isn't (or if you want to increase the
@@ -27,9 +28,10 @@ the running server).
 
 1. Compiling the MUSH - tips
 
-Files with translated messages are located at
+Files with translated messages for PennMUSH are located at
 http://download.pennmush.org/Source/translations/. Get the one for your
-patchlevel and language, put it in your pennmush/po/ directory.
+patchlevel and language, put it in your pennmush/po/ directory.  Specific
+translation files for CobraMUSH are welcome contributions.
 
 These files have to be compiled to an efficient internal form before
 starting up the mush.  This means you should set your LANG environment
@@ -48,9 +50,9 @@ is 8-bit clean so it will work properly with non-ASCII characters.
 2. Starting up the MUSH - tips
 
 The LANG environment variable that controls what language the mush
-uses is normally set in the pennmush/game/restart script. There's an
-example for using French in the script already that can be used as a
-starting point.
+uses is normally set in the game/restart script. There's an example
+for using French in the script already that can be used as a starting
+point.
 
 Your server account might be set up with a non-english language as the
 default. If so, and you don't set LANG in the restart script, that
