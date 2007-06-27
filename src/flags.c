@@ -1211,6 +1211,8 @@ can_set_flag(dbref player, dbref thing, FLAG *flagp, int negate)
     notify(player, T("You must @lock/zone before you can set a player ZONE"));
     return 0;
   }
+  if ((myperms & F_SELF) && (player == thing))
+    return 1;
   /* Privilege, permissions work if a) they hav priv power & b) they control the thing */
   if ((myperms & F_PRIVILEGE) && !(div_powover(player, player, "Privilege") && controls(player,thing)))
     return 0;
