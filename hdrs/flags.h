@@ -140,6 +140,7 @@ extern void decompile_flags(dbref player, dbref thing, const char *name);
 #define F_ODARK         0x2000	/* owner/admin/God can see this flag */
 #define F_DISABLED      0x4000	/* flag can't be used */
 /* RESERVED		0x8000 */
+#define F_SELF		0x10000	/* can set on self, regardless of the above */
 
 
 /* we don't use these anymore.. but kept aroudn for DB conversion */
