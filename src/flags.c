@@ -1217,7 +1217,7 @@ can_set_flag(dbref player, dbref thing, FLAG *flagp, int negate)
   /* Privilege, permissions work if a) they hav priv power & b) they control the thing */
   if ((myperms & F_PRIVILEGE) && !(div_powover(player, player, "Privilege") && controls(player,thing)))
     return 0;
-  else if ((myperms & F_GOD) && !God(player))
+  if ((myperms & F_GOD) && !God(player))
     return 0;
   if (Director(thing) && is_flag(flagp, "GAGGED"))
     return 0;			/* can't gag directors/God */
