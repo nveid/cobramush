@@ -23,3 +23,5 @@ CobraMUSH Version 0.72p4
     * zwho() and zmwho() were insecure and did not properely do permissions checks
       on if the victim could actually see the people online or not. [RLB]
     * Typo in Wizard's max and auto power lists on default for the Nuke power. [RLB]
+    * Anyone can now set INHERITABLE on himself regardless of having the
+      Privilege power [AEJ]
