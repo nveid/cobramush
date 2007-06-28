@@ -216,6 +216,7 @@ static PRIV flag_privs[] = {
   {"mdark", '\0', F_MDARK, F_MDARK},
   {"odark", '\0', F_ODARK, F_ODARK},
   {"disabled", '\0', F_DISABLED, F_DISABLED},
+  {"self", '\0', F_SELF, F_SELF},
   {NULL, '\0', 0, 0}
 };
 
