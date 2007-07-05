@@ -1330,7 +1330,7 @@ FUNCTION(fun_setinter)
   a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   if (!a1 || !a2)
-    mush_panic("Unable to allocate memory in fun_setunion");
+    mush_panic("Unable to allocate memory in fun_setinter");
 
   /* make arrays out of the lists */
   n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
@@ -1430,7 +1430,8 @@ FUNCTION(fun_setunion)
 {
   char sep;
   char **a1, **a2;
-  int n1, n2, x1, x2, val;
+  int n1, n2, x1, x2, val, orign1, orign2;
+  int lastx1, lastx2, found;
   char *sort_type = ALPHANUM_LIST;
   int osepl = 0;
   char *osep = NULL, osepd[2] = { '\0', '\0' };
@@ -1448,8 +1449,8 @@ FUNCTION(fun_setunion)
     mush_panic("Unable to allocate memory in fun_setunion");
 
   /* make arrays out of the lists */
-  n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
-  n2 = list2arr(a2, MAX_SORTSIZE, args[1], sep);
+  orign1 = n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
+  orign2 = n2 = list2arr(a2, MAX_SORTSIZE, args[1], sep);
 
   if (nargs < 4) {
     osepd[0] = sep;
@@ -1478,60 +1479,85 @@ FUNCTION(fun_setunion)
   do_gensort(executor, a1, NULL, n1, sort_type);
   do_gensort(executor, a2, NULL, n2, sort_type);
 
-  /* get the first value for the difference, removing duplicates */
-  x1 = x2 = 0;
-  while ((val = gencomp(executor, a1[x1], a2[x2], sort_type)) >= 0) {
-    if (val > 0) {
-      x2++;
-      if (x2 >= n2)
-	break;
-    }
-    if (!val) {
-      x1++;
-      if (x1 >= n1) {
-	mush_free((Malloc_t) a1, "ptrarray");
-	mush_free((Malloc_t) a2, "ptrarray");
-	return;
+  /* get values for the union, in order, skipping duplicates */
+  lastx1 = lastx2 = -1;
+  found = x1 = x2 = 0;
+  if (n1 == 1 && !*a1[0])
+    n1 = 0;
+  if (n2 == 1 && !*a2[0])
+    n2 = 0;
+  while ((x1 < n1) || (x2 < n2)) {
+    /* If we've already copied off something from a1, and our current
+     * look at a1 is the same element, or we've copied from a2 and
+     * our current look at a1 is the same element, skip forward in a1.
+     */
+    if (x1 < n1 && lastx1 >= 0) {
+      val = gencomp(executor, a1[lastx1], a1[x1], sort_type);
+      if (val == 0) {
+	x1++;
+	continue;
       }
     }
-  }
-  safe_str(a1[x1], buff, bp);
-  do {
-    x1++;
-    if (x1 >= n1) {
-      mush_free((Malloc_t) a1, "ptrarray");
-      mush_free((Malloc_t) a2, "ptrarray");
-      return;
-    }
-  } while (!gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
-
-  /* get values for the difference, until at least one list is empty */
-  while (x2 < n2) {
-    if ((val = gencomp(executor, a1[x1], a2[x2], sort_type)) < 0) {
-      safe_strl(osep, osepl, buff, bp);
-      safe_str(a1[x1], buff, bp);
-    }
-    if (val <= 0) {
-      do {
+    if (x1 < n1 && lastx2 >= 0) {
+      val = gencomp(executor, a2[lastx2], a1[x1], sort_type);
+      if (val == 0) {
 	x1++;
-	if (x1 >= n1) {
-	  mush_free((Malloc_t) a1, "ptrarray");
-	  mush_free((Malloc_t) a2, "ptrarray");
-	  return;
-	}
-      } while (!gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
+	continue;
+      }
     }
-    if (val >= 0)
-      x2++;
-  }
-
-  /* empty out remaining values, still removing duplicates */
-  while (x1 < n1) {
-    safe_strl(osep, osepl, buff, bp);
-    safe_str(a1[x1], buff, bp);
-    do {
-      x1++;
-    } while ((x1 < n1) && !gencomp(executor, a1[x1], a1[x1 - 1], sort_type));
+    if (x2 < n2 && lastx1 >= 0) {
+      val = gencomp(executor, a1[lastx1], a2[x2], sort_type);
+      if (val == 0) {
+	x2++;
+	continue;
+      }
+    }
+    if (x2 < n2 && lastx2 >= 0) {
+      val = gencomp(executor, a2[lastx2], a2[x2], sort_type);
+      if (val == 0) {
+	x2++;
+	continue;
+      }
+    }
+    if (x1 >= n1) {
+      /* Just copy off the rest of a2 */
+      if (x2 < n2) {
+	if (found)
+	  safe_strl(osep, osepl, buff, bp);
+	safe_str(a2[x2], buff, bp);
+	lastx2 = x2;
+	x2++;
+	found = 1;
+      }
+    } else if (x2 >= n2) {
+      /* Just copy off the rest of a1 */
+      if (x1 < n1) {
+	if (found)
+	  safe_strl(osep, osepl, buff, bp);
+	safe_str(a1[x1], buff, bp);
+	lastx1 = x1;
+	x1++;
+	found = 1;
+      }
+    } else {
+      /* At this point, we're merging. Take the lower of the two. */
+      val = gencomp(executor, a1[x1], a2[x2], sort_type);
+      if (val <= 0) {
+	if (found)
+	  safe_strl(osep, osepl, buff, bp);
+	safe_str(a1[x1], buff, bp);
+	lastx1 = x1;
+	x1++;
+	found = 1;
+      } else {
+	if (found)
+	  safe_strl(osep, osepl, buff, bp);
+	safe_str(a2[x2], buff, bp);
+	lastx2 = x2;
+	x2++;
+	found = 1;
+      }
+    }
   }
   mush_free((Malloc_t) a1, "ptrarray");
   mush_free((Malloc_t) a2, "ptrarray");
@@ -1557,7 +1583,7 @@ FUNCTION(fun_setdiff)
   a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   if (!a1 || !a2)
-    mush_panic("Unable to allocate memory in fun_setunion");
+    mush_panic("Unable to allocate memory in fun_diff");
 
   /* make arrays out of the lists */
   n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
