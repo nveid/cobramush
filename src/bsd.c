@@ -5422,25 +5422,24 @@ void feed_snoop(DESC *d, const char *s, char dir) {
   int n;
   char snstr[BUFFER_LEN];
 
-
-  if(!d ||!d->connected)
+  if(!d || !d->connected)
     return;
   memset(snstr, '\0', BUFFER_LEN);
   strncpy(snstr, remove_markup(s, NULL), BUFFER_LEN-1);
   if(*s && !*snstr)
-	  return;
-  for(n = 0; n < MAX_SNOOPS ; n++)
-    if(!IsPlayer(d->snooper[n]))
+    return;
+  for(n = 0; n < MAX_SNOOPS ; n++) {
+    if(!GoodObject(d->snooper[n]) || !IsPlayer(d->snooper[n]))
       continue;
-    else if(GoodObject(d->snooper[n]) && IsPlayer(d->snooper[n])) {
-      if(dir == 1) /* player see's */
-        notify_format((dbref) d->snooper[n], T("%s%s<-%s %s"), object_header(d->snooper[n],d->player), ANSI_BLUE,
-	    ANSI_NORMAL, snstr);
-      else /* player types */
-	notify_format((dbref) d->snooper[n], T("%s%s->%s %s%s"), object_header(d->snooper[n],d->player), 
-	    ANSI_BLUE, ANSI_RED, snstr, ANSI_NORMAL);
-    }
-
+    if(dir == 1) /* player sees */
+      notify_format((dbref) d->snooper[n], T("%s%s<-%s %s"),
+			object_header(d->snooper[n],d->player),
+			ANSI_BLUE, ANSI_NORMAL, snstr);
+    else /* player types */
+      notify_format((dbref) d->snooper[n], T("%s%s->%s %s%s"),
+			object_header(d->snooper[n],d->player),
+			ANSI_BLUE, ANSI_RED, snstr, ANSI_NORMAL);
+  }
 }
 
 char is_snooped(DESC *d) {
