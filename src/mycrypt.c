@@ -56,7 +56,7 @@ mush_crypt(const char *key)
   shsInit(&shsInfo);
   shsUpdate(&shsInfo, (const BYTE *) key, strlen(key));
   shsFinal(&shsInfo);
-  sprintf(crypt_buff, "XX%lu%lu", shsInfo.digest[0], shsInfo.digest[1]);
+  sprintf(crypt_buff, "XX%u%u", shsInfo.digest[0], shsInfo.digest[1]);
 #endif
 
   return crypt_buff;

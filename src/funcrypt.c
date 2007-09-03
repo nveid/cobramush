@@ -144,7 +144,7 @@ FUNCTION(fun_sha0)
   shsInit(&shsInfo);
   shsUpdate(&shsInfo, (const BYTE *) args[0], arglens[0]);
   shsFinal(&shsInfo);
-  safe_format(buff, bp, "%0lx%0lx%0lx%0lx%0lx", shsInfo.digest[0],
+  safe_format(buff, bp, "%0x%0x%0x%0x%0x", shsInfo.digest[0],
 	      shsInfo.digest[1], shsInfo.digest[2], shsInfo.digest[3],
 	      shsInfo.digest[4]);
 #endif
@@ -178,7 +178,7 @@ FUNCTION(fun_digest)
     shsInit(&shsInfo);
     shsUpdate(&shsInfo, (const BYTE *) args[0], arglens[0]);
     shsFinal(&shsInfo);
-    safe_format(buff, bp, "%0lx%0lx%0lx%0lx%0lx", shsInfo.digest[0],
+    safe_format(buff, bp, "%0x%0x%0x%0x%0x", shsInfo.digest[0],
 		shsInfo.digest[1], shsInfo.digest[2], shsInfo.digest[3],
 		shsInfo.digest[4]);
   } else {
