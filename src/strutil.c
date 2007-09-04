@@ -1017,7 +1017,7 @@ trim_space_sep(char *str, char sep)
   str += strspn(str, " ");
   for (p = str; *p; p++) ;
   /* And trailing */
-  for (p--; (*p == ' ') && (p > str); p--) ;
+  for (p--; (p > str) && (*p == ' '); p--) ;
   p++;
   *p = '\0';
   return str;
