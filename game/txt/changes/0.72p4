@@ -26,3 +26,4 @@ CobraMUSH Version 0.72p4
     * Anyone can now set INHERITABLE on himself regardless of having the
       Privilege power [AEJ]
     * Fixed possible crash in process_commands() [AEJ]
+    * Fixed possible crash in trim_space_sep() [AEJ]
