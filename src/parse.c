@@ -922,85 +922,80 @@ process_expression(char *buff, char **bp, char const **str,
 	  if (attrib)
 	    safe_str(atr_value(attrib), buff, bp);
 	  break;
-                case 'z':
-                case 'Z':
-                  nextc = **str;
-                  (*str)++;
-                  if (!nextc)
-                    {
-                      goto exit_sequence;
-                    }
-                  else
-                    {
-
-                      switch (nextc)
-                        {
-                        case 'h':       /* hilite */
-                          safe_str (ANSI_HILITE, buff, bp);
-                          break;
-                        case 'i':       /* inverse */
-                          safe_str (ANSI_INVERSE, buff, bp);
-                          break;
-                        case 'f':       /* flash */
-                          safe_str (ANSI_BLINK, buff, bp);
-                          break;
-                        case 'u':       /* underscore */
-                          safe_str (ANSI_UNDERSCORE, buff, bp);
-                          break;
-                        case 'n':       /* normal */
-                          safe_str (ANSI_NORMAL, buff, bp);
-                          break;
-                        case 'x':       /* black fg */
-                          safe_str (ANSI_BLACK, buff, bp);
-                          break;
-                        case 'r':       /* red fg */
-                          safe_str (ANSI_RED, buff, bp);
-                          break;
-                        case 'g':       /* green fg */
-                          safe_str (ANSI_GREEN, buff, bp);
-                          break;
-                        case 'y':       /* yellow fg */
-                          safe_str (ANSI_YELLOW, buff, bp);
-                          break;
-                        case 'b':       /* blue fg */
-                          safe_str (ANSI_BLUE, buff, bp);
-                          break;
-                        case 'm':       /* magenta fg */
-                          safe_str (ANSI_MAGENTA, buff, bp);
-                          break;
-                        case 'c':       /* cyan fg */
-                          safe_str (ANSI_CYAN, buff, bp);
-                          break;
-                        case 'w':       /* white fg */
-                          safe_str (ANSI_WHITE, buff, bp);
-                          break;
-                        case 'X':       /* black bg */
-                          safe_str (ANSI_BBLACK, buff, bp);
-                          break;
-                        case 'R':       /* red bg */
-                          safe_str (ANSI_BRED, buff, bp);
-                          break;
-                        case 'G':       /* green bg */
-                          safe_str (ANSI_BGREEN, buff, bp);
-                          break;
-                        case 'Y':       /* yellow bg */
-                          safe_str (ANSI_BYELLOW, buff, bp);
-                          break;
-                        case 'B':       /* blue bg */
-                          safe_str (ANSI_BBLUE, buff, bp);
-                          break;
-                        case 'M':       /* magenta bg */
-                          safe_str (ANSI_BMAGENTA, buff, bp);
-                          break;
-                        case 'C':       /* cyan bg */
-                          safe_str (ANSI_BCYAN, buff, bp);
-                          break;
-                        case 'W':       /* white bg */
-                          safe_str (ANSI_BWHITE, buff, bp);
-                          break;
-                        }
-                      break;
-                    }
+        case 'z':
+        case 'Z':
+          nextc = **str;
+          (*str)++;
+          if (!nextc) {
+            goto exit_sequence;
+          } else {
+            switch (nextc) {
+            case 'h':       /* hilite */
+              safe_str(ANSI_HILITE, buff, bp);
+              break;
+            case 'i':       /* inverse */
+              safe_str(ANSI_INVERSE, buff, bp);
+              break;
+            case 'f':       /* flash */
+              safe_str(ANSI_BLINK, buff, bp);
+              break;
+            case 'u':       /* underscore */
+              safe_str(ANSI_UNDERSCORE, buff, bp);
+              break;
+            case 'n':       /* normal */
+              safe_str(ANSI_NORMAL, buff, bp);
+              break;
+            case 'x':       /* black fg */
+              safe_str(ANSI_BLACK, buff, bp);
+              break;
+            case 'r':       /* red fg */
+              safe_str(ANSI_RED, buff, bp);
+              break;
+            case 'g':       /* green fg */
+              safe_str(ANSI_GREEN, buff, bp);
+              break;
+            case 'y':       /* yellow fg */
+              safe_str(ANSI_YELLOW, buff, bp);
+              break;
+            case 'b':       /* blue fg */
+              safe_str(ANSI_BLUE, buff, bp);
+              break;
+            case 'm':       /* magenta fg */
+              safe_str(ANSI_MAGENTA, buff, bp);
+              break;
+            case 'c':       /* cyan fg */
+              safe_str(ANSI_CYAN, buff, bp);
+              break;
+            case 'w':       /* white fg */
+              safe_str(ANSI_WHITE, buff, bp);
+              break;
+            case 'X':       /* black bg */
+              safe_str(ANSI_BBLACK, buff, bp);
+              break;
+            case 'R':       /* red bg */
+              safe_str(ANSI_BRED, buff, bp);
+              break;
+            case 'G':       /* green bg */
+              safe_str(ANSI_BGREEN, buff, bp);
+              break;
+            case 'Y':       /* yellow bg */
+              safe_str(ANSI_BYELLOW, buff, bp);
+              break;
+            case 'B':       /* blue bg */
+              safe_str(ANSI_BBLUE, buff, bp);
+              break;
+            case 'M':       /* magenta bg */
+              safe_str(ANSI_BMAGENTA, buff, bp);
+              break;
+            case 'C':       /* cyan bg */
+              safe_str(ANSI_BCYAN, buff, bp);
+              break;
+            case 'W':       /* white bg */
+              safe_str(ANSI_BWHITE, buff, bp);
+              break;
+            }
+            break;
+          }
 	default:		/* just copy */
 	  safe_chr(savec, buff, bp);
 	}
