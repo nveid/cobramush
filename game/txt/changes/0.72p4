@@ -29,4 +29,6 @@ CobraMUSH Version 0.72p4
     * Fixed possible crash in trim_space_sep() [AEJ]
     * Fixed attribute flag mortal_dark [AEJ]
     * Fixed attribute read locks [AEJ]
+    * Fixed can_write_attr_internal() to prohibit writing attributes that
+      the player cannot read [AEJ]
 

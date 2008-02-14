@@ -2173,6 +2173,8 @@ can_write_attr_internal(dbref player, dbref obj, ATTR * atr, int safe)
 {
   char *p;
   missing_name[0] = '\0';
+  if (!can_read_attr_internal(player, obj, atr))
+    return 0;
   if (Cannot_Write_This_Attr(player, atr, obj, safe, !atr_match(atr->name), AL_CREATOR(atr)))
     return 0;
   strcpy(missing_name, AL_NAME(atr));
