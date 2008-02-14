@@ -2098,10 +2098,6 @@ can_read_attr_internal(dbref player, dbref obj, ATTR * atr)
 
   visible = (player == NOTHING);
 
-  /* Do an easy yes.. If they can write, it they can read it */
-  if (Can_Write_Attr(player, obj, atr))
-    return 1;
-
   /* Evaluate read lock first here */
   if (AL_RLock(atr) == TRUE_BOOLEXP)
     r_lock = 1;
@@ -2125,21 +2121,15 @@ can_read_attr_internal(dbref player, dbref obj, ATTR * atr)
 
   /* Take an easy out if there is one... */
   /* If we can't see the attribute itself, then that's easy. */
-  if (AF_Internal(atr) || (!Admin(player) && (AF_Mdark(atr) ||
-                                              !(cansee
-                                                ||
-                                                ((AF_Visual(atr)
-                                                  ||
-                                                  ((AL_RLock(atr) !=
-                                                    TRUE_BOOLEXP)
-                                                   && r_lock))
-                                                 && (!AF_Nearby(atr)
-                                                     || canlook))
-                                                || (!visible
-                                                    && !Mistrust(player)
-                                                    &&
-                                                    (Owner(AL_CREATOR(atr))
-                                                     == Owner(player)))))))
+  if (AF_Internal(atr)
+      || (!Admin(player)
+          && (AF_Mdark(atr)
+	      || !(cansee
+		   || ((AF_Visual(atr)
+			|| ((AL_RLock(atr) != TRUE_BOOLEXP) && r_lock))
+		       && (!AF_Nearby(atr) || canlook))
+	      || (!visible && !Mistrust(player)
+		  && (Owner(AL_CREATOR(atr)) == Owner(player)))))))
     return 0;
 
   /* If the attribute isn't on a branch, then that's also easy. */
