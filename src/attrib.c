@@ -140,6 +140,9 @@ int cannot_write_this_attr_internal(dbref player, ATTR *attr, dbref obj, char sa
   if((AL_FLAGS(attr) & AF_PRIVILEGE) && !(Prived(player) || (Inherit_Powers(player) && Prived(Owner(player)))))
     return 1;
 
+  if(AF_Mdark(attr) && !(Admin(player)
+			 || (Inherit_Powers(player) && Admin(Owner(player)))))
+    return 1;
 
   if(ns_chk && catchall && !controls(player, AL_CREATOR(catchall)) && AL_WLock(catchall) != TRUE_BOOLEXP && 
       !eval_boolexp(player, AL_WLock(catchall), obj, NULL))
