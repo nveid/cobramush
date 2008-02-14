@@ -27,3 +27,5 @@ CobraMUSH Version 0.72p4
       Privilege power [AEJ]
     * Fixed possible crash in process_commands() [AEJ]
     * Fixed possible crash in trim_space_sep() [AEJ]
+    * Fixed attribute flag mortal_dark [AEJ]
+
