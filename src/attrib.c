@@ -2121,15 +2121,17 @@ can_read_attr_internal(dbref player, dbref obj, ATTR * atr)
 
   /* Take an easy out if there is one... */
   /* If we can't see the attribute itself, then that's easy. */
-  if (AF_Internal(atr)
-      || (!Admin(player)
-          && (AF_Mdark(atr)
-	      || !(cansee
-		   || ((AF_Visual(atr)
-			|| ((AL_RLock(atr) != TRUE_BOOLEXP) && r_lock))
-		       && (!AF_Nearby(atr) || canlook))
+  if (AF_Internal(atr) && !God(player))
+    return 0;
+
+  if(!Admin(player)
+     && (AF_Mdark(atr)
+	 || !(cansee
+	      || ((AF_Visual(atr)
+		   || ((AL_RLock(atr) != TRUE_BOOLEXP) && r_lock))
+		  && (!AF_Nearby(atr) || canlook))
 	      || (!visible && !Mistrust(player)
-		  && (Owner(AL_CREATOR(atr)) == Owner(player)))))))
+		  && (Owner(AL_CREATOR(atr)) == Owner(player))))))
     return 0;
 
   /* If the attribute isn't on a branch, then that's also easy. */
