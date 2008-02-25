@@ -36,6 +36,7 @@
 #define COMMAND_NAME_LIMIT 64
 #define MAX_ZONES	30
 #define NUM_SWITCH_BYTES 22
+#define MAX_DIVISION_DEPTH 1000
 
 /* magic cookies */
 #define LOOKUP_TOKEN '*'
