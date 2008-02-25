@@ -1462,7 +1462,7 @@ division_set(dbref exec, dbref target, const char *arg2)
   ATTR *divrcd;
   char *p_buf[BUFFER_LEN / 2];
   char buf[BUFFER_LEN], *bp;
-  dbref cur_obj, divi;
+  dbref cur_obj, divi, tmp;
   struct power_group_list *pg_l;
   int cnt;
 
@@ -1513,9 +1513,11 @@ division_set(dbref exec, dbref target, const char *arg2)
     return;
   }
 
-  if (divi == target) {
-    notify(exec, T("Can't division something to itself."));
-    return;
+  for (tmp = divi; GoodObject(tmp); tmp = Division(tmp)) {
+    if (tmp == target) {
+      notify(exec, T("Can't create loops in division tree."));
+      return;
+    }
   }
 
   /* Make sure the receiving division has the quota to receive all of this crapp...
@@ -1677,6 +1679,7 @@ div_inscope(dbref scoper, dbref scopee)
 {
 /* check if scopee is in the divscope of scoper */
   dbref div1, div2;
+  unsigned i;
 
   if (!GoodObject(scopee))
     return 0;
@@ -1702,14 +1705,16 @@ div_inscope(dbref scoper, dbref scopee)
   if (div2 == NOTHING)          /*  they're automatically at the bottom of the divtree */
     return 1;
 
-  for (; div1 != div2; div2 = SDIV(div2).object)
+  for (i = 0; i < MAX_DIVISION_DEPTH && div1 != div2;
+       div2 = SDIV(div2).object, i++)
     if (div2 == NOTHING)        /* went off the tree */
       return 0;
-    else if (div2 == SDIV(div2).object) {       /* detect & fix bad division tree */
-      do_log(LT_ERR, scoper, scopee,
-             T("Bad Master Division(#%d).  Corrected."), div2);
-      SDIV(div2).object = NOTHING;
-    }
+
+  if (div1 != div2) {    /* maximum depth reached without finding it */
+    do_rawlog(LT_ERR, T("Caught probable division loop circa #%d"), div1);
+    return 0;
+  }
+
   return 1;
 }
 

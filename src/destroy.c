@@ -1050,16 +1050,30 @@ check_divisions(void) {
 	Division(i) = Location(i);
 	Parent(i) = Location(i);
       }
-      /* make sure their division is set correctly. */
-      if(SDIV(i).object != -1 && SDIV(i).object == i) {
-	do_rawlog(LT_ERR, T("ERROR: Bad Master-Division."));
-        SDIV(i).object = -1; 	
-      }
+
       /* make sure their division is a valid object */
-      if((!GoodObject(Division(i)) && Division(i) != NOTHING) || IsGarbage(Division(i))) {
-	Division(i) = -1;
-	do_rawlog(LT_ERR, T("ERROR: Bad Division(#%d) set on object #%d"), Division(i), i);
+      if((!GoodObject(Division(i)) && Division(i) != NOTHING)
+	 || IsGarbage(Division(i))) {
+	Division(i) = NOTHING;
+	do_rawlog(LT_ERR, T("ERROR: Bad Division(#%d) set on object #%d"),
+		  Division(i), i);
       }
+
+      /* check for division loops */
+      if(GoodObject(Division(i))) {
+        dbref tmp;
+        unsigned j;
+
+        for(tmp = Division(i), j = 0; GoodObject(tmp) && j < MAX_DIVISION_DEPTH;
+	    tmp = Division(tmp), j++) {
+          if(tmp == i) {
+            do_rawlog(LT_ERR, T("ERROR: Division loop detected at #%d"), i);
+            Division(i) = NOTHING;
+            Parent(i) = NOTHING;
+          }
+        }
+      }
+
       /* now check parent tree */
       if(Division(i) != -1)
 	Parent(i) = Division(i);
