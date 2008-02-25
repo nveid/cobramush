@@ -31,4 +31,5 @@ CobraMUSH Version 0.72p4
     * Fixed attribute read locks [AEJ]
     * Fixed can_write_attr_internal() to prohibit writing attributes that
       the player cannot read [AEJ]
+    * Detect and prevent division loops, and fix them in @dbck [AEJ]
 
