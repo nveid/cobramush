@@ -561,7 +561,7 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
 
 
   if (!powergroup || !*powergroup) {
-    notify(executor, "Must provide powergroup arguments.");
+    notify(executor, "Must provide powergroup names.");
     return;
   }
 
@@ -587,7 +587,7 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
 
     if (GoodObject(executor) && !God(executor)
         && !can_have_pg(player, pgrp)) {
-      notify_format(executor, "%s can not receive the '%s' powergroup.",
+      notify_format(executor, "%s cannot receive the %s powergroup.",
                     unparse_object(executor, player), pgrp->name);
       continue;
     }
@@ -607,7 +607,7 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
                   check_power_yescode(DPBITS(executor), power))
               < check_power_yescode(pgrp->max_powers, power)) {
             notify_format(executor,
-                          "You must possess '%s' power to set the '%s' powergroup.",
+                          "You must have the %s power to add the %s powergroup.",
                           power->name, pgrp->name);
             goto pgset_recurse;
           }
@@ -616,21 +616,28 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
 
     if (reset) {
       if (!powergroup_has(player, pgrp)) {
-        /* TODO: Better message */
-        notify(executor,
-               "They don't have the powergroup in the first place.");
+        memset(tbuf, '\0', 128);
+        strncpy(tbuf, object_header(executor, player), 127);
+        notify_format(executor, "%s did not have powergroup %s.",
+	    tbuf, pgrp->name);
         continue;
       }
       /* Remove */
       rem_pg_from_player(player, pgrp);
-      notify_format(executor, "You remove powergroup '%s' from %s.",
-                    pgrp->name, object_header(executor, player));
-      notify_format(player, "%s removed powergroup '%s' from you.",
-                    object_header(player, executor), pgrp->name);
+      memset(tbuf, '\0', 128);
+      strncpy(tbuf, object_header(executor, player), 127);
+      notify_format(executor, "You remove powergroup %s from %s.",
+                    pgrp->name, tbuf);
+      memset(tbuf, '\0', 128);
+      strncpy(tbuf, object_header(player, executor), 127);
+      notify_format(player, "%s removed powergroup %s from you.",
+	  tbuf, pgrp->name);
     } else {
       if (powergroup_has(player, pgrp)) {
-        notify(executor,
-               "They already have that powergroup.  Don't add it twice.");
+        memset(tbuf, '\0', 128);
+        strncpy(tbuf, object_header(executor, player), 127);
+        notify_format(executor, "%s already has powergroup %s.",
+	    tbuf, pgrp->name);
         continue;
       }
       /* Add */
@@ -661,12 +668,12 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
       if (executor != NOTHING) {
         memset(tbuf, '\0', 128);
         strncpy(tbuf, object_header(executor, player), 127);
-        notify_format(executor, "Added Powergroup '%s' to %s.", pgrp->name,
+        notify_format(executor, "You added powergroup %s to %s.", pgrp->name,
                       tbuf);
         memset(tbuf, '\0', 128);
         strncpy(tbuf, object_header(player, executor), 127);
-        notify_format(player, "You received Powergroup '%s' from %s.",
-                      pgrp->name, tbuf);
+        notify_format(player, "%s added powergroup %s to you.",
+                      tbuf, pgrp->name);
       }
     }
   pgset_recurse:
