@@ -1026,6 +1026,11 @@ FUNCTION(fun_hastype)
       if (IsThing(it))
       found = 1;
       break;
+    case 'd':
+    case 'D':
+      if (IsDivision(it))
+      found = 1;
+      break;
     case 'g':
     case 'G':
       if (IsGarbage(it))
