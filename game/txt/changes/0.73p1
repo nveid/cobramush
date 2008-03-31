@@ -8,4 +8,5 @@ CobraMUSH Version 0.73p1
   It is the first maintenance release in that series.
 
   Fixes:
+    * Fixed cstatus() [AEJ]
 
