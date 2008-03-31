@@ -316,7 +316,7 @@ FUNTAB flist[] = {
   {"CMSGS", fun_cinfo, 1, 1, FN_REG},
   {"COWNER", fun_cowner, 1, 1, FN_REG},
   {"CRECALL", fun_crecall, 1, 5, FN_REG},
-  {"CSTATUS", fun_cinfo, 1, 1, FN_REG},
+  {"CSTATUS", fun_cstatus, 2, 2, FN_REG},
   {"CTITLE", fun_ctitle, 2, 2, FN_REG},
   {"CUSERS", fun_cinfo, 1, 1, FN_REG},
   {"CWHO", fun_cwho, 1, 1, FN_REG},
