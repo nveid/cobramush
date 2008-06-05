@@ -9,4 +9,6 @@ CobraMUSH Version 0.73p1
 
   Fixes:
     * Fixed cstatus() [AEJ]
+    * Fixed bug that caused some lock types to incorrectly count
+      recursion depth [AEJ]
 

@@ -608,10 +608,9 @@ eval_boolexp(dbref player /* The player trying to pass */ ,
         boolexp_recursion--;
         break;
       case OP_TDIVISION:
-        boolexp_recursion++;
         /* basicaly what we're doing is if we catch a '+' key
          * we're going to loop upwards in the players division
-         * tree & tre to match it to the division lock somewhere
+         * tree & try to match it to the division lock somewhere
          * upwards.
          */
         s = (char *) bytecode + arg;
@@ -628,14 +627,11 @@ eval_boolexp(dbref player /* The player trying to pass */ ,
             r = (div2 == div);
           }
         }
-        boolexp_recursion--;
         break;
       case OP_TPWRGRP:
-        boolexp_recursion++;
         s = (char *) bytecode + arg;
         break;
       case OP_TLEVEL:
-        boolexp_recursion++;
         s = (char *) bytecode + arg;
         switch (*s) {
         case '>':
@@ -647,7 +643,6 @@ eval_boolexp(dbref player /* The player trying to pass */ ,
         default:
           r = LEVEL(player) == parse_number(s);
         }
-        boolexp_recursion--;
         break;
       case OP_TOBJID:
         {
