@@ -11,4 +11,6 @@ CobraMUSH Version 0.73p1
     * Fixed cstatus() [AEJ]
     * Fixed bug that caused some lock types to incorrectly count
       recursion depth [AEJ]
+    * Fix compilation issue caused by OOREF calls being incorrectly
+      placed in fun_speak [AEJ]
 
