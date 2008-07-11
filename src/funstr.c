@@ -2131,16 +2131,20 @@ FUNCTION(fun_speak)
   char *say_string;
   char *string;
   char rbuff[BUFFER_LEN];
+  BEGINOOREF_L
 
   speaker = match_thing(executor, args[0]);
   if (speaker == NOTHING || speaker == AMBIGUOUS) {
     safe_str(T(e_match), buff, bp);
+    ENDOOREF_L
     return;
   }
   speaker_str = unparse_dbref(speaker);
 
-  if (!args[1] || !*args[1])
+  if (!args[1] || !*args[1]) {
+    ENDOOREF_L
     return;
+  }
 
   string = args[1];
 
@@ -2149,7 +2153,6 @@ FUNCTION(fun_speak)
   else
     say_string = (char *) "says,";
 
-  BEGINOOREF_L
   if (nargs > 3) {
     if (args[3] != '\0') {
       /* we have a transform attr */
