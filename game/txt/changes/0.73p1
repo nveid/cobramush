@@ -7,6 +7,9 @@ CobraMUSH Version 0.73p1
   Version 0.73p1 is a maintenance release of version 0.73.
   It is the first maintenance release in that series.
 
+  Minor changes:
+    * General OOREF cleanup [AEJ]
+
   Fixes:
     * Fixed cstatus() [AEJ]
     * Fixed bug that caused some lock types to incorrectly count
