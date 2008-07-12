@@ -17,4 +17,5 @@ CobraMUSH Version 0.73p1
     * Fix compilation issue caused by OOREF calls being incorrectly
       placed in fun_speak [AEJ]
     * Fixed other OOREF calls [AEJ]
+    * Miscellaneous code cleanups for C standard compliance [AEJ]
 
