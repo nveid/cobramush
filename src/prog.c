@@ -59,6 +59,7 @@ COMMAND(cmd_prog)
   ATTR *patr;
   DESC *d;
   int i, pflags = 0;
+  char buf[BUFFER_LEN], *bp;
 
   if (!arg_left) {
     notify(player, "Invalid arguments.");
@@ -163,7 +164,6 @@ COMMAND(cmd_prog)
                   "WARNING: %s is using bad prompt syntax with @program.  Refer to help @prompt.",
                   object_header(Owner(player), player));
 
-    char buf[BUFFER_LEN], *bp;
     tooref = ooref, ooref = NOTHING;
     atr_add(target, "XY_PROGPROMPT", t, GOD, NOTHING);
     ooref = tooref;

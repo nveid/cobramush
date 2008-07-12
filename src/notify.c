@@ -165,8 +165,7 @@ enum na_type {
   NA_NANSI,			/**< ANSI and NOACCENTS */
   NA_NCOLOR,			/**< ANSI, COLOR, NOACCENTS */
   NA_NPUEBLO,			/**< html & NOACCENTS */
-  NA_NPASCII,			/**< NOACCENTS */
-//  NA_EVALONCONTACT		/**< Evaluate on Contact */
+  NA_NPASCII			/**< NOACCENTS */
 };
 
 /** Number of possible message text renderings */
