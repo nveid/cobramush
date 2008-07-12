@@ -200,12 +200,13 @@ FUNCTION(fun_ulocal)
   char rbuff[BUFFER_LEN];
   ufun_attrib ufun;
 
+  BEGINOOREF_L
+
   if (!fetch_ufun_attrib(args[0], executor, &ufun, 0)) {
     safe_str(T(ufun.errmess), buff, bp);
+    ENDOOREF_L
     return;
   }
-
-  BEGINOOREF_L
 
   /* Save global regs */
   save_global_regs("ulocal.save", preserve);

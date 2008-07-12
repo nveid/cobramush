@@ -2131,6 +2131,7 @@ FUNCTION(fun_speak)
   char *say_string;
   char *string;
   char rbuff[BUFFER_LEN];
+
   BEGINOOREF_L
 
   speaker = match_thing(executor, args[0]);
