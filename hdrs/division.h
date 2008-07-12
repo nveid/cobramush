@@ -200,8 +200,6 @@ typedef struct power_group_t POWERGROUP;
    thing, is the object receiving the effects of marker powerz
    */
 #define marker_powers(t, m, o) SLEVEL(o) = m ? LEVEL_DIRECTOR : LEVEL_ADMIN ; 
-		      //         division_powerlevel_set(GOD, o, (t ? (m ? PL_DIRECTOR : PL_ROYALTY) : PL_PLAYER), 1);	
-
 
 /* power over checks {{{1 */
 #define POWC(x)         int x(int, dbref, dbref)

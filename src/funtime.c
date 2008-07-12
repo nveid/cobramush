@@ -243,31 +243,31 @@ etime_to_secs(char *str1, int *secs)
     }
     str2[i] = '\0';
     if (!*str1) {
-      *secs += parse_integer(str2);	// no more chars, just add seconds and stop
+      *secs += parse_integer(str2);	/* no more chars, just add seconds and stop */
       break;
     }
     switch (*str1) {
     case 'd':
     case 'D':
-      *secs += (parse_integer(str2) * 86400);	// days
+      *secs += (parse_integer(str2) * 86400);	/* days */
       break;
     case 'h':
     case 'H':
-      *secs += (parse_integer(str2) * 3600);	// hours
+      *secs += (parse_integer(str2) * 3600);	/* hours */
       break;
     case 'm':
     case 'M':
-      *secs += (parse_integer(str2) * 60);	// minutes
+      *secs += (parse_integer(str2) * 60);	/* minutes */
       break;
     case 's':
     case 'S':
     case ' ':
-      *secs += parse_integer(str2);	// seconds
+      *secs += parse_integer(str2);	/* seconds */
       break;
     default:
       return 0;
     }
-    str1++;			// move past the time char
+    str1++;			/* move past the time char */
   }
   return 1;
 }

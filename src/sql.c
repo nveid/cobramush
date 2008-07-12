@@ -547,7 +547,6 @@ query_table:
 	memset(buf, '\0', BUFFER_LEN);
 	strncpy(buf, row_p[3], BUFFER_LEN-1);
 	j = sqllist_check(Contents(SQLCMD_MasterRoom), player, '$', ':', buf, 0);
-   //     j = list_check(Contents(SQLCMD_MasterRoom), player, '$', ':', buf, 0);
 	if(j < 1) {
 	  mysql_free_result(qres2);
 	  mysql_query(mysql_struct, tprintf("UPDATE query_t SET query=\"-1\", io=0 WHERE id = %d", atoi(row_p[0]) ));
