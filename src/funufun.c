@@ -56,8 +56,9 @@ FUNCTION(fun_objeval)
   char *s;
   char const *p;
   dbref obj;
+  OOREF_DECL;
 
-  BEGINOOREF_L
+  ENTER_OOREF;
 
   /* First, we evaluate our first argument so people can use 
    * functions on it.
@@ -88,7 +89,8 @@ FUNCTION(fun_objeval)
   p = args[1];
   process_expression(buff, bp, &p, obj, executor, enactor, PE_DEFAULT,
 		     PT_DEFAULT, pe_info);
-  ENDOOREF_L
+
+  LEAVE_OOREF;
 }
 
 /** Helper function for ufun and family.
@@ -150,11 +152,13 @@ FUNCTION(fun_ufun)
 {
   char rbuff[BUFFER_LEN];
   ufun_attrib ufun;
+  OOREF_DECL;
 
-  BEGINOOREF_L
+  ENTER_OOREF;
 
   if (!fetch_ufun_attrib(args[0], executor, &ufun, 0)) {
     safe_str(T(ufun.errmess), buff, bp);
+    LEAVE_OOREF;
     return;
   }
 
@@ -162,7 +166,7 @@ FUNCTION(fun_ufun)
 
   safe_str(rbuff, buff, bp);
 
-  ENDOOREF_L
+  LEAVE_OOREF;
 
   return;
 }
@@ -172,12 +176,13 @@ FUNCTION(fun_ulambda)
 {
   char rbuff[BUFFER_LEN];
   ufun_attrib ufun;
+  OOREF_DECL;
 
-  BEGINOOREF_L
+  ENTER_OOREF;
 
   if (!fetch_ufun_attrib(args[0], executor, &ufun, 1)) {
     safe_str(T(ufun.errmess), buff, bp);
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   }
 
@@ -185,7 +190,8 @@ FUNCTION(fun_ulambda)
 
   safe_str(rbuff, buff, bp);
 
-  ENDOOREF_L
+  LEAVE_OOREF;
+
   return;
 }
 
@@ -199,12 +205,13 @@ FUNCTION(fun_ulocal)
   char *preserve[NUMQ];
   char rbuff[BUFFER_LEN];
   ufun_attrib ufun;
+  OOREF_DECL;
 
-  BEGINOOREF_L
+  ENTER_OOREF;
 
   if (!fetch_ufun_attrib(args[0], executor, &ufun, 0)) {
     safe_str(T(ufun.errmess), buff, bp);
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   }
 
@@ -216,7 +223,7 @@ FUNCTION(fun_ulocal)
 
   restore_global_regs("ulocal.save", preserve);
 
-  ENDOOREF_L
+  LEAVE_OOREF;
 
   return;
 }
@@ -236,8 +243,9 @@ FUNCTION(fun_uldefault)
   char **xargs;
   int i;
   char *preserve[NUMQ];
+  OOREF_DECL;
 
-  BEGINOOREF_L
+  ENTER_OOREF;
 
   /* find our object and attribute */
   dp = mstr;
@@ -277,7 +285,7 @@ FUNCTION(fun_uldefault)
 	mush_free(xargs[i], "udefault");
       mush_free(xargs, "udefault.xargs");
     }
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   }
   /* We couldn't get it. Evaluate args[1] and return it */
@@ -289,7 +297,9 @@ FUNCTION(fun_uldefault)
 		     PE_DEFAULT, PT_DEFAULT, pe_info);
   if (called_as[1] == 'L')
     restore_global_regs("uldefault.save", preserve);
-  ENDOOREF_L
+
+  LEAVE_OOREF;
+
   return;
 }
 
@@ -299,14 +309,15 @@ FUNCTION(fun_zfun)
 {
   ATTR *attrib;
   dbref zone;
+  OOREF_DECL;
 
-  BEGINOOREF_L
+  ENTER_OOREF;
 
   zone = Zone(executor);
 
   if (zone == NOTHING) {
     safe_str(T("#-1 INVALID ZONE"), buff, bp);
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   }
   /* find the user function attribute */
@@ -314,19 +325,19 @@ FUNCTION(fun_zfun)
   if (attrib && Can_Read_Attr(executor, zone, attrib)) {
     if (!CanEvalAttr(executor, zone, attrib)) {
       safe_str(T(e_perm), buff, bp);
-      ENDOOREF_L
+      LEAVE_OOREF;
       return;
     }
     do_userfn(buff, bp, zone, attrib, nargs - 1, args + 1, executor, caller,
 	      enactor, pe_info);
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   } else if (attrib || !Can_Examine(executor, zone)) {
     safe_str(T(e_atrperm), buff, bp);
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   }
   safe_str(T("#-1 NO SUCH USER FUNCTION"), buff, bp);
-  ENDOOREF_L
+  LEAVE_OOREF;
   return;
 }

@@ -15,12 +15,18 @@
 
 /* TwinCheck Ooref define */
 #define	OOREF(x,y,z)	((ooref == NOTHING || x == ooref) ? (y) : (z && y))
-#define BEGINOOREF_L	  char l = 0; \
-                          if(options.twinchecks && ooref == NOTHING ) { \
-	            		ooref = executor; \
-		                l = 1; \
-			        }
-#define ENDOOREF_L	if(l  == 1) { ooref = NOTHING; }
+
+#define OOREF_DECL	char __ooref_set = 0
+
+#define ENTER_OOREF	if(options.twinchecks && ooref == NOTHING) { \
+			  ooref = executor; \
+			  __ooref_set = 1; \
+			}
+
+#define LEAVE_OOREF	if(__ooref_set) { \
+			  ooref = NOTHING; \
+			  __ooref_set = 0; \
+			}
 
 /* New Guest Setup Configuration */
 #define GUEST_KEYWORD	"GUEST"

@@ -2131,21 +2131,18 @@ FUNCTION(fun_speak)
   char *say_string;
   char *string;
   char rbuff[BUFFER_LEN];
-
-  BEGINOOREF_L
+  OOREF_DECL;
 
   speaker = match_thing(executor, args[0]);
   if (speaker == NOTHING || speaker == AMBIGUOUS) {
     safe_str(T(e_match), buff, bp);
-    ENDOOREF_L
     return;
   }
+
   speaker_str = unparse_dbref(speaker);
 
-  if (!args[1] || !*args[1]) {
-    ENDOOREF_L
+  if (!args[1] || !*args[1])
     return;
-  }
 
   string = args[1];
 
@@ -2154,13 +2151,15 @@ FUNCTION(fun_speak)
   else
     say_string = (char *) "says,";
 
+  ENTER_OOREF;
+
   if (nargs > 3) {
     if (args[3] != '\0') {
       /* we have a transform attr */
       transform = 1;
       if (!fetch_ufun_attrib(args[3], executor, &transufun, 1)) {
-	ENDOOREF_L
 	safe_str(T(e_atrperm), buff, bp);
+        LEAVE_OOREF;
 	return;
       }
       if (nargs > 4) {
@@ -2168,8 +2167,8 @@ FUNCTION(fun_speak)
 	  /* we have an attr to use when transform returns an empty string */
 	  null = 1;
 	  if (!fetch_ufun_attrib(args[4], executor, &nullufun, 1)) {
-	    ENDOOREF_L
 	    safe_str(T(e_atrperm), buff, bp);
+            LEAVE_OOREF;
 	    return;
 	  }
 	}
@@ -2224,7 +2223,7 @@ FUNCTION(fun_speak)
       safe_format(buff, bp, "%s %s \"%s\"", Name(speaker), say_string, string);
     else
       safe_str(string, buff, bp);
-    ENDOOREF_L
+    LEAVE_OOREF;
     return;
   }
 
@@ -2235,22 +2234,22 @@ FUNCTION(fun_speak)
     wenv[1] = speaker_str;
     wenv[2] = unparse_integer(fragment);
     if (call_ufun(&transufun, wenv, 3, rbuff, executor, enactor, pe_info)) {
-      ENDOOREF_L
+      LEAVE_OOREF;
       return;
     }
     if (strlen(rbuff) > 0) {
       safe_format(buff, bp, "%s %s %s", Name(speaker), say_string, rbuff);
-      ENDOOREF_L
+      LEAVE_OOREF;
       return;
     } else if (null == 1) {
       wenv[0] = speaker_str;
       wenv[1] = unparse_integer(fragment);
       if (call_ufun(&nullufun, wenv, 2, rbuff, executor, enactor, pe_info)) {
-	ENDOOREF_L
+        LEAVE_OOREF;
 	return;
       }
       safe_str(rbuff, buff, bp);
-      ENDOOREF_L
+      LEAVE_OOREF;
       return;
     }
   } else {
@@ -2312,5 +2311,6 @@ FUNCTION(fun_speak)
       safe_str(string, buff, bp);	/* remaining string (not speech, so not t) */
     }
   }
-  ENDOOREF_L
+
+  LEAVE_OOREF;
 }
