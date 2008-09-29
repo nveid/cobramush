@@ -9,6 +9,8 @@ CobraMUSH Version 0.73p1
 
   Minor changes:
     * General OOREF cleanup [AEJ]
+    * The restart script now copies old logs and core dumps to save/ [AEJ]
+    * Players may change to a forbidden name that they are already using [AEJ]
 
   Fixes:
     * Fixed cstatus() [AEJ]
