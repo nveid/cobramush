@@ -336,6 +336,11 @@ which are available.
   only specific individuals.
 
   See also: @haven
+& LOUD
+  Flag:  LOUD (all types)
+
+  A LOUD object overrides speech, channel speech, and interaction
+  locks.  This flag can only be set by Privileged players.
 
 & TRUST
 & INHERIT

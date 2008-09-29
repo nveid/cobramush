@@ -759,6 +759,7 @@ flag_add_additional(void)
 	   F_PRIVILEGE);
   add_flag("ORPHAN", 'i', NOTYPE, F_ANY, F_ANY);
   add_flag("TRACK_MONEY", '\0', TYPE_PLAYER, F_ANY, F_ANY);
+  add_flag("LOUD", '\0', NOTYPE, F_PRIVILEGE, F_ANY);
   add_flag("INPROGRAM", '\0', TYPE_PLAYER, F_INTERNAL, F_INTERNAL);
   add_flag("BUILDER", '\0', TYPE_PLAYER, F_PRIVILEGE, F_PRIVILEGE);
   add_flag("AUTH_PARENT", '\0', NOTYPE, F_PRIVILEGE, F_PRIVILEGE);
