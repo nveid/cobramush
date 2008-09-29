@@ -164,7 +164,16 @@ if [ -r "$PANICDIR/$PANICDB" ]; then
    fi
 fi
 
-rm -f log/*.log
+# Move the last set of log files to save/
+mv -f log/*.log save/
+
+# Copy the latest core or netmud.core to save/
+if [ -r "core" ]; then
+   cp core save/
+fi
+if [ -r "netmud.core" ]; then
+   cp netmud.core save/
+fi
 
 if [ -r "data/$OUTDB$SUFFIX" ]; then
    rm -f save/$INDB$SUFFIX.old
