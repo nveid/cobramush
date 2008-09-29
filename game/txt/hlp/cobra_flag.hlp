@@ -347,7 +347,7 @@ which are available.
   Flag:  INHERIT  (rooms, objects, exits, divisions)
  
   Inherits all powers and privileges from an object's owner that is set 
-  'Inheritable'.  Objects however do not Inherit the 'Privlege' power,
+  'Inheritable'.  Objects however do not Inherit the 'Privilege' power,
   nor the Level of their owner.
 
   See Also: Inheritable
