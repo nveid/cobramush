@@ -803,9 +803,7 @@ ok_player_name(const char *name, dbref player, dbref thing)
   const unsigned char *scan, *good;
   dbref lookup;
 
-  if (!ok_name(name)
-      || (forbidden_name(name) && !(GoodObject(player) && Director(player)))
-      || strlen(name) >= (size_t) PLAYER_NAME_LIMIT)
+  if (!ok_name(name) || strlen(name) >= (size_t) PLAYER_NAME_LIMIT)
     return 0;
 
   good = (unsigned char *) (PLAYER_NAME_SPACES ? " `$_-.,'" : "`$_-.,'");
@@ -819,6 +817,13 @@ ok_player_name(const char *name, dbref player, dbref thing)
   }
 
   lookup = lookup_player(name);
+
+  /* A player may only change to a forbidden name if they're already
+     using that name. */
+  if (forbidden_name(name) && !((lookup == thing) ||
+				(GoodObject(player) && Director(player))))
+    return 0;
+
   return ((lookup == NOTHING) || (lookup == thing));
 }
 
