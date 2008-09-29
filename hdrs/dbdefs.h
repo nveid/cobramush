@@ -84,7 +84,7 @@ extern dbref first_free;	/* pointer to free list */
 /* Can guy talk? */
 #define Mute(x)		(has_flag_by_name(x, "MUTE", TYPE_THING | TYPE_PLAYER | TYPE_ROOM))
 #define IsMuted(x,y)	(Mute(x) || Mute(Location(x)))
-#define CanSpeak(x,y)	(!Mute(x) && (Admin(x) || (!Mute(y)  && eval_lock(x, y, Speech_Lock))))
+#define CanSpeak(x,y)	(!Mute(x) && (Admin(x) || Loud(x) || (!Mute(y) && eval_lock(x, y, Speech_Lock))))
 
 /******* Player toggles */
 #define Connected(x)    (IS(x, TYPE_PLAYER, "CONNECTED"))	/* 0x200 */
@@ -156,6 +156,7 @@ extern dbref first_free;	/* pointer to free list */
 #define Inherit(x)	(has_flag_by_name(x, "INHERIT", TYPE_THING|TYPE_EXIT|TYPE_ROOM))
 #define Light(x)        (has_flag_by_name(x, "LIGHT", NOTYPE))
 #define LinkOk(x)       (has_flag_by_name(x, "LINK_OK", NOTYPE))
+#define Loud(x)		(has_flag_by_name(x, "LOUD", NOTYPE))
 #define Mistrust(x)     (has_flag_by_name(x, "MISTRUST", TYPE_THING|TYPE_EXIT|TYPE_ROOM))
 #define NoCommand(x)    (has_flag_by_name(x, "NO_COMMAND", NOTYPE))
 #define NoWarn(x)       (has_flag_by_name(x, "NOWARN", NOTYPE))

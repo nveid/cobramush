@@ -194,7 +194,7 @@ int ChanObjCheck _((CHAN *c));
       (eval_chan_lock(c,p,CLOCK_JOIN)))
 #define Chan_Can_Speak(c,p) \
      (Chan_Can_Access(c,p) && \
-      (eval_chan_lock(c,p, CLOCK_SPEAK)))
+      (Loud(p) || eval_chan_lock(c,p, CLOCK_SPEAK)))
 #define Chan_Can_Cemit(c,p) \
      (!Channel_NoCemit(c) && Chan_Can_Speak(c,p))
 #define Chan_Can_Modify(c,p) \

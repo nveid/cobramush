@@ -185,7 +185,7 @@ int unfindable(dbref);
 
 /* Can from pass to's @lock/interact? */
 #define Pass_Interact_Lock(from,to) \
-  (Can_Pemit(from, to) || eval_lock(from, to, Interact_Lock))
+  (Can_Pemit(from, to) || Loud(from) || eval_lock(from, to, Interact_Lock))
 
 /* How many pennies can you have? */
 #define TC_Max_Pennies(p) (Guest(p) ? MAX_GUEST_PENNIES : MAX_PENNIES)
