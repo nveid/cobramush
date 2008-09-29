@@ -152,7 +152,7 @@ do_say(dbref player, const char *tbuf1)
   if (!GoodObject(loc))
     return;
 
-  if(!CanSpeak(player,loc)) {
+  if (!CanSpeak(player,loc)) {
     notify(player, T("You may not speak here!"));
     return;
   }
@@ -540,7 +540,7 @@ do_pose(dbref player, const char *tbuf1, int space)
   if (!GoodObject(loc))
     return;
 
-  if(!CanSpeak(player,loc)) {
+  if (!CanSpeak(player,loc)) {
     notify(player, T("You may not speak here!"));
     return;
   }
@@ -1175,7 +1175,7 @@ do_emit(dbref player, const char *tbuf1, int flags)
   if (!GoodObject(loc))
     return;
 
-  if(!CanSpeak(player,loc)) {
+  if (!CanSpeak(player,loc)) {
     notify(player, T("You may not speak here!"));
     return;
   }
