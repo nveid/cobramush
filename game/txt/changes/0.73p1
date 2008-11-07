@@ -11,6 +11,7 @@ CobraMUSH Version 0.73p1
     * General OOREF cleanup [AEJ]
     * The restart script now copies old logs and core dumps to save/ [AEJ]
     * Players may change to a forbidden name that they are already using [AEJ]
+    * Use long integer types when unparsing integers [AEJ]
 
   Flags:
     * Added LOUD flag [AEJ]
@@ -23,4 +24,5 @@ CobraMUSH Version 0.73p1
       placed in fun_speak [AEJ]
     * Fixed other OOREF calls [AEJ]
     * Miscellaneous code cleanups for C standard compliance [AEJ]
+    * Unparse time_t as unsigned int [AEJ]
 
