@@ -641,7 +641,7 @@ safe_format(char *buff, char **bp, const char *RESTRICT fmt, ...)
  * \return 0 on success, non-zero on failure.
  */
 int
-safe_integer(int i, char *buff, char **bp)
+safe_integer(long i, char *buff, char **bp)
 {
   return format_long(i, buff, bp, BUFFER_LEN, 10);
 }
@@ -653,7 +653,7 @@ safe_integer(int i, char *buff, char **bp)
  * \return 0 on success, non-zero on failure.
  */
 int
-safe_uinteger(unsigned int i, char *buff, char **bp)
+safe_uinteger(unsigned long i, char *buff, char **bp)
 {
   return safe_str(unparse_uinteger(i), buff, bp);
 }
@@ -665,7 +665,7 @@ safe_uinteger(unsigned int i, char *buff, char **bp)
  * \return 0 on success, non-zero on failure.
  */
 int
-safe_integer_sbuf(int i, char *buff, char **bp)
+safe_integer_sbuf(long i, char *buff, char **bp)
 {
   return format_long(i, buff, bp, SBUF_LEN, 10);
 }

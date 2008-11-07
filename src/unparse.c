@@ -257,7 +257,7 @@ unparse_dbref(dbref num)
  * \return address of static buffer containing stringified value.
  */
 char *
-unparse_integer(int num)
+unparse_integer(long num)
 {
   static char str[SBUF_LEN];
   char *strp;
@@ -273,11 +273,11 @@ unparse_integer(int num)
  * \return address of static buffer containing stringified value.
  */
 char *
-unparse_uinteger(unsigned int num)
+unparse_uinteger(unsigned long num)
 {
   static char str[16];
 
-  sprintf(str, "%u", num);
+  sprintf(str, "%lu", num);
   return str;
 }
 
