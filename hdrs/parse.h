@@ -61,8 +61,8 @@ extern dbref parse_objid(char const *str);
 #define unparse_boolean(x) ((x) ? "1" : "0")
 
 char *unparse_dbref(dbref num);
-char *unparse_integer(int num);
-char *unparse_uinteger(unsigned int num);
+char *unparse_integer(long num);
+char *unparse_uinteger(unsigned long num);
 char *unparse_number(NVAL num);
 char *unparse_types(int type);
 

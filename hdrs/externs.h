@@ -494,11 +494,11 @@ strdup(const char *s)
     extern int safe_format(char *buff, char **bp, const char *RESTRICT fmt, ...)
   __attribute__ ((__format__(__printf__, 3, 4)));
 /* Append an int to the end of a buffer */
-    extern int safe_integer(int i, char *buff, char **bp);
-    extern int safe_uinteger(unsigned int, char *buff, char **bp);
+    extern int safe_integer(long i, char *buff, char **bp);
+    extern int safe_uinteger(unsigned long, char *buff, char **bp);
 /* Same, but for a SBUF_LEN buffer, not BUFFER_LEN */
 #define SBUF_LEN 64    /**< A short buffer */
-    extern int safe_integer_sbuf(int i, char *buff, char **bp);
+    extern int safe_integer_sbuf(long i, char *buff, char **bp);
 /* Append a NVAL to a string */
     extern int safe_number(NVAL n, char *buff, char **bp);
 /* Append a dbref to a buffer */
