@@ -151,7 +151,7 @@ FUNCTION(fun_time)
 /* ARGSUSED */
 FUNCTION(fun_secs)
 {
-  safe_integer(mudtime, buff, bp);
+  safe_uinteger(mudtime, buff, bp);
 }
 
 /* ARGSUSED */
@@ -463,9 +463,9 @@ FUNCTION(fun_convtime)
 #endif
     ) {
 #ifdef SUN_OS
-    safe_integer(timelocal(&ttm), buff, bp);
+    safe_uinteger(timelocal(&ttm), buff, bp);
 #else
-    safe_integer(mktime(&ttm), buff, bp);
+    safe_uinteger(mktime(&ttm), buff, bp);
 #endif				/* SUN_OS */
   } else {
     safe_str("-1", buff, bp);
