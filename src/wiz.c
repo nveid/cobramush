@@ -1076,8 +1076,10 @@ do_debug_examine(dbref player, const char *name)
 
   switch (Typeof(thing)) {
   case TYPE_PLAYER:
+#ifdef USE_MAILER
     mp = desc_mail(thing);
     notify_format(player, T("First mail sender: %d"), mp ? mp->from : NOTHING);
+#endif
   case TYPE_THING:
     notify_format(player, "Location: %d", Location(thing));
     notify_format(player, "Home: %d", Home(thing));

@@ -62,8 +62,10 @@ COBRA_CONF conftable[] = {
   {"crash_database", cf_str, options.crash_db, sizeof options.crash_db, 0,
    "files"}
   ,
+#ifdef USE_MAILER
   {"mail_database", cf_str, options.mail_db, sizeof options.mail_db, 0, "files"}
   ,
+#endif
   {"chat_database", cf_str, options.chatdb, sizeof options.chatdb, 0, "files"}
   ,
   {"compress_suffix", cf_str, options.compresssuff, sizeof options.compresssuff,
@@ -1053,7 +1055,9 @@ conf_default_set(void)
   options.chan_cost = 1000;
   options.max_player_chans = 3;
   options.max_channels = 200;
+#ifdef USE_MAILER
   strcpy(options.mail_db, "data/maildb");
+#endif
   options.player_start = 0;
   options.guest_start = options.player_start;
   options.master_room = 2;

@@ -411,6 +411,7 @@ dump_database_internal(void)
       perror(realtmpfl);
       longjmp(db_err, 1);
     }
+#ifdef USE_MAILER
     sprintf(realdumpfile, "%s%s", options.mail_db, options.compresssuff);
     strcpy(tmpfl, make_new_epoch_file(options.mail_db, epoch));
     sprintf(realtmpfl, "%s%s", tmpfl, options.compresssuff);
@@ -430,6 +431,7 @@ dump_database_internal(void)
 	longjmp(db_err, 1);
       }
     }
+#endif
 #ifdef CHAT_SYSTEM 
     sprintf(realdumpfile, "%s%s", options.chatdb, options.compresssuff);
     strcpy(tmpfl, make_new_epoch_file(options.chatdb, epoch));
@@ -508,7 +510,9 @@ mush_panic(const char *message)
       } else {
 	do_rawlog(LT_ERR, T("DUMPING: %s"), panicfile);
 	db_write(f, DBF_PANIC);
+#ifdef USE_MAILER
 	dump_mail(f);
+#endif
 #ifdef CHAT_SYSTEM
 	save_chatdb(f);
 #endif /* CHAT_SYSTEM */
@@ -858,7 +862,9 @@ init_game_dbs(void)
   FILE *f;
   int c;
   const char *infile, *outfile;
+#ifdef USE_MAILER
   const char *mailfile;
+#endif
   const char *flag_file;
   int panicdb;
 
@@ -869,7 +875,9 @@ init_game_dbs(void)
   infile = restarting ? options.output_db : options.input_db;
   outfile = options.output_db;
   flag_file = options.flagdb;
+#ifdef USE_MAILER
   mailfile = options.mail_db;
+#endif
   strcpy(globals.dumpfile, outfile);
 
   /* read small text files into cache */
@@ -962,6 +970,7 @@ init_game_dbs(void)
     if (!GoodObject(GOD) || (!IsPlayer(GOD)))
       do_rawlog(LT_ERR, T("WARNING: God (#%d) is NOT a player."), GOD);
 
+#ifdef USE_MAILER
     /* read mail database */
     mail_init();
 
@@ -985,6 +994,7 @@ init_game_dbs(void)
         db_close(f);
       }
     }
+#endif /* USE_MAILER */
 
 #ifdef CHAT_SYSTEM
     init_chatdb();

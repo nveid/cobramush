@@ -139,11 +139,13 @@ migrate_stuff(int amount)
     for (lptr = Locks(end_obj); lptr; lptr = L_NEXT(lptr))
       if (L_KEY(lptr) != NULL_CHUNK_REFERENCE)
 	actual++;
+#ifdef USE_MAILER
     if (IsPlayer(end_obj)) {
       for (mp = find_exact_starting_point(end_obj); mp; mp = mp->next)
 	if (mp->msgid != NULL_CHUNK_REFERENCE)
 	  actual++;
     }
+#endif
     end_obj = (end_obj + 1) % db_top;
   } while (actual < amount && end_obj != start_obj);
 
@@ -177,6 +179,7 @@ migrate_stuff(int amount)
 	refs[actual] = &(lptr->key);
 	actual++;
       }
+#ifdef USE_MAILER
     if (IsPlayer(start_obj)) {
       for (mp = find_exact_starting_point(start_obj); mp; mp = mp->next)
 	if (mp->msgid != NULL_CHUNK_REFERENCE) {
@@ -184,6 +187,7 @@ migrate_stuff(int amount)
 	  actual++;
 	}
     }
+#endif
     start_obj = (start_obj + 1) % db_top;
   } while (start_obj != end_obj);
 

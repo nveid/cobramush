@@ -576,6 +576,7 @@ COMMAND (cmd_lset) {
   do_lset(player, arg_left, arg_right);
 }
 
+#ifdef USE_MAILER
 COMMAND (cmd_mail) {
   int urgent = SW_ISSET(sw, SWITCH_URGENT);
   int silent = SW_ISSET(sw, SWITCH_SILENT);
@@ -664,6 +665,7 @@ COMMAND (cmd_malias) {
   else
     do_malias(player, arg_left, arg_right);
 }
+#endif
 
 COMMAND (cmd_map) {
   unsigned int flags = DOL_MAP;

@@ -855,9 +855,11 @@ clear_player(dbref thing)
   char alias[BUFFER_LEN + 1];
 
   /* Clear out mail. */
+#ifdef USE_MAILER
   do_mail_clear(thing, NULL);
   do_mail_purge(thing);
   malias_cleanup(thing);
+#endif
 
 #ifdef CHAT_SYSTEM
   /* Chown any chat channels they own to God */
