@@ -25,4 +25,5 @@ CobraMUSH Version 0.73p1
     * Fixed other OOREF calls [AEJ]
     * Miscellaneous code cleanups for C standard compliance [AEJ]
     * Unparse time_t as unsigned int [AEJ]
+    * Allow removal of mail system [AEJ]
 
