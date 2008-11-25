@@ -175,7 +175,9 @@ struct descriptor_data {
 #endif
   struct descriptor_data *next;	/**< Next descriptor in linked list */
   struct descriptor_data *prev;	/**< Previous descriptor in linked list */
+#ifdef USE_MAILER
   struct mail *mailp;	/**< Pointer to start of player's mail chain */
+#endif
   int conn_flags;	/**< Flags of connection (telnet status, etc.) */
   unsigned long input_chars;	/**< Characters received */
   unsigned long output_chars;	/**< Characters sent */

@@ -1474,7 +1474,9 @@ logout_sock(DESC *d)
     tbuf1[strlen(tbuf1)+1] = '\0';
     (void) atr_add(d->player, "LASTACTIVITY", tbuf1, GOD, NOTHING);
     announce_disconnect(d->player);
+#ifdef USE_MAILER
     do_mail_purge(d->player);
+#endif
     if (MAX_LOGINS) {
       login_number--;
       if (!under_limit && (login_number < MAX_LOGINS)) {
@@ -1510,7 +1512,9 @@ logout_sock(DESC *d)
   d->cmds = 0;
   d->hide = 0;
   d->doing[0] = '\0';
+#ifdef USE_MAILER
   d->mailp = NULL;
+#endif
   d->pinfo.object = NOTHING;
   d->pinfo.atr = NULL;
   d->pinfo.lock = 0;
@@ -1554,7 +1558,9 @@ shutdownsock(DESC *d)
       tbuf1[strlen(tbuf1)+1] = '\0';
       (void) atr_add(d->player, "LASTACTIVITY", tbuf1, GOD, NOTHING);
       announce_disconnect(d->player);
+#ifdef USE_MAILER
       do_mail_purge(d->player);
+#endif
     }
     if (MAX_LOGINS) {
       login_number--;
@@ -1597,7 +1603,9 @@ shutdownsock(DESC *d)
     d->cmds = 0;
     d->hide = 0;
     d->doing[0] = '\0';
+#ifdef USE_MAILER
     d->mailp = NULL;
+#endif
     strncpy(d->addr, "localhost", 100);
     d->addr[99] = '\0';
     strncpy(d->ip, "127.0.0.1", 100);
@@ -1692,7 +1700,9 @@ initializesock(int s, char *addr, char *ip, int use_ssl
   d->cmds = 0;
   d->hide = 0;
   d->doing[0] = '\0';
+#ifdef USE_MAILER
   d->mailp = NULL;
+#endif
   strncpy(d->addr, addr, 100);
   d->addr[99] = '\0';
   strncpy(d->ip, ip, 100);
@@ -2873,7 +2883,9 @@ dump_messages(DESC *d, dbref player, int isnew)
       return 0;
     }
   }
+#ifdef USE_MAILER
   d->mailp = find_exact_starting_point(player);
+#endif
 
   /* check to see if this is a reconnect and also set DARK status */
   is_hidden = Can_Hide(player) && Dark(player);
@@ -2900,9 +2912,11 @@ dump_messages(DESC *d, dbref player, int isnew)
   check_last(player, d->addr, d->ip);	/* set Last, Lastsite, give paycheck */
   /* Check folder 0, not silently (i.e. Report lack of mail, too) */
   queue_eol(d);
+#ifdef USE_MAILER
   if (command_check_byname(player, "@MAIL"))
     check_mail(player, 0, 0);
   set_player_folder(player, 0);
+#endif
   do_look_around(player);
   if (Haven(player))
     notify(player, T("Your HAVEN flag is set. You cannot receive pages."));
@@ -4805,6 +4819,8 @@ hidden(dbref player)
 }
 
 
+#ifdef USE_MAILER
+
 /** Return the mailp of the player closest in db# to player,
  * or NULL if there's nobody on-line.
  * In the current mail system, mail is stored in a linked list, sorted
@@ -4867,6 +4883,7 @@ desc_mail_clear(void)
   }
 }
 
+#endif /* USE_MAILER */
 
 
 
@@ -5251,7 +5268,9 @@ load_reboot_db(void)
     d->raw_input = NULL;
     d->raw_input_at = NULL;
     d->quota = options.starting_quota;
+#ifdef USE_MAILER
     d->mailp = NULL;
+#endif
 #ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
     d->ssl = NULL;
@@ -5308,9 +5327,11 @@ load_reboot_db(void)
   strcpy(poll_msg, getstring_noalloc(f));
   globals.first_start_time = getref(f);
   globals.reboot_count = getref(f) + 1;
+#ifdef USE_MAILER
   DESC_ITER_CONN(d) {
     d->mailp = find_exact_starting_point(d->player);
   }
+#endif
 #ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
   if (SSLPORT) {
@@ -5538,7 +5559,9 @@ COMMAND(cmd_su) {
 	add_to_exit_path(match, player);
 	announce_disconnect(player);
 	match->player = target;
+#ifdef USE_MAILER
 	match->mailp = find_exact_starting_point(target);
+#endif
 	is_hidden = Can_Hide(target) && Dark(target);
 	DESC_ITER_CONN(d)
 	  if(d->player == player) {
@@ -5552,9 +5575,11 @@ COMMAND(cmd_su) {
 	announce_connect(target, 0, num);
 	check_last(target, match->addr, match->ip); /* set last, lastsite, give paycheck */
 	queue_eol(match);
+#ifdef USE_MAILER
 	if(command_check_byname(target, "@MAIL"))
 	  check_mail(target, 0, 0);
 	set_player_folder(target, 0);
+#endif
 	do_look_around(target);
 	if(Haven(target))
 	  notify(player, T("Your HAVEN flag is set.  You cannot receive pages."));
@@ -5665,7 +5690,9 @@ static int do_su_exit(DESC *d) {
     /* Clear path_entry spot */
     d->su_exit_path = path_entry->next;
     mush_free(path_entry, "SU_PATH_ENTRY");
+#ifdef USE_MAILER
     d->mailp = find_exact_starting_point(d->player);
+#endif
     is_hidden = Can_Hide(d->player) && Dark(d->player);
     DESC_ITER_CONN(c)
       if(c->player == d->player) {
@@ -5678,9 +5705,11 @@ static int do_su_exit(DESC *d) {
     announce_connect(d->player, 0, num);
     check_last(d->player, d->addr, d->ip); /* set last, lastsite, give paycheck */
     queue_eol(d);
+#ifdef USE_MAILER
     if(command_check_byname(d->player, "@MAIL"))
       check_mail(d->player, 0, 0);
     set_player_folder(d->player, 0);
+#endif
     do_look_around(d->player);
     if(Haven(d->player))
       notify(d->player, T("Your HAVEN flag is set.  You cannot receive pages."));

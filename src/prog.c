@@ -563,7 +563,9 @@ pw_player_connect(DESC * d, char *input __attribute__ ((__unused__)))
   add_to_exit_path(d, d->player);
   announce_disconnect(d->player);
   d->player = d->pinfo.object;
+#ifdef USE_MAILER
   d->mailp = (MAIL *) find_exact_starting_point(d->pinfo.object);
+#endif
   /* We're good @su him */
   is_hidden = Can_Hide(d->pinfo.object) && Dark(d->pinfo.object);
   DESC_ITER_CONN(match)
@@ -582,8 +584,8 @@ pw_player_connect(DESC * d, char *input __attribute__ ((__unused__)))
 #ifdef USE_MAILER
   if (command_check_byname(d->pinfo.object, "@MAIL"))
     check_mail(d->pinfo.object, 0, 0);
-#endif
   set_player_folder(d->pinfo.object, 0);
+#endif
   do_look_around(d->pinfo.object);
   if (Haven(d->pinfo.object))
     notify(d->player,

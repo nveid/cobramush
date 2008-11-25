@@ -129,7 +129,9 @@ struct options_table {
   char output_db[256];	/**< Name of the output database file */
   char flagdb[256];	/**<Name of flag database file */
   char crash_db[256];	/**< Name of the panic database file */
+#ifdef USE_MAILER
   char mail_db[256];	/**< Name of the mail database file */
+#endif
   dbref player_start;	/**< The room in which new players are created */
   dbref guest_start; /**<The room in which new guests are created */
   dbref master_room;	/**< The master room for global commands/exits */

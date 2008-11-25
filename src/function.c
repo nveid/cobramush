@@ -381,7 +381,9 @@ FUNTAB flist[] = {
   {"FLIP", fun_flip, 1, -1, FN_REG},
   {"FLOORDIV", fun_floordiv, 2, 2, FN_REG},
   {"FOLD", fun_fold, 2, 4, FN_REG},
+#ifdef USE_MAILER
   {"FOLDERSTATS", fun_folderstats, 0, 2, FN_REG},
+#endif
   {"FOLLOWERS", fun_followers, 1, 1, FN_REG},
   {"FOLLOWING", fun_following, 1, 1, FN_REG},
   {"FOREACH", fun_foreach, 2, 4, FN_REG},
@@ -469,6 +471,7 @@ FUNTAB flist[] = {
   {"LVTHINGS", fun_dbwalker, 1, 1, FN_REG},
   {"LWHO", fun_lwho, 0, 1, FN_REG},
   {"LWHOID", fun_lwho, 0, 1, FN_REG},
+#ifdef USE_MAILER
   {"MAIL", fun_mail, 0, 2, FN_REG},
   {"MAILFROM", fun_mailfrom, 1, 2, FN_REG},
   {"MAILSTATS", fun_mailstats, 1, 1, FN_REG},
@@ -477,6 +480,7 @@ FUNTAB flist[] = {
   {"MAILSTATUS", fun_mailstatus, 1, 2, FN_REG},
   {"MAILSUBJECT", fun_mailsubject, 1, 2, FN_REG},
   {"MAILTIME", fun_mailtime, 1, 2, FN_REG},
+#endif
   {"MAP", fun_map, 2, 4, FN_REG},
   {"MAPSQL", fun_mapsql, 2, 4, FN_REG},
   {"MATCH", fun_match, 2, 3, FN_REG},
