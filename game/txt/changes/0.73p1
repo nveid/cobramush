@@ -26,4 +26,5 @@ CobraMUSH Version 0.73p1
     * Miscellaneous code cleanups for C standard compliance [AEJ]
     * Unparse time_t as unsigned int [AEJ]
     * Allow removal of mail system [AEJ]
+    * Fix bug in lsearch caused by uninitialized variable [AEJ]
 
