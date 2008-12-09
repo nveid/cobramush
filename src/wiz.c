@@ -1977,7 +1977,7 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
   size_t nresults = 0;
   int n;
   struct search_spec spec;
-  int count;
+  int count = 0;
 
   /* make sure player has money to do the search */
   if (!payfor(player, FIND_COST)) {
