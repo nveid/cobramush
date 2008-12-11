@@ -199,7 +199,7 @@ ctags:
 	ctags *.c 
 
 depend: funlocal.c cmdlocal.c local.c flaglocal.c
-	makedepend -fMakefile.SH -w10 -- $(CFLAGS) -- $(C_FILES) $(H_FILES)
+	makedepend -fMakefile.SH -w10 -- -I../hdrs -I.. $(CFLAGS) -- $(C_FILES) $(H_FILES)
 	perl ../utils/fixdepend.pl Makefile.SH
 
 # Requires GNU indent! 
