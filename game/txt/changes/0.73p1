@@ -12,6 +12,7 @@ CobraMUSH Version 0.73p1
     * The restart script now copies old logs and core dumps to save/ [AEJ]
     * Players may change to a forbidden name that they are already using [AEJ]
     * Use long integer types when unparsing integers [AEJ]
+    * Don't count IDLE toward players' commands totals [AEJ]
 
   Flags:
     * Added LOUD flag [AEJ]
