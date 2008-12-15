@@ -461,10 +461,9 @@ prog_handler(DESC * d, char *input)
   char *p_buf[NUMQ];
   int rcnt, i;
 
-  if (!strcmp(input, "IDLE")) {
-    (d->cmds)++;
+  if (!strcmp(input, "IDLE"))
     return 1;
-  }
+
   /* handle escaped commandz */
   if (d->pinfo.lock) {
     if (!strcmp(input, "|QUIT")) {

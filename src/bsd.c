@@ -2748,10 +2748,11 @@ do_command(DESC *d, char *command)
 
   depth = 0;
 
-  (d->cmds)++;
-
   if (!strcmp(command, IDLE_COMMAND))
     return 1;
+
+  (d->cmds)++;
+
   if(difftime(mudtime, d->last_time) >= 300) { 
     d->idle_total += difftime(mudtime, d->last_time);
     d->unidle_times++;
