@@ -42,6 +42,7 @@ PTAB ptab_attrib;
 PRIV attr_privs_set[] = {
   {"no_command", '$', AF_NOPROG, AF_NOPROG},
   {"no_inherit", 'i', AF_PRIVATE, AF_PRIVATE},
+  {"pow_inherit", 't', AF_POWINHERIT, AF_POWINHERIT},
   {"private", 'i', AF_PRIVATE, AF_PRIVATE},
   {"no_clone", 'c', AF_NOCOPY, AF_NOCOPY},
   {"privilege", 'w', AF_PRIVILEGE, AF_PRIVILEGE},
