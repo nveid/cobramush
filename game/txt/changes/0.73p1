@@ -28,4 +28,6 @@ CobraMUSH Version 0.73p1
     * Unparse time_t as unsigned int [AEJ]
     * Allow removal of mail system [AEJ]
     * Fix bug in lsearch caused by uninitialized variable [AEJ]
+    * Make some division checks safer [AEJ]
+    * Remove unnecessary static buffer non-NULL checks [AEJ]
 
