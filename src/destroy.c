@@ -1056,7 +1056,7 @@ check_divisions(void) {
 
       /* make sure their division is a valid object */
       if((!GoodObject(Division(i)) && Division(i) != NOTHING)
-	 || IsGarbage(Division(i))) {
+	 || (GoodObject(Division(i)) && IsGarbage(Division(i)))) {
 	Division(i) = NOTHING;
 	do_rawlog(LT_ERR, T("ERROR: Bad Division(#%d) set on object #%d"),
 		  Division(i), i);
