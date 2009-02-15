@@ -1450,7 +1450,7 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
 		  icloc_ptr = atr_get(thing, "TRUERACE");
 		  if(icloc_ptr) 
 		    strncpy(icloc_buf, atr_value(icloc_ptr), BUFFER_LEN-1);
-		  if(!icloc_buf) {
+		  if(!*icloc_buf) {
 			  if(player != thing)
 				  notify(player, "That player does not have a valid TRUERACE set.");
 			  notify(thing, "You do not have a valid TRUERACE set.  Contact an administrator.");
@@ -1465,7 +1465,7 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
 		  memset(icloc_buf, '\0', BUFFER_LEN);
 		  if(icloc_ptr)
 			  strncpy(icloc_buf, atr_value(icloc_ptr), BUFFER_LEN-1);
-		  if(!icloc_buf) {
+		  if(!*icloc_buf) {
 			  if(player != thing)
 			    notify(player, "That player has an invalid RP location set."); 
 			  notify(thing, "You have an invalid RP location set.  Contact an administrator.");

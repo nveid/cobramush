@@ -237,7 +237,7 @@ load_chatdb_oldstyle(FILE * fp)
 
   /* Check for **END OF DUMP*** */
   fgets(buff, sizeof buff, fp);
-  if (!buff)
+  if (!*buff)
     do_rawlog(LT_ERR, T("CHAT: No end-of-dump marker in the chat database."));
   else if (strcmp(buff, EOD) != 0)
     do_rawlog(LT_ERR, T("CHAT: Trailing garbage in the chat database."));
@@ -310,7 +310,7 @@ load_chatdb(FILE * fp)
 
   /* Check for **END OF DUMP*** */
   fgets(buff, sizeof buff, fp);
-  if (!buff)
+  if (!*buff)
     do_rawlog(LT_ERR, T("CHAT: No end-of-dump marker in the chat database."));
   else if (strcmp(buff, EOD) != 0)
     do_rawlog(LT_ERR, T("CHAT: Trailing garbage in the chat database."));
@@ -1955,7 +1955,7 @@ ok_channel_name(const char *n)
 
   strcpy(name, remove_markup(n, NULL));
 
-  if (!name || !*name)
+  if (!*name)
     return 0;
 
   /* No leading spaces */

@@ -2037,7 +2037,7 @@ load_mail(FILE * fp)
     if (nbuf1[0] == '0' && nbuf1[1] == '\n') {
       char buff[20];
       fgets(buff, sizeof buff, fp);
-      if (!buff)
+      if (!*buff)
 	do_rawlog(LT_ERR,
 		  T("MAIL: Missing end-of-dump marker in mail database."));
       else if (strcmp(buff, (mail_flags & MDBF_NEW_EOD)
@@ -2153,7 +2153,7 @@ load_mail(FILE * fp)
   {
     char buff[20];
     fgets(buff, sizeof buff, fp);
-    if (!buff)
+    if (!*buff)
       do_rawlog(LT_ERR,
 		T("MAIL: Missing end-of-dump marker in mail database."));
     else if (strcmp(buff, (mail_flags & MDBF_NEW_EOD)

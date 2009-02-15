@@ -1292,7 +1292,7 @@ COMMAND(cmd_power)
         *tbp = '\0';
 
         notify_format(player, "Power Name    : %s", power->name);
-        notify_format(player, "Power Aliases : %s", tbuf ? tbuf : "");
+        notify_format(player, "Power Aliases : %s", tbuf);
         notify_format(player, "Power Type    : %s", powc_list[i].name);
       } else
         notify(player, "No such power.");
@@ -2672,7 +2672,7 @@ void do_list_powers(dbref player, const char *name) {
           safe_format(tbuf, &tbp, ", %s", pname);
       }
     *tbp = '\0';
-    notify_format(player, "Powers List: %s", tbuf ? tbuf : "None.");
+    notify_format(player, "Powers List: %s", tbuf);
 }
 
 char *list_all_powers(dbref player, const char *name) {

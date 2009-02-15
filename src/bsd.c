@@ -2869,11 +2869,11 @@ dump_messages(DESC *d, dbref player, int isnew)
       (Guest(player) && !options.guest_allow)) {
     if (!options.login_allow) {
       fcache_dump(d, fcache.down_fcache, NULL);
-      if (cf_downmotd_msg && *cf_downmotd_msg)
+      if (*cf_downmotd_msg)
 	raw_notify(player, cf_downmotd_msg);
     } else if (MAX_LOGINS && !under_limit) {
       fcache_dump(d, fcache.full_fcache, NULL);
-      if (cf_fullmotd_msg && *cf_fullmotd_msg)
+      if (*cf_fullmotd_msg)
 	raw_notify(player, cf_fullmotd_msg);
     }
     if (!Can_Login(player)) {
@@ -3766,7 +3766,7 @@ announce_connect(dbref player, int isnew, int num)
   }
   orator = player;
 
-  if (cf_motd_msg && *cf_motd_msg) {
+  if (*cf_motd_msg) {
     raw_notify(player, cf_motd_msg);
   }
   raw_notify(player, " ");
