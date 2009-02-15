@@ -119,8 +119,8 @@ Parenthesis Special Behavior definitions:
 S - Only used over self
 B - only checks LT
 L - only checks LTE
-LS - If used over a division & they don't have division power they're fucked.
-     otherwise. works like a normal power.
+LS - If used over a division & they don't have division power they're denied.
+     Otherwise works like a normal power.
 # - how many places of power. 1, 2(usually only yes, & lte checking), 
     3 - full Yes/LTE/LT range power
 
