@@ -66,7 +66,7 @@ extern dbref first_free;	/* pointer to free list */
 #define IsRoom(x)       (!!(Typeof(x) & TYPE_ROOM))
 #define IsThing(x)      (!!(Typeof(x) & TYPE_THING))
 #define IsExit(x)       (!!(Typeof(x) & TYPE_EXIT))
-#define IsDivision(x)	(!!(Typeof(x) & TYPE_DIVISION))
+#define IsDivision(x)	(GoodObject(x) && !!(Typeof(x) & TYPE_DIVISION))
 #define IsMasterDivision(x) (GoodObject(x) && IsDivision(x) && Division(x) == NOTHING)
 
 /* Was Destroyed() */
