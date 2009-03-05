@@ -1279,8 +1279,8 @@ process_command(dbref player, char *command, dbref cause, dbref realcause,  int 
       /* if nothing matched with zone master room/zone object, try
        * matching zone commands on the player's personal zone
        */
-      if ((!a) && (Zone(player) != NOTHING) &&
-	  (Zone(Location(check_loc)) != Zone(player))) {
+      if ((!a) && (Zone(player) != NOTHING) && GoodObject(Location(check_loc))
+	  && (Zone(Location(check_loc)) != Zone(player))) {
 	if (IsRoom(Zone(player)))
 	  /* Player's personal zone is a zone master room, so we
 	   * also check commands on objects in that room
