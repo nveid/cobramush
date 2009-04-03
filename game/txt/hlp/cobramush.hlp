@@ -174,7 +174,7 @@ Items that might be of interest:
 & @program
  Syntaxes:
    @program[/lock] <player> = <program_object>/<program_attribute>
-   @programm[/lock] <player> = <program_attribute>
+   @program[/lock] <player> = <program_attribute>
    @program/quit <player>
 
    This command gives the ability to place users into MUSHcoded 
