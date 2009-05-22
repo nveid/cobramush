@@ -109,7 +109,7 @@ extern const lock_type Dropto_Lock;	/* Who follows the dropto of this room? */
 extern const lock_type Destroy_Lock;	/* Who can @dest me if I'm dest_ok? */
 extern const lock_type Interact_Lock;
 extern const lock_type MailForward_Lock;	/* Who can forward mail to me */
-extern const lock_type Take_Lock;
+extern const lock_type Take_Lock;	/* Who can take from the contents of this object? */
 /* channel locks */
 #ifdef  NEWCHAT
 extern const lock_type chan_speak_lock;
