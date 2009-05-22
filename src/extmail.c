@@ -2766,6 +2766,7 @@ filter_mail(dbref from, dbref player, char *subject,
     global_eval_context.wenv[j] = NULL;
   for (j = 0; j < NUMQ; j++)
     global_eval_context.renv[j][0] = '\0';
+  clear_namedregs(&global_eval_context.namedregs);
   strcpy(arg, unparse_dbref(from));
   global_eval_context.wenv[0] = arg;
   strcpy(arg2, subject);

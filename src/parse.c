@@ -738,6 +738,22 @@ process_expression(char *buff, char **bp, char const **str,
 	switch (savec) {
 	case 'Q':
 	case 'q':
+          savec = **str;
+          if (!savec)
+            goto exit_sequence;
+          safe_chr(savec, buff, bp);
+          (*str)++;
+          if (savec == '<') {
+            for (savec = **str; savec && savec != '>'; savec = **str) {
+              safe_chr(savec, buff, bp);
+              (*str)++;
+            }
+            if(!savec)
+              goto exit_sequence;
+            safe_chr(savec, buff, bp);
+            (*str)++;
+          }
+          break;
 	case 'V':
 	case 'v':
 	case 'W':
@@ -883,10 +899,25 @@ process_expression(char *buff, char **bp, char const **str,
 	  if (!nextc)
 	    goto exit_sequence;
 	  (*str)++;
-	  if ((qindex = qreg_indexes[(unsigned char) nextc]) == -1)
-	    break;
-	  if (global_eval_context.renv[qindex])
-	    safe_str(global_eval_context.renv[qindex], buff, bp);
+          if (nextc == '<') {
+            const char *tmp;
+            char regname[BUFFER_LEN];
+            for(tmp = *str; *tmp && *tmp != '>'; tmp++)
+              ;
+            if(!*tmp || tmp == *str) {
+              (*str)--;
+              goto exit_sequence;
+            }
+            strncpy(regname, *str, tmp - *str);
+            regname[tmp - *str] = '\0';
+            safe_str(get_namedreg(&global_eval_context.namedregs, regname), buff, bp);
+            *str = tmp + 1;
+          } else {
+	    if ((qindex = qreg_indexes[(unsigned char) nextc]) == -1)
+	      break;
+	    if (global_eval_context.renv[qindex])
+	      safe_str(global_eval_context.renv[qindex], buff, bp);
+          }
 	  break;
 	case 'R':
 	case 'r':		/* newline */

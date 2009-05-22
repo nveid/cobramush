@@ -327,6 +327,7 @@ real_did_it(dbref player, dbref thing, const char *what, const char *def,
     global_eval_context.wnxt[j] = myenv[j];
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = NULL;
+  clear_namedregs(&global_eval_context.namedregsnxt);
   attribs_used = charge_action(player, thing, awhat) || attribs_used;
   orator = preserve_orator;
   return attribs_used;
@@ -1057,6 +1058,7 @@ do_switch(dbref player, char *expression, char **argv, dbref cause,
     global_eval_context.wnxt[a] = global_eval_context.wenv[a];
   for (a = 0; a < NUMQ; a++)
     global_eval_context.rnxt[a] = global_eval_context.renv[a];
+  copy_namedregs(&global_eval_context.namedregsnxt, &global_eval_context.namedregs);
 
   /* now try a wild card match of buff with stuff in coms */
   for (a = 1;

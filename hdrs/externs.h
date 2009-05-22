@@ -218,6 +218,8 @@ struct eval_context {
   int re_subpatterns;	      /**< The number of re subpatterns */
   int *re_offsets;	      /**< The offsets for the subpatterns */
   char *re_from;	      /**< The positions of the subpatterns */
+  HASHTAB namedregs;
+  HASHTAB namedregsnxt;
 };
 
 typedef struct eval_context EVAL_CONTEXT;
@@ -248,6 +250,13 @@ extern void dequeue_semaphores(dbref thing, char const *aname, int count,
 			       int all, int drain);
 extern void shutdown_queues(void);
 extern void do_hourly(void);
+
+extern void init_namedregs(HASHTAB *);
+extern void free_namedregs(HASHTAB *);
+extern void clear_namedregs(HASHTAB *);
+extern void copy_namedregs(HASHTAB *, HASHTAB *);
+extern void set_namedreg(HASHTAB *, const char *, const char *);
+extern const char *get_namedreg(HASHTAB *, const char *);
 
 
 /* From create.c */

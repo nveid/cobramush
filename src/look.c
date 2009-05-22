@@ -94,6 +94,7 @@ look_exits(dbref player, dbref loc, const char *exit_name)
     }
     for (j = 0; j < NUMQ; j++)
       global_eval_context.renv[j][0] = '\0';
+    clear_namedregs(&global_eval_context.namedregs);
     bp = arg;
     DOLIST(thing, Exits(loc)) {
       if (((Light(loc) || Light(thing)) || !(Dark(loc) || Dark(thing)))
@@ -261,6 +262,7 @@ look_contents(dbref player, dbref loc, const char *contents_name)
     }
     for (j = 0; j < NUMQ; j++)
       global_eval_context.renv[j][0] = '\0';
+    clear_namedregs(&global_eval_context.namedregs);
     bp = arg;
     bp2 = arg2;
     DOLIST(thing, Contents(loc)) {
@@ -1022,6 +1024,7 @@ do_inventory(dbref player)
 
     for(j = 0; j < NUMQ ; j++)
       global_eval_context.renv[j][0] = '\0';
+    clear_namedregs(&global_eval_context.namedregs);
     bp = arg;
     bp2 = arg2;
     DOLIST(thing, Contents(player)) {

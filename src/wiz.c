@@ -629,6 +629,7 @@ do_force(dbref player, const char *what, char *command)
     global_eval_context.wnxt[j] = global_eval_context.wenv[j];
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = global_eval_context.renv[j];
+  copy_namedregs(&global_eval_context.namedregsnxt, &global_eval_context.namedregs);
   if(ooref == NOTHING) {
       ooref = player;
       l = 1;
