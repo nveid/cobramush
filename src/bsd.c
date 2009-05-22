@@ -2810,6 +2810,7 @@ do_command(DESC *d, char *command)
 	global_eval_context.wenv[j] = (char *) NULL;
       for (j = 0; j < NUMQ; j++)
 	global_eval_context.renv[j][0] = '\0';
+      clear_namedregs(&global_eval_context.namedregs);
       global_eval_context.process_command_port = d->descriptor;
 
       process_command(d->player, command, d->player, d->player, 1);
@@ -3783,6 +3784,7 @@ announce_connect(dbref player, int isnew, int num)
     global_eval_context.wnxt[j] = NULL;
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = NULL;
+  clear_namedregs(&global_eval_context.namedregsnxt);
   strcpy(global_eval_context.ccom, "");
 
   /* do the person's personal connect action */
@@ -3854,6 +3856,7 @@ announce_disconnect(dbref player)
       global_eval_context.wnxt[j] = NULL;
     for (j = 0; j < NUMQ; j++)
       global_eval_context.rnxt[j] = NULL;
+    clear_namedregs(&global_eval_context.namedregsnxt);
 
     /* Setup all connect information as info to pass */
     (void) queue_attribute(player, "ADISCONNECT", player);

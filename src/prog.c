@@ -60,6 +60,7 @@ COMMAND(cmd_prog)
   DESC *d;
   int i, pflags = 0;
   char buf[BUFFER_LEN], *bp;
+  char *key;
 
   if (!arg_left) {
     notify(player, "Invalid arguments.");
@@ -181,6 +182,12 @@ COMMAND(cmd_prog)
     }
     safe_chr('|', tbuf1, &tbp);
   }
+  for(key = hash_firstentry_key(&global_eval_context.namedregs); key; key = hash_nextentry_key(&global_eval_context.namedregs)) {
+    safe_str(key, tbuf1, &tbp);
+    safe_chr('|', tbuf1, &tbp);
+    safe_str(get_namedreg(&global_eval_context.namedregs, key), tbuf1, &tbp);
+    safe_chr('|', tbuf1, &tbp);
+  }
 
   tbp--;
   *tbp = '\0';
@@ -209,6 +216,7 @@ FUNCTION(fun_prog)
   dbref target, thing;
   char pflags = 0x0;
   int i;
+  char *key;
 
   target = match_result(executor, args[0], TYPE_PLAYER, MAT_EVERYTHING);
   if (!GoodObject(target) || !Connected(target)) {
@@ -277,6 +285,13 @@ FUNCTION(fun_prog)
     }
     safe_chr('|', tbuf1, &tbp);
   }
+  for(key = hash_firstentry_key(&global_eval_context.namedregs); key; key = hash_nextentry_key(&global_eval_context.namedregs)) {
+    safe_str(key, tbuf1, &tbp);
+    safe_chr('|', tbuf1, &tbp);
+    safe_str(get_namedreg(&global_eval_context.namedregs, key), tbuf1, &tbp);
+    safe_chr('|', tbuf1, &tbp);
+  }
+
 
   tbp--;
   *tbp = '\0';
@@ -460,6 +475,7 @@ prog_handler(DESC * d, char *input)
   char *tbuf, *bp;
   char *p_buf[NUMQ];
   int rcnt, i;
+  char *key;
 
   if (!strcmp(input, "IDLE"))
     return 1;
@@ -486,6 +502,13 @@ prog_handler(DESC * d, char *input)
         strcpy(global_eval_context.renv[i], p_buf[i]);
 	global_eval_context.rnxt[i] = global_eval_context.renv[i];
       }
+
+    for (; i < (rcnt - 1); i+= 2) {
+      if (p_buf[i] && strlen(p_buf[i]) > 0 && p_buf[i+1] && strlen(p_buf[i+1]) > 0) {
+        set_namedreg(&global_eval_context.namedregs, p_buf[i], p_buf[i+1]);
+        set_namedreg(&global_eval_context.namedregsnxt, p_buf[i], p_buf[i+1]);
+      }
+    }
   }
   strcpy(buf, atr_value(d->pinfo.atr));
   global_eval_context.wnxt[0] = input;
@@ -499,6 +522,12 @@ prog_handler(DESC * d, char *input)
       safe_str(tbuf, buf, &bp);
       mush_free((Malloc_t) tbuf, "str_escaped_chr.buff");
     }
+    safe_chr('|', buf, &bp);
+  }
+  for(key = hash_firstentry_key(&global_eval_context.namedregs); key; key = hash_nextentry_key(&global_eval_context.namedregs)) {
+    safe_str(key, buf, &bp);
+    safe_chr('|', buf, &bp);
+    safe_str(get_namedreg(&global_eval_context.namedregs, key), buf, &bp);
     safe_chr('|', buf, &bp);
   }
   bp--;

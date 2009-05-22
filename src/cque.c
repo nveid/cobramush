@@ -67,6 +67,7 @@ typedef struct bque {
 #endif
   char fqueued;			/**< function inserted into queue  */
   enum qid_flags qid; /**<  queue identification # */
+  HASHTAB namedregs;
 } BQUE;
 
 static BQUE *qfirst = NULL, *qlast = NULL, *qwait = NULL;
@@ -232,6 +233,7 @@ free_qentry(BQUE *point)
     if (point->rval[a]) {
       mush_free((Malloc_t) point->rval[a], "bqueue_rval");
     }
+  free_namedregs(&point->namedregs);
   if (point->semattr)
     mush_free((Malloc_t) point->semattr, "bqueue_semattr");
   if (point->comm)
@@ -257,13 +259,19 @@ pay_queue(dbref player, const char *command)
     char *val_rnxt[NUMQ];
     char *preserves[10];
     char *preserveq[NUMQ];
+    HASHTAB preserve_namedregs;
     save_global_nxt("pay_queue_save", preserve_wnxt, preserve_rnxt, val_wnxt,
 		    val_rnxt);
     save_global_regs("pay_queue_save", preserveq);
     save_global_env("pay_queue_save", preserves);
+    init_namedregs(&preserve_namedregs);
+    copy_namedregs(&preserve_namedregs, &global_eval_context.namedregs);
+    clear_namedregs(&global_eval_context.namedregs);
     notify_format(Owner(player),
 		  T("GAME: Object %s(%s) lost a %s to queue loss."),
 		  Name(player), unparse_dbref(player), MONEY);
+    copy_namedregs(&global_eval_context.namedregs, &preserve_namedregs);
+    free_namedregs(&preserve_namedregs);
     restore_global_regs("pay_queue_save", preserveq);
     restore_global_env("pay_queue_save", preserves);
     restore_global_nxt("pay_queue_save", preserve_wnxt, preserve_rnxt, val_wnxt,
@@ -334,6 +342,8 @@ parse_que(dbref player, const char *command, dbref cause)
     else {
       tmp->rval[a] = mush_strdup(global_eval_context.rnxt[a], "bqueue_rval");
     }
+  init_namedregs(&tmp->namedregs);
+  copy_namedregs(&tmp->namedregs, &global_eval_context.namedregs);
 
   if (IsPlayer(cause)) {
     if (qlast) {
@@ -384,6 +394,8 @@ div_parse_que(dbref division, const char *command, dbref called_division, dbref 
     else {
       tmp->rval[a] = mush_strdup(global_eval_context.rnxt[a], "bqueue_rval");
     }
+  init_namedregs(&tmp->namedregs);
+  copy_namedregs(&tmp->namedregs, &global_eval_context.namedregs);
   if (IsPlayer(player)) {
     if (qlast) {
       qlast->next = tmp;
@@ -526,6 +538,8 @@ wait_que(dbref player, int wait, char *command, dbref cause, dbref sem,
       tmp->rval[a] = mush_strdup(global_eval_context.rnxt[a], "bqueue_rval");
     }
   }
+  init_namedregs(&tmp->namedregs);
+  copy_namedregs(&tmp->namedregs, &global_eval_context.namedregs);
 
   if (until) {
     tmp->left = wait;
@@ -692,6 +706,7 @@ do_top(int ncom)
 	  else
 	    global_eval_context.renv[a][0] = '\0';
 	}
+        copy_namedregs(&global_eval_context.namedregs, &entry->namedregs);
 	global_eval_context.process_command_port = 0;
 	s = entry->comm;
 	global_eval_context.break_called = 0;
@@ -991,6 +1006,7 @@ do_wait(dbref player, dbref cause, char *arg1, char *cmd, int until, char finvoc
     global_eval_context.wnxt[j] = global_eval_context.wenv[j];
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = global_eval_context.renv[j];
+  copy_namedregs(&global_eval_context.namedregsnxt, &global_eval_context.namedregs);
 
   arg2 = strip_braces(cmd);
   if (is_strict_integer(arg1)) {
@@ -1406,6 +1422,7 @@ do_halt(dbref owner, const char *ncom, dbref victim)
       global_eval_context.wnxt[j] = global_eval_context.wenv[j];
     for (j = 0; j < NUMQ; j++)
       global_eval_context.rnxt[j] = global_eval_context.renv[j];
+    copy_namedregs(&global_eval_context.namedregsnxt, &global_eval_context.namedregs);
     parse_que(player, ncom, player);
   }
 }
@@ -1593,6 +1610,8 @@ shutdown_queues(void)
   shutdown_a_queue(&qlfirst, &qllast);
   shutdown_a_queue(&qsemfirst, &qsemlast);
   shutdown_a_queue(&qwait, NULL);
+  free_namedregs(&global_eval_context.namedregs);
+  free_namedregs(&global_eval_context.namedregsnxt);
 }
 
 
@@ -1612,6 +1631,60 @@ shutdown_a_queue(BQUE **head, BQUE **tail)
     }
     free_qentry(entry);
   }
+}
+
+void init_namedregs(HASHTAB *regs) {
+  hashinit(regs, 16, sizeof(char *));
+}
+
+void free_namedregs(HASHTAB *regs) {
+  clear_namedregs(regs);
+  hashfree(regs);
+}
+
+void clear_namedregs(HASHTAB *regs) {
+  char *value;
+
+  for(value = (char *) hash_firstentry(regs); value; value = (char *) hash_nextentry(regs))
+    mush_free(value, "namedreg");
+
+  hashflush(regs, 16);
+}
+
+void copy_namedregs(HASHTAB *dest, HASHTAB *src) {
+  char *key;
+
+  for(key = hash_firstentry(src); key; key = hash_nextentry_key(src))
+    set_namedreg(dest, key, get_namedreg(src, key));
+}
+
+void set_namedreg(HASHTAB *regs, const char *name, const char *value) {
+  char *key;
+  char *oldvalue;
+
+  key = strupper(name);
+
+  oldvalue = (char *) hashfind(key, regs);
+  if(oldvalue) {
+    mush_free(oldvalue, "namedreg");
+    hashdelete(key, regs);
+  }
+
+  hashadd(key, mush_strdup(value, "namedreg"), regs);
+}
+
+const char *get_namedreg(HASHTAB *regs, const char *name) {
+  char *key;
+  char *value;
+
+  key = strupper(name);
+
+  value = (char *) hashfind(key, regs);
+
+  if(value)
+    return value;
+
+  return "";
 }
 
 FUNCTION(fun_wait) {

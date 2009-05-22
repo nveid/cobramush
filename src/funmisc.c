@@ -175,8 +175,15 @@ FUNCTION(fun_setq)
       strcpy(global_eval_context.renv[qindex], args[n + 1]);
       if (n == 0 && !strcmp(called_as, "SETR"))
 	safe_strl(args[n + 1], arglens[n + 1], buff, bp);
-    } else
-      safe_str(T("#-1 REGISTER OUT OF RANGE"), buff, bp);
+    } else {
+      if (*args[n] && !strpbrk(args[n], "|<>% \n\r\t")) {
+        set_namedreg(&global_eval_context.namedregs, args[n], args[n+1]);
+        if (n == 0 && !strcmp(called_as, "SETR"))
+          safe_strl(args[n + 1], arglens[n + 1], buff, bp);
+      } else {
+        safe_str(T("#-1 REGISTER OUT OF RANGE"), buff, bp);
+      }
+    }
   }
 }
 
@@ -190,6 +197,8 @@ FUNCTION(fun_r)
       ((qindex = qreg_indexes[(unsigned char) args[0][0]]) != -1)
       && global_eval_context.renv[qindex])
     safe_str(global_eval_context.renv[qindex], buff, bp);
+  else if (*args[0])
+    safe_str(get_namedreg(&global_eval_context.namedregs, args[0]), buff, bp);
   else
     safe_str(T("#-1 REGISTER OUT OF RANGE"), buff, bp);
 }

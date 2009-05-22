@@ -212,6 +212,7 @@ nameformat(dbref player, dbref loc, char *tbuf1, char *defname)
     }
     for (j = 0; j < NUMQ; j++)
       global_eval_context.renv[j][0] = '\0';
+    clear_namedregs(&global_eval_context.namedregs);
     strcpy(arg, unparse_dbref(loc));
     global_eval_context.wenv[0] = arg;
     strcpy(arg2, defname);

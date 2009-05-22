@@ -459,6 +459,7 @@ wild_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
     global_eval_context.wnxt[j] = (char *) NULL;
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = (char *) NULL;
+  clear_namedregs(&global_eval_context.namedregsnxt);
   return wild(s, d, 0, cs);
 }
 
@@ -523,6 +524,7 @@ regexp_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
   }
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = (char *) NULL;
+  clear_namedregs(&global_eval_context.namedregsnxt);
 
   for (i = 0; (i < 10) && (i < NUMARGS); i++) {
     pcre_copy_substring(d, offsets, subpatterns, i, wtmp[i], BUFFER_LEN);

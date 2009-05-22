@@ -712,6 +712,8 @@ do_restart(void)
     global_eval_context.wnxt[j] = NULL;
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = NULL;
+  init_namedregs(&global_eval_context.namedregs);
+  init_namedregs(&global_eval_context.namedregsnxt);
 
   /* Initialize the regexp patterns to nothing */
   global_eval_context.re_code = NULL;
@@ -767,6 +769,8 @@ init_game_config(const char *conf)
     global_eval_context.renv[a][0] = '\0';
     global_eval_context.rnxt[a] = NULL;
   }
+  clear_namedregs(&global_eval_context.namedregs);
+  clear_namedregs(&global_eval_context.namedregsnxt);
 
   /* set MUSH start time */
   globals.start_time = time((time_t *) 0);
@@ -1912,6 +1916,7 @@ do_dolist(dbref player, char *list, char *command, dbref cause,
     global_eval_context.wnxt[j] = global_eval_context.wenv[j];
   for (j = 0; j < NUMQ; j++)
     global_eval_context.rnxt[j] = global_eval_context.renv[j];
+  copy_namedregs(&global_eval_context.namedregsnxt, &global_eval_context.namedregs);
   bp = outbuf;
   if (flags & DOL_DELIM)
     list += 2;
