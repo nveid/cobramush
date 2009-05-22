@@ -7,6 +7,9 @@ CobraMUSH Version 0.73p1
   Version 0.73p1 is a maintenance release of version 0.73.
   It is the first maintenance release in that series.
 
+  Major changes:
+    * Implement named %q<registers> [AEJ]
+
   Minor changes:
     * General OOREF cleanup [AEJ]
     * The restart script now copies old logs and core dumps to save/ [AEJ]
