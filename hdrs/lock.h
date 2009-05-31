@@ -121,7 +121,7 @@ extern const lock_type chan_hide_lock;
 
 /* Declare new lock types here! */
 
-/* The only locktype we don't pass is the uselock */
-#define IS_passlock_type(ltp) (strcasecmp(ltp , Use_Lock)!=0)
+/* The only locktypes we don't pass Use and Command */
+#define IS_passlock_type(ltp) (strcasecmp(ltp, Use_Lock) && strcasecmp(ltp, Command_Lock))
 
 #endif				/* __LOCK_H */
