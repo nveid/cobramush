@@ -7,3 +7,6 @@ CobraMUSH Version 0.73p2
   Version 0.73p2 is a maintenance release of version 0.73.
   It is the second maintenance release in that series.
 
+  Fixes:
+    * Add 'Command' lock to list of exemptions to Pass_Locks power [AEJ]
+
