@@ -62,11 +62,12 @@
 & Attribute functions
   All these functions access attributes on an object.
   
-  aposs()       default()     edefault()    eval()        filter()
-  filterbool()  fold()        foreach()     get()         grep()
-  grepi()       lattr()       nattr()       obj()         poss()        
-  regrep()      regrepi()     subj()        udefault()    ufun()        
-  uldefault()   ulocal()      v-function    xget()        zfun()
+  aposs()       apply()       default()     edefault()    eval()
+  filter()      filterbool()  fold()        foreach()     get()
+  grep()        grepi()       lattr()       nattr()       obj()
+  poss()        regrep()      regrepi()     subj()        udefault()
+  ufun()        uldefault()   ulocal()      v-function    xget()
+  zfun()
 
   See also: ATTRIBUTES, NON-STANDARD ATTRIBUTES
 & Bitwise functions
@@ -480,6 +481,16 @@
 
   Returns the absolute possessive pronoun - his/hers/its/theirs -
   for an object.
+& APPLY()
+  apply([<object>/]<user function name>, <argument list>[, <delimiter>])
+
+  Apply the given function, which may be a #lambda function, to the list
+  of arguments, the elements of which are separated by a space or by the
+  given one-character delimiter.
+
+  apply(function,1 2 3) is equivalent to ufun(function,1,2,3)
+
+  See also: ufun()
 & ART()
   art(<string>)
 
