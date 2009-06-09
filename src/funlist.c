@@ -3503,3 +3503,33 @@ FUNCTION(fun_regrab)
   if (study)
     mush_free((Malloc_t) study, "pcre.extra");
 }
+
+FUNCTION(fun_apply)
+{
+  char sep;
+  int count;
+  char *arr[10];
+  ufun_attrib ufun;
+  char rbuff[BUFFER_LEN];
+  OOREF_DECL;
+
+  if (!delim_check(buff, bp, nargs, args, 3, &sep))
+    return;
+
+  ENTER_OOREF;
+
+  count = list2arr(arr, 10, args[1], sep);
+
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1)) {
+    safe_str(T(ufun.errmess), buff, bp);
+    LEAVE_OOREF;
+    return;
+  }
+
+  call_ufun(&ufun, arr, count, rbuff, executor, enactor, pe_info);
+
+  LEAVE_OOREF;
+
+  safe_str(rbuff, buff, bp);
+}
+

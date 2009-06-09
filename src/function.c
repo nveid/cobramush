@@ -285,6 +285,7 @@ FUNTAB flist[] = {
   {"ANDPOWERS", fun_andflags, 2, 2, FN_REG},
   {"ANSI", fun_ansi, 2, -2, FN_NOPARSE},
   {"APOSS", fun_aposs, 1, 1, FN_REG},
+  {"APPLY", fun_apply, 1, 3, FN_REG},
   {"ARABIC2ROMAN", fun_arabictoroman, 1, 1, FN_REG},
   {"ART", fun_art, 1, 1, FN_REG},
   {"ATRLOCK", fun_atrlock, 1, 2, FN_REG},

@@ -15,6 +15,7 @@ FUNCTION_PROTO(fun_andflags);
 FUNCTION_PROTO(fun_andlflags);
 FUNCTION_PROTO(fun_ansi);
 FUNCTION_PROTO(fun_aposs);
+FUNCTION_PROTO(fun_apply);
 FUNCTION_PROTO(fun_arabictoroman);
 FUNCTION_PROTO(fun_art);
 FUNCTION_PROTO(fun_asin);
