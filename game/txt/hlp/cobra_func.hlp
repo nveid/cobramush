@@ -218,14 +218,14 @@
 & Utility functions
   These functions don't quite fit into any other category.
   
-  allof()       ansi()        atrlock()     beep()        break()	
-  checkpass()   clone()       create()      die()         dig()         
-  firstof() 	functions()   isdbref()     isint()       isnum()       
-  isword() 	localize()    link()        list()        lnum()        
-  null()   	objeval()     open()        pcreate()     r-function    
-  rand()        s-function    scan()        set()         setq()        
-  setr()        soundex()     soundslike()  tel()         textfile()    
-  valid()       wipe()        @@()
+  allof()       ansi()        atrlock()     atrmodtime()  beep()
+  break()	checkpass()   clone()       create()      die()
+  dig()         firstof()     functions()   isdbref()     isint()
+  isnum()       isword()      localize()    link()        list()
+  lnum()        null()        objeval()     open()        pcreate()
+  r-function    rand()        s-function    scan()        set()
+  setq()        setr()        soundex()     soundslike()  tel()
+  textfile()    valid()       wipe()        @@()
 
 & @@()
 & NULL()
