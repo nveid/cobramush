@@ -526,6 +526,10 @@
 
   When given a second argument of "on" (or "off"), attempts to lock
   (unlock) the specified attribute, as per @atrlock.
+& ATRMODTIME()
+  atrmodtime(<object>/<attrib>)
+
+  Returns the time that the specified attribute was last modified.
 & ATTRIB_SET()
   attrib_set(<object>/<attrib>[, <value>])
 
