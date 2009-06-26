@@ -12,5 +12,7 @@ CobraMUSH Version 0.73p2
 
   Functions:
     * apply(fun, arglist[, delim]) will apply the ufun-style function to the
-      given list of arguments
+      given list of arguments [AEJ]
+    * atrmodtime(object/attribute) returns the time of the attribute's last
+      modification [AEJ]
 
