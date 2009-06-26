@@ -2100,6 +2100,37 @@ FUNCTION(fun_atrlock)
 }
 
 /* ARGSUSED */
+FUNCTION(fun_atrmodtime)
+{
+  dbref thing;
+  char *p;
+  ATTR *ptr;
+
+  if (!args[0] || !*args[0]) {
+    safe_str(T("#-1 ARGUMENT MUST BE OBJ/ATTR"), buff, bp);
+    return;
+  }
+  if (!(p = strchr(args[0], '/')) || !(*(p + 1))) {
+    safe_str(T("#-1 ARGUMENT MUST BE OBJ/ATTR"), buff, bp);
+    return;
+  }
+  *p++ = '\0';
+
+  if ((thing =
+       noisy_match_result(executor, args[0], NOTYPE,
+			  MAT_EVERYTHING)) == NOTHING) {
+    safe_str(T(e_notvis), buff, bp);
+    return;
+  }
+
+  ptr = atr_get_noparent(thing, strupper(p));
+  if (ptr && Can_Read_Attr(executor, thing, ptr))
+    safe_str(show_time(AL_MODTIME(ptr), 0), buff, bp);
+  else
+    safe_str("#-1", buff, bp);
+}
+
+/* ARGSUSED */
 FUNCTION(fun_followers)
 {
   dbref thing;
