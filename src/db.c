@@ -495,6 +495,45 @@ db_read_labeled_number(FILE * f, char **label, int *value)
   *value = parse_integer(readvalue);
 }
 
+/** Read a time_t with a given label.
+ * If the label read is different than the one being checked, the
+ * database load will abort with an error.
+ * \param f the file to read from.
+ * \param label the label that should be read.
+ * \param value pointer to update to the time_t that was read.
+ */
+void
+db_read_this_labeled_time_t(FILE * f, const char *label, time_t *value)
+{
+  char *readlabel;
+  char *readvalue;
+
+  db_read_labeled_string(f, &readlabel, &readvalue);
+
+  if (strcmp(readlabel, label)) {
+    do_rawlog(LT_ERR,
+	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
+	      readlabel, label, dbline);
+    longjmp(db_err, 1);
+  }
+
+  *value = (time_t) atoll(readvalue);
+}
+
+/** Read a time_t and label.
+ * \param f the file to read from.
+ * \param label pointer to update to the address of a static
+ * buffer containing the label that was read.
+ * \param value pointer to update to the time_t that was read.
+ */
+void
+db_read_labeled_time_t(FILE * f, char **label, time_t *value)
+{
+  char *readvalue;
+  db_read_labeled_string(f, label, &readvalue);
+  *value = (time_t) atoll(readvalue);
+}
+
 /** Read a dbref with a given label.
  * If the label read is different than the one being checked, the 
  * database load will abort with an error.
@@ -551,6 +590,12 @@ void
 db_write_labeled_number(FILE * f, char const *label, int value)
 {
   OUTPUT(fprintf(f, "%s %d\n", label, value));
+}
+
+void
+db_write_labeled_time_t(FILE * f, char const *label, time_t value)
+{
+  OUTPUT(fprintf(f, "%s %zu\n", label, value));
 }
 
 void
@@ -665,6 +710,7 @@ db_write_object(FILE * f, dbref i)
     db_write_labeled_number(f, "     derefs", chunk_derefs(AL_WLock(list)));
     db_write_labeled_string(f, "  readlock", unparse_boolexp(GOD, AL_RLock(list), UB_DBREF));
     db_write_labeled_number(f, "     derefs", chunk_derefs(AL_RLock(list)));
+    db_write_labeled_time_t(f, "  modtime", AL_MODTIME(list));
     db_write_labeled_string(f, "  value", atr_value(list));
   }
   return 0;
@@ -719,6 +765,7 @@ db_write(FILE * f, int flag)
   dbflag += DBF_DIVISIONS;
   dbflag += DBF_LABELS;
   dbflag += DBF_NEW_ATR_LOCK;
+  dbflag += DBF_ATR_MODTIME;
 
   OUTPUT(fprintf(f, "+V%d\n", dbflag * 256 + 2));
   db_write_labeled_string(f, "savedtime", show_time(mudtime, 1));
@@ -1250,7 +1297,7 @@ get_list(FILE * f, dbref i)
        * since we haven't loaded the whole db and can't really tell
        * if it is or not. We'll fix this up at the end of the load 
        */
-      atr_new_add(i, tbuf1, getstring_noalloc(f), atoi(p), flags, derefs, TRUE_BOOLEXP, TRUE_BOOLEXP);
+      atr_new_add(i, tbuf1, getstring_noalloc(f), atoi(p), flags, derefs, TRUE_BOOLEXP, TRUE_BOOLEXP, 0);
       count++;
       /* Check removed for atoi(q) == 0  (which results in NOTHING for that
        * parameter, and thus no flags), since this eliminates 'visual'
@@ -1295,6 +1342,7 @@ db_read_attrs(FILE * f, dbref i, int count)
    char l_key[BUFFER_LEN];
    char value[BUFFER_LEN + 1];
    boolexp w_lock, r_lock;
+   time_t modtime;
    dbref owner;
    int derefs = 0, lock_derefs = 0;
    int flags;
@@ -1325,11 +1373,16 @@ db_read_attrs(FILE * f, dbref i, int count)
        w_lock = TRUE_BOOLEXP;
        r_lock = TRUE_BOOLEXP;
      }
-     
+
+     if (HAS_COBRADBFLAG(indb_flags, DBF_ATR_MODTIME)) {
+       db_read_this_labeled_time_t(f, "modtime", &modtime);
+     } else {
+       modtime = CreTime(i);
+     }
 
      db_read_this_labeled_string(f, "value", &tmp);
      strcpy(value, tmp);
-     atr_new_add(i, name, value, owner, flags, derefs, w_lock, r_lock);
+     atr_new_add(i, name, value, owner, flags, derefs, w_lock, r_lock, modtime);
    }
 }
 
@@ -1620,7 +1673,7 @@ db_read_oldstyle(FILE * f)
 	    CreTime(master_division) = ModTime(master_division) = mudtime;
 	    atr_new_add(master_division, "DESCRIBE",
 		"This is the master division that comes before all divisions.", i,
-		AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+		AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
 	    current_state.divisions++;
 	    SLEVEL(master_division) =  LEVEL_DIRECTOR;
 	    SLEVEL(i) = LEVEL_GOD;
@@ -2000,7 +2053,7 @@ void init_postconvert() {
 	    Location(master_division) = i;
 	    atr_new_add(master_division, "DESCRIBE",
 		"This is the master division that comes before all divisions.", i,
-		AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+		AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
 	    current_state.divisions++;
 	    SLEVEL(master_division) =  LEVEL_DIRECTOR;
 	    SLEVEL(i) = LEVEL_GOD;
@@ -2105,7 +2158,7 @@ create_minimal_db(void)
   Type(start_room) = TYPE_ROOM;
   Flags(start_room) = string_to_bits("FLAG", "LINK_OK");
   atr_new_add(start_room, "DESCRIBE", "You are in Room Zero.", GOD, desc_flags,
-	      1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+	      1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
   CreTime(start_room) = ModTime(start_room) = mudtime;
   current_state.rooms++;
 
@@ -2120,9 +2173,9 @@ create_minimal_db(void)
   add_lock(god, god, Basic_Lock, parse_boolexp(god, "=me", Basic_Lock), -1);
   add_lock(god, god, Enter_Lock, parse_boolexp(god, "=me", Enter_Lock), -1);
   add_lock(god, god, Use_Lock, parse_boolexp(god, "=me", Use_Lock), -1);
-  atr_new_add(god, "DESCRIBE", "You see Number One.", god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+  atr_new_add(god, "DESCRIBE", "You see Number One.", god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
 #ifdef USE_MAILER
-  atr_new_add(god, "MAILCURF", "0", god, AF_LOCKED | AF_NOPROG, 1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+  atr_new_add(god, "MAILCURF", "0", god, AF_LOCKED | AF_NOPROG, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
   add_folder_name(god, 0, "inbox");
 #endif
   PUSH(god, Contents(start_room));
@@ -2138,7 +2191,7 @@ create_minimal_db(void)
   CreTime(master_room) = ModTime(master_room) = mudtime;
   atr_new_add(master_room, "DESCRIBE",
 	      "This is the master room. Any exit in here is considered global. The same is true for objects with $-commands placed here.",
-	      god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+	      god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
   current_state.rooms++;
 /* Master Division */
   Location(master_division) = god;
@@ -2149,7 +2202,7 @@ create_minimal_db(void)
   Owner(master_division) = god;
   CreTime(master_division) = ModTime(master_division) = mudtime; 
   atr_new_add(master_division, "DESCRIBE", 
-      "This is the master division that comes before all divisions.", god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP);
+      "This is the master division that comes before all divisions.", god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
   current_state.divisions++;
   /* division stuff */
   SDIV(start_room).object = master_division;

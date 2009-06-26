@@ -18,6 +18,7 @@ struct attr {
   dbref creator;		/**< The attribute's creator's dbref */
   boolexp write_lock;		/**< Attribute lock set */
   boolexp read_lock;		/**< Attribute read lock */
+  time_t last_modified;		/**< Timestamp of last modification */
   ATTR *next;			/**< Pointer to next attribute in list */
 };
 
@@ -46,7 +47,8 @@ extern ATTR *atr_match(char const *string);
 extern ATTR *atr_sub_branch(ATTR *branch);
 extern void atr_new_add(dbref thing, char const *RESTRICT atr,
 			char const *RESTRICT s, dbref player, int flags,
-			unsigned char derefs, boolexp wlock, boolexp rlock);
+			unsigned char derefs, boolexp wlock, boolexp rlock,
+			time_t modtime);
 extern int atr_add(dbref thing, char const *RESTRICT atr,
 		   char const *RESTRICT s, dbref player, int flags);
 extern int atr_clr(dbref thing, char const *atr, dbref player);
@@ -131,6 +133,7 @@ safe_atr_value(ATTR *atr)
 #define AL_DEREFS(alist)        ((alist)->data?chunk_derefs((alist)->data):0)
 #define AL_WLock(alist)		((alist)->write_lock)
 #define AL_RLock(alist)		((alist)->read_lock)
+#define AL_MODTIME(alist)	((alist)->last_modified)
 
 /* Errors from ok_player_alias */
 #define OPAE_SUCCESS	1

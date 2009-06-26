@@ -289,6 +289,7 @@ FUNTAB flist[] = {
   {"ARABIC2ROMAN", fun_arabictoroman, 1, 1, FN_REG},
   {"ART", fun_art, 1, 1, FN_REG},
   {"ATRLOCK", fun_atrlock, 1, 2, FN_REG},
+  {"ATRMODTIME", fun_atrmodtime, 1, 1, FN_REG},
   {"ATTRIB_SET", fun_attrib_set, 1, -2, FN_REG},
   {"BAND", fun_band, 1, INT_MAX, FN_REG},
   {"BASECONV", fun_baseconv, 3, 3, FN_REG},

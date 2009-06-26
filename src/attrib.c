@@ -497,7 +497,7 @@ create_atr(dbref thing, char const *atr_name)
 void
 atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
             dbref player, int flags, unsigned char derefs, boolexp wlock,
-            boolexp rlock)
+            boolexp rlock, time_t modtime)
 {
   ATTR *ptr;
   boolexp lock;
@@ -523,6 +523,8 @@ atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   AL_FLAGS(ptr) = (flags != NOTHING) ? flags : 0;
   AL_FLAGS(ptr) &= ~AF_COMMAND & ~AF_LISTEN;
   AL_CREATOR(ptr) = ooref != NOTHING ? ooref : player;
+
+  AL_MODTIME(ptr) = modtime;
 
   /* replace string with new string */
   if (!s || !*s) {
@@ -628,6 +630,7 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
         set_default_flags(ptr, flags, lock_owner, ns_chk);
         AL_FLAGS(ptr) &= ~AF_COMMAND & ~AF_LISTEN;
         AL_CREATOR(ptr) = ooref != NOTHING ? Owner(ooref) : Owner(player);
+        AL_MODTIME(ptr) = mudtime;
         if (!EMPTY_ATTRS) {
           unsigned char *t = compress(" ");
           if (!t) {
@@ -664,6 +667,7 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   AL_CREATOR(ptr) = Owner(player);
 
   AL_FLAGS(ptr) &= ~AF_COMMAND & ~AF_LISTEN;
+  AL_MODTIME(ptr) = mudtime;
 
   /* replace string with new string */
   if (ptr->data)
@@ -1006,7 +1010,7 @@ atr_cpy(dbref dest, dbref source)
         && (AttrCount(dest) < max_attrs)) {
       atr_new_add(dest, AL_NAME(ptr), atr_value(ptr),
                   AL_CREATOR(ptr), AL_FLAGS(ptr), AL_DEREFS(ptr),
-                  AL_WLock(ptr), AL_RLock(ptr));
+                  AL_WLock(ptr), AL_RLock(ptr), AL_MODTIME(ptr));
       AttrCount(dest)++;
     }
 }

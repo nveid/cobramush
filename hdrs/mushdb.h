@@ -218,6 +218,7 @@ int unfindable(dbref);
 #define DBF_DIVISIONS		0x40000
 #define DBF_LABELS		0x100000
 #define DBF_NEW_ATR_LOCK	0x200000
+#define DBF_ATR_MODTIME		0x400000
 
 #define FLAG_DBF_CQUOTA_RENAME  0x01  /* Rename CQuota Power to SetQuotas */
 
