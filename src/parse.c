@@ -736,6 +736,19 @@ process_expression(char *buff, char **bp, char const **str,
 	safe_chr(savec, buff, bp);
 	(*str)++;
 	switch (savec) {
+        case '<':
+          savec = **str;
+          if (!savec)
+            goto exit_sequence;
+          for (savec = **str; savec && savec != '>'; savec = **str) {
+            safe_chr(savec, buff, bp);
+            (*str)++;
+          }
+          if(!savec)
+            goto exit_sequence;
+          safe_chr(savec, buff, bp);
+          (*str)++;
+          break;
 	case 'Q':
 	case 'q':
           savec = **str;
@@ -893,6 +906,29 @@ process_expression(char *buff, char **bp, char const **str,
 	    gender = get_gender(enactor);
 	  safe_str(poss[gender], buff, bp);
 	  break;
+        case '<':
+	  if (!**str)
+	    goto exit_sequence;
+          {
+            const char *tmp;
+            char atrname[BUFFER_LEN];
+            ATTR *atr;
+
+            for(tmp = *str; *tmp && *tmp != '>'; tmp++)
+              ;
+            if(!*tmp || tmp == *str) {
+              (*str)--;
+              goto exit_sequence;
+            }
+            strncpy(atrname, *str, tmp - *str);
+            atrname[tmp - *str] = '\0';
+
+            atr = atr_get(executor, strupper(atrname));
+            if(atr)
+              safe_str(atr_value(atr), buff, bp);
+            *str = tmp + 1;
+          }
+          break;
 	case 'Q':
 	case 'q':		/* temporary storage */
 	  nextc = **str;
