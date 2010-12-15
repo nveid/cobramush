@@ -261,19 +261,24 @@ FUNCTION(fun_prog)
     safe_str("#-1 PERMISSION DENIED", buff, bp);
     return;
   }
-  if (args[3] && is_integer(args[3]) && atoi(args[3]) == 1)
-    pflags = PI_LOCK;
-  else {
-    do_rawlog(LT_ERR,
-              "Bad Program Prompt, Silently Ignored. HINT: Use Prompt() : %d - %s",
-              executor, global_eval_context.ccom);
+  if (nargs >= 4) {
+    if (args[3] && is_integer(args[3]) && atoi(args[3]) == 1)
+      pflags = PI_LOCK;
+    else {
+      do_rawlog(LT_ERR,
+                "Bad Program Prompt, Silently Ignored. HINT: Use Prompt() : %d - %s",
+                executor, global_eval_context.ccom);
+    }
   }
 
-  if (args[4] && atoi(args[4]) == 1) {
-    pflags = PI_LOCK;
-    do_rawlog(LT_ERR, "Bad Proglock Usage format used on %d - %s",
-              executor, global_eval_context.ccom);
+  if (nargs >= 5) {
+    if (args[4] && atoi(args[4]) == 1) {
+      pflags = PI_LOCK;
+      do_rawlog(LT_ERR, "Bad Proglock Usage format used on %d - %s",
+                executor, global_eval_context.ccom);
+    }
   }
+
   /* Save Registers to XY_PROGENV */
   memset(tbuf1, '\0', BUFFER_LEN);
   tbp = tbuf1;
