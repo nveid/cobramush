@@ -12,6 +12,7 @@ CobraMUSH Version 0.73p2
 
   Fixes:
     * Add 'Command' lock to list of exemptions to Pass_Locks power [AEJ]
+    * Remove extraneous logged error messages from program() [AEJ]
 
   Functions:
     * apply(fun, arglist[, delim]) will apply the ufun-style function to the
