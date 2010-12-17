@@ -13,6 +13,7 @@ CobraMUSH Version 0.73p2
   Minor changes:
     * Alias @atrlock to @attrlock, @atrchown to @attrchown, and atrlock()
       to attrlock() [AEJ]
+    * New alias_flag() hardcode function [AEJ]
 
   Fixes:
     * Add 'Command' lock to list of exemptions to Pass_Locks power [AEJ]
