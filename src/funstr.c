@@ -2116,7 +2116,6 @@ FUNCTION(fun_align)
   return;
 }
 
-
 FUNCTION(fun_speak)
 {
   ufun_attrib transufun;

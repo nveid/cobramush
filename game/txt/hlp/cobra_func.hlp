@@ -4263,7 +4263,7 @@ See also: timestring(), etimefmt()
   or cpu time that may be configured in the MUSH.
   If the evaluation order doesn't quite seem right, adding escapes
   or breaking up the expression will probably help.
-    
+
 & UCSTR()
   ucstr(<string>)
 

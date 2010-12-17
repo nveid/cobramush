@@ -119,4 +119,3 @@ restrict_function lstats noguest
 #restrict_function mailtime nobody
 #restrict_function malias nobody
 #restrict_function folderstats nobody
-
