@@ -83,7 +83,7 @@ extern int type_from_old_flags(long old_flags);
 extern object_flag_type flags_from_old_flags(long old_flags, long old_toggles,
                                              int type);
 extern FLAG *add_flag(const char *name, const char letter, int type,
-                      int perms, int negate_perms);
+		      int perms, int negate_perms);
 extern void do_list_flags(dbref player, const char *arg, int lc);
 extern char *list_all_flags(const char *ns, const char *name, dbref privs, int which);
 extern void do_flag_info(const char *ns, dbref player, const char *name);

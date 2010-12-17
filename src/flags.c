@@ -2292,15 +2292,43 @@ do_flag_alias(dbref player, const char *name, const char *alias)
       do_flag_info("FLAG", player, f->name);
   } else {
     /* Insert the flag in the ptab by the given alias */
-    ptab_start_inserts(n->tab);
-    ptab_insert(n->tab, alias, f);
-    ptab_end_inserts(n->tab);
-    if ((f = match_flag_ns(n, alias)))
+    if (alias_flag(name, alias))
       do_flag_info("FLAG", player, alias);
     else
       notify(player, T("Unknown failure adding alias."));
   }
 }
+
+ /** Add a new alias for a flag.
+  * \param ns name of the flagspace to use.
+  * \param name name of the flag
+  * \param alias new alias for the flag
+  * \retval 1 alias added successfully
+  * \retval 0 failed to add alias
+  */
+int
+alias_flag_generic(const char *ns, const char *name, const char *alias)
+{
+  FLAG *f;
+  FLAGSPACE *n;
+
+  Flagspace_Lookup(n, ns);
+
+  f = match_flag_ns(n, name);
+  if (!f) {
+    return 0;			/* no such flag 'name' */
+  }
+
+  if (ptab_find_exact(n->tab, strupper(alias))) {
+    return 0;			/* a flag called 'alias' already exists */
+  }
+
+  ptab_start_inserts(n->tab);
+  ptab_insert(n->tab, strupper(alias), f);
+  ptab_end_inserts(n->tab);
+  return ((f = match_flag_ns(n, alias)) ? 1 : 0);
+}
+
 
 /** Change a flag's alias. 
  * \param player the enactor.
