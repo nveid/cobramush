@@ -195,7 +195,6 @@ FUNCTION(fun_ulambda)
   return;
 }
 
-
 /* ARGSUSED */
 FUNCTION(fun_ulocal)
 {

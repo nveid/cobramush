@@ -3766,7 +3766,7 @@ See also: get, drop
   get <thing>'s <object>, which will fail if either thing is not ENTER_OK 
   or the object is locked against you. Some MUSHes choose to disable the 
   ability to take an object in someone else's inventory.
-  
+
 See also: @lock, ENTER_OK, give, drop, @success, inventory
 & @abuy
   @abuy <object> = <action list>

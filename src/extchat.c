@@ -2130,6 +2130,7 @@ do_chan_title(dbref player, const char *name, const char *title)
   }
   if (!title)
     title = "";
+
   if (strlen(title) >= CU_TITLE_LEN) {
     notify(player, T("Title too long."));
     return;

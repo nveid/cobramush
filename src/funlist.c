@@ -1741,7 +1741,6 @@ FUNCTION(fun_unique)
 
 }
 
-
 /* ARGSUSED */
 FUNCTION(fun_lnum)
 {
