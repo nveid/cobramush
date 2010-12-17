@@ -1608,8 +1608,7 @@ create_div(dbref owner, const char *name)
   }
   Parent(obj) = SDIV(owner).object;
   current_state.divisions++;
-  strcpy(buf,  unparse_object(owner, obj));
-  strcpy(buf2,  unparse_object(owner, SDIV(obj).object));
+  sprintf(buf, object_header(owner, obj));
   notify_format(owner, T("Division created: %s  Parent division: %s"),
                 buf, buf2);
   return obj;
