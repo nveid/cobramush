@@ -9,6 +9,7 @@ CobraMUSH Version 0.73p2
 
   Major changes:
     * Implement attribute value access by %<name> [AEJ]
+    * Allow searching for garbage [AEJ]
 
   Minor changes:
     * Alias @atrlock to @attrlock, @atrchown to @attrchown, and atrlock()
