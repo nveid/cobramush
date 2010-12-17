@@ -760,9 +760,9 @@ do_stats(dbref player, const char *name)
                     first_free);
   } else {
     notify_format(player,
-                  T("%d objects = %d rooms, %d exits, %d things, %d players, %d divisions."),
-                  si->total - si->garbage, si->rooms, si->exits, si->things,
-                  si->players, si->divisions);
+		  T("%d objects = %d rooms, %d exits, %d things, %d players, %d divisions."),
+		  si->total - si->garbage, si->rooms, si->exits, si->things,
+		  si->players, si->divisions);
   }
 }
 
@@ -1431,7 +1431,7 @@ FUNCTION(fun_quota)
  */
 void
 do_sitelock(dbref player, const char *site, const char *opts, const char *who,
-            enum sitelock_type type)
+	    enum sitelock_type type)
 {
 
   if (opts && *opts) {
