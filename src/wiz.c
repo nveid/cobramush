@@ -1829,6 +1829,8 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
         spec->type = TYPE_PLAYER;
       } else if (string_prefix("divisions", restriction)) {
         spec->type = TYPE_DIVISION;
+      } else if (string_prefix("garbage", restriction)) {
+        spec->type = TYPE_GARBAGE;
       } else {
         notify(player, T("Unknown type."));
         return -1;
@@ -2006,7 +2008,7 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
     mush_panic(T("Couldn't allocate memory in search!"));
   
   for (n = spec.low; n <= spec.high; n++) {
-    if (IsGarbage(n))
+    if (IsGarbage(n) && spec.type != TYPE_GARBAGE)
       continue;
     if (spec.owner == ANY_OWNER && !CanSearch(player, Owner(n)))
       continue;
