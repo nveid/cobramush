@@ -10,6 +10,10 @@ CobraMUSH Version 0.73p2
   Major changes:
     * Implement attribute value access by %<name> [AEJ]
 
+  Minor changes:
+    * Alias @atrlock to @attrlock, @atrchown to @attrchown, and atrlock()
+      to attrlock() [AEJ]
+
   Fixes:
     * Add 'Command' lock to list of exemptions to Pass_Locks power [AEJ]
     * Remove extraneous logged error messages from program() [AEJ]
