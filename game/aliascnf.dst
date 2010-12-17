@@ -35,6 +35,8 @@ command_alias page p
 command_alias whisper w
 command_alias goto move
 command_alias brief b
+command_alias @atrlock @attrlock
+command_alias @atrchown @attrchown
 
 # As well as commands, functions can be aliased. Same syntax,
 # just function_alias instead of command_alias. Note that many
@@ -52,6 +54,7 @@ function_alias iter parse
 function_alias modulo mod
 function_alias modulo modulus
 function_alias randword pickrand
+function_alias atrlock attrlock
 
 # For rhost compatibility
 function_alias textfile dynhelp
