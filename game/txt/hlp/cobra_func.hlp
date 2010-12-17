@@ -2250,6 +2250,11 @@ for an object named "Test", preferring a thing over other types.
   This function returns the dbrefs of all connected and non-dark players
   in an object. You must be in the object or control it to use this 
   function.
+& LVTHINGS()
+  lvthings(<object>)
+
+  This function returns the dbrefs of all non-dark things inside an
+  object. You must be in the object or control it to use this function.
 & LWHO()
   lwho()
   lwho(<viewer>)
