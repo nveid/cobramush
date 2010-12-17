@@ -443,7 +443,7 @@ Standard Attributes: (see @list/attribs for the complete list)
                           +1 to the previous owner).
           @open: 1 penny (2 pennies if linked at  the same time)
   
-  Type '@config costs' to get the costs for the particular MUSH you are on.
+  Type '@config/list costs' to get the costs for the MUSH you are on.
 
   See also: MONEY, money(), score
 & PENNMUSH CREDITS

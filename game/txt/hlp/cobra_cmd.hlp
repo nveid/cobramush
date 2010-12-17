@@ -2132,6 +2132,7 @@ See also: locktypes, @clock, objid()
   @lock/dropto		Who can trigger this container's drop-to.
   @lock/destroy		Who can destroy this object if it's DESTROY_OK
   @lock/interact        Who can send sound (say/pose/emit/etc) to this object
+  @lock/take            Who can get things contained in this object
 
   See also: @lock, @lset, @clock, FAILURE
 & @lset
@@ -2632,9 +2633,8 @@ See also: give
  
   The /list switch to this command allows you to @pemit a message to
   a list:  @pemit/list <object 1> [<object 2> <object N>] = <message>
-  There can be any number of objects in the list. The objects must be
-  specified by dbref number. You will not get back a "confirmation"
-  message for the /list form of this command. 
+  There can be any number of objects in the list. You will not get back a
+  "confirmation" message for the /list form of this command.
 
 (continued in help @pemit2)
 & @pemit2
@@ -3762,9 +3762,10 @@ See also: get, drop
   get <object>
   take <object>
 
-  You pick up object, if you pass the object's @lock. You can also do 
-  get <thing>'s <object>, which will fail if either thing is not ENTER_OK 
-  or the object is locked against you. Some MUSHes choose to disable the 
+  You pick up object, if you pass the object's @lock and the container's
+  @lock/take (if set). You can also do get <thing>'s <object>, which will
+  fail if thing is not ENTER_OK, thing has a take-lock that blocks you,
+  or object is locked against you. Some MUSHes choose to disable the
   ability to take an object in someone else's inventory.
 
 See also: @lock, ENTER_OK, give, drop, @success, inventory
