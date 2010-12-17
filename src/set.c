@@ -1124,7 +1124,7 @@ do_wipe(dbref player, char *name)
   we_are_wiping = 1;
 
   if (!atr_iter_get(player, thing, pattern, 0, wipe_helper, NULL))
-    notify(player, T("No matching attributes."));
+    notify(player, T("No attributes wiped."));
   else
     notify(player, T("Attributes wiped."));
 
