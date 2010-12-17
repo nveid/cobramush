@@ -278,7 +278,7 @@ which are available.
   Flag:  ENTER_OK  (all types)
  
   If an object or person is ENTER_OK, other players may 
-  enter the object or person by using 'enter <object/person>.
+  enter the object or person by using 'enter <object/person>'.
   Only objects which are ENTER_OK may be entered, regardless of the
   enter lock. Players must also have the ENTER_OK flag set if they wish
   to be able to receive  things given to them by other players via the 

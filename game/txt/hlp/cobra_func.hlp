@@ -1502,6 +1502,10 @@ Continued in HELP FOREACH2
   See also: match(), matchall(), grab(), regmatch()
 & GREP()
 & REGREP()
+& WILDGREP()
+& GREPI()
+& REGREPI()
+& WILDGREPI()
   grep(<object>,<attrs>,<substring>)
   wildgrep(<object>,<attrs>,<pattern>)
   regrep(<object>,<attrs>,<regexp>)
@@ -2078,7 +2082,7 @@ Continued in HELP ITER2
             preferred one.
     X   -   Never return #-2. Use the last dbref found if the match is  
             ambiguous.
-  If you specify more than one type, the last one will be preferred. Unless
+  If you specify more than one type, any will be preferred. Unless
   you specify an F option, if an object of a different type is found and
   none of the preferred type are, the found object will be returned.
  
@@ -2673,14 +2677,23 @@ See also: mwho(), xwho()
 
   Returns the dbref number of the object, which must be in the same 
   room as the object executing num.
+& NMWHO()
 & NWHO()
   nwho()
+  nmwho()
 
   This returns a count of all currently-connected players. When
-  mortals use this function, DARK privileged players are NOT counted.
+  mortals use this function, hidden players are NOT counted.
 
-See also: lwho(), nmwho(), xwho()
+  nmwho() returns a count of all currently connected, non-hidden players.
+  It's exactly the same as nwho() used by a mortal, and is suitable for use
+  on privileged global objects that always need an unprivileged count of
+  who is online.
 
+  These functions are equivilent to words(lwho()) and words(mwho()),
+  but are more efficient, and don't suffer from buffer constraints.
+
+See also: lwho(), mwho(), xwho(), xmwho()
 & OBJ()
   obj(<object>)
 
@@ -4229,8 +4242,10 @@ See also: timestring(), etimefmt()
   or ROOM. See "help types of objects" for more.
 & U()
 & UFUN()
+& ULAMBDA()
   u([<object>/]<user function name>, <arg 0>, <arg 1>, ...)
   ufun([<object>/]<user function name>, <arg 0>, <arg1>, ...)
+  ulambda([<object>/]<user function name>, <arg 0>, <arg1>, ...)
  
   This allows you to create your own functions and evaluate them.
   <user function name> is the attribute that contains the desired
@@ -4240,11 +4255,11 @@ See also: timestring(), etimefmt()
   
   <arg 0>, <arg 1>, ... are the arguments that get passed to the
   user function as v(0), v(1), etc. (as in @trigger).  You can pass
-  up to 10 arguments (v(0) through v(9)); extra arguments will be
-  evaluated but not accessible (since v(10) refers to an attribute,
-  not another argument).
+  up to 10 arguments (v(0) through v(9)).
   
   This function is also known as U()  (alias for TinyMUSH compatibility).
+
+  ulambda() also accepts anonymous attributes.
 
   See "help UFUN2" for more.
   
