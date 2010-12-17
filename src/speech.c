@@ -426,7 +426,7 @@ do_pemit_list(dbref player, char *list, const char *message, int flags)
 {
   char *bp, *p;
   char *nsbuf, *nspbuf;
-  char *l;
+  const char *l;
   dbref who;
   int nospoof;
 
@@ -439,8 +439,8 @@ do_pemit_list(dbref player, char *list, const char *message, int flags)
   list[BUFFER_LEN - 1] = '\0';
   l = trim_space_sep(list, ' ');
 
-  while ((p = split_token(&l, ' '))) {
-    who = noisy_match_result(player, p, NOTYPE, MAT_PLAYER | MAT_ABSOLUTE);
+  while (l && *l && (p = next_in_list(&l))) {
+    who = noisy_match_result(player, p, NOTYPE, MAT_EVERYTHING);
     if (GoodObject(who) && okay_pemit(player, who)) {
       if (nospoof && Nospoof(who)) {
 	if (Paranoid(who)) {
