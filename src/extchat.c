@@ -2584,7 +2584,7 @@ do_chan_chown(dbref player, const char *name, const char *newowner)
   /* Find the channel */
   test_channel(player, name, c);
   /* Find the victim */
-  if ((victim = lookup_player(newowner)) == NOTHING) {
+  if (!newowner || (victim = lookup_player(newowner)) == NOTHING) {
     notify(player, T("CHAT: Invalid owner."));
     return;
   }
