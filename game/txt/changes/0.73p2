@@ -20,3 +20,6 @@ CobraMUSH Version 0.73p2
     * atrmodtime(object/attribute) returns the time of the attribute's last
       modification [AEJ]
 
+  Help fixes:
+    * add helpfile for lvthings() [AEJ]
+
