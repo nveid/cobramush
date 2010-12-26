@@ -126,6 +126,7 @@
 #include "game.h"
 #include "dbio.h"
 #include "confmagic.h"
+#include "mushlua.h"
 #ifdef HAS_WAITPID
 /** What does wait*() return? */
 #define WAIT_TYPE int
@@ -546,6 +547,10 @@ main(int argc, char **argv)
   fclose(id);
 #endif
 
+  /* Start lua enivonrment 
+   * Eventually we'll conver the config file to a big lua script, so we'll start the lua envionrment before it */
+  mush_lua_start();
+
   strncpy(confname, argv[1], BUFFER_LEN - 1);
   confname[BUFFER_LEN - 1] = '\0';
   init_game_config(confname);
@@ -565,6 +570,8 @@ main(int argc, char **argv)
   }
 
   init_qids();
+
+  /* load databases */
   if (init_game_dbs() < 0) {
     do_rawlog(LT_ERR, T("ERROR: Couldn't load databases! Exiting."));
     exit(2);
@@ -619,6 +626,7 @@ main(int argc, char **argv)
 
   close_sockets();
   sql_shutdown();
+  mush_lua_stop(); /* shutdown the lua environment */
 
 #ifndef COMPILE_CONSOLE
 #ifdef INFO_SLAVE
