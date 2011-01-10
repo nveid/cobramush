@@ -79,6 +79,7 @@ COMMAND_PROTO(cmd_mail);
 COMMAND_PROTO(cmd_malias);
 COMMAND_PROTO(cmd_map);
 COMMAND_PROTO(cmd_motd);
+COMMAND_PROTO(cmd_mushlua);
 COMMAND_PROTO(cmd_mvattr);
 COMMAND_PROTO(cmd_name);
 COMMAND_PROTO(cmd_newpassword);

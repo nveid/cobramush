@@ -50,7 +50,7 @@ $spitshell >Makefile <<!GROK!THIS!
 #
 $make_set_make
 CC=$cc
-CCFLAGS=$optimize -I.. -I../hdrs $ccflags $warnings
+CCFLAGS=$optimize -I.. -I../lua/src -I../hdrs $ccflags $warnings
 LDFLAGS=$ldflags
 CLIBS=$libs $cryptlib $libssl $libcrypto $libmysqlclient
 INSTALL=$install
@@ -67,7 +67,7 @@ $spitshell >>Makefile <<'!NO!SUBS!'
 # stupid SYS V shell
 SHELL=/bin/sh
 # Where to install with 'make globalinstall'
-GLOBAL_INSTALL=/usr/libexec/pennmush
+GLOBAL_INSTALL=/usr/libexec/cobramush
 
 # Where to install with 'make debianinstall'
 DEB_INSTALL=$(DESTDIR)/usr/lib/pennmush/game

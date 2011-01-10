@@ -1,4 +1,5 @@
 -- Test lua script file
 do
- mush.notify(1, "Hi", test, "long" , " ",  "string")
+  -- testval = mush.current_state
+  notify(1,testval["things"])
 end

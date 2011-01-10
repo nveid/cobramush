@@ -83,7 +83,7 @@
 ?T:inctest thisincl xxx flag inclwanted ftry previous thislibdir
 ?D:cppflags=''
 ?D:ccflags=''
-?D:ldflags=''
+?D:ldflags='-L$toplev/lua/src/'
 ?D:optimize=''
 ?D:warnings=''
 ?INIT:: Possible local include directories to search.

@@ -126,6 +126,7 @@
 #include "game.h"
 #include "dbio.h"
 #include "confmagic.h"
+#include "lua.h"
 #include "mushlua.h"
 #ifdef HAS_WAITPID
 /** What does wait*() return? */

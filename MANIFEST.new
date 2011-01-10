@@ -55,7 +55,6 @@ README
 README.SQL
 README.SSL
 UPGRADING
-config_h.SH
 confmagic.h
 options.h.dist
 hdrs/access.h
@@ -241,3 +240,4 @@ win32/patches.h
 win32/pennmush.dsp
 win32/pennmush.dsw
 Configure                    Portability tool
+config_h.SH                  Produces config.h

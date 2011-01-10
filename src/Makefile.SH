@@ -69,7 +69,8 @@ C_FILES=access.c atr_tab.c attrib.c boolexp.c bsd.c bufferq.c \
 	predicat.c privtab.c prog.o ptab.c rob.c rplog.c services.c set.c shs.c  \
 	sig.c speech.c sql.c strdup.c strtree.c  strutil.c tables.c timer.c unparse.c  \
 	utils.c version.c warnings.c  wild.c wiz.c
-
+# Add LUA files
+C_FILES+= mushlua.c mushlua_wrappers.c
 
 H_FILES = ../config.h ../confmagic.h ../hdrs/ansi.h ../hdrs/atr_tab.h \
 	  ../hdrs/attrib.h ../hdrs/boolexp.h ../hdrs/bufferq.h ../hdrs/case.h \
@@ -83,6 +84,7 @@ H_FILES = ../config.h ../confmagic.h ../hdrs/ansi.h ../hdrs/atr_tab.h \
 	  ../hdrs/mymalloc.h ../hdrs/mysocket.h ../hdrs/myssl.h \
 	  ../hdrs/parse.h ../hdrs/pcre.h ../hdrs/privtab.h ../hdrs/ptab.h \
 	  ../hdrs/strtree.h ../hdrs/version.h ../options.h ../hdrs/division.h ../hdrs/cron.h
+H_FILES += ../hdrs/mushlua.h
 
 # .o versions of above - these are used in the build
 COMMON_O_FILES=access.o atr_tab.o attrib.o boolexp.o bufferq.o \
@@ -96,6 +98,7 @@ COMMON_O_FILES=access.o atr_tab.o attrib.o boolexp.o bufferq.o \
 	prog.o   ptab.o rob.o rplog.o services.o set.o shs.o sig.o speech.o sql.o \
 	strdup.o strtree.o  strutil.o tables.o timer.o unparse.o utils.o version.o warnings.o \
 	wild.o wiz.o
+COMMON_O_FILES+= mushlua.o mushlua_wrappers.o
 O_FILES=$(COMMON_O_FILES) bsd.o
 CONSOLE_O_FILES=$(COMMON_O_FILES) console.o
 

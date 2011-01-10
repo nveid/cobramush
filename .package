@@ -1,4 +1,4 @@
-: This file was created by running packinit on Fri Mar  2 09:50:32 EST 2007.
+: This file was created by running packinit on Sun Jan  9 22:53:58 EST 2011.
 : Do not hand edit -- run packinit again if changes are to be made.
 packver='3.036'
 : Basic variables
@@ -9,11 +9,11 @@ copyright=' '
 mydiff=''
 maintname='CobraMUSH Development Team'
 maintloc='devteam@cobramush.org'
-ftpsite='cobramush.org'
+ftpsite='ftp.cobramush.org'
 orgname=''
-newsgroups=''
-recipients=''
-ftpdir=''
+newsgroups='comp.sources.bugs'
+recipients='source-archives@mirror.TMC.COM'
+ftpdir=' '
 mailagent='false'
 changelog=' '
 changercs=0

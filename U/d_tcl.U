@@ -60,9 +60,8 @@ if $test $ok = 0; then
   nlibs=""
   for l in $libs; do
     case $l in 
-      *tcl*) ;;
-      *dl*) ;;
-      *ld*) ;;
+      "-ltcl") ;;
+      "-ld") ;;
       *) nlibs="$nlibs$l " ;;
     esac
   done
