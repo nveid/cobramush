@@ -326,8 +326,8 @@ iter(1 2 3,iter(5 6 7,if(eq(itext(0),6),break(1))##)
 
 & kickass credits
 & CREDITS
-  Maintainer: Nveid[RLB]
-  Developers: Ari[AJ], Jamie [JLW]
+  Maintainer: Ari[AJ]
+  Developers: Nveid[AJ], Jamie [JLW]
   Derived From PennMUSH v1.7.7p26
 
   For original PennMUSH credits type help pennmush credits.
