@@ -4,6 +4,8 @@ CobraMUSH Version 0.80
   interest to the user.
   (See 'changes entries' for a list of all versions.)
 
+ Minor Changes:
+   * LUA Scripting Engine Embedding.
  Fixes:
-   * All fixes from pre-0.80 development series
+   * All fixes from pre-0.80 development series.
 
