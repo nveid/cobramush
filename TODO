@@ -1,0 +1,9 @@
+CobraMUSH Development TODO List
+----------------------------------
+* Create Module/Plugin Core code. (Scheduled for 0.80)
+      - Removed cmdlocal.c, funlocal.c, and other local files in favor of module loading 
+      - Move majority of commands & functions to modules divided into categories.
+      - Seperate Chat & Mail code into seperate modules
+* Embed LUA Engine
+      - Move all configuration code to be one big LUA script
+      - Allow lua to be hooked to events, commands, functions, etc..

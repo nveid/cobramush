@@ -1,4 +1,4 @@
-# configuration file for PennMUSH
+# configuration file for CobraMUSH
 #
 # The directives in this file control the behavior of your MUSH
 # If you change any of them while your MUSH is running, you can
@@ -25,7 +25,7 @@ ip_addr
 
 # Should the MUSH attempt to resolve IP numbers to hostnames?
 # If yes, you'll see hostnames on the wizard WHO. If no, IP numbers.
-# No makes sense if you're running PennMUSH at home and don't have
+# No makes sense if you're running CobraMUSH at home and don't have
 # a DNS server you can access. MacOS 7/8/9 should use 'no'
 # Changing this while using info_slave requires a @shutdown/reboot
 # to make it take effect.
@@ -136,7 +136,7 @@ names_file	names.cnf
 ###
 ### Attribute (chunk) cache
 ###
-### PennMUSH can swap rarely-referenced attribute text out to a disk
+### CobraMUSH can swap rarely-referenced attribute text out to a disk
 ### file, and cache often-used attribute text in memory. This 
 ### can result in substantial (typically 30-50%) savings
 ### in process memory use, at the cost of a very small performance hit.
@@ -651,7 +651,7 @@ full_invis	no
 # For TinyMUSH compatibility, the answer is 'no'.
 null_eq_zero	no
 
-# In PennMUSH, strings and db#s larger than #0 have traditionally
+# In CobraMUSH, strings and db#s larger than #0 have traditionally
 # been considered true (1) in boolean functions like and(), or(), etc.
 # In TinyMUSH, strings and db#s evaluate as false (0)
 # Should we emulate TinyMUSH?
@@ -659,14 +659,14 @@ tiny_booleans	no
 
 # TinyMUSH's trim function is: 
 #   trim(<string> [,<trim style> [,<trim character>]])
-# PennMUSH's trim function has been:
+# CobraMUSH's trim function has been:
 #    trim(<string>[,<character to trim>[,<trim style>]])
 # Should we emulate TinyMUSH? [+ for new MUSHes]
 tiny_trim_fun	yes
 
 # In Tiny, strings used in math expressions evaluate to 0,
 # so eq(asdfa,0) = 1, gt(asdf,0) = 0, etc.
-# In Penn, using strings where numbers should be is traditionally an
+# In Cobra, using strings where numbers should be is traditionally an
 # error (returning #-1 ARGUMENT MUST BE NUMBER or similar)
 # Do you want the TinyMUSH behavior?
 tiny_math	no
