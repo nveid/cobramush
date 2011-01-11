@@ -71,7 +71,6 @@
 #include "parse.h"
 #include "access.h"
 #include "version.h"
-#include "patches.h"
 #include "mysocket.h"
 #include "ident.h"
 #include "strtree.h"

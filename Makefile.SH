@@ -93,19 +93,16 @@ options.h: options.h.dist
 autogen: hdrs/cmds.h hdrs/funs.h hdrs/switches.h
 
 hdrs/cmds.h: src/cmds.c src/command.c src/cque.c src/help.c src/set.c src/sql.c Patchlevel
-	(cd utils; sh mkcmds.sh commands)
+	(perl utils/mkcmds.pl commands)
 
 hdrs/switches.h: src/SWITCHES Patchlevel
-	(cd utils; sh mkcmds.sh switches)
+	(perl utils/mkcmds.pl switches)
 
 src/switchinc.c: src/SWITCHES Patchlevel
-	(cd utils; sh mkcmds.sh switches)
+	(perl utils/mkcmds.pl switches)
 
-hdrs/funs.h: src/fun*.c src/bsd.c src/conf.c src/extmail.c src/help.c src/wiz.c src/sql.c Patchlevel
-	(cd utils; sh mkcmds.sh functions)
-
-hdrs/patches.h: patches/*
-	(cd utils; sh mkcmds.sh patches)
+hdrs/funs.h: src/fun*.c src/bsd.c src/conf.c src/cque.c src/extmail.c src/help.c src/wiz.c src/sql.c Patchlevel
+	(perl utils/mkcmds.pl functions)
 
 install: localized all game/restart
 	-rm -f game/netmush
@@ -156,7 +153,7 @@ distdepend: hdrs/funs.h hdrs/cmds.h
 
 # REQUIRES GNU INDENT! DON'T INDENT WITH ANYTHING ELSE!
 indent:
-	@(cd src; make indent)
+#	@(cd src; make indent)
 
 protoize:
 	(cd src; make protoize "CCFLAGS=$(CCFLAGS)")
@@ -230,7 +227,7 @@ clean:
 
 distclean: 
 	(cd hdrs; rm -f *.orig *~ \#* *.rej *.bak funs.h cmds.h buildinf.h patches.h)
-	(cd utils; rm -f *.orig *~ \#* *.rej *.bak mkcmds.sh)
+	(cd utils; rm -f *.orig *~ \#* *.rej *.bak)
 	(cd game; rm -rf *.log netmush info_slave *.orig *.rej *~ *.bak mush.cnf)
 	(cd os2; rm -rf *.rej *.orig *~ *.bak)
 	(cd src; make distclean; rm -f Makefile)
@@ -287,13 +284,9 @@ touchswitches:
 dist.tar: indent distclean versions touchswitches autogen
 	makedist -c cobramush
 	tar -cvf /tmp/dist.tar cobramush
-	-pgp -sb /tmp/dist.tar
+# CobraMUSH does not pgp sign distributions at this moment
+#	-pgp -sb /tmp/dist.tar
 	-rm -rf cobramush
-
-CSRImalloc.tar.Z:
-	(cd src/CSRI; make clean)
-	(tar -cvFFf /tmp/CSRImalloc.tar `cat exclude.tar`)
-	compress /tmp/CSRImalloc.tar
 
 globalinstall: install
 	(cd game/txt; make clean compose.sh)
@@ -321,11 +314,11 @@ debianinstall: install
 	$(INSTALL) src/netmud $(DEB_INSTALL)/netmush
 	$(INSTALL) src/console $(DEB_INSTALL)/console
 	$(INSTALL) src/info_slave $(DEB_INSTALL)/info_slave
-	$(INSTALL) utils/penn-install $(DEB_BIN)/penn-install
+	$(INSTALL) utils/cobramush-install $(DEB_BIN)/cobramush-install
 	$(CHMOD) a+rX -R $(DEB_INSTALL)
-	$(CHMOD) a+rX $(DEB_BIN)/penn-install
+	$(CHMOD) a+rX $(DEB_BIN)/cobramush-install
 	@echo "** Files installed in $(DEB_INSTALL)."
-	@echo "** You can run penn-install to create a user directory."
+	@echo "** You can run cobramush-install to create a user directory."
 
 !NO!SUBS!
 chmod 644 Makefile

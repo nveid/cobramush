@@ -15,7 +15,6 @@
 
 #include "externs.h"
 #include "version.h"
-#include "patches.h"
 #ifndef WIN32
 #include "buildinf.h"
 #endif
@@ -36,9 +35,6 @@ do_version(player)
   notify_format(player, T("Last restarted: %s"), buff);
 
   notify_format(player, "CobraMUSH v%s [%s]", VERSION, VBRANCH);
-#ifdef PATCHES
-  notify_format(player, "Patches: %s", PATCHES);
-#endif
 #ifdef WIN32
   notify_format(player, T("Build date: %s"), __DATE__);
 #else

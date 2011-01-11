@@ -226,7 +226,7 @@ utils/fixdepend.pl
 utils/gentables.c
 utils/ln-dir.sh
 utils/make_access_cnf.sh
-utils/mkcmds.sh.SH
+utils/mkcmds.pl
 utils/penn-install
 utils/update-cnf.pl
 utils/update.pl

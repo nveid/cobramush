@@ -188,10 +188,6 @@ local.c: local.dst
 	  echo "********************************************************"; \
 	fi
 
-../hdrs/patches.h:
-	if [ ! -f ../hdrs/patches.h ]; then \
-	  (cd ../utils; sh mkcmds.sh patches); \
-	fi
 
 ../po/pennmush.pot: $(C_FILES) $(H_FILES)
 	xgettext -d pennmush -kT -o ../po/pennmush.pot $(C_FILES) $(H_FILES)
@@ -375,7 +371,6 @@ bsd.o: ../hdrs/access.h
 bsd.o: ../hdrs/command.h
 bsd.o: ../hdrs/switches.h
 bsd.o: ../hdrs/version.h
-bsd.o: ../hdrs/patches.h
 bsd.o: ../hdrs/mysocket.h
 bsd.o: ../hdrs/ident.h
 bsd.o: ../hdrs/strtree.h
@@ -1442,7 +1437,6 @@ notify.o: ../hdrs/pueblo.h
 notify.o: ../hdrs/parse.h
 notify.o: ../hdrs/access.h
 notify.o: ../hdrs/version.h
-notify.o: ../hdrs/patches.h
 notify.o: ../hdrs/mysocket.h
 notify.o: ../hdrs/ident.h
 notify.o: ../hdrs/strtree.h
@@ -1876,7 +1870,6 @@ version.o: ../hdrs/chunk.h
 version.o: ../hdrs/bufferq.h
 version.o: ../confmagic.h
 version.o: ../hdrs/version.h
-version.o: ../hdrs/patches.h
 version.o: ../hdrs/buildinf.h
 warnings.o: ../config.h
 warnings.o: ../hdrs/copyrite.h
