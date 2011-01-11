@@ -34,7 +34,7 @@
 int safe_tag(char const *a_tag, char *buf, char **bp);
 int safe_tag_cancel(char const *a_tag, char *buf, char **bp);
 int safe_tag_wrap(char const *a_tag, char const *params,
-		  char const *data, char *buf, char **bp, dbref player);
+                  char const *data, char *buf, char **bp, dbref player);
 
 /* Please STAY SANE when modifying. 
  * Making this something like 'x' and 'y' is a BAD IDEA 
@@ -46,7 +46,7 @@ int safe_tag_wrap(char const *a_tag, char const *params,
 /* Start & Cancel raw mud text */
 /* Use this for when we go into pueblo displaying shit */
 #define PUEBLO_CMT(buf,bp)  safe_str("</XCH_MUDTEXT>", buf, bp); \
-			    safe_str("<IMG XCH_MODE=HTML>", buf, bp);
+                            safe_str("<IMG XCH_MODE=HTML>", buf, bp);
 
 /* Use this when we go back to normal shit */
 #define PUEBLO_SMT(buf, bp) safe_str("<IMG XCH_MODE=TEXT>", buf, bp);

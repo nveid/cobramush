@@ -29,19 +29,19 @@
 #include "confmagic.h"
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4761)        /* NJG: disable warning re conversion */
 #endif
 
 extern PRIV attr_privs_view[];
 static lock_type get_locktype(char *str);
 extern struct db_stat_info *get_stats(dbref owner);
 static int lattr_helper(dbref player, dbref thing, dbref parent, char const *pattern,
-			ATTR *atr, void *args);
+                        ATTR *atr, void *args);
 
 static dbref
  dbwalk(char *buff, char **bp, dbref executor, dbref enactor,
              int type, dbref loc, dbref after, int skipdark,
-	             int start, int count, int *retcount);
+                     int start, int count, int *retcount);
 
 
 const char *
@@ -54,9 +54,9 @@ do_get_attrib(dbref executor, dbref thing, const char *attrib)
   if (a) {
     if (Can_Read_Attr(executor, thing, a)) {
       if (strlen(value = atr_value(a)) < BUFFER_LEN)
-	return value;
+        return value;
       else
-	return T("#-1 ATTRIBUTE LENGTH TOO LONG");
+        return T("#-1 ATTRIBUTE LENGTH TOO LONG");
     }
     return T(e_atrperm);
   }
@@ -73,9 +73,9 @@ do_get_attrib(dbref executor, dbref thing, const char *attrib)
 
 /** Structure containing arguments for lattr_helper */
 struct lh_args {
-  int first;		/**< Is this is the first attribute, or later? */
-  char *buff;		/**< Buffer to store output */
-  char **bp;		/**< Pointer to address of insertion point in buff */
+  int first;            /**< Is this is the first attribute, or later? */
+  char *buff;           /**< Buffer to store output */
+  char **bp;            /**< Pointer to address of insertion point in buff */
 };
 
 /* this function produces a space-separated list of attributes that are
@@ -84,10 +84,10 @@ struct lh_args {
 /* ARGSUSED */
 static int
 lattr_helper(dbref player __attribute__ ((__unused__)),
-	     dbref thing __attribute__ ((__unused__)),
-	     dbref parent __attribute__ ((__unused__)),
-	     char const *pattern __attribute__ ((__unused__)),
-	     ATTR *atr, void *args)
+             dbref thing __attribute__ ((__unused__)),
+             dbref parent __attribute__ ((__unused__)),
+             char const *pattern __attribute__ ((__unused__)),
+             ATTR *atr, void *args)
 {
   struct lh_args *lh = args;
   if (lh->first)
@@ -100,7 +100,7 @@ lattr_helper(dbref player __attribute__ ((__unused__)),
 
 
 FUNCTION(fun_ooref) {
-	safe_dbref(ooref, buff, bp);
+        safe_dbref(ooref, buff, bp);
 }
 /* ARGSUSED */
 FUNCTION(fun_lattr)
@@ -113,7 +113,7 @@ FUNCTION(fun_lattr)
   if (pattern)
     *pattern++ = '\0';
   else
-    pattern = (char *) "*";	/* match anything */
+    pattern = (char *) "*";     /* match anything */
 
   thing = match_thing(executor, args[0]);
   if (!GoodObject(thing)) {
@@ -228,7 +228,7 @@ FUNCTION(fun_default)
     dp = mstr;
     sp = args[i - 1];
     process_expression(mstr, &dp, &sp, executor, caller, enactor, PE_DEFAULT,
-		       PT_DEFAULT, pe_info);
+                       PT_DEFAULT, pe_info);
     *dp = '\0';
     parse_attrib(executor, mstr, &thing, &attrib);
     if (GoodObject(thing) && attrib && Can_Read_Attr(executor, thing, attrib)) {
@@ -242,7 +242,7 @@ FUNCTION(fun_default)
   /* We couldn't get it. Evaluate the last arg and return it */
   sp = args[nargs - 1];
   process_expression(buff, bp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   return;
 }
 
@@ -270,7 +270,7 @@ FUNCTION(fun_eval)
     tp = tbuf = safe_atr_value(a);
     add_check("fun_eval.attr_value");
     process_expression(buff, bp, &tp, thing, executor, executor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     mush_free((Malloc_t) tbuf, "fun_eval.attr_value");
     return;
   } else if (a || !Can_Examine(executor, thing)) {
@@ -310,7 +310,7 @@ FUNCTION(fun_get_eval)
     tp = tbuf = safe_atr_value(a);
     add_check("fun_eval.attr_value");
     process_expression(buff, bp, &tp, thing, executor, executor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     mush_free((Malloc_t) tbuf, "fun_eval.attr_value");
     return;
   } else if (a || !Can_Examine(executor, thing)) {
@@ -335,7 +335,7 @@ FUNCTION(fun_edefault)
   dp = mstr;
   sp = args[0];
   process_expression(mstr, &dp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   *dp = '\0';
   parse_attrib(executor, mstr, &thing, &attrib);
   if (GoodObject(thing) && attrib && Can_Read_Attr(executor, thing, attrib)) {
@@ -347,14 +347,14 @@ FUNCTION(fun_edefault)
     sp = sbuf = safe_atr_value(attrib);
     add_check("fun_edefault.attr_value");
     process_expression(buff, bp, &sp, thing, executor, executor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     mush_free((Malloc_t) sbuf, "fun_edefault.attr_value");
     return;
   }
   /* We couldn't get it. Evaluate args[1] and return it */
   sp = args[1];
   process_expression(buff, bp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   return;
 }
 
@@ -378,7 +378,7 @@ FUNCTION(fun_v)
     case '8':
     case '9':
       if (global_eval_context.wenv[c - '0'])
-	safe_str(global_eval_context.wenv[c - '0'], buff, bp);
+        safe_str(global_eval_context.wenv[c - '0'], buff, bp);
       return;
     case '#':
       /* enactor dbref */
@@ -477,7 +477,7 @@ FUNCTION(fun_lflags)
 }
 
 #ifdef WIN32
-#pragma warning( default : 4761)	/* Re-enable conversion warning */
+#pragma warning( default : 4761)        /* Re-enable conversion warning */
 #endif
 
 /* ARGSUSED */
@@ -593,28 +593,28 @@ dbwalk(char *buff, char **bp, dbref executor, dbref enactor,
        *   use type == TYPE_PLAYER for this check. :-/.
        */
       if (!(Typeof(thing) & type) ||
-	  !can_interact(thing, executor, INTERACT_SEE) ||
-	  (skipdark && Dark(thing) && !Light(thing) && !Light(loc)) ||
-	  ((type == TYPE_PLAYER) && skipdark && !Connected(thing)))
-	continue;
+          !can_interact(thing, executor, INTERACT_SEE) ||
+          (skipdark && Dark(thing) && !Light(thing) && !Light(loc)) ||
+          ((type == TYPE_PLAYER) && skipdark && !Connected(thing)))
+        continue;
       nthing += 1;
       if (count < 1 || (nthing >= start && nthing < start + count)) {
-	if (buff) {
-	  if (first)
-	    first = 0;
-	  else
-	    safe_chr(' ', buff, bp);
-	  safe_dbref(thing, buff, bp);
-	}
+        if (buff) {
+          if (first)
+            first = 0;
+          else
+            safe_chr(' ', buff, bp);
+          safe_dbref(thing, buff, bp);
+        }
       }
       if (result == NOTHING) {
-	if (after == NOTHING)
-	  result = thing;
-	if (after == thing)
-	  after = NOTHING;
+        if (after == NOTHING)
+          result = thing;
+        if (after == thing)
+          after = NOTHING;
       }
       if (retcount)
-	*retcount = nthing;
+        *retcount = nthing;
     }
   } else if (buff)
     safe_str("#-1", buff, bp);
@@ -665,16 +665,16 @@ FUNCTION(fun_dbwalker)
   case 'D':
     type = TYPE_DIVISION; /* divisions */
     break;
-  case 'C':			/* con */
+  case 'C':                     /* con */
     type = TYPE_THING | TYPE_PLAYER;
     break;
-  case 'T':			/* things */
+  case 'T':                     /* things */
     type = TYPE_THING;
     break;
-  case 'P':			/* players */
+  case 'P':                     /* players */
     type = TYPE_PLAYER;
     break;
-  case 'E':			/* exits */
+  case 'E':                     /* exits */
     type = TYPE_EXIT;
     break;
   default:
@@ -683,7 +683,7 @@ FUNCTION(fun_dbwalker)
   }
 
   dbwalk(buffptr, bptr, executor, enactor, type, loc, NOTHING,
-	 vis, start, count, &result);
+         vis, start, count, &result);
 
   if (!buffptr) {
     safe_integer(result, buff, bp);
@@ -696,7 +696,7 @@ FUNCTION(fun_con)
 {
   dbref loc = match_thing(executor, args[0]);
   safe_dbref(dbwalk (NULL, NULL, executor, enactor, TYPE_THING | TYPE_PLAYER, loc, 
-	NOTHING, 0, 0, 0, NULL), buff, bp);
+        NOTHING, 0, 0, 0, NULL), buff, bp);
 
 }
 
@@ -705,7 +705,7 @@ FUNCTION(fun_exit)
 {
   dbref loc = match_thing(executor, args[0]);
     safe_dbref(dbwalk (NULL, NULL, executor, enactor, TYPE_EXIT, loc, NOTHING, 0, 0, 0,
-		                    NULL), buff, bp);
+                                    NULL), buff, bp);
 
 }
 
@@ -751,7 +751,7 @@ FUNCTION(fun_entrances)
   dbref counter;
   dbref entrance;
   int found;
-  int exd, td, pd, rd;		/* what we're looking for */
+  int exd, td, pd, rd;          /* what we're looking for */
   char *p;
 
   if (!command_check_byname(executor, "@entrances")) {
@@ -776,27 +776,27 @@ FUNCTION(fun_entrances)
       switch (*p) {
       case 'a':
       case 'A':
-	exd = td = pd = rd = 1;
-	break;
+        exd = td = pd = rd = 1;
+        break;
       case 'e':
       case 'E':
-	exd = 1;
-	break;
+        exd = 1;
+        break;
       case 't':
       case 'T':
-	td = 1;
-	break;
+        td = 1;
+        break;
       case 'p':
       case 'P':
-	pd = 1;
-	break;
+        pd = 1;
+        break;
       case 'r':
       case 'R':
-	rd = 1;
-	break;
+        rd = 1;
+        break;
       default:
-	safe_str(T("#-1 INVALID SECOND ARGUMENT"), buff, bp);
-	return;
+        safe_str(T("#-1 INVALID SECOND ARGUMENT"), buff, bp);
+        return;
       }
       p++;
     }
@@ -835,7 +835,7 @@ FUNCTION(fun_entrances)
   }
   if (!payfor(executor, FIND_COST)) {
     notify_format(executor, T("You don't have %d %s to do that."),
-		  FIND_COST, ((FIND_COST == 1) ? MONEY : MONIES));
+                  FIND_COST, ((FIND_COST == 1) ? MONEY : MONIES));
     safe_str("#-1", buff, bp);
     return;
   }
@@ -844,19 +844,19 @@ FUNCTION(fun_entrances)
   for (counter = low; counter <= high; counter++) {
     if (controls(executor, where) || controls(executor, counter)) {
       if ((exd && IsExit(counter)) ||
-	  (td && IsThing(counter)) ||
-	  (pd && IsPlayer(counter)) || (rd && IsRoom(counter))) {
-	if (Mobile(counter))
-	  entrance = Home(counter);
-	else
-	  entrance = Location(counter);
-	if (entrance == where) {
-	  if (!found)
-	    found = 1;
-	  else
-	    safe_chr(' ', buff, bp);
-	  safe_dbref(counter, buff, bp);
-	}
+          (td && IsThing(counter)) ||
+          (pd && IsPlayer(counter)) || (rd && IsRoom(counter))) {
+        if (Mobile(counter))
+          entrance = Home(counter);
+        else
+          entrance = Location(counter);
+        if (entrance == where) {
+          if (!found)
+            found = 1;
+          else
+            safe_chr(' ', buff, bp);
+          safe_dbref(counter, buff, bp);
+        }
       }
     }
   }
@@ -893,7 +893,7 @@ FUNCTION(fun_controls)
   else if (!GoodObject(thing))
     safe_str(T("#-1 ARG2 NOT FOUND"), buff, bp);
   else if (!(controls(executor, it) || controls(executor, thing)
-	     || CanSee(executor, it) || CanSee(executor, thing)))
+             || CanSee(executor, it) || CanSee(executor, thing)))
     safe_str(T(e_perm), buff, bp);
   else
     safe_chr(controls(it, thing) ? '1' : '0', buff, bp);
@@ -964,7 +964,7 @@ FUNCTION(fun_type)
   default:
     safe_str("WEIRD OBJECT", buff, bp);
     do_rawlog(LT_ERR, T("WARNING: Weird object #%d (type %d)\n"), it,
-	      Typeof(it));
+              Typeof(it));
   }
 }
 
@@ -1074,10 +1074,10 @@ FUNCTION(fun_orlflags)
   dbref it = match_thing(executor, args[0]);
   if (!strcmp(called_as, "ORLPOWERS"))
     safe_boolean(flaglist_check_long("POWER", executor, it, args[1], 0), buff,
-		 bp);
+                 bp);
   else
     safe_boolean(flaglist_check_long("FLAG", executor, it, args[1], 0), buff,
-		 bp);
+                 bp);
 }
 
 /* ARGSUSED */
@@ -1086,10 +1086,10 @@ FUNCTION(fun_andlflags)
   dbref it = match_thing(executor, args[0]);
   if (!strcmp(called_as, "ANDLPOWERS"))
     safe_boolean(flaglist_check_long("POWER", executor, it, args[1], 1), buff,
-		 bp);
+                 bp);
   else
     safe_boolean(flaglist_check_long("FLAG", executor, it, args[1], 1), buff,
-		 bp);
+                 bp);
 }
 
 static lock_type
@@ -1134,7 +1134,7 @@ FUNCTION(fun_lock)
   if (GoodObject(it) && (real_ltype != NULL)
       && Can_Read_Lock(executor, it, real_ltype)) {
     safe_str(unparse_boolexp(executor, getlock(it, real_ltype), UB_DBREF),
-	     buff, bp);
+             buff, bp);
     return;
   }
   safe_str("#-1", buff, bp);
@@ -1177,7 +1177,7 @@ FUNCTION(fun_findable)
   else if (!GoodObject(victim))
     safe_str(T("#-1 ARG2 NOT FOUND"), buff, bp);
   else if (!CanSee(executor, obj) && !controls(executor, obj) &&
-	   !controls(executor, victim))
+           !controls(executor, victim))
     safe_str(T(e_perm), buff, bp);
   else
     safe_boolean(Can_Locate(obj, victim), buff, bp);
@@ -1199,13 +1199,13 @@ FUNCTION(fun_loctree) {
 
   if (GoodObject(it) && Can_Locate(executor, it)) {
         for(loc = it; GoodObject(Location(loc)) ; loc = Location(loc)) {
-	  if(loc != it)
-	    safe_chr(' ', buff, bp);
-	  safe_dbref(Location(loc), buff, bp);
-	}
+          if(loc != it)
+            safe_chr(' ', buff, bp);
+          safe_dbref(Location(loc), buff, bp);
+        }
   }
    else safe_str("#-1", buff, bp);
-	
+        
 }
 
 /* ARGSUSED */
@@ -1294,7 +1294,7 @@ FUNCTION(fun_rloc)
   else {
     for (i = 0; i < deep; i++) {
       if (!GoodObject(it) || IsRoom(it))
-	break;
+        break;
       it = Location(it);
     }
     safe_dbref(it, buff, bp);
@@ -1403,9 +1403,9 @@ FUNCTION(fun_money)
     if (is_integer(args[0])) {
       int a = parse_integer(args[0]);
       if (abs(a) == 1)
-	safe_str(MONEY, buff, bp);
+        safe_str(MONEY, buff, bp);
       else
-	safe_str(MONIES, buff, bp);
+        safe_str(MONIES, buff, bp);
     } else {
       /* Guess we're just making a typo or something. */
       safe_str("#-1", buff, bp);
@@ -1437,7 +1437,7 @@ FUNCTION(fun_owner)
   if (strchr(args[0], '/')) {
     parse_attrib(executor, args[0], &thing, &attrib);
     if (!GoodObject(thing) || !attrib
-	|| !Can_Read_Attr(executor, thing, attrib))
+        || !Can_Read_Attr(executor, thing, attrib))
       safe_str("#-1", buff, bp);
     else
       safe_dbref(attrib->creator, buff, bp);
@@ -1462,7 +1462,7 @@ FUNCTION(fun_alias)
   /* Support changing alias via function if side-effects are enabled */
   if (nargs == 2) {
     if (!command_check_byname(executor, "ATTRIB_SET")
- 	|| fun->flags & FN_NOSIDEFX) {
+        || fun->flags & FN_NOSIDEFX) {
       safe_str(T(e_perm), buff, bp);
       return;
     }
@@ -1507,34 +1507,34 @@ FUNCTION(fun_name)
   }
   it = match_thing(executor, args[0]);
   if (GoodObject(it))
-	  /* Quick Fix for most code dealing with know system */
-	  /* All code.. when the enactor is IC & so is the person they're
-	   * trying to gt the name of, they will get their 'know name' variant.
-	   * Only exceptions are A) Code called from the master room
-	   * 			 B) Code called from a division object
-	   *			 C) The enactor has see_all over the other player & are over the empire levels
-	   **/
+          /* Quick Fix for most code dealing with know system */
+          /* All code.. when the enactor is IC & so is the person they're
+           * trying to gt the name of, they will get their 'know name' variant.
+           * Only exceptions are A) Code called from the master room
+           *                     B) Code called from a division object
+           *                     C) The enactor has see_all over the other player & are over the empire levels
+           **/
     safe_str(
-		    shortname(it)
-		    , buff, bp);
+                    shortname(it)
+                    , buff, bp);
   else
     safe_str(T(e_notvis), buff, bp);
 }
 
 #ifdef KNOW_SYS
 FUNCTION(fun_checkknow) {
-	dbref who;
-	dbref what;
+        dbref who;
+        dbref what;
 
-	who = match_thing(executor, args[0]);
-	what = match_thing(executor, args[1]);
+        who = match_thing(executor, args[0]);
+        what = match_thing(executor, args[1]);
 
-	if(!IsPlayer(who) || !IsPlayer(what)) {
-		safe_str((e_notvis), buff, bp);
-		return;
-	}
+        if(!IsPlayer(who) || !IsPlayer(what)) {
+                safe_str((e_notvis), buff, bp);
+                return;
+        }
 
-	safe_chr(check_know(who,what) ? '1' : '0' , buff, bp); 
+        safe_chr(check_know(who,what) ? '1' : '0' , buff, bp); 
 }
 #endif
 
@@ -1567,12 +1567,12 @@ FUNCTION(fun_iname)
   if (GoodObject(it)) {
     /* You must either be see_all, control it, or be inside it */
     if (!(controls(executor, it) || CanSee(executor, it) ||
-	  (Location(executor) == it))) {
+          (Location(executor) == it))) {
       safe_str(T(e_perm), buff, bp);
       return;
     }
     if (nameformat(executor, it, tbuf1,
-		   IsExit(it) ? shortname(it) : (char *) accented_name(it)))
+                   IsExit(it) ? shortname(it) : (char *) accented_name(it)))
       safe_str(tbuf1, buff, bp);
     else if (IsExit(it))
       safe_str(shortname(it), buff, bp);
@@ -1736,7 +1736,7 @@ FUNCTION(fun_locate)
       match_flags |= MAT_ENGLISH;
       break;
     case 'X':
-      ambig_ok = 1;		/* okay to pick last match */
+      ambig_ok = 1;             /* okay to pick last match */
       break;
     default:
       notify_format(executor, T("I don't understand switch '%c'."), *p);
@@ -1773,13 +1773,13 @@ FUNCTION(fun_locate)
     if (Can_Examine(executor, loc))
       safe_dbref(item, buff, bp);
     else if (can_interact(item, executor, INTERACT_SEE)
-	     && (!DarkLegal(item) || Light(loc) || Light(item)))
+             && (!DarkLegal(item) || Light(loc) || Light(item)))
       safe_dbref(item, buff, bp);
     else
       safe_dbref(NOTHING, buff, bp);
   } else {
     if (can_interact(item, executor, INTERACT_SEE)
-	&& (See_All(executor) || !DarkLegal(item) || Light(item)))
+        && (See_All(executor) || !DarkLegal(item) || Light(item)))
       safe_dbref(item, buff, bp);
     else
       safe_dbref(NOTHING, buff, bp);
@@ -2040,10 +2040,10 @@ FUNCTION(fun_lstats)
   si = get_stats(who);
   if (who != ANY_OWNER) {
     safe_format(buff, bp, "%d %d %d %d %d %d", si->total - si->garbage, si->rooms,
-		si->exits, si->things, si->players, si->divisions);
+                si->exits, si->things, si->players, si->divisions);
   } else {
     safe_format(buff, bp, "%d %d %d %d %d %d %d", si->total, si->rooms, si->exits,
-		si->things, si->players, si->divisions, si->garbage);
+                si->things, si->players, si->divisions, si->garbage);
   }
 }
 
@@ -2064,9 +2064,9 @@ FUNCTION(fun_atrlock)
   if (status == 1) {
     if (FUNCTION_SIDE_EFFECTS) {
       if (!command_check_byname(executor, "@atrlock")
-	  || fun->flags & FN_NOSIDEFX) {
-	safe_str(T(e_perm), buff, bp);
-	return;
+          || fun->flags & FN_NOSIDEFX) {
+        safe_str(T(e_perm), buff, bp);
+        return;
       }
       do_atrlock(executor, args[0], args[1], 0);
       return;
@@ -2087,7 +2087,7 @@ FUNCTION(fun_atrlock)
 
   if ((thing =
        noisy_match_result(executor, args[0], NOTYPE,
-			  MAT_EVERYTHING)) == NOTHING) {
+                          MAT_EVERYTHING)) == NOTHING) {
     safe_str(T(e_notvis), buff, bp);
     return;
   }
@@ -2118,7 +2118,7 @@ FUNCTION(fun_atrmodtime)
 
   if ((thing =
        noisy_match_result(executor, args[0], NOTYPE,
-			  MAT_EVERYTHING)) == NOTHING) {
+                          MAT_EVERYTHING)) == NOTHING) {
     safe_str(T(e_notvis), buff, bp);
     return;
   }

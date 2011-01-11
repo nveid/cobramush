@@ -42,8 +42,8 @@ void init_rplogs() {
 
   for(current = 0 ; current < db_top ; current++)
     if(has_flag_by_name(current, "ICFUNCS", TYPE_ROOM)) {
-	db[current].rplog.bufferq = allocate_bufferq(RPBUF_SIZE); 
-	db[current].rplog.status = 0;
+        db[current].rplog.bufferq = allocate_bufferq(RPBUF_SIZE); 
+        db[current].rplog.status = 0;
     } else { 
       db[current].rplog.bufferq = NULL;
     }
@@ -69,8 +69,8 @@ void rplog_room(dbref room, dbref player, char *str) {
   if(db[room].rplog.bufferq && has_flag_by_name(room, "ICFUNCS", TYPE_ROOM)) {
     if(db[room].rplog.status == 1) { /* Check Size.. We might need to make it bigger */
       if(db[room].rplog.bufferq->num_buffered == (lines = 
-	    bufferq_lines(db[room].rplog.bufferq)) && lines < RPBUF_MAXSIZE )
-	reallocate_bufferq(db[room].rplog.bufferq,lines+1); 
+            bufferq_lines(db[room].rplog.bufferq)) && lines < RPBUF_MAXSIZE )
+        reallocate_bufferq(db[room].rplog.bufferq,lines+1); 
     }
     add_to_bufferq(db[room].rplog.bufferq, 0, player, str); 
   }
@@ -93,26 +93,26 @@ void rplog_reset() {
   char *bq;
   time_t timeof;
   if((mudtime % 3600)==0) { /* reset all things in a combat status 
-			     * that have been ina  combat status over 24 hours */
+                             * that have been ina  combat status over 24 hours */
     for(i = 0; i < db_top; i++)
       if(IsGarbage(i))
-	continue;
+        continue;
       else if(db[i].rplog.bufferq != NULL) {
-	if(db[i].rplog.status == 1) {
-	  bq = db[i].rplog.bufferq->buffer;
-	  bq += sizeof(int) + sizeof(dbref) + sizeof(int);
-	  /* K.. we're pointed here.. make sure we're not greater than the buffer end though... */
-	  if(bq >= db[i].rplog.bufferq->buffer_end) /* OOo... we are, nothings ever been done here.. So lets continue */
-	    continue;
-	  memcpy(&timeof, bq, sizeof(time_t)); 
-	  if(timeof < (mudtime-RPRESET_TIME)) {
-	    /* make sure its small.. */
-	    reallocate_bufferq(db[i].rplog.bufferq,  RPBUF_SIZE);
-	    expire_bufferq(db[i].rplog.bufferq, (time_t) (mudtime - 1200));
-	  }
-	} else { /* Otherwise just do message expirations */
-	  expire_bufferq(db[i].rplog.bufferq, (time_t) (mudtime - 1200));
-	}
+        if(db[i].rplog.status == 1) {
+          bq = db[i].rplog.bufferq->buffer;
+          bq += sizeof(int) + sizeof(dbref) + sizeof(int);
+          /* K.. we're pointed here.. make sure we're not greater than the buffer end though... */
+          if(bq >= db[i].rplog.bufferq->buffer_end) /* OOo... we are, nothings ever been done here.. So lets continue */
+            continue;
+          memcpy(&timeof, bq, sizeof(time_t)); 
+          if(timeof < (mudtime-RPRESET_TIME)) {
+            /* make sure its small.. */
+            reallocate_bufferq(db[i].rplog.bufferq,  RPBUF_SIZE);
+            expire_bufferq(db[i].rplog.bufferq, (time_t) (mudtime - 1200));
+          }
+        } else { /* Otherwise just do message expirations */
+          expire_bufferq(db[i].rplog.bufferq, (time_t) (mudtime - 1200));
+        }
       }
   }
 }
@@ -234,7 +234,7 @@ static void rplog_recall(dbref player, dbref room, char quiet, int lines) {
             stamp = show_time(timestamp, 0);
             notify_format(player, "[%s] %s", stamp, buf);
           }
-	}
+        }
       }
     }
     skip--;
@@ -247,7 +247,7 @@ void rplog_shutdown(void) {
 
   for(cur_obj = 0 ; cur_obj < db_top ; cur_obj++)
     if(has_flag_by_name(cur_obj, "ICFUNCS", TYPE_ROOM) 
-	&& (db[cur_obj].rplog.bufferq)) {
+        && (db[cur_obj].rplog.bufferq)) {
       free_bufferq(db[cur_obj].rplog.bufferq);
       db[cur_obj].rplog.bufferq = NULL;
       db[cur_obj].rplog.status = 0;

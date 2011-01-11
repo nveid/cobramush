@@ -46,15 +46,15 @@
 #include "confmagic.h"
 
 #ifndef UCHAR_MAX
-#define UCHAR_MAX 255	/**< Largest unsigned character */
+#define UCHAR_MAX 255   /**< Largest unsigned character */
 #endif
 
 /* Various constants.  Their import is either bleedingly obvious
  * or explained below. */
-#define ST_MAX_DEPTH 64		/**< Max depth of the tree */
-#define ST_RED 1		/**< This node is red */
-#define ST_BLACK 0		/**< This node is black */
-#define ST_COLOR 1		/**< Bit mask for colors */
+#define ST_MAX_DEPTH 64         /**< Max depth of the tree */
+#define ST_RED 1                /**< This node is red */
+#define ST_BLACK 0              /**< This node is black */
+#define ST_COLOR 1              /**< Bit mask for colors */
 #define ST_USE_STEP 2
 #define ST_USE_LIMIT (UCHAR_MAX - ST_USE_STEP + 1)
 
@@ -68,7 +68,7 @@
  */
 static StrNode *path[ST_MAX_DEPTH];
 
-unsigned long st_mem = 0;	/**< Memory used by string trees */
+unsigned long st_mem = 0;       /**< Memory used by string trees */
 
 static void st_left_rotate(int tree_depth, StrNode **root);
 static void st_right_rotate(int tree_depth, StrNode **root);
@@ -125,7 +125,7 @@ void
 st_stats_header(dbref player)
 {
   notify(player,
-	 "Tree       Entries  Leaves MinDep  Max  Avg   PermEnt     AvgTmpC ~Memory");
+         "Tree       Entries  Leaves MinDep  Max  Avg   PermEnt     AvgTmpC ~Memory");
 }
 
 /** Statistics about the tree.
@@ -142,11 +142,11 @@ st_stats(dbref player, StrTree *root, const char *name)
 
   bytes = (sizeof(StrNode) - BUFFER_LEN) * root->count + root->mem;
   st_traverse_stats(root->root, &maxdepth, &mindepth, &avgdepth, &leaves,
-		    &perms, &nperms);
+                    &perms, &nperms);
   notify_format(player, "%-10s %7ld %7d %6d %4d %4d %9lu %11.3f %7lu",
-		name, root->count, leaves, mindepth, maxdepth,
-		avgdepth, perms,
-		((double) nperms / (double) (root->count - perms)), bytes);
+                name, root->count, leaves, mindepth, maxdepth,
+                avgdepth, perms,
+                ((double) nperms / (double) (root->count - perms)), bytes);
 }
 
 /* Tree rotations.  These preserve left-to-right ordering,
@@ -267,45 +267,45 @@ st_insert(char const *s, StrTree *root)
       StrNode *y;
       y = path[tree_depth - 1]->right;
       if (y && (y->info & ST_COLOR) == ST_RED) {
-	/* Hmph.  Uncle is red.  Push the mess up the tree. */
-	path[tree_depth]->info &= ~ST_RED;
-	y->info &= ~ST_RED;
-	tree_depth--;
-	path[tree_depth]->info |= ST_RED;
-	tree_depth--;
+        /* Hmph.  Uncle is red.  Push the mess up the tree. */
+        path[tree_depth]->info &= ~ST_RED;
+        y->info &= ~ST_RED;
+        tree_depth--;
+        path[tree_depth]->info |= ST_RED;
+        tree_depth--;
       } else {
-	/* Okay, uncle is black.  We can fix everything, now. */
-	if (path[tree_depth + 1] == path[tree_depth]->right) {
-	  st_left_rotate(tree_depth, &root->root);
-	  path[tree_depth + 1]->info &= ~ST_RED;
-	} else {
-	  path[tree_depth]->info &= ~ST_RED;
-	}
-	path[tree_depth - 1]->info |= ST_RED;
-	st_right_rotate(tree_depth - 1, &root->root);
-	break;
+        /* Okay, uncle is black.  We can fix everything, now. */
+        if (path[tree_depth + 1] == path[tree_depth]->right) {
+          st_left_rotate(tree_depth, &root->root);
+          path[tree_depth + 1]->info &= ~ST_RED;
+        } else {
+          path[tree_depth]->info &= ~ST_RED;
+        }
+        path[tree_depth - 1]->info |= ST_RED;
+        st_right_rotate(tree_depth - 1, &root->root);
+        break;
       }
     } else {
       StrNode *y;
       y = path[tree_depth - 1]->left;
       if (y && (y->info & ST_COLOR) == ST_RED) {
-	/* Hmph.  Uncle is red.  Push the mess up the tree. */
-	path[tree_depth]->info &= ~ST_RED;
-	y->info &= ~ST_RED;
-	tree_depth--;
-	path[tree_depth]->info |= ST_RED;
-	tree_depth--;
+        /* Hmph.  Uncle is red.  Push the mess up the tree. */
+        path[tree_depth]->info &= ~ST_RED;
+        y->info &= ~ST_RED;
+        tree_depth--;
+        path[tree_depth]->info |= ST_RED;
+        tree_depth--;
       } else {
-	/* Okay, uncle is black.  We can fix everything, now. */
-	if (path[tree_depth + 1] == path[tree_depth]->left) {
-	  st_right_rotate(tree_depth, &root->root);
-	  path[tree_depth + 1]->info &= ~ST_RED;
-	} else {
-	  path[tree_depth]->info &= ~ST_RED;
-	}
-	path[tree_depth - 1]->info |= ST_RED;
-	st_left_rotate(tree_depth - 1, &root->root);
-	break;
+        /* Okay, uncle is black.  We can fix everything, now. */
+        if (path[tree_depth + 1] == path[tree_depth]->left) {
+          st_right_rotate(tree_depth, &root->root);
+          path[tree_depth + 1]->info &= ~ST_RED;
+        } else {
+          path[tree_depth]->info &= ~ST_RED;
+        }
+        path[tree_depth - 1]->info |= ST_RED;
+        st_left_rotate(tree_depth - 1, &root->root);
+        break;
       }
     }
   }
@@ -449,77 +449,77 @@ st_delete(char const *s, StrTree *root)
   if ((y->info & ST_COLOR) == ST_BLACK) {
     while (x != root->root && (!x || (x->info & ST_COLOR) == ST_BLACK)) {
       if (x == path[tree_depth - 1]->left) {
-	StrNode *w = path[tree_depth - 1]->right;
-	assert(w);
-	if (w && (w->info & ST_COLOR) == ST_RED) {
-	  w->info &= ~ST_RED;
-	  path[tree_depth - 1]->info |= ST_RED;
-	  st_left_rotate(tree_depth - 1, &root->root);
-	  path[tree_depth] = path[tree_depth - 1];
-	  path[tree_depth - 1] = w;
-	  tree_depth++;
-	  w = path[tree_depth - 1]->right;
-	  assert(w);
-	}
-	assert((w->info & ST_COLOR) == ST_BLACK);
-	if ((!w->left || (w->left->info & ST_COLOR) == ST_BLACK) &&
-	    (!w->right || (w->right->info & ST_COLOR) == ST_BLACK)) {
-	  w->info |= ST_RED;
-	  x = path[tree_depth - 1];
-	  tree_depth--;
-	} else {
-	  if (!w->right || (w->right->info & ST_COLOR) == ST_BLACK) {
-	    assert(w->left);
-	    w->left->info &= ~ST_RED;
-	    path[tree_depth] = w;
-	    st_right_rotate(tree_depth, &root->root);
-	    w = path[tree_depth - 1]->right;
-	    assert(w);
-	  }
-	  w->info =
-	    (w->info & ~ST_COLOR) | (path[tree_depth - 1]->info & ST_COLOR);
-	  path[tree_depth - 1]->info &= ~ST_RED;
-	  assert(w->right);
-	  w->right->info &= ~ST_RED;
-	  st_left_rotate(tree_depth - 1, &root->root);
-	  x = root->root;
-	}
+        StrNode *w = path[tree_depth - 1]->right;
+        assert(w);
+        if (w && (w->info & ST_COLOR) == ST_RED) {
+          w->info &= ~ST_RED;
+          path[tree_depth - 1]->info |= ST_RED;
+          st_left_rotate(tree_depth - 1, &root->root);
+          path[tree_depth] = path[tree_depth - 1];
+          path[tree_depth - 1] = w;
+          tree_depth++;
+          w = path[tree_depth - 1]->right;
+          assert(w);
+        }
+        assert((w->info & ST_COLOR) == ST_BLACK);
+        if ((!w->left || (w->left->info & ST_COLOR) == ST_BLACK) &&
+            (!w->right || (w->right->info & ST_COLOR) == ST_BLACK)) {
+          w->info |= ST_RED;
+          x = path[tree_depth - 1];
+          tree_depth--;
+        } else {
+          if (!w->right || (w->right->info & ST_COLOR) == ST_BLACK) {
+            assert(w->left);
+            w->left->info &= ~ST_RED;
+            path[tree_depth] = w;
+            st_right_rotate(tree_depth, &root->root);
+            w = path[tree_depth - 1]->right;
+            assert(w);
+          }
+          w->info =
+            (w->info & ~ST_COLOR) | (path[tree_depth - 1]->info & ST_COLOR);
+          path[tree_depth - 1]->info &= ~ST_RED;
+          assert(w->right);
+          w->right->info &= ~ST_RED;
+          st_left_rotate(tree_depth - 1, &root->root);
+          x = root->root;
+        }
       } else {
-	StrNode *w = path[tree_depth - 1]->left;
-	assert(w);
-	if (w && (w->info & ST_COLOR) == ST_RED) {
-	  w->info &= ~ST_RED;
-	  path[tree_depth - 1]->info |= ST_RED;
-	  st_right_rotate(tree_depth - 1, &root->root);
-	  path[tree_depth] = path[tree_depth - 1];
-	  path[tree_depth - 1] = w;
-	  tree_depth++;
-	  w = path[tree_depth - 1]->left;
-	  assert(w);
-	}
-	assert((w->info & ST_COLOR) == ST_BLACK);
-	if ((!w->right || (w->right->info & ST_COLOR) == ST_BLACK) &&
-	    (!w->left || (w->left->info & ST_COLOR) == ST_BLACK)) {
-	  w->info |= ST_RED;
-	  x = path[tree_depth - 1];
-	  tree_depth--;
-	} else {
-	  if (!w->left || (w->left->info & ST_COLOR) == ST_BLACK) {
-	    assert(w->right);
-	    w->right->info &= ~ST_RED;
-	    path[tree_depth] = w;
-	    st_left_rotate(tree_depth, &root->root);
-	    w = path[tree_depth - 1]->left;
-	    assert(w);
-	  }
-	  w->info =
-	    (w->info & ~ST_COLOR) | (path[tree_depth - 1]->info & ST_COLOR);
-	  path[tree_depth - 1]->info &= ~ST_RED;
-	  assert(w->left);
-	  w->left->info &= ~ST_RED;
-	  st_right_rotate(tree_depth - 1, &root->root);
-	  x = root->root;
-	}
+        StrNode *w = path[tree_depth - 1]->left;
+        assert(w);
+        if (w && (w->info & ST_COLOR) == ST_RED) {
+          w->info &= ~ST_RED;
+          path[tree_depth - 1]->info |= ST_RED;
+          st_right_rotate(tree_depth - 1, &root->root);
+          path[tree_depth] = path[tree_depth - 1];
+          path[tree_depth - 1] = w;
+          tree_depth++;
+          w = path[tree_depth - 1]->left;
+          assert(w);
+        }
+        assert((w->info & ST_COLOR) == ST_BLACK);
+        if ((!w->right || (w->right->info & ST_COLOR) == ST_BLACK) &&
+            (!w->left || (w->left->info & ST_COLOR) == ST_BLACK)) {
+          w->info |= ST_RED;
+          x = path[tree_depth - 1];
+          tree_depth--;
+        } else {
+          if (!w->left || (w->left->info & ST_COLOR) == ST_BLACK) {
+            assert(w->right);
+            w->right->info &= ~ST_RED;
+            path[tree_depth] = w;
+            st_left_rotate(tree_depth, &root->root);
+            w = path[tree_depth - 1]->left;
+            assert(w);
+          }
+          w->info =
+            (w->info & ~ST_COLOR) | (path[tree_depth - 1]->info & ST_COLOR);
+          path[tree_depth - 1]->info &= ~ST_RED;
+          assert(w->left);
+          w->left->info &= ~ST_RED;
+          st_right_rotate(tree_depth - 1, &root->root);
+          x = root->root;
+        }
       }
     }
     if (x)
@@ -554,8 +554,8 @@ st_print_tree(StrNode *node, int tree_depth, int lead)
   tmp = leader[tree_depth * 2];
   leader[tree_depth * 2] = '\0';
   printf("%s%c-+ %c %d %s%s\n", leader, lead,
-	 (node->info & ST_COLOR) ? 'r' : 'b', node->info / ST_USE_STEP,
-	 node->string, looped ? " -LOOPING" : "");
+         (node->info & ST_COLOR) ? 'r' : 'b', node->info / ST_USE_STEP,
+         node->string, looped ? " -LOOPING" : "");
   leader[tree_depth * 2] = ' ' + '|' - tmp;
   leader[0] = ' ';
   if (node->right && !looped)
@@ -579,8 +579,8 @@ static void st_depth_helper
    unsigned long *perms, unsigned long *nperms, int count);
 static void
 st_depth_helper(StrNode *node, int *maxdepth, int *mindepth,
-		int *avgdepth, int *leaves, unsigned long *perms,
-		unsigned long *nperms, int count)
+                int *avgdepth, int *leaves, unsigned long *perms,
+                unsigned long *nperms, int count)
 {
   if (!node)
     return;
@@ -596,14 +596,14 @@ st_depth_helper(StrNode *node, int *maxdepth, int *mindepth,
   if (node->left) {
     /* Inner node */
     st_depth_helper(node->left, maxdepth, mindepth, avgdepth, leaves, perms,
-		    nperms, count + 1);
+                    nperms, count + 1);
   }
   if (node->right) {
     /* Inner node */
     st_depth_helper(node->right, maxdepth, mindepth, avgdepth, leaves, perms,
-		    nperms, count + 1);
+                    nperms, count + 1);
   }
-  if (!node->left && !node->right) {	/* This is a leaf node */
+  if (!node->left && !node->right) {    /* This is a leaf node */
     (*leaves)++;
     (*avgdepth) += count;
     if (*mindepth > count)
@@ -615,7 +615,7 @@ st_depth_helper(StrNode *node, int *maxdepth, int *mindepth,
 /* Find the depth and number of permanment nodes */
 static void
 st_traverse_stats(StrNode *node, int *maxdepth, int *mindepth, int *avgdepth,
-		  int *leaves, unsigned long *perms, unsigned long *nperms)
+                  int *leaves, unsigned long *perms, unsigned long *nperms)
 {
   *maxdepth = 0;
   *mindepth = node ? (ST_MAX_DEPTH + 1) : 0;

@@ -116,7 +116,7 @@ unparse_room(dbref player, dbref loc)
  ***/
 const char *
 real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
-	     int use_nameaccent)
+             int use_nameaccent)
 {
   static char buf[BUFFER_LEN], *bp;
   static char tbuf1[BUFFER_LEN];
@@ -125,7 +125,7 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
 
   couldunparse = 0;
   if (!(GoodObject(loc) || (loc == NOTHING) || (loc == AMBIGUOUS) ||
-	(loc == HOME)))
+        (loc == HOME)))
     return T("*NOTHING*");
   switch (loc) {
   case NOTHING:
@@ -141,33 +141,33 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
       strcpy(tbuf1, Name(loc));
     if (IsExit(loc) && obey_myopic) {
       if ((p = strchr(tbuf1, ';')))
-	*p = '\0';
+        *p = '\0';
     }
     /* Don't let 'em get dbrefs when they're IC */
     if ((Can_Examine(player, loc) || can_link_to(player, loc) ||
-	 JumpOk(loc) || ChownOk(loc) || DestOk(loc)) &&
-	(!Myopic(player) || !obey_myopic) &&
-	!(use_nameformat && got_nameformat)
-	) {
+         JumpOk(loc) || ChownOk(loc) || DestOk(loc)) &&
+        (!Myopic(player) || !obey_myopic) &&
+        !(use_nameformat && got_nameformat)
+        ) {
       /* show everything */
       if (SUPPORT_PUEBLO)
-	couldunparse = 1;
+        couldunparse = 1;
       bp = buf;
       if (ANSI_NAMES && ShowAnsi(player) && !got_nameformat)
-	safe_format(buf, &bp, "%s%s%s(#%d%s)", ANSI_HILITE, tbuf1,
-		    ANSI_NORMAL, loc, unparse_flags(loc, player));
+        safe_format(buf, &bp, "%s%s%s(#%d%s)", ANSI_HILITE, tbuf1,
+                    ANSI_NORMAL, loc, unparse_flags(loc, player));
       else
-	safe_format(buf, &bp, "%s(#%d%s)", tbuf1, loc,
-		    unparse_flags(loc, player));
+        safe_format(buf, &bp, "%s(#%d%s)", tbuf1, loc,
+                    unparse_flags(loc, player));
       *bp = '\0';
     } else {
       /* show only the name */
       if (ANSI_NAMES && ShowAnsi(player) && !got_nameformat) {
-	bp = buf;
-	safe_format(buf, &bp, "%s%s%s", ANSI_HILITE, tbuf1, ANSI_NORMAL);
-	*bp = '\0';
+        bp = buf;
+        safe_format(buf, &bp, "%s%s%s", ANSI_HILITE, tbuf1, ANSI_NORMAL);
+        *bp = '\0';
       } else
-	strcpy(buf, tbuf1);
+        strcpy(buf, tbuf1);
     }
   }
   /* buf now contains the default formatting of the name. If we
@@ -220,7 +220,7 @@ nameformat(dbref player, dbref loc, char *tbuf1, char *defname)
     sp = save = safe_atr_value(a);
     bp = tbuf1;
     process_expression(tbuf1, &bp, &sp, loc, player, player,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     free((Malloc_t) save);
     for (j = 0; j < 10; j++) {
@@ -290,7 +290,7 @@ unparse_uinteger(unsigned long num)
 char *
 unparse_number(NVAL num)
 {
-  static char str[100];		/* Should be large enough for even the HUGE floats */
+  static char str[100];         /* Should be large enough for even the HUGE floats */
   char *p;
   sprintf(str, "%.*f", FLOAT_PRECISION, num);
 

@@ -30,8 +30,8 @@ extern ATTR *catchall;
 /** An alias for an attribute.
  */
 typedef struct atr_alias {
-  const char *alias;		/**< The alias. */
-  const char *realname;		/**< The attribute's canonical name. */
+  const char *alias;            /**< The alias. */
+  const char *realname;         /**< The attribute's canonical name. */
 } ATRALIAS;
 
 
@@ -251,11 +251,11 @@ void do_attribute_lock(dbref player, char *name, char *lock, switch_mask swi) {
   if (SW_ISSET(swi, SWITCH_RETROACTIVE) && !SW_ISSET(swi, SWITCH_DEFAULTS)) {
     for (i = 0; i < db_top; i++) {
       if ((ap2 = atr_get_noparent(i, name))) {
-	free_boolexp(SW_ISSET(swi, SWITCH_WRITE) ? AL_WLock(ap2) : AL_RLock(ap2));
-	if(SW_ISSET(swi, SWITCH_WRITE))
-	  AL_WLock(ap2) = dup_bool(AL_WLock(ap));
-	else
-	  AL_RLock(ap2) = dup_bool(AL_RLock(ap));
+        free_boolexp(SW_ISSET(swi, SWITCH_WRITE) ? AL_WLock(ap2) : AL_RLock(ap2));
+        if(SW_ISSET(swi, SWITCH_WRITE))
+          AL_WLock(ap2) = dup_bool(AL_WLock(ap));
+        else
+          AL_RLock(ap2) = dup_bool(AL_RLock(ap));
       }
     }
   }
@@ -346,14 +346,14 @@ do_attribute_access(dbref player, char *name, char *perms, int retroactive)
   if (retroactive) {
     for (i = 0; i < db_top; i++) {
       if ((ap2 = atr_get_noparent(i, name))) {
-	AL_FLAGS(ap2) = flags;
-	AL_CREATOR(ap2) = player;
+        AL_FLAGS(ap2) = flags;
+        AL_CREATOR(ap2) = player;
       }
     }
   }
 
   notify_format(player, T("%s -- Attribute permissions now: %s"), name,
-		privs_to_string(attr_privs_view, flags));
+                privs_to_string(attr_privs_view, flags));
 }
 
 
@@ -435,8 +435,8 @@ do_attribute_rename(dbref player, char *old, char *newname)
   ap = (ATTR *) ptab_find_exact(&ptab_attrib, newname);
   if (ap) {
     notify_format(player,
-		  T("The name %s is already used in the attribute table."),
-		  newname);
+                  T("The name %s is already used in the attribute table."),
+                  newname);
     return;
   }
   /* Is the old name a real attribute? */
@@ -455,7 +455,7 @@ do_attribute_rename(dbref player, char *old, char *newname)
   ptab_insert(&ptab_attrib, newname, ap);
   ptab_end_inserts(&ptab_attrib);
   notify_format(player,
-		T("Renamed %s to %s in attribute table."), old, newname);
+                T("Renamed %s to %s in attribute table."), old, newname);
   return;
 }
 
@@ -497,8 +497,8 @@ do_attribute_info(dbref player, char *name)
   }
   notify_format(player, "Attribute: %s", ap == catchall ? "Default Attribute" : AL_NAME(ap));
   notify_format(player,
-		"    Flags: %s", privs_to_string(attr_privs_view,
-						 AL_FLAGS(ap)));
+                "    Flags: %s", privs_to_string(attr_privs_view,
+                                                 AL_FLAGS(ap)));
   notify_format(player, "  Creator: %s", unparse_dbref(AL_CREATOR(ap)));
   /* Now Locks */
     if(!(AL_RLock(ap) == TRUE_BOOLEXP))

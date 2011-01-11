@@ -450,7 +450,7 @@ int
 eval_boolexp(dbref player /* The player trying to pass */ ,
              boolexp b /* The boolexp */ ,
              dbref target /* The object with the lock */,
-	     unsigned char * switches)
+             unsigned char * switches)
 {
   static int boolexp_recursion = 0;
 
@@ -553,19 +553,19 @@ eval_boolexp(dbref player /* The player trying to pass */ ,
         boolexp_recursion--;
         break;
       case OP_TSWITCHES:
-	if(switches) {
-	  SWITCH_VALUE *sw_val; 
-	  r = 0;
+        if(switches) {
+          SWITCH_VALUE *sw_val; 
+          r = 0;
 
           for(sw_val = switch_list; sw_val->name != NULL; sw_val++) 
-	    if(SW_ISSET(switches, sw_val->value)
-	       && !strcasecmp(sw_val->name, (char *) bytecode + arg)) {
-	      r = 1;
-	      break;
-	    }
-	} else
-	  r = 1;
-	break;
+            if(SW_ISSET(switches, sw_val->value)
+               && !strcasecmp(sw_val->name, (char *) bytecode + arg)) {
+              r = 1;
+              break;
+            }
+        } else
+          r = 1;
+        break;
       case OP_TFLAG:
         /* Note that both fields of a boolattr struct are upper-cased */
         if (sees_flag(target, player, (char *) bytecode + arg))
@@ -717,28 +717,28 @@ eval_boolexp(dbref player /* The player trying to pass */ ,
         }
         break;
       case OP_TDBREFLIST:
-	{
-	  char *idstr, *curr, *orig;
-	  dbref mydb;
-	  
-	  r = 0;
-	  a = atr_get(target, (char *) bytecode + arg);
-	  if (!a)
-	    break;
-	    
-	  orig = safe_atr_value(a);
-	  idstr = trim_space_sep(orig, ' ');
-	  
-	  while ((curr = split_token(&idstr, ' ')) != NULL) {
-	    mydb = parse_objid(curr);
-	    if (mydb == player) {
-	      r = 1; 
-	      break;
-	    }
-	  }
-	  free((Malloc_t) orig);
-	}
-	break;
+        {
+          char *idstr, *curr, *orig;
+          dbref mydb;
+          
+          r = 0;
+          a = atr_get(target, (char *) bytecode + arg);
+          if (!a)
+            break;
+            
+          orig = safe_atr_value(a);
+          idstr = trim_space_sep(orig, ' ');
+          
+          while ((curr = split_token(&idstr, ' ')) != NULL) {
+            mydb = parse_objid(curr);
+            if (mydb == player) {
+              r = 1; 
+              break;
+            }
+          }
+          free((Malloc_t) orig);
+        }
+        break;
       default:
         do_log(LT_ERR, 0, 0, "Bad boolexp opcode %d %d in object #%d",
                op, arg, target);
@@ -914,11 +914,11 @@ unparse_boolexp(dbref player, boolexp b, enum u_b_f flag)
         safe_format(boolexp_buf, &buftop, "HOSTNAME^%s", bytecode + arg);
         break;
       case OP_TSWITCHES:
-	safe_format(boolexp_buf, &buftop, "SWITCHES^%s", bytecode + arg);
-	break;
+        safe_format(boolexp_buf, &buftop, "SWITCHES^%s", bytecode + arg);
+        break;
       case OP_TDBREFLIST:
-	safe_format(boolexp_buf, &buftop, "DBREFLIST^%s", bytecode + arg);
-	break;
+        safe_format(boolexp_buf, &buftop, "DBREFLIST^%s", bytecode + arg);
+        break;
       }
     }
   }

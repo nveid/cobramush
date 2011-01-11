@@ -31,9 +31,9 @@ int okay_pemit(dbref player, dbref target);
 static dbref speech_loc(dbref thing);
 void propagate_sound(dbref thing, const char *msg);
 static void do_audible_stuff(dbref loc, dbref *excs, int numexcs,
-			     const char *msg);
+                             const char *msg);
 static void do_one_remit(dbref player, const char *target, const char *msg,
-			 int flags);
+                         int flags);
 static int dbref_comp(const void *a, const void *b);
 
 dbref na_zemit(dbref current, void *data);
@@ -129,14 +129,14 @@ do_teach(dbref player, dbref cause, const char *tbuf1)
     return;
   }
 
-  recurse = 1;			/* Protect use from recursive teach */
+  recurse = 1;                  /* Protect use from recursive teach */
   notify_except(Contents(loc), NOTHING,
-		tprintf(T("%s types --> %s%s%s"), spname(player),
-			ANSI_HILITE, tbuf1, ANSI_NORMAL), NA_INTER_HEAR);
-  command = mush_strdup(tbuf1, "string");	/* process_command is destructive */
+                tprintf(T("%s types --> %s%s%s"), spname(player),
+                        ANSI_HILITE, tbuf1, ANSI_NORMAL), NA_INTER_HEAR);
+  command = mush_strdup(tbuf1, "string");       /* process_command is destructive */
   process_command(player, command, cause, cause, 1);
   mush_free(command, "string");
-  recurse = 0;			/* Ok, we can be called again safely */
+  recurse = 0;                  /* Ok, we can be called again safely */
 }
 
 /** The say command.
@@ -163,8 +163,8 @@ do_say(dbref player, const char *tbuf1)
   /* notify everybody */
   notify_format(player, T("You say, \"%s\""), tbuf1);
   notify_except(Contents(loc), player,
-		tprintf(T("%s says, \"%s\""), spname(player), tbuf1),
-		NA_INTER_HEAR);
+                tprintf(T("%s says, \"%s\""), spname(player), tbuf1),
+                NA_INTER_HEAR);
 }
 
 /** A comparator for raw dbrefs.
@@ -233,7 +233,7 @@ do_oemit_list(dbref player, char *list, const char *message, int flags)
       return;
     }
 
-    oneloc = 1;			/* we are only oemitting to one location */
+    oneloc = 1;                 /* we are only oemitting to one location */
   } else {
     temp = list;
   }
@@ -252,15 +252,15 @@ do_oemit_list(dbref player, char *list, const char *message, int flags)
      * locs[0..10] are corresponding dbrefs of locations
      */
     if (GoodObject(who) && GoodObject(Location(who))
-	&& (CanSpeak(player, Location(who)))
+        && (CanSpeak(player, Location(who)))
       ) {
       if (pass[0] < 10) {
-	locs[pass[0]] = Location(who);
-	pass[pass[0] + 2] = who;
-	pass[0]++;
+        locs[pass[0]] = Location(who);
+        pass[pass[0] + 2] = who;
+        pass[0]++;
       } else {
-	notify(player, T("Too many people to oemit to."));
-	break;
+        notify(player, T("Too many people to oemit to."));
+        break;
       }
     }
   }
@@ -276,7 +276,7 @@ do_oemit_list(dbref player, char *list, const char *message, int flags)
       continue;
     pass[1] = locs[i];
     notify_anything_loc(orator, na_exceptN, pass, ns_esnotify, na_flags,
-			message, locs[i]);
+                        message, locs[i]);
     do_audible_stuff(pass[1], &pass[2], pass[0], message);
   }
 }
@@ -337,18 +337,18 @@ do_whisper(dbref player, const char *arg1, const char *arg2, int noisy)
   while (head && *head) {
     current = next_in_list(start);
     who = match_result(player, current, TYPE_PLAYER, MAT_NEAR_THINGS |
-		       MAT_CONTAINER );
+                       MAT_CONTAINER );
     if (!GoodObject(who) || !can_interact(player, who, INTERACT_HEAR)) {
       safe_chr(' ', tbuf, &tp);
       safe_str_space(current, tbuf, &tp);
       if (GoodObject(who))
-	notify_format(player, T("%s can't hear you."), Name(who));
+        notify_format(player, T("%s can't hear you."), Name(who));
     } else {
       /* A good whisper */
       good[gcount++] = who;
       if (gcount >= 100) {
-	notify(player, T("Too many people to whisper to."));
-	break;
+        notify(player, T("Too many people to whisper to."));
+        break;
       }
     }
   }
@@ -379,12 +379,12 @@ do_whisper(dbref player, const char *arg1, const char *arg2, int noisy)
 
   if (key == 1) {
     notify_format(player, (gcount > 1) ? T("%s sense: %s%s%s") :
-		  T("%s senses: %s%s%s"), tbuf + 4, Name(player), gap, arg2);
+                  T("%s senses: %s%s%s"), tbuf + 4, Name(player), gap, arg2);
     p = tprintf("You sense: %s%s%s", Name(player), gap, arg2);
   } else {
     notify_format(player, T("You whisper, \"%s\"%s."), arg2, tbuf);
     p = tprintf("%s whispers%s: %s", Name(player),
-		gcount > 1 ? tbuf : "", arg2);
+                gcount > 1 ? tbuf : "", arg2);
   }
 
   for (who = 0; who < gcount; who++) {
@@ -400,13 +400,13 @@ do_whisper(dbref player, const char *arg1, const char *arg2, int noisy)
     DOLIST(first, first) {
       overheard = 1;
       for (who = 0; who < gcount; who++) {
-	if ((first == player) || (first == good[who])) {
-	  overheard = 0;
-	  break;
-	}
+        if ((first == player) || (first == good[who])) {
+          overheard = 0;
+          break;
+        }
       }
       if (overheard)
-	notify_noecho(first, p);
+        notify_noecho(first, p);
     }
   }
   mush_free((Malloc_t) tbuf, "string");
@@ -443,29 +443,29 @@ do_pemit_list(dbref player, char *list, const char *message, int flags)
     who = noisy_match_result(player, p, NOTYPE, MAT_PLAYER | MAT_ABSOLUTE);
     if (GoodObject(who) && okay_pemit(player, who)) {
       if (nospoof && Nospoof(who)) {
-	if (Paranoid(who)) {
-	  if (!nspbuf) {
-	    bp = nspbuf = mush_malloc(BUFFER_LEN, "string");
-	    if (player == Owner(player))
-	      safe_format(nspbuf, &bp, "[%s(#%d)->] %s", Name(player),
-			  player, message);
-	    else
-	      safe_format(nspbuf, &bp, "[%s(#%d)'s %s(#%d)->] %s",
-			  Name(Owner(player)), Owner(player),
-			  Name(player), player, message);
-	    *bp = '\0';
-	  }
-	  notify(who, nspbuf);
-	} else {
-	  if (!nsbuf) {
-	    bp = nsbuf = mush_malloc(BUFFER_LEN, "string");
-	    safe_format(nsbuf, &bp, "[%s->] %s", Name(player), message);
-	    *bp = '\0';
-	  }
-	  notify(who, nsbuf);
-	}
+        if (Paranoid(who)) {
+          if (!nspbuf) {
+            bp = nspbuf = mush_malloc(BUFFER_LEN, "string");
+            if (player == Owner(player))
+              safe_format(nspbuf, &bp, "[%s(#%d)->] %s", Name(player),
+                          player, message);
+            else
+              safe_format(nspbuf, &bp, "[%s(#%d)'s %s(#%d)->] %s",
+                          Name(Owner(player)), Owner(player),
+                          Name(player), player, message);
+            *bp = '\0';
+          }
+          notify(who, nspbuf);
+        } else {
+          if (!nsbuf) {
+            bp = nsbuf = mush_malloc(BUFFER_LEN, "string");
+            safe_format(nsbuf, &bp, "[%s->] %s", Name(player), message);
+            *bp = '\0';
+          }
+          notify(who, nsbuf);
+        }
       } else {
-	notify_must_puppet(who, message);
+        notify_must_puppet(who, message);
       }
     }
   }
@@ -492,7 +492,7 @@ do_pemit(dbref player, const char *arg1, const char *arg2, int flags)
   nospoof = (flags & PEMIT_SPOOF) ? 0 : 1;
 
   switch (who = match_result(player, arg1, NOTYPE,
-			     MAT_OBJECTS | MAT_HERE | MAT_CONTAINER)) {
+                             MAT_OBJECTS | MAT_HERE | MAT_CONTAINER)) {
   case NOTHING:
     notify(player, T("I don't see that here."));
     break;
@@ -502,23 +502,23 @@ do_pemit(dbref player, const char *arg1, const char *arg2, int flags)
   default:
     if (!okay_pemit(player, who)) {
       notify_format(player,
-		    T("I'm sorry, but %s wishes to be left alone now."),
-		    Name(who));
+                    T("I'm sorry, but %s wishes to be left alone now."),
+                    Name(who));
       return;
     }
     if (!silent)
       notify_format(player, T("You pemit \"%s\" to %s."), arg2, Name(who));
     if (nospoof && Nospoof(who)) {
       if (Paranoid(who)) {
-	if (player == Owner(player))
-	  notify_format(who, "[%s(#%d)->%s] %s", Name(player), player,
-			Name(who), arg2);
-	else
-	  notify_format(who, "[%s(#%d)'s %s(#%d)->%s] %s",
-			Name(Owner(player)), Owner(player),
-			Name(player), player, Name(who), arg2);
+        if (player == Owner(player))
+          notify_format(who, "[%s(#%d)->%s] %s", Name(player), player,
+                        Name(who), arg2);
+        else
+          notify_format(who, "[%s(#%d)'s %s(#%d)->%s] %s",
+                        Name(Owner(player)), Owner(player),
+                        Name(player), player, Name(who), arg2);
       } else
-	notify_format(who, "[%s->%s] %s", Name(player), Name(who), arg2);
+        notify_format(who, "[%s->%s] %s", Name(player), Name(who), arg2);
     } else {
       notify_must_puppet(who, arg2);
     }
@@ -548,10 +548,10 @@ do_pose(dbref player, const char *tbuf1, int space)
   /* notify everybody */
   if (!space)
     notify_except(Contents(loc), NOTHING,
-		  tprintf("%s %s", spname(player), tbuf1), NA_INTER_HEAR);
+                  tprintf("%s %s", spname(player), tbuf1), NA_INTER_HEAR);
   else
     notify_except(Contents(loc), NOTHING,
-		  tprintf("%s%s", spname(player), tbuf1), NA_INTER_HEAR);
+                  tprintf("%s%s", spname(player), tbuf1), NA_INTER_HEAR);
 }
 
 /** The *wall commands.
@@ -577,7 +577,7 @@ do_wall(dbref player, const char *message, enum wall_type target, int emit)
     switch (*message) {
     case SAY_TOKEN:
       if (CHAT_STRIP_QUOTE)
-	message++;
+        message++;
       break;
     case SEMI_POSE_TOKEN:
       gap = "";
@@ -603,8 +603,8 @@ do_wall(dbref player, const char *message, enum wall_type target, int emit)
     flag_broadcast(mask, 0, "%s [%s]: %s", prefix, Name(player), message);
   else
     flag_broadcast(mask, 0,
-		   "%s %s %s, \"%s\"", prefix, Name(player),
-		   target == WALL_ALL ? "shouts" : "says", message);
+                   "%s %s %s, \"%s\"", prefix, Name(player),
+                   target == WALL_ALL ? "shouts" : "says", message);
 }
 
 /** The page command.
@@ -619,7 +619,7 @@ do_wall(dbref player, const char *message, enum wall_type target, int emit)
  */
 void
 do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
-	int noeval, int multipage, int override, int has_eq)
+        int noeval, int multipage, int override, int has_eq)
 {
   dbref target;
   const char *message;
@@ -648,7 +648,7 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   if (*arg1 && has_eq) {
     /* page to=[msg]. Always evaluate to, maybe evaluate msg */
     process_expression(tbuf2, &tp2, &arg1, player, cause, cause,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *tp2 = '\0';
     head = tbuf2;
     message = arg2;
@@ -672,7 +672,7 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
       notify_format(player, T("You last paged %s."), head);
       mush_free((Malloc_t) tbuf2, "string");
       if (hp)
-	free((Malloc_t) hp);
+        free((Malloc_t) hp);
       return;
     }
   }
@@ -689,64 +689,64 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
       target = short_page(current);
     if (target == NOTHING) {
       notify_format(player,
-		    T("I can't find who you're trying to page with: %s"),
-		    current);
+                    T("I can't find who you're trying to page with: %s"),
+                    current);
       safe_chr(' ', tbuf, &tp);
       safe_str_space(current, tbuf, &tp);
     } else if (target == AMBIGUOUS) {
       notify_format(player,
-		    T("I'm not sure who you want to page with: %s"), current);
+                    T("I'm not sure who you want to page with: %s"), current);
       safe_chr(' ', tbuf, &tp);
       safe_str_space(current, tbuf, &tp);
     } else {
       fails_lock = !(override || eval_lock(player, target, Page_Lock));
       is_haven = !override && Haven(target);
       if (!Connected(target) || (Dark(target) && (is_haven || fails_lock))) {
-	/* A player isn't connected if they aren't connected, or if
-	 * they're DARK and HAVEN, or DARK and the pagelock fails. */
-	page_return(player, target, "Away", "AWAY",
-		    tprintf(T("%s is not connected."), Name(target)));
-	if (fails_lock)
-	  fail_lock(player, target, Page_Lock, NULL, NOTHING);
-	safe_chr(' ', tbuf, &tp);
-	safe_str_space(current, tbuf, &tp);
+        /* A player isn't connected if they aren't connected, or if
+         * they're DARK and HAVEN, or DARK and the pagelock fails. */
+        page_return(player, target, "Away", "AWAY",
+                    tprintf(T("%s is not connected."), Name(target)));
+        if (fails_lock)
+          fail_lock(player, target, Page_Lock, NULL, NOTHING);
+        safe_chr(' ', tbuf, &tp);
+        safe_str_space(current, tbuf, &tp);
 #ifdef RPMODE_SYS
       } else if(RPMODE(player) && LEVEL(target) < 23) {
-	      notify(player, "You can't do that in RPMODE.");
-	      safe_chr(' ', tbuf, &tp);
-	      safe_str_space(Name(target), tbuf, &tp);
+              notify(player, "You can't do that in RPMODE.");
+              safe_chr(' ', tbuf, &tp);
+              safe_str_space(Name(target), tbuf, &tp);
 #endif
       } else if (is_haven) {
-	page_return(player, target, "Haven", "HAVEN",
-		    tprintf(T("%s is not accepting any pages."), Name(target)));
-	safe_chr(' ', tbuf, &tp);
-	safe_str_space(Name(target), tbuf, &tp);
+        page_return(player, target, "Haven", "HAVEN",
+                    tprintf(T("%s is not accepting any pages."), Name(target)));
+        safe_chr(' ', tbuf, &tp);
+        safe_str_space(Name(target), tbuf, &tp);
       } else if (fails_lock) {
-	page_return(player, target, "Haven", "HAVEN",
-		    tprintf(T("%s is not accepting your pages."),
-			    Name(target)));
-	fail_lock(player, target, Page_Lock, NULL, NOTHING);
-	safe_chr(' ', tbuf, &tp);
-	safe_str_space(Name(target), tbuf, &tp);
+        page_return(player, target, "Haven", "HAVEN",
+                    tprintf(T("%s is not accepting your pages."),
+                            Name(target)));
+        fail_lock(player, target, Page_Lock, NULL, NOTHING);
+        safe_chr(' ', tbuf, &tp);
+        safe_str_space(Name(target), tbuf, &tp);
       } else if(RPMODE(target) && LEVEL(player) < 23 && LEVEL(target) < 23 ) {
-	      page_return(player, target, 
-	  	   "RPMode", "RPMODE", 
-		      tprintf(T("%s is in RPMode and can not communicate OOCly at this moment."), Name(target)));
-			      safe_chr(' ', tbuf , &tp);
-			      safe_str_space(current, tbuf, &tp);
-		      } else if(hidden(target) && !CanSee(player,target)){
-	      /* this is a page that appears bad, but is good */
-	          page_return(player, target, "Away", "AWAY",
-	                   tprintf(T("%s is not connected."), Name(target)));
-	          safe_chr(' ', tbuf, &tp);
-	          safe_str_space(current, tbuf, &tp);
+              page_return(player, target, 
+                   "RPMode", "RPMODE", 
+                      tprintf(T("%s is in RPMode and can not communicate OOCly at this moment."), Name(target)));
+                              safe_chr(' ', tbuf , &tp);
+                              safe_str_space(current, tbuf, &tp);
+                      } else if(hidden(target) && !CanSee(player,target)){
+              /* this is a page that appears bad, but is good */
+                  page_return(player, target, "Away", "AWAY",
+                           tprintf(T("%s is not connected."), Name(target)));
+                  safe_chr(' ', tbuf, &tp);
+                  safe_str_space(current, tbuf, &tp);
 
              almost_good[ag_count] = target;
              ag_count++;
       } else {
-	/* This is a good page */
-	good[gcount] = target;
-	gcount++;
+        /* This is a good page */
+        good[gcount] = target;
+        gcount++;
       }
     }
   }
@@ -808,7 +808,7 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
       mush_panic("Unable to allocate memory in do_page");
 
     process_expression(msgbuf, &mb, &message, player, cause, cause,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *mb = '\0';
     message = msgbuf;
   }
@@ -859,12 +859,12 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   if(gcount > 0) {
     if (key == 1)
        notify_format(player, T("Long distance to %s%s: %s%s%s"),
-		  ((gcount > 1) && (!multipage)) ? "(blind) " : "", tbuf2,
-		  Name(player), gap, message);
+                  ((gcount > 1) && (!multipage)) ? "(blind) " : "", tbuf2,
+                  Name(player), gap, message);
     else
        notify_format(player, T("You paged %s%s with '%s'"),
-		  ((gcount > 1) && (!multipage)) ? "(blind) " : "", tbuf2,
-		  message);
+                  ((gcount > 1) && (!multipage)) ? "(blind) " : "", tbuf2,
+                  message);
   }
 
   /* Figure out the 'name' of the player */
@@ -904,9 +904,9 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   for (i = 0; i < (gcount+ag_count); i++) {
 
     if(i >= gcount || gcount == 0)
-	    gptr = almost_good + (i-gcount);
+            gptr = almost_good + (i-gcount);
     else
-	    gptr = good + i;
+            gptr = good + i;
     
     if (!IsPlayer(player) && Nospoof((dbref)*gptr))
       notify_format((dbref)*gptr, "[#%d] %s%s", player,(i >= gcount || gcount == 0) ? "Hidden Receive>": "" ,  tbuf);
@@ -939,10 +939,10 @@ filter_found(dbref thing, const char *msg, int flag)
   char *filter;
   ATTR *a;
   char *p, *bp;
-  char *temp;			/* need this so we don't leak memory     
-				 * by failing to free the storage
-				 * allocated by safe_uncompress
-				 */
+  char *temp;                   /* need this so we don't leak memory     
+                                 * by failing to free the storage
+                                 * allocated by safe_uncompress
+                                 */
   int i;
   int matched = 0;
 
@@ -959,12 +959,12 @@ filter_found(dbref thing, const char *msg, int flag)
   for (i = 0; (i < MAX_ARG) && !matched; i++) {
     p = bp = filter;
     process_expression(p, &bp, (char const **) &filter, 0, 0, 0,
-		       PE_NOTHING, PT_COMMA, NULL);
+                       PE_NOTHING, PT_COMMA, NULL);
     if (*filter == ',')
       *filter++ = '\0';
-    if (*p == '\0' && *filter == '\0')	/* No more filters */
+    if (*p == '\0' && *filter == '\0')  /* No more filters */
       break;
-    if (*p == '\0')		/* Empty filter */
+    if (*p == '\0')             /* Empty filter */
       continue;
     if (AF_Regexp(a))
       matched = quick_regexp_match(p, msg, AF_Case(a));
@@ -1008,7 +1008,7 @@ make_prefixstr(dbref thing, const char *msg, char *tbuf1)
     asave = safe_atr_value(a);
     ap = asave;
     process_expression(tbuf1, &bp, &ap, thing, orator, orator,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     free((Malloc_t) asave);
     restore_global_regs("prefix_save", preserve);
     for (j = 0; j < 10; j++)
@@ -1050,7 +1050,7 @@ propagate_sound(dbref thing, const char *msg)
 
   if (IsExit(thing)) {
     notify_anything(orator, na_next, &Contents(loc), NULL, NA_INTER_HEAR,
-		    tbuf1);
+                    tbuf1);
   } else {
     pass[0] = Contents(loc);
     pass[1] = thing;
@@ -1071,12 +1071,12 @@ do_audible_stuff(dbref loc, dbref *excs, int numexcs, const char *msg)
   if (IsRoom(loc)) {
     DOLIST(e, Exits(loc)) {
       if (Audible(e))
-	propagate_sound(e, msg);
+        propagate_sound(e, msg);
     }
   } else {
     for (i = 0; i < numexcs; i++)
       if (*(excs + i) == loc)
-	exclude = 1;
+        exclude = 1;
     if (!exclude)
       propagate_sound(loc, msg);
   }
@@ -1207,20 +1207,20 @@ do_one_remit(dbref player, const char *target, const char *msg, int flags)
       notify(player, T("There can't be anything in that!"));
     } else if (!okay_pemit(player, room)) {
       notify_format(player,
-		    T("I'm sorry, but %s wishes to be left alone now."),
-		    Name(room));
+                    T("I'm sorry, but %s wishes to be left alone now."),
+                    Name(room));
     } else if (!CanSpeak(player,room)) {
       notify(player, T("You may not speak there!"));
     } else {
       if (!(flags & PEMIT_SILENT) && (Location(player) != room)) {
-	const char *rmno;
-	rmno = unparse_object(player, room);
-	notify_format(player, T("You remit, \"%s\" in %s"), msg, rmno);
+        const char *rmno;
+        rmno = unparse_object(player, room);
+        notify_format(player, T("You remit, \"%s\" in %s"), msg, rmno);
       }
       if (flags & PEMIT_SPOOF)
-	na_flags |= NA_SPOOF;
+        na_flags |= NA_SPOOF;
       notify_anything_loc(player, na_loc, &room, ns_esnotify, na_flags,
-			  msg, room);
+                          msg, room);
       do_audible_stuff(room, NULL, 0, msg);
     }
   }
@@ -1271,7 +1271,7 @@ do_lemit(dbref player, const char *tbuf1, int flags)
   if (((room = Location(player)) == player) || !GoodObject(room)) {
     notify(player, T("Invalid container object."));
     do_rawlog(LT_ERR, T("** BAD CONTAINER **  #%d is inside #%d."), player,
-	      room);
+              room);
     return;
   }
   while (!IsRoom(room) && (rec < 15)) {
@@ -1307,12 +1307,12 @@ na_zemit(dbref current __attribute__ ((__unused__)), void *data)
   do {
     if (this == NOTHING) {
       for (room = dbrefs[1]; room < db_top; room++) {
-	if (IsRoom(room) && (Zone(room) == dbrefs[2])
-	    && CanSpeak(dbrefs[3], room))
-	  break;
+        if (IsRoom(room) && (Zone(room) == dbrefs[2])
+            && CanSpeak(dbrefs[3], room))
+          break;
       }
       if (!(room < db_top))
-	return NOTHING;
+        return NOTHING;
       this = room;
       dbrefs[1] = room + 1;
     } else if (IsRoom(this)) {

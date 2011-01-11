@@ -75,6 +75,6 @@ local_commands()
 {
 #ifdef EXAMPLE
   command_add("@SILLY", CMD_T_ANY, NULL, NULL, "NOISY NOEVAL",
-	      cmd_local_silly);
+              cmd_local_silly);
 #endif
 }

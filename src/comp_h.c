@@ -25,16 +25,16 @@
 #include "mymalloc.h"
 #include "confmagic.h"
 #ifdef WIN32
-#pragma warning( disable : 4244)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4244)        /* NJG: disable warning re conversion */
 #endif
 
-#define TABLE_SIZE      256	/**< allow all characters */
-#define EOS             0	/**< use null code for end of string */
-#define CHAR_BITS       8	/**< number of bits in char */
-#define CHAR_MASK       255	/**< mask for just one char */
-#define CODE_BITS       25	/**< max number of bits in code */
+#define TABLE_SIZE      256     /**< allow all characters */
+#define EOS             0       /**< use null code for end of string */
+#define CHAR_BITS       8       /**< number of bits in char */
+#define CHAR_MASK       255     /**< mask for just one char */
+#define CODE_BITS       25      /**< max number of bits in code */
 #ifndef SAMPLE_SIZE
-#define SAMPLE_SIZE     0	/**< sample entire database */
+#define SAMPLE_SIZE     0       /**< sample entire database */
 #endif
 
 
@@ -45,9 +45,9 @@ typedef unsigned long CType;
 
 /** A node in the huffman compression tree. */
 typedef struct cnode {
-  struct cnode *left;		/**< Left child node. */
-  struct cnode *right;		/**< Right child node. */
-  unsigned char c;		/**< character at this node. */
+  struct cnode *left;           /**< Left child node. */
+  struct cnode *right;          /**< Right child node. */
+  unsigned char c;              /**< character at this node. */
 } CNode;
 
 static CNode *ctop;
@@ -87,7 +87,7 @@ compress(const char *s)
   /* Part 1 - how long will the compressed string be? */
   for (p = (const unsigned char *) s; p && *p; p++)
     bits += ltable[*p];
-  bits += CHAR_BITS * 2 - 1;	/* add space for the ending \0 */
+  bits += CHAR_BITS * 2 - 1;    /* add space for the ending \0 */
   needed_length = bits / CHAR_BITS;
 
   /* Part 2 - Actually get around to compressing the data... */
@@ -261,9 +261,9 @@ add_ones(CNode *node)
     if ((count >= 7) || ((count >= 3) && !node->left && !node->right)) {
       ctop = (CNode *) malloc((unsigned) sizeof(CNode));
       if (!ctop) {
-	do_rawlog(LT_ERR,
-		  "Cannot allocate memory for compression tree. Aborting.");
-	exit(1);
+        do_rawlog(LT_ERR,
+                  "Cannot allocate memory for compression tree. Aborting.");
+        exit(1);
       }
       ctop->left = node->left;
       ctop->right = node->right;
@@ -297,7 +297,7 @@ build_ctable(CNode *root, CType code, int numbits)
 #endif
     if (numbits > CODE_BITS) {
       do_rawlog(LT_ERR, "Illegal compression code length (%d). Aborting.",
-		numbits);
+                numbits);
       exit(1);
     }
   } else {
@@ -342,7 +342,7 @@ init_compress(FILE * f)
     table[total].node = (CNode *) malloc((unsigned) sizeof(CNode));
     if (!table[total].node) {
       do_rawlog(LT_ERR,
-		"Cannot allocate memory for compression tree. Aborting.");
+                "Cannot allocate memory for compression tree. Aborting.");
       exit(1);
     }
     table[total].node->c = total;
@@ -365,7 +365,7 @@ init_compress(FILE * f)
 #ifdef STANDALONE
   for (indx = 0; indx < TABLE_SIZE; indx++) {
     printf(isprint(indx) ? "Frequency for '%c': %d\n"
-	   : "Frequency for %d: %d\n", (unsigned char) indx, table[indx].freq);
+           : "Frequency for %d: %d\n", (unsigned char) indx, table[indx].freq);
   }
 #endif
 
@@ -405,7 +405,7 @@ init_compress(FILE * f)
    */
   for (indx = 2; indx < TABLE_SIZE; indx++) {
     for (count = indx;
-	 (count > 1) && (table[count - 1].freq < table[count].freq); count--) {
+         (count > 1) && (table[count - 1].freq < table[count].freq); count--) {
       temp = table[count].freq;
       table[count].freq = table[count - 1].freq;
       table[count - 1].freq = temp;
@@ -437,7 +437,7 @@ init_compress(FILE * f)
     node = (CNode *) malloc((unsigned) sizeof(CNode));
     if (!node) {
       do_rawlog(LT_ERR,
-		"Cannot allocate memory for compression tree. Aborting.");
+                "Cannot allocate memory for compression tree. Aborting.");
       exit(1);
     }
     node->left = table[indx].node;
@@ -445,7 +445,7 @@ init_compress(FILE * f)
     table[indx - 1].freq += table[indx].freq;
     table[indx - 1].node = node;
     for (count = indx - 1;
-	 (count > 1) && (table[count - 1].freq <= table[count].freq); count--) {
+         (count > 1) && (table[count - 1].freq <= table[count].freq); count--) {
       temp = table[count].freq;
       table[count].freq = table[count - 1].freq;
       table[count - 1].freq = temp;
@@ -481,7 +481,7 @@ init_compress(FILE * f)
   /* Force a 1 at fifth position on the left edge of tree. (Or terminating
    * 1 for the all 0 code.)
    */
-  node = table[1].node;		/* top of tree */
+  node = table[1].node;         /* top of tree */
   for (count = 0; node->left && (count < 4); count++)
     node = node->left;
   ctop = (CNode *) malloc((unsigned) sizeof(CNode));
@@ -505,14 +505,14 @@ init_compress(FILE * f)
 
   /* Part 4(e): Finally add in EOS as 00000000.
    */
-  node = table[1].node;		/* top of tree */
+  node = table[1].node;         /* top of tree */
   for (count = 0; count < 8; count++) {
     if (!node->left) {
       ctop = (CNode *) malloc((unsigned) sizeof(CNode));
       if (!ctop) {
-	do_rawlog(LT_ERR,
-		  "Cannot allocate memory for compression tree. Aborting.");
-	exit(1);
+        do_rawlog(LT_ERR,
+                  "Cannot allocate memory for compression tree. Aborting.");
+        exit(1);
       }
       ctop->left = (CNode *) NULL;
       ctop->right = (CNode *) NULL;
@@ -572,7 +572,7 @@ main(argc, argv)
     p1 = otherbuf;
     while (p1 && *p1) {
       for (count = 0; count < 8; count++)
-	printf("%d", (*p1 >> count) & 1);
+        printf("%d", (*p1 >> count) & 1);
       p1++;
     }
     printf("\n");
@@ -582,7 +582,7 @@ main(argc, argv)
     printf("Text: %s!\n", newbuffer);
     printf("Strcoll(orig,uncomp) = %d\n", strcoll(newbuffer, buffer));
     printf("strlen(orig) = %d, strlen(uncomp) = %d\n", strlen(buffer),
-	   strlen(newbuffer));
+           strlen(newbuffer));
     p1 = buffer;
     p2 = newbuffer;
 /*

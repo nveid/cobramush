@@ -40,7 +40,7 @@ $spitshell >Makefile <<!GROK!THIS!
 # This section of the file should be automatically configured by
 # the Configure script. If it doesn't work, you might try starting
 # from the Makefile.old that's included instead, and reporting
-# your problem (including this Makefile) to pennmush-bugs@pennmush.org
+# your problem (including this Makefile) to devteam@cobramush.org
 #
 # If you want to profile the code, add -pg -a -DPROFILING to CCFLAGS
 # and (probably) remove -O
@@ -70,7 +70,7 @@ SHELL=/bin/sh
 GLOBAL_INSTALL=/usr/libexec/cobramush
 
 # Where to install with 'make debianinstall'
-DEB_INSTALL=$(DESTDIR)/usr/lib/pennmush/game
+DEB_INSTALL=$(DESTDIR)/usr/lib/cobramush/game
 DEB_BIN=$(DESTDIR)/usr/games
 
 all: config.h options.h autogen game/mush.cnf
@@ -126,8 +126,8 @@ console:
 access:
 	utils/make_access_cnf.sh game
 
-pennmush.pot:
-	(cd src; make ../po/pennmush.pot)
+cobramush.pot:
+	(cd src; make ../po/cobramush.pot)
 
 localized:
 	-echo "Localizing for your locale..."
@@ -141,14 +141,14 @@ announce:
 	(cd src; make announce "CC=$(CC)" "CCFLAGS=$(CCFLAGS)" \
 	"LDFLAGS=$(LDFLAGS)" "CLIBS=$(CLIBS)" )
 
-versions: CHANGES*
-	-@rm -rf CHANGES*~ CHANGES*bak
-	@utils/mkvershlp.pl game/txt/hlp CHANGES*
+versions: game/txt/changes/*   
+	-@rm -rf game/txt/changes.txt
+	(cd game/txt && ruby genchanges.rb) 
 
 safety:
-	$(CP) src/*.c /var/pennmush-bak/src
-	$(CP) hdrs/*.h /var/pennmush-bak/hdrs
-	$(CP) * /var/pennmush-bak
+	$(CP) src/*.c /var/cobramush-bak/src
+	$(CP) hdrs/*.h /var/cobramush-bak/hdrs
+	$(CP) * /var/cobramush-bak
 
 distdepend: hdrs/funs.h hdrs/cmds.h
 	(cd src; make depend "CC=$(CC)" "CCFLAGS=$(CCFLAGS)" \
@@ -260,7 +260,7 @@ diffs:
 	@make versions > /dev/null 2>&1
 	@make touchswitches > /dev/null 2>&1
 	@make autogen > /dev/null 2>&1
-	@(prcs diff -r$(VS) -N pennmush `cat MANIFEST` | grep -v 'Index:')
+	@(prcs diff -r$(VS) -N cobramush `cat MANIFEST` | grep -v 'Index:')
 
 checkin: versions autogen
 	@prcs checkin
@@ -285,10 +285,10 @@ touchswitches:
 	@touch src/SWITCHES
 
 dist.tar: indent distclean versions touchswitches autogen
-	makedist -c pennmush
-	tar -cvf /tmp/dist.tar pennmush
+	makedist -c cobramush
+	tar -cvf /tmp/dist.tar cobramush
 	-pgp -sb /tmp/dist.tar
-	-rm -rf pennmush
+	-rm -rf cobramush
 
 CSRImalloc.tar.Z:
 	(cd src/CSRI; make clean)

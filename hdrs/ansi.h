@@ -66,4 +66,4 @@
 
 #define ANSI_END        "m"
 
-#endif				/* __ANSI_H */
+#endif                          /* __ANSI_H */

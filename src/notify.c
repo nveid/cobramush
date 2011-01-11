@@ -20,7 +20,7 @@
 #include <windows.h>
 #include <winsock.h>
 #include <io.h>
-#else				/* !WIN32 */
+#else                           /* !WIN32 */
 #ifdef I_SYS_FILE
 #include <sys/file.h>
 #endif
@@ -43,7 +43,7 @@
 #ifdef I_SYS_STAT
 #include <sys/stat.h>
 #endif
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */
 #include <time.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -124,7 +124,7 @@ static int under_limit = 1;
  */
 
 /* Telnet codes */
-#define IAC 255			/**< telnet: interpret as command */
+#define IAC 255                 /**< telnet: interpret as command */
 
 /** Iterate through a list of descriptors, and do something with those
  * that are connected.
@@ -154,48 +154,48 @@ int process_output(DESC *d);
 
 /** Types of text renderings we can do in notify_anything(). */
 enum na_type {
-  NA_ASCII = 0,			/**< Plain old ascii. */
-  NA_ANSI,			/**< ANSI flag */
-  NA_COLOR,			/**< ANSI and COLOR flags */
-  NA_PUEBLO,			/**< html */
-  NA_PASCII,			/**< Player without any of the above */
-  NA_TANSI,			/**< Like above with telnet-aware client */
-  NA_TCOLOR,			/**< Like above with telnet-aware client */
-  NA_TPASCII,			/**< Like above with telnet-aware client */
-  NA_NANSI,			/**< ANSI and NOACCENTS */
-  NA_NCOLOR,			/**< ANSI, COLOR, NOACCENTS */
-  NA_NPUEBLO,			/**< html & NOACCENTS */
-  NA_NPASCII			/**< NOACCENTS */
+  NA_ASCII = 0,                 /**< Plain old ascii. */
+  NA_ANSI,                      /**< ANSI flag */
+  NA_COLOR,                     /**< ANSI and COLOR flags */
+  NA_PUEBLO,                    /**< html */
+  NA_PASCII,                    /**< Player without any of the above */
+  NA_TANSI,                     /**< Like above with telnet-aware client */
+  NA_TCOLOR,                    /**< Like above with telnet-aware client */
+  NA_TPASCII,                   /**< Like above with telnet-aware client */
+  NA_NANSI,                     /**< ANSI and NOACCENTS */
+  NA_NCOLOR,                    /**< ANSI, COLOR, NOACCENTS */
+  NA_NPUEBLO,                   /**< html & NOACCENTS */
+  NA_NPASCII                    /**< NOACCENTS */
 };
 
 /** Number of possible message text renderings */
 #define MESSAGE_TYPES 12
 
-#define TA_BGC 0	/**< Text attribute background color */
-#define TA_FGC 1	/**< Text attribute foreground color */
-#define TA_BOLD 2	/**< Text attribute bold/hilite */
-#define TA_REV 3	/**< Text attribute reverse/inverse */
-#define TA_BLINK 4	/**< Text attribute blinking/flashing */
-#define TA_ULINE 5	/**< Text attribute underline */
+#define TA_BGC 0        /**< Text attribute background color */
+#define TA_FGC 1        /**< Text attribute foreground color */
+#define TA_BOLD 2       /**< Text attribute bold/hilite */
+#define TA_REV 3        /**< Text attribute reverse/inverse */
+#define TA_BLINK 4      /**< Text attribute blinking/flashing */
+#define TA_ULINE 5      /**< Text attribute underline */
 
 static int na_depth = 0;
 
 /** A place to store a rendered message. */
 struct notify_strings {
-  unsigned char *message;	/**< The message text. */
-  size_t len;			/**< Length of message. */
-  int made;			/**< True if message has been rendered. */
+  unsigned char *message;       /**< The message text. */
+  size_t len;                   /**< Length of message. */
+  int made;                     /**< True if message has been rendered. */
 };
 
 static void fillstate(int state[], const unsigned char **f);
 static void ansi_change_state(char *t, char **o, int color, int *state,
-			      int *newstate);
+                              int *newstate);
 static enum na_type notify_type(DESC *d);
 static void free_strings(struct notify_strings messages[]);
 static void zero_strings(struct notify_strings messages[]);
 static unsigned char *notify_makestring(const char *message,
-					struct notify_strings messages[],
-					enum na_type type);
+                                        struct notify_strings messages[],
+                                        enum na_type type);
 
 
 static void
@@ -213,35 +213,35 @@ fillstate(int state[6], const unsigned char **f)
     p++;
     while (*p && *p != 'm') {
       if ((*p > '9') || (*p < '0')) {
-	/* Nada */
+        /* Nada */
       } else if (!(*(p + 1)) || (*(p + 1) == 'm') || (*(p + 1) == ';')) {
-	/* ShortCode */ ;
-	switch (*p) {
-	case '0':
-	  for (i = 0; i < 6; i++)
-	    state[i] = 0;
-	  break;
-	case '1':
-	  state[TA_BOLD] = 1;
-	  break;
-	case '7':
-	  state[TA_REV] = 1;
-	  break;
-	case '5':
-	  state[TA_BLINK] = 1;
-	  break;
-	case '4':
-	  state[TA_ULINE] = 1;
-	  break;
-	}
+        /* ShortCode */ ;
+        switch (*p) {
+        case '0':
+          for (i = 0; i < 6; i++)
+            state[i] = 0;
+          break;
+        case '1':
+          state[TA_BOLD] = 1;
+          break;
+        case '7':
+          state[TA_REV] = 1;
+          break;
+        case '5':
+          state[TA_BLINK] = 1;
+          break;
+        case '4':
+          state[TA_ULINE] = 1;
+          break;
+        }
       } else {
-	n = (*p - '0') * 10;
-	p++;
-	n += (*p - '0');
-	if ((n >= 30) && (n <= 37))
-	  state[TA_FGC] = n - 29;
-	else if ((n >= 40) && (n <= 47))
-	  state[TA_BGC] = n - 39;
+        n = (*p - '0') * 10;
+        p++;
+        n += (*p - '0');
+        if ((n >= 30) && (n <= 37))
+          state[TA_FGC] = n - 29;
+        else if ((n >= 40) && (n <= 47))
+          state[TA_BGC] = n - 39;
       }
       p++;
     }
@@ -322,7 +322,7 @@ free_strings(struct notify_strings messages[])
 
 static unsigned char *
 notify_makestring(const char *message, struct notify_strings messages[],
-		  enum na_type type)
+                  enum na_type type)
 {
   char *o;
   const unsigned char *p;
@@ -349,18 +349,18 @@ notify_makestring(const char *message, struct notify_strings messages[],
     while (*p) {
       switch (*p) {
       case TAG_START:
-	while (*p && *p != TAG_END)
-	  p++;
-	break;
+        while (*p && *p != TAG_END)
+          p++;
+        break;
       case '\r':
       case BEEP_CHAR:
-	break;
+        break;
       case ESC_CHAR:
-	while (*p && *p != 'm')
-	  p++;
-	break;
+        while (*p && *p != 'm')
+          p++;
+        break;
       default:
-	safe_chr(*p, t, &o);
+        safe_chr(*p, t, &o);
       }
       p++;
     }
@@ -378,31 +378,31 @@ notify_makestring(const char *message, struct notify_strings messages[],
     while (*p) {
       switch (*p) {
       case IAC:
-	if (type == NA_TPASCII)
-	  safe_str("\xFF\xFF", t, &o);
-	else if (strip)
-	  safe_str(accent_table[IAC].base, t, &o);
-	else
-	  safe_chr((char) IAC, t, &o);
-	break;
+        if (type == NA_TPASCII)
+          safe_str("\xFF\xFF", t, &o);
+        else if (strip)
+          safe_str(accent_table[IAC].base, t, &o);
+        else
+          safe_chr((char) IAC, t, &o);
+        break;
       case TAG_START:
-	while (*p && *p != TAG_END)
-	  p++;
-	break;
+        while (*p && *p != TAG_END)
+          p++;
+        break;
       case ESC_CHAR:
-	while (*p && *p != 'm')
-	  p++;
-	break;
+        while (*p && *p != 'm')
+          p++;
+        break;
       case '\r':
-	break;
+        break;
       case '\n':
-	safe_str("\r\n", t, &o);
-	break;
+        safe_str("\r\n", t, &o);
+        break;
       default:
-	if (strip && accent_table[(unsigned char) *p].base)
-	  safe_str(accent_table[(unsigned char) *p].base, t, &o);
-	else
-	  safe_chr(*p, t, &o);
+        if (strip && accent_table[(unsigned char) *p].base)
+          safe_str(accent_table[(unsigned char) *p].base, t, &o);
+        else
+          safe_chr(*p, t, &o);
       }
       p++;
     }
@@ -428,83 +428,83 @@ notify_makestring(const char *message, struct notify_strings messages[],
     while (*p) {
       switch ((unsigned char) *p) {
       case IAC:
-	if (changed) {
-	  changed = 0;
-	  ansi_change_state(t, &o, color, state, newstate);
-	}
-	if (type == NA_TANSI || type == NA_TCOLOR)
-	  safe_str("\xFF\xFF", t, &o);
-	else if (strip && accent_table[IAC].base)
-	  safe_str(accent_table[IAC].base, t, &o);
-	else
-	  safe_chr((char) IAC, t, &o);
-	break;
+        if (changed) {
+          changed = 0;
+          ansi_change_state(t, &o, color, state, newstate);
+        }
+        if (type == NA_TANSI || type == NA_TCOLOR)
+          safe_str("\xFF\xFF", t, &o);
+        else if (strip && accent_table[IAC].base)
+          safe_str(accent_table[IAC].base, t, &o);
+        else
+          safe_chr((char) IAC, t, &o);
+        break;
       case TAG_START:
-	if (pueblo) {
-	  safe_chr('<', t, &o);
-	  p++;
-	  while ((*p) && (*p != TAG_END)) {
-	    safe_chr(*p, t, &o);
-	    p++;
-	  }
-	  safe_chr('>', t, &o);
-	} else {
-	  /* Non-pueblo */
-	  while (*p && *p != TAG_END)
-	    p++;
-	}
-	break;
+        if (pueblo) {
+          safe_chr('<', t, &o);
+          p++;
+          while ((*p) && (*p != TAG_END)) {
+            safe_chr(*p, t, &o);
+            p++;
+          }
+          safe_chr('>', t, &o);
+        } else {
+          /* Non-pueblo */
+          while (*p && *p != TAG_END)
+            p++;
+        }
+        break;
       case TAG_END:
-	/* Should never be seen alone */
-	break;
+        /* Should never be seen alone */
+        break;
       case '\r':
-	break;
+        break;
       case ESC_CHAR:
-	fillstate(newstate, &p);
-	changed = 1;
-	break;
+        fillstate(newstate, &p);
+        changed = 1;
+        break;
       default:
-	if (changed) {
-	  changed = 0;
-	  ansi_change_state(t, &o, color, state, newstate);
-	}
-	if (pueblo) {
-	  if (strip) {
-	    /* Even if we're NOACCENTS, we must still translate a few things */
-	    switch ((unsigned char) *p) {
-	    case '\n':
-	    case '&':
-	    case '<':
-	    case '>':
-	    case '"':
-	      safe_str(accent_table[(unsigned char) *p].entity, t, &o);
-	      break;
-	    default:
-	      if (accent_table[(unsigned char) *p].base)
-		safe_str(accent_table[(unsigned char) *p].base, t, &o);
-	      else
-		safe_chr(*p, t, &o);
-	      break;
-	    }
-	  } else if (accent_table[(unsigned char) *p].entity)
-	    safe_str(accent_table[(unsigned char) *p].entity, t, &o);
-	  else
-	    safe_chr(*p, t, &o);
-	} else {
-	  /* Non-pueblo */
-	  if ((unsigned char) *p == '\n')
-	    safe_str("\r\n", t, &o);
-	  else if (strip && accent_table[(unsigned char) *p].base)
-	    safe_str(accent_table[(unsigned char) *p].base, t, &o);
-	  else
-	    safe_chr(*p, t, &o);
-	}
+        if (changed) {
+          changed = 0;
+          ansi_change_state(t, &o, color, state, newstate);
+        }
+        if (pueblo) {
+          if (strip) {
+            /* Even if we're NOACCENTS, we must still translate a few things */
+            switch ((unsigned char) *p) {
+            case '\n':
+            case '&':
+            case '<':
+            case '>':
+            case '"':
+              safe_str(accent_table[(unsigned char) *p].entity, t, &o);
+              break;
+            default:
+              if (accent_table[(unsigned char) *p].base)
+                safe_str(accent_table[(unsigned char) *p].base, t, &o);
+              else
+                safe_chr(*p, t, &o);
+              break;
+            }
+          } else if (accent_table[(unsigned char) *p].entity)
+            safe_str(accent_table[(unsigned char) *p].entity, t, &o);
+          else
+            safe_chr(*p, t, &o);
+        } else {
+          /* Non-pueblo */
+          if ((unsigned char) *p == '\n')
+            safe_str("\r\n", t, &o);
+          else if (strip && accent_table[(unsigned char) *p].base)
+            safe_str(accent_table[(unsigned char) *p].base, t, &o);
+          else
+            safe_chr(*p, t, &o);
+        }
       }
       p++;
     }
     if (state[TA_BOLD] || state[TA_REV] ||
-	state[TA_BLINK] || state[TA_ULINE] ||
-	(color && (state[TA_FGC] || state[TA_BGC])))
+        state[TA_BLINK] || state[TA_ULINE] ||
+        (color && (state[TA_FGC] || state[TA_BGC])))
       safe_str(ANSI_NORMAL, t, &o);
 
     break;
@@ -539,13 +539,13 @@ na_one(dbref current, void *data)
 }
 
 dbref na_jloc(dbref current, void *data) {
-	dbref player = *((dbref *) data);
-	if(current == NOTHING)
-		return player;
-	if(current == player)
-		return Location(player);
-	else
-		return NOTHING;
+        dbref player = *((dbref *) data);
+        if(current == NOTHING)
+                return player;
+        if(current == player)
+                return Location(player);
+        else
+                return NOTHING;
 }
 
 /** notify_anthing() iterator for following a contents/exit chain.
@@ -661,7 +661,7 @@ na_exceptN(dbref current, void *data)
     check = 0;
     for (i = 2; i < dbrefs[0] + 2; i++)
       if (current == dbrefs[i])
-	check = 1;
+        check = 1;
   } while (check);
   return current;
 }
@@ -693,14 +693,14 @@ notify_type(DESC *d)
   } else if (ShowAnsi(d->player)) {
     if (ShowAnsiColor(d->player)) {
       if (strip)
-	poutput = NA_NCOLOR;
+        poutput = NA_NCOLOR;
       else
-	poutput = (d->conn_flags & CONN_TELNET) ? NA_TCOLOR : NA_COLOR;
+        poutput = (d->conn_flags & CONN_TELNET) ? NA_TCOLOR : NA_COLOR;
     } else {
       if (strip)
-	poutput = NA_NANSI;
+        poutput = NA_NANSI;
       else
-	poutput = (d->conn_flags & CONN_TELNET) ? NA_TANSI : NA_ANSI;
+        poutput = (d->conn_flags & CONN_TELNET) ? NA_TANSI : NA_ANSI;
     }
   } else {
     if (strip)
@@ -726,9 +726,9 @@ notify_type(DESC *d)
  */
 void
 notify_anything_loc(dbref speaker, na_lookup func,
-		    void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
-						  int), int flags,
-		    const char *message, dbref loc)
+                    void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
+                                                  int), int flags,
+                    const char *message, dbref loc)
 {
   dbref target;
   dbref passalong[3];
@@ -781,133 +781,133 @@ notify_anything_loc(dbref speaker, na_lookup func,
 
     if (IsPlayer(target)) {
       if (!Connected(target) && options.login_allow && under_limit)
-	continue;
+        continue;
 
       if (flags & NA_INTERACTION) {
-	int pass_interact = 1;
-	if ((flags & NA_INTER_SEE) &&
-	    !can_interact(speaker, target, INTERACT_SEE))
-	  pass_interact = 0;
-	if (pass_interact && (flags & NA_INTER_PRESENCE) &&
-	    !can_interact(speaker, target, INTERACT_PRESENCE))
-	  pass_interact = 0;
-	if (pass_interact && (flags & NA_INTER_HEAR) &&
-	    !can_interact(speaker, target, INTERACT_HEAR))
-	  pass_interact = 0;
-	if (pass_interact && (flags & NA_INTER_LOCK) &&
-	    !Pass_Interact_Lock(speaker, target))
-	  pass_interact = 0;
-	if (!pass_interact)
-	  continue;
+        int pass_interact = 1;
+        if ((flags & NA_INTER_SEE) &&
+            !can_interact(speaker, target, INTERACT_SEE))
+          pass_interact = 0;
+        if (pass_interact && (flags & NA_INTER_PRESENCE) &&
+            !can_interact(speaker, target, INTERACT_PRESENCE))
+          pass_interact = 0;
+        if (pass_interact && (flags & NA_INTER_HEAR) &&
+            !can_interact(speaker, target, INTERACT_HEAR))
+          pass_interact = 0;
+        if (pass_interact && (flags & NA_INTER_LOCK) &&
+            !Pass_Interact_Lock(speaker, target))
+          pass_interact = 0;
+        if (!pass_interact)
+          continue;
       }
 
       /* Evaluate the On Contact Message */
       if(flags & NA_EVALONCONTACT) {
-	const char *tmpbuf = msgbuf;
-	for (j = 0; j < 10; j++)
-	  wsave[j] = global_eval_context.wenv[j];
-	global_eval_context.wenv[0] = msgbuf;
-	for (j = 1; j < 10; j++)
-	  global_eval_context.wenv[j] = NULL;
-	bp = eocm;
-	process_expression(eocm, &bp, &tmpbuf, target, speaker, speaker,
-			   PE_DEFAULT, PT_DEFAULT, NULL);
-	*bp = 0;
-	for (j = 0; j < 10; j++)
-	  global_eval_context.wenv[j] = wsave[j];
+        const char *tmpbuf = msgbuf;
+        for (j = 0; j < 10; j++)
+          wsave[j] = global_eval_context.wenv[j];
+        global_eval_context.wenv[0] = msgbuf;
+        for (j = 1; j < 10; j++)
+          global_eval_context.wenv[j] = NULL;
+        bp = eocm;
+        process_expression(eocm, &bp, &tmpbuf, target, speaker, speaker,
+                           PE_DEFAULT, PT_DEFAULT, NULL);
+        *bp = 0;
+        for (j = 0; j < 10; j++)
+          global_eval_context.wenv[j] = wsave[j];
       }
 
       for (d = descriptor_list; d; d = d->next) {
-	if (d->connected && d->player == target) {
-	  poutput = notify_type(d);
+        if (d->connected && d->player == target) {
+          poutput = notify_type(d);
 
-	  if ((flags & NA_PONLY) && (poutput != NA_PUEBLO))
-	    continue;
+          if ((flags & NA_PONLY) && (poutput != NA_PUEBLO))
+            continue;
 
-	  if (!(flags & NA_SPOOF)
-	      && (nsfunc && ((Nospoof(target) && (target != speaker))
-			     || (flags & NA_NOSPOOF)))) {
-	    if (Paranoid(target) || (flags & NA_PARANOID)) {
-	      if (!havepara) {
-		paranoid = nsfunc(speaker, func, fdata, 1);
-		havepara = 1;
-	      }
-	      pstring = notify_makestring(paranoid, paranoids, poutput);
-	      plen = paranoids[poutput].len;
-	    } else {
-	      if (!havespoof) {
-		nospoof = nsfunc(speaker, func, fdata, 0);
-		havespoof = 1;
-	      }
-	      pstring = notify_makestring(nospoof, nospoofs, poutput);
-	      plen = nospoofs[poutput].len;
-	    }
-	    queue_newwrite(d, pstring, plen);
-	  }
+          if (!(flags & NA_SPOOF)
+              && (nsfunc && ((Nospoof(target) && (target != speaker))
+                             || (flags & NA_NOSPOOF)))) {
+            if (Paranoid(target) || (flags & NA_PARANOID)) {
+              if (!havepara) {
+                paranoid = nsfunc(speaker, func, fdata, 1);
+                havepara = 1;
+              }
+              pstring = notify_makestring(paranoid, paranoids, poutput);
+              plen = paranoids[poutput].len;
+            } else {
+              if (!havespoof) {
+                nospoof = nsfunc(speaker, func, fdata, 0);
+                havespoof = 1;
+              }
+              pstring = notify_makestring(nospoof, nospoofs, poutput);
+              plen = nospoofs[poutput].len;
+            }
+            queue_newwrite(d, pstring, plen);
+          }
 
-	  pstring = notify_makestring((flags & NA_EVALONCONTACT) ? eocm : msgbuf, messages, poutput);
-	  plen = messages[poutput].len;
-	  if (pstring && *pstring)
-	    queue_newwrite(d, pstring, plen);
+          pstring = notify_makestring((flags & NA_EVALONCONTACT) ? eocm : msgbuf, messages, poutput);
+          plen = messages[poutput].len;
+          if (pstring && *pstring)
+            queue_newwrite(d, pstring, plen);
 
-	  if (!(flags & NA_NOENTER)) {
-	    if ((poutput == NA_PUEBLO) || (poutput == NA_NPUEBLO)) {
-	      if (flags & NA_NOPENTER)
-		queue_newwrite(d, (unsigned char *) "\n", 1);
-	      else
-		queue_newwrite(d, (unsigned char *) "<BR>\n", 5);
-	    } else {
-	      queue_newwrite(d, (unsigned char *) "\r\n", 2);
-	    }
-	  }
-	}
+          if (!(flags & NA_NOENTER)) {
+            if ((poutput == NA_PUEBLO) || (poutput == NA_NPUEBLO)) {
+              if (flags & NA_NOPENTER)
+                queue_newwrite(d, (unsigned char *) "\n", 1);
+              else
+                queue_newwrite(d, (unsigned char *) "<BR>\n", 5);
+            } else {
+              queue_newwrite(d, (unsigned char *) "\r\n", 2);
+            }
+          }
+        }
       }
     } else if (Puppet(target) &&
-	       ((Location(target) != Location(Owner(target))) ||
-		Verbose(target) ||
-		(flags & NA_MUST_PUPPET)) &&
-	       ((flags & NA_PUPPET) || !(flags & NA_NORELAY))) {
+               ((Location(target) != Location(Owner(target))) ||
+                Verbose(target) ||
+                (flags & NA_MUST_PUPPET)) &&
+               ((flags & NA_PUPPET) || !(flags & NA_NORELAY))) {
       dbref last = puppet;
 
       if (flags & NA_INTERACTION) {
-	int pass_interact = 1;
-	if ((flags & NA_INTER_SEE) &&
-	    !can_interact(speaker, target, INTERACT_SEE))
-	  pass_interact = 0;
-	if (pass_interact && (flags & NA_INTER_PRESENCE) &&
-	    !can_interact(speaker, target, INTERACT_PRESENCE))
-	  pass_interact = 0;
-	if (pass_interact && (flags & NA_INTER_HEAR) &&
-	    !can_interact(speaker, target, INTERACT_HEAR))
-	  pass_interact = 0;
-	if (!pass_interact)
-	  continue;
+        int pass_interact = 1;
+        if ((flags & NA_INTER_SEE) &&
+            !can_interact(speaker, target, INTERACT_SEE))
+          pass_interact = 0;
+        if (pass_interact && (flags & NA_INTER_PRESENCE) &&
+            !can_interact(speaker, target, INTERACT_PRESENCE))
+          pass_interact = 0;
+        if (pass_interact && (flags & NA_INTER_HEAR) &&
+            !can_interact(speaker, target, INTERACT_HEAR))
+          pass_interact = 0;
+        if (!pass_interact)
+          continue;
       }
 
       puppet = target;
       if (!tbuf1)
-	tbuf1 = (char *) mush_malloc(BUFFER_LEN, "string");
+        tbuf1 = (char *) mush_malloc(BUFFER_LEN, "string");
       bp = tbuf1;
       safe_str(Name(target), tbuf1, &bp);
       safe_str("> ", tbuf1, &bp);
       *bp = '\0';
       notify_anything(GOD, na_one, &Owner(target), NULL,
-		      NA_NOENTER | NA_PUPPET2 | NA_NORELAY | flags, tbuf1);
+                      NA_NOENTER | NA_PUPPET2 | NA_NORELAY | flags, tbuf1);
 
       nsflags = 0;
       if (!(flags & NA_SPOOF)) {
-	if (Nospoof(target))
-	  nsflags |= NA_NOSPOOF;
-	if (Paranoid(target))
-	  nsflags |= NA_PARANOID;
+        if (Nospoof(target))
+          nsflags |= NA_NOSPOOF;
+        if (Paranoid(target))
+          nsflags |= NA_PARANOID;
       }
       notify_anything(speaker, na_one, &Owner(target), ns_esnotify,
-		      flags | nsflags | NA_NORELAY | NA_PUPPET2, msgbuf);
+                      flags | nsflags | NA_NORELAY | NA_PUPPET2, msgbuf);
       puppet = last;
     }
     if ((flags & NA_NOLISTEN)
-	|| (!PLAYER_LISTEN && IsPlayer(target))
-	|| IsExit(target))
+        || (!PLAYER_LISTEN && IsPlayer(target))
+        || IsExit(target))
       continue;
 
 #ifdef RPMODE_SYS
@@ -920,56 +920,56 @@ notify_anything_loc(dbref speaker, na_lookup func,
     a = atr_get_noparent(target, "LISTEN");
     if (a) {
       if (!tbuf1)
-	tbuf1 = (char *) mush_malloc(BUFFER_LEN, "string");
+        tbuf1 = (char *) mush_malloc(BUFFER_LEN, "string");
       strcpy(tbuf1, atr_value(a));
       if (AF_Regexp(a)
-	  ? regexp_match_case(tbuf1,
-			      (char *) notify_makestring(msgbuf, messages,
-							 NA_ASCII), AF_Case(a))
-	  : wild_match_case(tbuf1,
-			    (char *) notify_makestring(msgbuf, messages,
-						       NA_ASCII), AF_Case(a))) {
-	if (eval_lock(speaker, target, Listen_Lock))
-	  if (PLAYER_AHEAR || (!IsPlayer(target))) {
-	    if (speaker != target)
-	      charge_action(speaker, target, "AHEAR");
-	    else
-	      charge_action(speaker, target, "AMHEAR");
-	    charge_action(speaker, target, "AAHEAR");
-	  }
-	if (!(flags & NA_NORELAY) && (loc != target) &&
-	    !filter_found(target,
-			  (char *) notify_makestring(msgbuf, messages,
-						     NA_ASCII), 1)) {
-	  passalong[0] = target;
-	  passalong[1] = target;
-	  passalong[2] = Owner(target);
-	  a = atr_get(target, "INPREFIX");
-	  if (a) {
-	    for (j = 0; j < 10; j++)
-	      wsave[j] = global_eval_context.wenv[j];
-	    global_eval_context.wenv[0] = (char *) msgbuf;
-	    for (j = 1; j < 10; j++)
-	      global_eval_context.wenv[j] = NULL;
-	    save_global_regs("inprefix_save", preserve);
-	    asave = safe_atr_value(a);
-	    ap = asave;
-	    bp = tbuf1;
-	    process_expression(tbuf1, &bp, &ap, target, speaker, speaker,
-			       PE_DEFAULT, PT_DEFAULT, NULL);
-	    if (bp != tbuf1)
-	      safe_chr(' ', tbuf1, &bp);
-	    safe_str(msgbuf, tbuf1, &bp);
-	    *bp = 0;
-	    free(asave);
-	    restore_global_regs("inprefix_save", preserve);
-	    for (j = 0; j < 10; j++)
-	      global_eval_context.wenv[j] = wsave[j];
-	  }
-	  notify_anything(speaker, Puppet(target) ? na_except2 : na_except,
-			  passalong, NULL, flags | NA_NORELAY | NA_PUPPET,
-			  (a) ? tbuf1 : msgbuf);
-	}
+          ? regexp_match_case(tbuf1,
+                              (char *) notify_makestring(msgbuf, messages,
+                                                         NA_ASCII), AF_Case(a))
+          : wild_match_case(tbuf1,
+                            (char *) notify_makestring(msgbuf, messages,
+                                                       NA_ASCII), AF_Case(a))) {
+        if (eval_lock(speaker, target, Listen_Lock))
+          if (PLAYER_AHEAR || (!IsPlayer(target))) {
+            if (speaker != target)
+              charge_action(speaker, target, "AHEAR");
+            else
+              charge_action(speaker, target, "AMHEAR");
+            charge_action(speaker, target, "AAHEAR");
+          }
+        if (!(flags & NA_NORELAY) && (loc != target) &&
+            !filter_found(target,
+                          (char *) notify_makestring(msgbuf, messages,
+                                                     NA_ASCII), 1)) {
+          passalong[0] = target;
+          passalong[1] = target;
+          passalong[2] = Owner(target);
+          a = atr_get(target, "INPREFIX");
+          if (a) {
+            for (j = 0; j < 10; j++)
+              wsave[j] = global_eval_context.wenv[j];
+            global_eval_context.wenv[0] = (char *) msgbuf;
+            for (j = 1; j < 10; j++)
+              global_eval_context.wenv[j] = NULL;
+            save_global_regs("inprefix_save", preserve);
+            asave = safe_atr_value(a);
+            ap = asave;
+            bp = tbuf1;
+            process_expression(tbuf1, &bp, &ap, target, speaker, speaker,
+                               PE_DEFAULT, PT_DEFAULT, NULL);
+            if (bp != tbuf1)
+              safe_chr(' ', tbuf1, &bp);
+            safe_str(msgbuf, tbuf1, &bp);
+            *bp = 0;
+            free(asave);
+            restore_global_regs("inprefix_save", preserve);
+            for (j = 0; j < 10; j++)
+              global_eval_context.wenv[j] = wsave[j];
+          }
+          notify_anything(speaker, Puppet(target) ? na_except2 : na_except,
+                          passalong, NULL, flags | NA_NORELAY | NA_PUPPET,
+                          (a) ? tbuf1 : msgbuf);
+        }
       }
     }
     /* if object is flagged LISTENER, check for ^ listen patterns
@@ -978,17 +978,17 @@ notify_anything_loc(dbref speaker, na_lookup func,
      *    */
 
     if ((speaker != target) && (ThingListen(target) || RoomListen(target))
-	&& eval_lock(speaker, target, Listen_Lock)
+        && eval_lock(speaker, target, Listen_Lock)
       )
       atr_comm_match(target, speaker, '^', ':',
-		     (char *) notify_makestring(msgbuf, messages, NA_ASCII), 0,
-		     NULL, NULL, NULL);
+                     (char *) notify_makestring(msgbuf, messages, NA_ASCII), 0,
+                     NULL, NULL, NULL);
 
     /* If object is flagged AUDIBLE and has a @FORWARDLIST, send
      *  stuff on */
     if ((!(flags & NA_NORELAY) || (flags & NA_PUPPET)) && Audible(target)
-	&& ((a = atr_get_noparent(target, "FORWARDLIST")) != NULL)
-	&& !filter_found(target, msgbuf, 0)) {
+        && ((a = atr_get_noparent(target, "FORWARDLIST")) != NULL)
+        && !filter_found(target, msgbuf, 0)) {
       notify_list(speaker, target, "FORWARDLIST", msgbuf, flags);
 
     }
@@ -1026,9 +1026,9 @@ notify_anything_loc(dbref speaker, na_lookup func,
  */
 void
 notify_anything(dbref speaker, na_lookup func,
-		void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
-					      int), int flags,
-		const char *message)
+                void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
+                                              int), int flags,
+                const char *message)
 {
   dbref loc;
 
@@ -1084,9 +1084,9 @@ notify_format(dbref player, const char *fmt, ...)
  */
 void WIN32_CDECL
 notify_anything_format(dbref speaker, na_lookup func,
-		       void *fdata, char *(*nsfunc) (dbref, na_lookup func,
-						     void *, int), int flags,
-		       const char *fmt, ...)
+                       void *fdata, char *(*nsfunc) (dbref, na_lookup func,
+                                                     void *, int), int flags,
+                       const char *fmt, ...)
 {
 #ifdef HAS_VSNPRINTF
   char buff[BUFFER_LEN];
@@ -1117,7 +1117,7 @@ notify_anything_format(dbref speaker, na_lookup func,
  */
 void
 notify_list(dbref speaker, dbref thing, const char *atr, const char *msg,
-	    int flags)
+            int flags)
 {
   char *fwdstr, *orig, *curr;
   char tbuf1[BUFFER_LEN], *bp;
@@ -1137,9 +1137,9 @@ notify_list(dbref speaker, dbref thing, const char *atr, const char *msg,
     make_prefixstr(thing, msg, tbuf1);
     if (!(flags & NA_SPOOF)) {
       if (Nospoof(thing))
-	nsflags |= NA_NOSPOOF;
+        nsflags |= NA_NOSPOOF;
       if (Paranoid(thing))
-	nsflags |= NA_PARANOID;
+        nsflags |= NA_PARANOID;
     }
   } else {
     safe_str(msg, tbuf1, &bp);
@@ -1150,14 +1150,14 @@ notify_list(dbref speaker, dbref thing, const char *atr, const char *msg,
     if (is_objid(curr)) {
       fwd = parse_objid(curr);
       if (GoodObject(fwd) && !IsGarbage(fwd) && (thing != fwd)
-	  && (Can_Forward(thing, fwd) || Can_Forward(AL_CREATOR(a),fwd))) {
-	if (IsRoom(fwd)) {
-	  notify_anything(speaker, na_loc, &fwd, ns_esnotify,
-			  flags | nsflags | NA_NORELAY, tbuf1);
-	} else {
-	  notify_anything(speaker, na_one, &fwd, ns_esnotify,
-			  flags | nsflags | NA_NORELAY, tbuf1);
-	}
+          && (Can_Forward(thing, fwd) || Can_Forward(AL_CREATOR(a),fwd))) {
+        if (IsRoom(fwd)) {
+          notify_anything(speaker, na_loc, &fwd, ns_esnotify,
+                          flags | nsflags | NA_NORELAY, tbuf1);
+        } else {
+          notify_anything(speaker, na_one, &fwd, ns_esnotify,
+                          flags | nsflags | NA_NORELAY, tbuf1);
+        }
       }
     }
   }
@@ -1234,7 +1234,7 @@ safe_tag_cancel(char const *a_tag, char *buf, char **bp)
  */
 int
 safe_tag_wrap(char const *a_tag, char const *params, char const *data,
-	      char *buf, char **bp, dbref player)
+              char *buf, char **bp, dbref player)
 {
   int result = 0;
   char *save = buf;
@@ -1373,7 +1373,7 @@ flush_queue(struct text_queue *q, int n)
     q->head = p->nxt;
 #ifdef DEBUG
     do_rawlog(LT_ERR, "free_text_block(0x%x) at 1.", p);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
     free_text_block(p);
   }
   p =
@@ -1398,7 +1398,7 @@ ssl_flush_queue(struct text_queue *q)
       q->head->nxt = p->nxt;
 #ifdef DEBUG
       do_rawlog(LT_ERR, "free_text_block(0x%x) at 1.", p);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
       free_text_block(p);
     }
   }
@@ -1477,13 +1477,13 @@ queue_newwrite(DESC *d, const unsigned char *b, int n)
     if (space < 0) {
 #ifdef HAS_OPENSSL
       if (d->ssl) {
-	/* Now we have a problem, as SSL works in blocks and you can't
-	 * just partially flush stuff.
-	 */
-	d->output_size = ssl_flush_queue(&d->output);
+        /* Now we have a problem, as SSL works in blocks and you can't
+         * just partially flush stuff.
+         */
+        d->output_size = ssl_flush_queue(&d->output);
       } else
 #endif
-	d->output_size -= flush_queue(&d->output, -space);
+        d->output_size -= flush_queue(&d->output, -space);
     }
   }
   add_to_queue(&d->output, b, n);
@@ -1556,7 +1556,7 @@ freeqs(DESC *d)
     next = cur->nxt;
 #ifdef DEBUG
     do_rawlog(LT_ERR, "free_text_block(0x%x) at 3.", cur);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
     free_text_block(cur);
     cur = next;
   }
@@ -1568,7 +1568,7 @@ freeqs(DESC *d)
     next = cur->nxt;
 #ifdef DEBUG
     do_rawlog(LT_ERR, "free_text_block(0x%x) at 4.", cur);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
     free_text_block(cur);
     cur = next;
   }
@@ -1591,7 +1591,7 @@ freeqs(DESC *d)
  *       */
 char *
 ns_esnotify(dbref speaker, na_lookup func __attribute__ ((__unused__)),
-	    void *fdata __attribute__ ((__unused__)), int para)
+            void *fdata __attribute__ ((__unused__)), int para)
 {
   char *dest, *bp;
   bp = dest = mush_malloc(BUFFER_LEN, "string");
@@ -1603,7 +1603,7 @@ ns_esnotify(dbref speaker, na_lookup func __attribute__ ((__unused__)),
       safe_format(dest, &bp, "[%s(#%d)] ", Name(speaker), speaker);
     else
       safe_format(dest, &bp, "[%s(#%d)'s %s(#%d)] ", Name(Owner(speaker)),
-		  Owner(speaker), Name(speaker), speaker);
+                  Owner(speaker), Name(speaker), speaker);
   } else
     safe_format(dest, &bp, "[%s:] ", spname(speaker));
   *bp = '\0';

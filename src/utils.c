@@ -30,7 +30,7 @@
 #endif
 #ifdef WIN32
 #include <wtypes.h>
-#include <winbase.h>		/* For GetCurrentProcessId() */
+#include <winbase.h>            /* For GetCurrentProcessId() */
 #endif
 #include "conf.h"
 
@@ -70,7 +70,7 @@ mush_malloc(size_t size, const char *check)
   ptr = malloc(size);
   if (ptr == NULL)
     do_log(LT_ERR, 0, 0, "mush_malloc failed to malloc %ld bytes for %s",
-	   size, check);
+           size, check);
   return ptr;
 }
 
@@ -82,7 +82,7 @@ mush_malloc(size_t size, const char *check)
  */
 void
 mush_free(Malloc_t RESTRICT ptr, const char *RESTRICT check
-	  __attribute__ ((__unused__)))
+          __attribute__ ((__unused__)))
 {
   del_check(check);
   free(ptr);
@@ -175,14 +175,14 @@ free_anon_attrib(ATTR *attrib)
  */
 int 
 fetch_ufun_attrib(char *attrname, dbref executor, ufun_attrib * ufun,
-		  int accept_lambda)
+                  int accept_lambda)
 { 
   ATTR *attrib;
   dbref thing;
   int pe_flags = PE_UDEFAULT;
     
   if (!ufun)
-    return 0;		/* We should never NOT receive a ufun. */
+    return 0;           /* We should never NOT receive a ufun. */
   ufun->errmess = (char *) "";
     
   /* find our object and attribute */
@@ -249,7 +249,7 @@ fetch_ufun_attrib(char *attrname, dbref executor, ufun_attrib * ufun,
  */
 int
 call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc, char *ret,
-	  dbref executor, dbref enactor, PE_Info * pe_info)   
+          dbref executor, dbref enactor, PE_Info * pe_info)   
 {
   char rbuff[BUFFER_LEN];
   char *rp;
@@ -301,7 +301,7 @@ call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc, char *ret,
 
   ap = ufun->contents;
   pe_ret = process_expression(ret, &rp, &ap, ufun->thing, executor,
-			      enactor, ufun->pe_flags, PT_DEFAULT, pe_info);
+                              enactor, ufun->pe_flags, PT_DEFAULT, pe_info);
   *rp = '\0';
 
   /* Restore the old wenv */
@@ -335,9 +335,9 @@ find_entrance(dbref door)
     if (IsRoom(room)) {
       thing = Exits(room);
       while (thing != NOTHING) {
-	if (thing == door)
-	  return room;
-	thing = Next(thing);
+        if (thing == door)
+          return room;
+        thing = Next(thing);
       }
     }
   return NOTHING;
@@ -360,8 +360,8 @@ remove_first(dbref first, dbref what)
     /* have to find it */
     DOLIST(prev, first) {
       if (Next(prev) == what) {
-	Next(prev) = Next(what);
-	return first;
+        Next(prev) = Next(what);
+        return first;
       }
     }
     return first;
@@ -487,7 +487,7 @@ initialize_mt(void)
     close(fd);
     if (r <= 0) {
       do_rawlog(LT_ERR,
-		"Couldn't read from /dev/urandom! Resorting to normal seeding method.");
+                "Couldn't read from /dev/urandom! Resorting to normal seeding method.");
     } else {
       do_rawlog(LT_ERR, "Seeded RNG from /dev/urandom");
       init_by_array(buf, r / sizeof(unsigned long));
@@ -495,7 +495,7 @@ initialize_mt(void)
     }
   } else
     do_rawlog(LT_ERR,
-	      "Couldn't open /dev/urandom to seed random number generator. Resorting to normal seeding method.");
+              "Couldn't open /dev/urandom to seed random number generator. Resorting to normal seeding method.");
 
 #endif
   /* Default seeder. Pick a seed that's fairly random */
@@ -525,12 +525,12 @@ initialize_mt(void)
 
 /* Period parameters */
 #define M 397  /**< PRNG constant */
-#define MATRIX_A 0x9908b0dfUL	/**< PRNG constant vector a */
-#define UPPER_MASK 0x80000000UL	/**< PRNG most significant w-r bits */
-#define LOWER_MASK 0x7fffffffUL	/**< PRNG least significant r bits */
+#define MATRIX_A 0x9908b0dfUL   /**< PRNG constant vector a */
+#define UPPER_MASK 0x80000000UL /**< PRNG most significant w-r bits */
+#define LOWER_MASK 0x7fffffffUL /**< PRNG least significant r bits */
 
-static unsigned long mt[N];	/* the array for the state vector  */
-static int mti = N + 1;		/* mti==N+1 means mt[N] is not initialized */
+static unsigned long mt[N];     /* the array for the state vector  */
+static int mti = N + 1;         /* mti==N+1 means mt[N] is not initialized */
 
 /** initializes mt[N] with a seed.
  * \param a seed value.
@@ -564,8 +564,8 @@ init_by_array(unsigned long init_key[], int key_length)
   k = (N > key_length ? N : key_length);
   for (; k; k--) {
     mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1664525UL))
-      + init_key[j] + j;	/* non linear */
-    mt[i] &= 0xffffffffUL;	/* for WORDSIZE > 32 machines */
+      + init_key[j] + j;        /* non linear */
+    mt[i] &= 0xffffffffUL;      /* for WORDSIZE > 32 machines */
     i++;
     j++;
     if (i >= N) {
@@ -577,8 +577,8 @@ init_by_array(unsigned long init_key[], int key_length)
   }
   for (k = N - 1; k; k--) {
     mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1566083941UL))
-      - i;			/* non linear */
-    mt[i] &= 0xffffffffUL;	/* for WORDSIZE > 32 machines */
+      - i;                      /* non linear */
+    mt[i] &= 0xffffffffUL;      /* for WORDSIZE > 32 machines */
     i++;
     if (i >= N) {
       mt[0] = mt[N - 1];
@@ -586,7 +586,7 @@ init_by_array(unsigned long init_key[], int key_length)
     }
   }
 
-  mt[0] = 0x80000000UL;		/* MSB is 1; assuring non-zero initial array */
+  mt[0] = 0x80000000UL;         /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0,0xffffffff]-interval */
@@ -597,11 +597,11 @@ genrand_int32(void)
   static unsigned long mag01[2] = { 0x0UL, MATRIX_A };
   /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
-  if (mti >= N) {		/* generate N words at one time */
+  if (mti >= N) {               /* generate N words at one time */
     int kk;
 
-    if (mti == N + 1)		/* if init_genrand() has not been called, */
-      init_genrand(5489UL);	/* a default initial seed is used */
+    if (mti == N + 1)           /* if init_genrand() has not been called, */
+      init_genrand(5489UL);     /* a default initial seed is used */
 
     for (kk = 0; kk < N - M; kk++) {
       y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
@@ -735,7 +735,7 @@ shortalias(dbref it)
 char *
 shortname(dbref it)
 {
-  static char n[BUFFER_LEN];	/* STATIC */
+  static char n[BUFFER_LEN];    /* STATIC */
   char *s;
 
   strncpy(n, Name(it), BUFFER_LEN - 1);
@@ -842,48 +842,48 @@ can_interact(dbref from, dbref to, int type)
  * If yes, returns 1
  */
 char check_know(dbref p1, dbref p2) {
-	ATTR *a;
-	dbref num;
-	char *b, *s, *e;
-	char di = 0;  /* variable set when in dbref isolating */
+        ATTR *a;
+        dbref num;
+        char *b, *s, *e;
+        char di = 0;  /* variable set when in dbref isolating */
 
-	/* Quick Check first */
-	if(p1 == p2)
-		return 1;
-	/* load @XY_KNOW attribute into the register, & check for p2 in it */
+        /* Quick Check first */
+        if(p1 == p2)
+                return 1;
+        /* load @XY_KNOW attribute into the register, & check for p2 in it */
 
-	a = atr_get(p1, "XY_KNOW");
-	if(!a) /* they know no one */
-		return 0;
-	b = s = e = safe_atr_value(a);
-	if(!s)
-		return 0;
+        a = atr_get(p1, "XY_KNOW");
+        if(!a) /* they know no one */
+                return 0;
+        b = s = e = safe_atr_value(a);
+        if(!s)
+                return 0;
 
-	/* isolate each dbref in the attribute & check if p2 matches anywhere */
-	while(*s && *e) 
-		if(di) {
-			if(*e && e[1] != '\0' && !isspace(*e)) {
-				e++;
-				continue;
-			}
-			if(isspace(*e))
-			  *e = '\0';
-			num = parse_dbref(s);
-			if(num == p2) { /* FOUND 'EM! */ 
-				mush_free(b, "ATRFREE");
-				return 1;
-			}
-			if(e[1] != '\0') {
-				di = 0;
-				s = e++;  
-				s++;
-			} else break;
-		} else if(*s == '#') 
-			di = 1;
-		else if(isspace(*s))
-			s++, e++;  
-	mush_free(b,"ATRFREE");
-	return 0;
+        /* isolate each dbref in the attribute & check if p2 matches anywhere */
+        while(*s && *e) 
+                if(di) {
+                        if(*e && e[1] != '\0' && !isspace(*e)) {
+                                e++;
+                                continue;
+                        }
+                        if(isspace(*e))
+                          *e = '\0';
+                        num = parse_dbref(s);
+                        if(num == p2) { /* FOUND 'EM! */ 
+                                mush_free(b, "ATRFREE");
+                                return 1;
+                        }
+                        if(e[1] != '\0') {
+                                di = 0;
+                                s = e++;  
+                                s++;
+                        } else break;
+                } else if(*s == '#') 
+                        di = 1;
+                else if(isspace(*s))
+                        s++, e++;  
+        mush_free(b,"ATRFREE");
+        return 0;
 }
 
 
@@ -894,85 +894,85 @@ char check_know(dbref p1, dbref p2) {
  * of overhead
  */
 const char *know_name_qk(dbref player) {
-	static char final_buffer[ROCC_LIMIT];
-	ATTR *a, *ao;
-	char *race, *ro, *p;
-	dbref spot;
-	/* to navigate backwards through content list */
-	struct object_ptr {
-		dbref cur;
-		struct object_ptr *back;
-	} *optr_add,*optr_nav;
-	int occ = 0;
+        static char final_buffer[ROCC_LIMIT];
+        ATTR *a, *ao;
+        char *race, *ro, *p;
+        dbref spot;
+        /* to navigate backwards through content list */
+        struct object_ptr {
+                dbref cur;
+                struct object_ptr *back;
+        } *optr_add,*optr_nav;
+        int occ = 0;
 
         /* ONLY PLAYERS! OR WE CRASH! */
 
         if(Typeof(player) != TYPE_PLAYER)
-	   return shortname(player);
+           return shortname(player);
 
-	/* initialize variables */
-	memset(final_buffer, '\0', ROCC_LIMIT);
-	p = final_buffer;
-	spot = Contents(Location(player));
+        /* initialize variables */
+        memset(final_buffer, '\0', ROCC_LIMIT);
+        p = final_buffer;
+        spot = Contents(Location(player));
 
 
-	/* Isolate player Race. */
-	a = atr_get(player, "RACE");
-	if(!a) 
-		race = strdup(DEF_RACE_NAME);
-	 else race = safe_atr_value(a);
+        /* Isolate player Race. */
+        a = atr_get(player, "RACE");
+        if(!a) 
+                race = strdup(DEF_RACE_NAME);
+         else race = safe_atr_value(a);
 
-	safe_str(race, final_buffer, &p);
+        safe_str(race, final_buffer, &p);
 
-	/* Now we have the race, loop through location contents to see which 'occurance' player
-	 * is of that race
-	 */
-	/* first lets make our backwrds list */
-	optr_nav = optr_add = NULL;
-	DOLIST(spot,spot) {
-		if(!IsPlayer(spot))
-			continue;
-		optr_nav = optr_add;
-		optr_add = mush_malloc(sizeof(struct object_ptr *) , "OPTR_ADD");
-		if(!optr_add)
-		  mush_panic("Can't Allocate OPTR_ADD");
-		if(optr_nav == NULL) {
-			optr_add->back = NULL;
-		} else optr_add->back = optr_nav;
-		optr_add->cur = spot;
-	}
+        /* Now we have the race, loop through location contents to see which 'occurance' player
+         * is of that race
+         */
+        /* first lets make our backwrds list */
+        optr_nav = optr_add = NULL;
+        DOLIST(spot,spot) {
+                if(!IsPlayer(spot))
+                        continue;
+                optr_nav = optr_add;
+                optr_add = mush_malloc(sizeof(struct object_ptr *) , "OPTR_ADD");
+                if(!optr_add)
+                  mush_panic("Can't Allocate OPTR_ADD");
+                if(optr_nav == NULL) {
+                        optr_add->back = NULL;
+                } else optr_add->back = optr_nav;
+                optr_add->cur = spot;
+        }
 
-	/* now loop through our backwards list */
-	for(optr_nav = optr_add; optr_nav ; optr_nav = optr_nav->back) {
-		/* grab race */
-		ao = atr_get(optr_nav->cur, "RACE");
-		if(!ao)
-			ro = strdup(DEF_RACE_NAME); /* It's your average no race dude */
-		else ro = safe_atr_value(ao);
-		if(!strcasecmp(race, ro)) { 
-			occ++;
-			if(optr_nav->cur == player) break;
-		}
+        /* now loop through our backwards list */
+        for(optr_nav = optr_add; optr_nav ; optr_nav = optr_nav->back) {
+                /* grab race */
+                ao = atr_get(optr_nav->cur, "RACE");
+                if(!ao)
+                        ro = strdup(DEF_RACE_NAME); /* It's your average no race dude */
+                else ro = safe_atr_value(ao);
+                if(!strcasecmp(race, ro)) { 
+                        occ++;
+                        if(optr_nav->cur == player) break;
+                }
 
-		free(ro); 
-	}
-	/* attach occ to final_buffer */
-	safe_chr('-', final_buffer, &p);
-	safe_number(occ, final_buffer, &p);
+                free(ro); 
+        }
+        /* attach occ to final_buffer */
+        safe_chr('-', final_buffer, &p);
+        safe_number(occ, final_buffer, &p);
 
          
-	/* free up & return */
-	for(optr_nav = optr_add;;optr_nav = optr_add) {
-		if(!optr_nav)
-		  break;
-		optr_add = optr_add->back;
-		mush_free(optr_nav, "OPTR_ADD");
-	}
+        /* free up & return */
+        for(optr_nav = optr_add;;optr_nav = optr_add) {
+                if(!optr_nav)
+                  break;
+                optr_add = optr_add->back;
+                mush_free(optr_nav, "OPTR_ADD");
+        }
 
-	free(race);
-	free(ro);
-	*p = '\0';
-	return final_buffer;
-	
+        free(race);
+        free(ro);
+        *p = '\0';
+        return final_buffer;
+        
 }
 #endif

@@ -46,15 +46,15 @@
 
 const unsigned char *tables = NULL;  /** Pointer to character tables */
 
-static char wspace[3 * BUFFER_LEN + NUMARGS];	/* argument return buffer */
-						/* big to match tprintf */
+static char wspace[3 * BUFFER_LEN + NUMARGS];   /* argument return buffer */
+                                                /* big to match tprintf */
 
 static int wild1
   (const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
    char *RESTRICT wbuf, int cs);
 static int wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs);
 static int check_literals(const char *RESTRICT tstr, const char *RESTRICT dstr,
-			  int cs);
+                          int cs);
 static char *strip_backslashes(const char *str);
 
 /** Do a wildcard match, without remembering the wild data.
@@ -97,7 +97,7 @@ quick_wild_new(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
        * end of data.
        */
       if (!*dstr)
-	return 0;
+        return 0;
       break;
     case '\\':
       /* Escape character.  Move up, and force literal
@@ -110,9 +110,9 @@ quick_wild_new(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
        * If matching end of data, return true.
        */
       if (NOTEQUAL(cs, *dstr, *tstr))
-	return 0;
+        return 0;
       if (!*dstr)
-	return 1;
+        return 1;
     }
     tstr++;
     dstr++;
@@ -129,7 +129,7 @@ quick_wild_new(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
   while ((*tstr == '?') || (*tstr == '*')) {
     if (*tstr == '?') {
       if (!*dstr)
-	return 0;
+        return 0;
       dstr++;
     }
     tstr++;
@@ -180,14 +180,14 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
        * end of data.
        */
       if (!*dstr || *dstr == '`')
-	return 0;
+        return 0;
       break;
     case '`':
       /* Delimiter match.  Special handling if at end of pattern. */
       if (*dstr != '`')
-	return 0;
+        return 0;
       if (!tstr[1])
-	return !strchr(dstr + 1, '`');
+        return !strchr(dstr + 1, '`');
       break;
     case '\\':
       /* Escape character.  Move up, and force literal
@@ -200,9 +200,9 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
        * If matching end of data, return true.
        */
       if (NOTEQUAL(0, *dstr, *tstr))
-	return 0;
+        return 0;
       if (!*dstr)
-	return 1;
+        return 1;
     }
     tstr++;
     dstr++;
@@ -216,7 +216,7 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
   while (starcount < 2 && ((*tstr == '?') || (*tstr == '*'))) {
     if (*tstr == '?') {
       if (!*dstr || *dstr == '`')
-	return 0;
+        return 0;
       dstr++;
       starcount = 0;
     } else
@@ -236,7 +236,7 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
     /* Scan for possible matches. */
     while (*dstr) {
       if (*dstr != '`' && atr_wild(tstr + 1, dstr + 1))
-	return 1;
+        return 1;
       dstr++;
     }
   } else {
@@ -247,9 +247,9 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
     /* Scan for possible matches. */
     while (*dstr) {
       if (EQUAL(0, *dstr, *tstr) && atr_wild(tstr + 1, dstr + 1))
-	return 1;
+        return 1;
       if (starcount < 2 && *dstr == '`')
-	return 0;
+        return 0;
       dstr++;
     }
   }
@@ -280,7 +280,7 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
        * end of data.
        */
       if (!*dstr)
-	return 0;
+        return 0;
 
       global_eval_context.wnxt[arg++] = wbuf;
       *wbuf++ = *dstr;
@@ -289,7 +289,7 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
       /* Jump to the fast routine if we can. */
 
       if (arg >= NUMARGS)
-	return quick_wild_new(tstr + 1, dstr + 1, cs);
+        return quick_wild_new(tstr + 1, dstr + 1, cs);
       break;
     case '\\':
       /* Escape character.  Move up, and force literal
@@ -302,9 +302,9 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
        * If matching end of data, return true.
        */
       if (NOTEQUAL(cs, *dstr, *tstr))
-	return 0;
+        return 0;
       if (!*dstr)
-	return 1;
+        return 1;
     }
     tstr++;
     dstr++;
@@ -331,17 +331,17 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
 
       /* Jump to the fast routine if we can. */
       if (argpos >= NUMARGS)
-	return quick_wild_new(tstr, dstr, cs);
+        return quick_wild_new(tstr, dstr, cs);
 
       /* Fill in any intervening '?'s */
       while (argpos < arg) {
-	global_eval_context.wnxt[argpos++] = wbuf;
-	*wbuf++ = *datapos++;
-	*wbuf++ = '\0';
+        global_eval_context.wnxt[argpos++] = wbuf;
+        *wbuf++ = *datapos++;
+        *wbuf++ = '\0';
 
-	/* Jump to the fast routine if we can. */
-	if (argpos >= NUMARGS)
-	  return quick_wild_new(tstr, dstr, cs);
+        /* Jump to the fast routine if we can. */
+        if (argpos >= NUMARGS)
+          return quick_wild_new(tstr, dstr, cs);
       }
     }
     /* Skip over the '*' for now... */
@@ -352,7 +352,7 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
     numextra = 0;
     while (*tstr == '?') {
       if (!*dstr)
-	return 0;
+        return 0;
       tstr++;
       dstr++;
       arg++;
@@ -375,11 +375,11 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
     wnext++;
     while (1) {
       if (EQUAL(cs, *dstr, *tstr) &&
-	  ((arg < NUMARGS) ? wild1(tstr, dstr, arg, wnext, cs)
-	   : quick_wild_new(tstr, dstr, cs)))
-	break;
+          ((arg < NUMARGS) ? wild1(tstr, dstr, arg, wnext, cs)
+           : quick_wild_new(tstr, dstr, cs)))
+        break;
       if (!*dstr)
-	return 0;
+        return 0;
       dstr++;
       wnext++;
     }
@@ -486,7 +486,7 @@ regexp_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
   int subpatterns;
 
   if ((re = pcre_compile(s, (cs ? 0 : PCRE_CASELESS), &errptr, &erroffset,
-			 tables)) == NULL) {
+                         tables)) == NULL) {
     /*
      * This is a matching error. We have an error message in
      * errptr that we can ignore, since we're doing
@@ -554,10 +554,10 @@ quick_regexp_match(const char *RESTRICT s, const char *RESTRICT d, int cs)
   int erroffset;
   int offsets[99];
   int r;
-  int flags = 0;		/* There's a PCRE_NO_AUTO_CAPTURE flag to turn all raw
-				   ()'s into (?:)'s, which would be nice to use,
-				   except that people might use backreferences in
-				   their patterns. Argh. */
+  int flags = 0;                /* There's a PCRE_NO_AUTO_CAPTURE flag to turn all raw
+                                   ()'s into (?:)'s, which would be nice to use,
+                                   except that people might use backreferences in
+                                   their patterns. Argh. */
 
   if (!cs)
     flags |= PCRE_CASELESS;

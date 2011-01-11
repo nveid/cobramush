@@ -65,8 +65,8 @@ static dbref match_here(const dbref who, const char *name);
 #define match_absolute(name) parse_objid(name)
 static dbref match_player(const dbref matcher, const char *match_name);
 static dbref choose_thing(const dbref match_who, const int preferred_type,
-			  long int flags, dbref thing1, dbref thing2);
-extern int check_alias(const char *command, const char *list);	/* game.c */
+                          long int flags, dbref thing1, dbref thing2);
+extern int check_alias(const char *command, const char *list);  /* game.c */
 
 
 /** A wrapper for returning a match, AMBIGUOUS, or NOTHING.
@@ -80,7 +80,7 @@ extern int check_alias(const char *command, const char *list);	/* game.c */
  */
 dbref
 match_result(const dbref who, const char *name, const int type,
-	     const long flags)
+             const long flags)
 {
   return match_result_internal(who, name, type, flags);
 }
@@ -98,7 +98,7 @@ match_result(const dbref who, const char *name, const int type,
  */
 dbref
 noisy_match_result(const dbref who, const char *name, const int type,
-		   const long flags)
+                   const long flags)
 {
   return match_result_internal(who, name, type, flags | MAT_NOISY);
 }
@@ -115,7 +115,7 @@ noisy_match_result(const dbref who, const char *name, const int type,
  */
 dbref
 last_match_result(const dbref who, const char *name, const int type,
-		  const long flags)
+                  const long flags)
 {
   return match_result_internal(who, name, type, flags | MAT_LAST);
 }
@@ -185,9 +185,9 @@ match_controlled(dbref player, const char *name)
  *  e. If we got no matches, complain
  */
 
-#define MATCH_NONE      0x0	/**< No matches were found */
-#define MATCH_EXACT     0x1	/**< At least one exact match found */
-#define MATCH_PARTIAL   0x2	/**< At least one partial match found, no exact */
+#define MATCH_NONE      0x0     /**< No matches were found */
+#define MATCH_EXACT     0x1     /**< At least one exact match found */
+#define MATCH_PARTIAL   0x2     /**< At least one partial match found, no exact */
 /** Prototype for matching functions */
 #define MATCH_FUNC_PROTO(fun_name) \
   /* ARGSUSED */ /* try to keep lint happy */ \
@@ -269,7 +269,7 @@ finished:
     if (!exact_matches_to_go)
       match = exact_match;
     else if (GoodObject(last_match))
-      match = last_match;	/* nth exact-or-partial match, or nothing? */
+      match = last_match;       /* nth exact-or-partial match, or nothing? */
     /* This shouldn't happen, but just in case we have a valid match,
      * and an invalid last_match in the matchnum case, fall through and
      * use the match.
@@ -277,18 +277,18 @@ finished:
   } else if (GoodObject(exact_match)) {
     /* How many exact matches? */
     if (exact_matches_to_go == -1)
-      match = exact_match;	/* Good */
+      match = exact_match;      /* Good */
     else if (flags & MAT_LAST)
-      match = exact_match;	/* Good enough */
+      match = exact_match;      /* Good enough */
     else
       match = AMBIGUOUS;
   } else {
     if (!matches_to_go)
-      match = NOTHING;		/* No matches */
+      match = NOTHING;          /* No matches */
     else if (matches_to_go == -1)
-      match = last_match;	/* Good */
+      match = last_match;       /* Good */
     else if (flags & MAT_LAST)
-      match = last_match;	/* Good enough */
+      match = last_match;       /* Good enough */
     else
       match = AMBIGUOUS;
   }
@@ -329,19 +329,19 @@ simple_matches(dbref who, const char *name, long flags)
       if (GoodObject(match) && (flags & MAT_NEAR) && !CanRemote(who, match))
         goto mat_near;
       if (GoodObject(match)) {
-	if (flags & MAT_CONTROL) {
-	  /* Check for control */
-	  if (controls(who, match) || nearby(who, match))
-	    return match;
-	} else {
-	  return match;
-	}
+        if (flags & MAT_CONTROL) {
+          /* Check for control */
+          if (controls(who, match) || nearby(who, match))
+            return match;
+        } else {
+          return match;
+        }
       }
     }
     if (flags & MAT_PLAYER) {
       match = match_player(who, name);
       if (GoodObject(match))
-	return match;
+        return match;
     }
   } else {
     /* We're doing a nearby match and the player doesn't have
@@ -387,14 +387,14 @@ parse_english(const char **name, long *flags)
       *name += 10;
       *flags &= ~(MAT_POSSESSION | MAT_EXIT);
     } else if (!strncasecmp(*name, "here ", 5)
-	       || !strncasecmp(*name, "this ", 5)) {
+               || !strncasecmp(*name, "this ", 5)) {
       *name += 5;
       *flags &=
-	~(MAT_POSSESSION | MAT_EXIT | MAT_REMOTE_CONTENTS | MAT_CONTAINER);
+        ~(MAT_POSSESSION | MAT_EXIT | MAT_REMOTE_CONTENTS | MAT_CONTAINER);
     }
   }
   if ((*flags & MAT_POSSESSION) && (!strncasecmp(*name, "my ", 3)
-				    || !strncasecmp(*name, "me ", 3))) {
+                                    || !strncasecmp(*name, "me ", 3))) {
     *name += 3;
     *flags &= ~(MAT_NEIGHBOR | MAT_EXIT | MAT_CONTAINER | MAT_REMOTE_CONTENTS);
   }
@@ -435,16 +435,16 @@ parse_english(const char **name, long *flags)
       count = -1;
     } else if ((count > 10) && (count < 14)) {
       if (strcasecmp(e, "th"))
-	count = -1;
+        count = -1;
     } else if ((count % 10) == 1) {
       if (strcasecmp(e, "st"))
-	count = -1;
+        count = -1;
     } else if ((count % 10) == 2) {
       if (strcasecmp(e, "nd"))
-	count = -1;
+        count = -1;
     } else if ((count % 10) == 3) {
       if (strcasecmp(e, "rd"))
-	count = -1;
+        count = -1;
     } else if (strcasecmp(e, "th")) {
       count = -1;
     }
@@ -516,35 +516,35 @@ MATCH_FUNC(match_list)
       (*matches_to_go)--;
       return MATCH_EXACT;
     } else if( can_interact(first, who, INTERACT_MATCH) && (!strcasecmp(Name(first), name) ||
-			    (GoodObject(alias_match) && (alias_match == first)))) {
+                            (GoodObject(alias_match) && (alias_match == first)))) {
       /* An exact match, but there may be others */
       (*exact_matches_to_go)--;
       (*matches_to_go)--;
       if (nth_match) {
-	if (!(*exact_matches_to_go)) {
-	  /* We're done */
-	  *match = first;
-	  return MATCH_EXACT;
-	}
+        if (!(*exact_matches_to_go)) {
+          /* We're done */
+          *match = first;
+          return MATCH_EXACT;
+        }
       } else {
-	if (match_type == MATCH_EXACT)
-	  *match = choose_thing(who, type, flags, *match, first);
-	else
-	  *match = first;
-	match_type = MATCH_EXACT;
+        if (match_type == MATCH_EXACT)
+          *match = choose_thing(who, type, flags, *match, first);
+        else
+          *match = first;
+        match_type = MATCH_EXACT;
       }
     } else if ((match_type != MATCH_EXACT) 
-		    && string_match(Name(first), name)
-		    && can_interact(first, who, INTERACT_MATCH)) {
+                    && string_match(Name(first), name)
+                    && can_interact(first, who, INTERACT_MATCH)) {
       /* A partial match, and we haven't done an exact match yet */
       (*matches_to_go)--;
       if (nth_match) {
-	if (!(*matches_to_go))
-	  *match = first;
+        if (!(*matches_to_go))
+          *match = first;
       } else if (match_type == MATCH_PARTIAL)
-	*match = choose_thing(who, type, flags, *match, first);
+        *match = choose_thing(who, type, flags, *match, first);
       else
-	*match = first;
+        *match = first;
       match_type = MATCH_PARTIAL;
     }
   }
@@ -564,16 +564,16 @@ MATCH_FUNC(match_exit)
   if (flags & MAT_REMOTES) {
     if (GoodObject(loc))
       return match_exit_internal(who, name, type, flags, Zone(loc),
-				 match, exact_matches_to_go, matches_to_go);
+                                 match, exact_matches_to_go, matches_to_go);
     else
       return NOTHING;
   } else if (flags & MAT_GLOBAL)
     return match_exit_internal(who, name, type, flags, MASTER_ROOM,
-			       match, exact_matches_to_go, matches_to_go);
+                               match, exact_matches_to_go, matches_to_go);
   /* Recursively search upwards in locations parent tree */
   while(GoodObject(loc) && !IsGarbage(loc) && mret != MATCH_EXACT ) {
     mret = match_exit_internal(who, name, type, flags, loc,
-			     match, exact_matches_to_go, matches_to_go);
+                             match, exact_matches_to_go, matches_to_go);
     loc = Parent(loc);
   }
   return mret;
@@ -599,22 +599,22 @@ MATCH_FUNC(match_exit_internal)
       (*matches_to_go)--;
       return MATCH_EXACT;
     } else if (check_alias(name, Name(exit_tmp))
-	       && (can_interact(exit_tmp, who, INTERACT_MATCH))) {
+               && (can_interact(exit_tmp, who, INTERACT_MATCH))) {
       /* Matched an exit alias, but there may be more */
       (*exact_matches_to_go)--;
       (*matches_to_go)--;
       if (nth_match) {
-	if (!(*exact_matches_to_go)) {
-	  /* We're done */
-	  *match = exit_tmp;
-	  return MATCH_EXACT;
-	}
+        if (!(*exact_matches_to_go)) {
+          /* We're done */
+          *match = exit_tmp;
+          return MATCH_EXACT;
+        }
       } else {
-	if (match_type == MATCH_EXACT)
-	  *match = choose_thing(who, type, flags, *match, exit_tmp);
-	else
-	  *match = exit_tmp;
-	match_type = MATCH_EXACT;
+        if (match_type == MATCH_EXACT)
+          *match = choose_thing(who, type, flags, *match, exit_tmp);
+        else
+          *match = exit_tmp;
+        match_type = MATCH_EXACT;
       }
     }
   }
@@ -630,7 +630,7 @@ MATCH_FUNC(match_possession)
   if (!GoodObject(who))
     return NOTHING;
   return match_list(who, name, type, flags, Contents(who), match,
-		    exact_matches_to_go, matches_to_go);
+                    exact_matches_to_go, matches_to_go);
 }
 
 MATCH_FUNC(match_container)
@@ -638,7 +638,7 @@ MATCH_FUNC(match_container)
   if (!GoodObject(who))
     return NOTHING;
   return match_list(who, name, type, flags, Location(who), match,
-		    exact_matches_to_go, matches_to_go);
+                    exact_matches_to_go, matches_to_go);
 }
 
 MATCH_FUNC(match_neighbor)
@@ -650,13 +650,13 @@ MATCH_FUNC(match_neighbor)
   if (!GoodObject(loc))
     return NOTHING;
   return match_list(who, name, type, flags, Contents(loc), match,
-		    exact_matches_to_go, matches_to_go);
+                    exact_matches_to_go, matches_to_go);
 }
 
 
 static dbref
 choose_thing(const dbref match_who, const int preferred_type, long flags,
-	     dbref thing1, dbref thing2)
+             dbref thing1, dbref thing2)
 {
   int has1;
   int has2;
@@ -671,7 +671,7 @@ choose_thing(const dbref match_who, const int preferred_type, long flags,
   if (preferred_type != NOTYPE) {
     if (Typeof(thing1) == preferred_type) {
       if (Typeof(thing2) != preferred_type)
-	return thing1;
+        return thing1;
     } else if (Typeof(thing2) == preferred_type)
       return thing2;
   }

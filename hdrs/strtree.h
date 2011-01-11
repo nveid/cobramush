@@ -14,10 +14,10 @@ typedef struct strnode StrNode;
  * This is a node in a red/black binary strtree.
  */
 struct strnode {
-  StrNode *left;		/**< Pointer to left child */
-  StrNode *right;		/**< Pointer to right child */
-  unsigned char info;		/**< Red/black and other internal state */
-  char string[BUFFER_LEN];	/**< Node label (value) */
+  StrNode *left;                /**< Pointer to left child */
+  StrNode *right;               /**< Pointer to right child */
+  unsigned char info;           /**< Red/black and other internal state */
+  char string[BUFFER_LEN];      /**< Node label (value) */
 };
 
 typedef struct strtree StrTree;
@@ -25,9 +25,9 @@ typedef struct strtree StrTree;
  * A red/black binary tree of strings.
  */
 struct strtree {
-  StrNode *root;	/**< Pointer to root node */
-  size_t count;		/**< Number of nodes in the tree */
-  size_t mem;		/**< Memory used by the tree */
+  StrNode *root;        /**< Pointer to root node */
+  size_t count;         /**< Number of nodes in the tree */
+  size_t mem;           /**< Memory used by the tree */
 };
 
 void st_init(StrTree *root);

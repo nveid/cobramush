@@ -48,19 +48,19 @@ void shutdown_checkpoint(void);
 #define MAYBE_GET(f,x) \
         (indb_flags & (x)) ? getref(f) : 0
 
-long indb_flags;		/**< What flags are in the db we read at startup? */
-long flagdb_flags;		/**< What flags are in the flag db we read at startup? */
+long indb_flags;                /**< What flags are in the db we read at startup? */
+long flagdb_flags;              /**< What flags are in the flag db we read at startup? */
 
 int loading_db = 0;   /**< Are we loading the database? */
 
-char db_timestamp[100];	/**< Time the read database was saved. */
+char db_timestamp[100]; /**< Time the read database was saved. */
 
 struct object *db = NULL; /**< The object db array */
-dbref db_top = 0;	  /**< The number of objects in the db array */
+dbref db_top = 0;         /**< The number of objects in the db array */
 
-dbref errobj;		  /**< Dbref of object on which an error has occurred */
+dbref errobj;             /**< Dbref of object on which an error has occurred */
 
-int dbline = 0;		  /**< Line of the database file being read */
+int dbline = 0;           /**< Line of the database file being read */
 int use_flagfile = 0;    /**< Use seperate file for flags */
 
 /** String that markes the end of dumps */
@@ -68,11 +68,11 @@ const char *EOD = "***END OF DUMP***\n";
 
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 5000   /**< Initial size for db array */
-#endif				/* DB_INITIAL_SIZE */
+#endif                          /* DB_INITIAL_SIZE */
 
 dbref db_size = DB_INITIAL_SIZE;  /**< Current size of db array */
 
-HASHTAB htab_objdata;	      /**< Object data hash table */
+HASHTAB htab_objdata;         /**< Object data hash table */
 HASHTAB htab_objdata_keys;    /**< Object data keys hash table */
 
 static void db_grow(dbref newtop);
@@ -94,7 +94,7 @@ static void db_write_flags(FILE * f);
 static void db_write_powers(FILE * f);
 static dbref db_read_oldstyle(FILE * f);
 
-StrTree object_names;	    /**< String tree of object names */
+StrTree object_names;       /**< String tree of object names */
 StrTree _clastmods;
 extern StrTree atr_names;
 
@@ -168,22 +168,22 @@ db_grow(dbref newtop)
       /* make the initial one */
       db_size = (db_init) ? db_init : DB_INITIAL_SIZE;
       while (db_top > db_size)
-	db_size *= 2;
+        db_size *= 2;
       if ((db = (struct object *)
-	   malloc(db_size * sizeof(struct object))) == NULL) {
-	do_rawlog(LT_ERR, "ERROR: out of memory while creating database!");
-	abort();
+           malloc(db_size * sizeof(struct object))) == NULL) {
+        do_rawlog(LT_ERR, "ERROR: out of memory while creating database!");
+        abort();
       }
     }
     /* maybe grow it */
     if (db_top > db_size) {
       /* make sure it's big enough */
       while (db_top > db_size)
-	db_size *= 2;
+        db_size *= 2;
       if ((newdb = (struct object *)
-	   realloc(db, db_size * sizeof(struct object))) == NULL) {
-	do_rawlog(LT_ERR, "ERROR: out of memory while extending database!");
-	abort();
+           realloc(db, db_size * sizeof(struct object))) == NULL) {
+        do_rawlog(LT_ERR, "ERROR: out of memory while extending database!");
+        abort();
       }
       db = newdb;
     }
@@ -327,15 +327,15 @@ db_read_labeled_string(FILE * f, char **label, char **value)
     c = getc(f);
     while (isspace(c)) {
       if (c == '\n')
-	dbline++;
+        dbline++;
       c = getc(f);
     }
     if (c == '#') {
       while ((c = getc(f)) != '\n' && c != EOF) {
-	/* nothing */
+        /* nothing */
       }
       if (c == '\n')
-	dbline++;
+        dbline++;
     }
   } while (c != EOF && isspace(c));
 
@@ -348,10 +348,10 @@ db_read_labeled_string(FILE * f, char **label, char **value)
 
   p = lbuf;
   do {
-    if (c != '_' && c != '-' && c != '!' && c != '.' && c != '>' && c != '<' && c != '#' &&	/* these really should only be first time */
-	!isalnum(c)) {
+    if (c != '_' && c != '-' && c != '!' && c != '.' && c != '>' && c != '<' && c != '#' &&     /* these really should only be first time */
+        !isalnum(c)) {
       do_rawlog(LT_ERR, "DB: Illegal character '%c'(%d) in label, line %d",
-		c, c, dbline);
+                c, c, dbline);
       longjmp(db_err, 1);
     }
     safe_chr(c, lbuf, &p);
@@ -371,7 +371,7 @@ db_read_labeled_string(FILE * f, char **label, char **value)
       do_rawlog(LT_ERR, T("DB: Unexpected EOF at line %d"), dbline);
     else
       do_rawlog(LT_ERR, T("DB: Missing value for '%s' at line %d"), lbuf,
-		dbline);
+                dbline);
     longjmp(db_err, 1);
   }
 
@@ -385,37 +385,37 @@ db_read_labeled_string(FILE * f, char **label, char **value)
     for (;;) {
       c = getc(f);
       if (c == '"')
-	break;
+        break;
       if (c == '\\')
-	c = getc(f);
+        c = getc(f);
       if (c == EOF) {
-	do_rawlog(LT_ERR, "DB: Unclosed quoted string starting on line %d",
-		  sline);
-	longjmp(db_err, 1);
+        do_rawlog(LT_ERR, "DB: Unclosed quoted string starting on line %d",
+                  sline);
+        longjmp(db_err, 1);
       }
       if (c == '\0')
-	do_rawlog(LT_ERR,
-		  "DB: warning: null in quoted string, remainder lost, line %d",
-		  dbline);
+        do_rawlog(LT_ERR,
+                  "DB: warning: null in quoted string, remainder lost, line %d",
+                  dbline);
       if (c == '\n')
-	dbline++;
+        dbline++;
       safe_chr(c, vbuf, &p);
     }
     do {
       c = getc(f);
       if (c != EOF && !isspace(c)) {
-	do_rawlog(LT_ERR, "DB: Garbage after quoted string, line %d", dbline);
-	longjmp(db_err, 1);
+        do_rawlog(LT_ERR, "DB: Garbage after quoted string, line %d", dbline);
+        longjmp(db_err, 1);
       }
     } while (c != '\n' && c != EOF);
   } else {
     /* non-quoted value */
     do {
       if (c != '_' && c != '-' && c != '!' && c != '.' &&
-	  c != '#' && !isalnum(c) && !isspace(c)) {
-	do_rawlog(LT_ERR, "DB: Illegal character '%c'(%d) in value, line %d",
-		  c, c, dbline);
-	longjmp(db_err, 1);
+          c != '#' && !isalnum(c) && !isspace(c)) {
+        do_rawlog(LT_ERR, "DB: Illegal character '%c'(%d) in value, line %d",
+                  c, c, dbline);
+        longjmp(db_err, 1);
       }
       safe_chr(c, vbuf, &p);
       c = getc(f);
@@ -450,8 +450,8 @@ db_read_this_labeled_string(FILE * f, const char *label, char **value)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
 }
@@ -473,8 +473,8 @@ db_read_this_labeled_number(FILE * f, const char *label, int *value)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
 
@@ -512,8 +512,8 @@ db_read_this_labeled_time_t(FILE * f, const char *label, time_t *value)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
 
@@ -551,8 +551,8 @@ db_read_this_labeled_dbref(FILE * f, const char *label, dbref *val)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
   *val = qparse_dbref(readvalue);
@@ -848,8 +848,8 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
     strcpy(name, AL_NAME(list));
     for (p = name; *p; p++) {
       if (!isprint((unsigned char) *p) || isspace((unsigned char) *p)) {
-	*p = '!';
-	fixmemdb = err = 1;
+        *p = '!';
+        fixmemdb = err = 1;
       }
     }
     if (err) {
@@ -857,17 +857,17 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
        * number to the end. Give up if we can't find one < 10000
        */
       if (atr_get_noparent(i, name)) {
-	count = 0;
-	do {
-	  name[BUFFER_LEN - 6] = '\0';
-	  sprintf(tbuf1, "%s%d", name, count);
-	  count++;
-	} while (count < 10000 && atr_get_noparent(i, tbuf1));
-	strcpy(name, tbuf1);
+        count = 0;
+        do {
+          name[BUFFER_LEN - 6] = '\0';
+          sprintf(tbuf1, "%s%d", name, count);
+          count++;
+        } while (count < 10000 && atr_get_noparent(i, tbuf1));
+        strcpy(name, tbuf1);
       }
       do_rawlog(LT_CHECK,
-		T(" * Bad attribute name on #%d. Changing name to %s.\n"),
-		i, name);
+                T(" * Bad attribute name on #%d. Changing name to %s.\n"),
+                i, name);
       err = 0;
     }
     /* check the owner */
@@ -892,18 +892,18 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
     lastp = '\0';
     for (p = tbuf1; *p; p++) {
       if (!isprint((unsigned char) *p)) {
-	if (!isspace((unsigned char) *p)) {
-	  *p = '!';
-	  err = 1;
-	}
+        if (!isspace((unsigned char) *p)) {
+          *p = '!';
+          err = 1;
+        }
       }
       lastp = *p;
     }
     if (err) {
       fixmemdb = 1;
       do_rawlog(LT_CHECK,
-		T(" * Bad text in attribute %s on #%d. Changed to:\n"), name,
-		i);
+                T(" * Bad text in attribute %s on #%d. Changed to:\n"), name,
+                i);
       do_rawlog(LT_CHECK, "%s\n", tbuf1);
     }
     db_write_labeled_string(f, "value", tbuf1);
@@ -1036,11 +1036,11 @@ getstring_noalloc(FILE * f)
   } else if (c != '"') {
     for (;;) {
       if ((c == '\0') || (c == EOF) ||
-	  ((c == '\n') && ((p == buf) || (p[-1] != '\r')))) {
-	*p = '\0';
-	if (c == '\n')
-	  dbline++;
-	return buf;
+          ((c == '\n') && ((p == buf) || (p[-1] != '\r')))) {
+        *p = '\0';
+        if (c == '\n')
+          dbline++;
+        return buf;
       }
       safe_chr(c, buf, &p);
       c = fgetc(f);
@@ -1049,24 +1049,24 @@ getstring_noalloc(FILE * f)
     for (;;) {
       c = fgetc(f);
       if (c == '"') {
-	/* It's a closing quote if it's followed by \r or \n */
-	c = fgetc(f);
-	if (c == '\r') {
-	  /* Get a possible \n, too */
-	  if ((c = fgetc(f)) != '\n')
-	    ungetc(c, f);
-	  else
-	    dbline++;
-	} else if (c != '\n')
-	  ungetc(c, f);
-	*p = '\0';
-	return buf;
+        /* It's a closing quote if it's followed by \r or \n */
+        c = fgetc(f);
+        if (c == '\r') {
+          /* Get a possible \n, too */
+          if ((c = fgetc(f)) != '\n')
+            ungetc(c, f);
+          else
+            dbline++;
+        } else if (c != '\n')
+          ungetc(c, f);
+        *p = '\0';
+        return buf;
       } else if (c == '\\') {
-	c = fgetc(f);
+        c = fgetc(f);
       }
       if ((c == '\0') || (c == EOF)) {
-	*p = '\0';
-	return buf;
+        *p = '\0';
+        return buf;
       }
       safe_chr(c, buf, &p);
     }
@@ -1158,7 +1158,7 @@ getlocks(dbref i, FILE * f)
       do_rawlog(LT_ERR, T("ERROR: Invalid lock format on object #%d"), i);
       return;
     }
-    b = getboolexp(f, buf);	/* Which will clobber a '\n' */
+    b = getboolexp(f, buf);     /* Which will clobber a '\n' */
     if (b == TRUE_BOOLEXP) {
       /* getboolexp() would already have complained. */
       return;
@@ -1198,7 +1198,7 @@ getbytes(FILE * f) {
 
   memset(byte_buf, 0, BUFFER_LEN);
   bp = byte_buf;
-  (void) fgetc(f);	/* Skip the leading " */
+  (void) fgetc(f);      /* Skip the leading " */
   for(;;) {
     i = fgetc(f);
     if(i == '\"') {
@@ -1258,22 +1258,22 @@ get_list(FILE * f, dbref i)
   tbuf1[0] = '\0';
   while (1)
     switch (c = getc(f)) {
-    case ']':			/* new style attribs, read name then value */
+    case ']':                   /* new style attribs, read name then value */
       /* Using getstring_noalloc here will cause problems with attribute
          names starting with ". This is probably a better fix than just
          disallowing " in attribute names. */
       fgets(tbuf1, BUFFER_LEN + 150, f);
       if (!(p = strchr(tbuf1, '^'))) {
-	do_rawlog(LT_ERR, T("ERROR: Bad format on new attributes. object #%d"),
-		  i);
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: Bad format on new attributes. object #%d"),
+                  i);
+        return -1;
       }
       *p++ = '\0';
       if (!(q = strchr(p, '^'))) {
-	do_rawlog(LT_ERR,
-		  T("ERROR: Bad format on new attribute %s. object #%d"),
-		  tbuf1, i);
-	return -1;
+        do_rawlog(LT_ERR,
+                  T("ERROR: Bad format on new attribute %s. object #%d"),
+                  tbuf1, i);
+        return -1;
       }
       *q++ = '\0';
       flags = atoi(q);
@@ -1281,18 +1281,18 @@ get_list(FILE * f, dbref i)
       flags &= ~AF_NUKED;
       flags &= ~AF_STATIC;
       if (!(indb_flags & DBF_AF_VISUAL)) {
-	/* Remove AF_ODARK flag. If it wasn't there, set AF_VISUAL */
-	if (!(flags & AF_ODARK))
-	  flags |= AF_VISUAL;
-	flags &= ~AF_ODARK;
+        /* Remove AF_ODARK flag. If it wasn't there, set AF_VISUAL */
+        if (!(flags & AF_ODARK))
+          flags |= AF_VISUAL;
+        flags &= ~AF_ODARK;
       }
       /* Read in the deref count for the attribute, or set it to 0 if not
          present. */
       q = strchr(q, '^');
       if (q++)
-	derefs = atoi(q);
+        derefs = atoi(q);
       else
-	derefs = 0;
+        derefs = 0;
       /* We add the attribute assuming that atoi(p) is an ok dbref
        * since we haven't loaded the whole db and can't really tell
        * if it is or not. We'll fix this up at the end of the load 
@@ -1304,31 +1304,31 @@ get_list(FILE * f, dbref i)
        * attributes (which, if not built-in attrs, have a flag val of 0.)
        */
       break;
-    case '>':			/* old style attribs, die noisily */
+    case '>':                   /* old style attribs, die noisily */
       do_rawlog(LT_ERR, T("ERROR: old-style attribute format in object %d"), i);
       return -1;
       break;
-    case '<':			/* end of list */
+    case '<':                   /* end of list */
       if ('\n' != getc(f)) {
-	do_rawlog(LT_ERR, T("ERROR: no line feed after < on object %d"), i);
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: no line feed after < on object %d"), i);
+        return -1;
       }
       return count;
     default:
       if (c == EOF) {
-	do_rawlog(LT_ERR, T("ERROR: Unexpected EOF on file."));
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: Unexpected EOF on file."));
+        return -1;
       }
       do_rawlog(LT_ERR,
-		T
-		("ERROR: Bad character %c (%d) in attribute list on object %d"),
-		c, c, i);
+                T
+                ("ERROR: Bad character %c (%d) in attribute list on object %d"),
+                c, c, i);
       do_rawlog(LT_ERR,
-		T("  (expecting ], >, or < as first character of the line.)"));
+                T("  (expecting ], >, or < as first character of the line.)"));
       if (*tbuf1)
-	do_rawlog(LT_ERR, T("  Last attribute read was: %s"), tbuf1);
+        do_rawlog(LT_ERR, T("  Last attribute read was: %s"), tbuf1);
       else
-	do_rawlog(LT_ERR, T("  No attributes had been read yet."));
+        do_rawlog(LT_ERR, T("  No attributes had been read yet."));
       return -1;
     }
 }
@@ -1407,27 +1407,27 @@ int load_flag_db(FILE *f) {
 
   while((c = fgetc(f)) != EOF) {
     if(c == '+') {
-	c = fgetc(f);
-	 if(c == 'F') {
-	   (void) getstring_noalloc(f);
-	   flag_read_all(f, "FLAG");
-	 } else if(c == 'P'){
-	   (void) getstring_noalloc(f);
-	   powers_read_all(f);
-	 }else {
-	   do_rawlog(LT_ERR, T("Unrecgonized database format"));
-	   return -1;
-	 }
+        c = fgetc(f);
+         if(c == 'F') {
+           (void) getstring_noalloc(f);
+           flag_read_all(f, "FLAG");
+         } else if(c == 'P'){
+           (void) getstring_noalloc(f);
+           powers_read_all(f);
+         }else {
+           do_rawlog(LT_ERR, T("Unrecgonized database format"));
+           return -1;
+         }
     } else if(c == '*'){
       char buff[80];
       ungetc('*', f);
       fgets(buff, sizeof buff, f);
       if(strcmp(buff, EOD) != 0){
-	do_rawlog(LT_ERR, T("ERROR: No end of dump entry."));
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: No end of dump entry."));
+        return -1;
       } else {
-	do_rawlog(LT_ERR, T("READING: done"));
-	break;
+        do_rawlog(LT_ERR, T("READING: done"));
+        break;
       }
     } else {
       do_rawlog(LT_ERR, T("Unrecognized database format"));
@@ -1482,23 +1482,23 @@ db_read_oldstyle(FILE * f)
       break;
       /* Use the MUSH 2.0 header stuff to see what's in this db */
     case '+':
-      c = getc(f);		/* Skip the V */
+      c = getc(f);              /* Skip the V */
       if (c == 'F') {
-	(void) getstring_noalloc(f);
-	flag_read_all(f, "FLAG");
+        (void) getstring_noalloc(f);
+        flag_read_all(f, "FLAG");
       } else {
-	do_rawlog(LT_ERR, T("Unrecognized database format!"));
-	return -1;
+        do_rawlog(LT_ERR, T("Unrecognized database format!"));
+        return -1;
       }
       break;
       /* old fashioned database */
     case '#':
-    case '&':			/* zone oriented database */
+    case '&':                   /* zone oriented database */
       do_rawlog(LT_ERR, T("ERROR: old style database."));
       return -1;
       break;
       /* new database */
-    case '!':			/* non-zone oriented database */
+    case '!':                   /* non-zone oriented database */
       /* make space */
       i = getref(f);
       db_grow(i + 1);
@@ -1517,11 +1517,11 @@ db_read_oldstyle(FILE * f)
       if (indb_flags & DBF_DIVISIONS) {
         o->division.object = getref(f);
         o->division.level = getref(f);
-	/* This is the spot for poweres.. read it to NULL ville */
-	getref(f);
-	/* Read Old Style and convert */
+        /* This is the spot for poweres.. read it to NULL ville */
+        getref(f);
+        /* Read Old Style and convert */
         old_dp_bytes = getbytes(f);
-	o->division.dp_bytes = (div_pbits) convert_old_cobra_powers(old_dp_bytes);
+        o->division.dp_bytes = (div_pbits) convert_old_cobra_powers(old_dp_bytes);
       } else {
         o->division.object = -1;
         o->division.level = 1;
@@ -1529,18 +1529,18 @@ db_read_oldstyle(FILE * f)
       }
       s_Pennies(i, getref(f));
       if (indb_flags & DBF_NEW_FLAGS) {
-	o->type = getref(f);
-	o->flags = string_to_bits("FLAG", getstring_noalloc(f));
+        o->type = getref(f);
+        o->flags = string_to_bits("FLAG", getstring_noalloc(f));
       } else {
-	int old_flags, old_toggles;
-	old_flags = getref(f);
-	old_toggles = getref(f);
-	if ((o->type = type_from_old_flags(old_flags)) < 0) {
-	  do_rawlog(LT_ERR, T("Unable to determine type of #%d\n"), i);
-	  return -1;
-	}
-	o->flags =
-	  flags_from_old_flags(old_flags, old_toggles, o->type);
+        int old_flags, old_toggles;
+        old_flags = getref(f);
+        old_toggles = getref(f);
+        if ((o->type = type_from_old_flags(old_flags)) < 0) {
+          do_rawlog(LT_ERR, T("Unable to determine type of #%d\n"), i);
+          return -1;
+        }
+        o->flags =
+          flags_from_old_flags(old_flags, old_toggles, o->type);
       }
 
       /* We need to have flags in order to do this right, which is why
@@ -1548,21 +1548,21 @@ db_read_oldstyle(FILE * f)
        */
       switch (Typeof(i)) {
       case TYPE_PLAYER:
-	current_state.players++;
-	current_state.garbage--;
-	break;
+        current_state.players++;
+        current_state.garbage--;
+        break;
       case TYPE_THING:
-	current_state.things++;
-	current_state.garbage--;
-	break;
+        current_state.things++;
+        current_state.garbage--;
+        break;
       case TYPE_EXIT:
-	current_state.exits++;
-	current_state.garbage--;
-	break;
+        current_state.exits++;
+        current_state.garbage--;
+        break;
       case TYPE_ROOM:
-	current_state.rooms++;
-	current_state.garbage--;
-	break;
+        current_state.rooms++;
+        current_state.garbage--;
+        break;
       case TYPE_DIVISION:
         current_state.divisions++;
         current_state.garbage--;
@@ -1570,34 +1570,34 @@ db_read_oldstyle(FILE * f)
       }
 
       if (IsPlayer(i) && (strlen(o->name) > (Size_t) PLAYER_NAME_LIMIT)) {
-	char buff[BUFFER_LEN + 1];	/* The name plus a NUL */
-	strncpy(buff, o->name, PLAYER_NAME_LIMIT);
-	buff[PLAYER_NAME_LIMIT] = '\0';
-	set_name(i, buff);
-	do_rawlog(LT_CHECK,
-		  T(" * Name of #%d is longer than the maximum, truncating.\n"),
-		  i);
+        char buff[BUFFER_LEN + 1];      /* The name plus a NUL */
+        strncpy(buff, o->name, PLAYER_NAME_LIMIT);
+        buff[PLAYER_NAME_LIMIT] = '\0';
+        set_name(i, buff);
+        do_rawlog(LT_CHECK,
+                  T(" * Name of #%d is longer than the maximum, truncating.\n"),
+                  i);
       } else if (!IsPlayer(i) && (strlen(o->name) > OBJECT_NAME_LIMIT)) {
-	char buff[OBJECT_NAME_LIMIT + 1];	/* The name plus a NUL */
-	strncpy(buff, o->name, OBJECT_NAME_LIMIT);
-	buff[OBJECT_NAME_LIMIT] = '\0';
-	set_name(i, buff);
-	do_rawlog(LT_CHECK,
-		  T(" * Name of #%d is longer than the maximum, truncating.\n"),
-		  i);
+        char buff[OBJECT_NAME_LIMIT + 1];       /* The name plus a NUL */
+        strncpy(buff, o->name, OBJECT_NAME_LIMIT);
+        buff[OBJECT_NAME_LIMIT] = '\0';
+        set_name(i, buff);
+        do_rawlog(LT_CHECK,
+                  T(" * Name of #%d is longer than the maximum, truncating.\n"),
+                  i);
       }
 
       if (!(indb_flags & DBF_VALUE_IS_COST) && IsThing(i))
-	s_Pennies(i, (Pennies(i) + 1) * 5);
+        s_Pennies(i, (Pennies(i) + 1) * 5);
       if(!(indb_flags & DBF_DIVISIONS)) {
-        opbits = getref(f);	/* save old pows to c to pass to conversion after object is read*/
-	convert_object_powers(i, opbits);
+        opbits = getref(f);     /* save old pows to c to pass to conversion after object is read*/
+        convert_object_powers(i, opbits);
       }
 
       /* Remove the STARTUP and ACCESSED flags */
       if (!(indb_flags & DBF_NO_STARTUP_FLAG)) {
-	clear_flag_internal(i, "STARTUP");
-	clear_flag_internal(i, "ACCESSED");
+        clear_flag_internal(i, "STARTUP");
+        clear_flag_internal(i, "ACCESSED");
       }
 
       /* Clear the GOING flags. If it was scheduled for destruction
@@ -1611,9 +1611,9 @@ db_read_oldstyle(FILE * f)
       /* If there are channels in the db, read 'em in */
       /* We don't support this anymore, so we just discard them */
       if (!(indb_flags & DBF_NO_CHAT_SYSTEM))
-	temp = getref(f);
+        temp = getref(f);
       else
-	temp = 0;
+        temp = 0;
 
       /* If there are warnings in the db, read 'em in */
       temp = MAYBE_GET(f, DBF_WARNINGS);
@@ -1621,89 +1621,89 @@ db_read_oldstyle(FILE * f)
       /* If there are creation times in the db, read 'em in */
       temp_time = MAYBE_GET(f, DBF_CREATION_TIMES);
       if (temp_time)
-	o->creation_time = (time_t) temp_time;
+        o->creation_time = (time_t) temp_time;
       else
-	o->creation_time = mudtime;
+        o->creation_time = mudtime;
       temp_time = MAYBE_GET(f, DBF_CREATION_TIMES);
       if (temp_time || IsPlayer(i))
-	o->modification_time = (time_t) temp_time;
+        o->modification_time = (time_t) temp_time;
       else
-	o->modification_time = o->creation_time;
+        o->modification_time = o->creation_time;
 
       /* read attribute list for item */
       if ((o->attrcount = get_list(f, i)) < 0) {
-	do_rawlog(LT_ERR, T("ERROR: bad attribute list object %d"), i);
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: bad attribute list object %d"), i);
+        return -1;
       }
       if (!(indb_flags & DBF_AF_NODUMP)) {
-	/* Clear QUEUE and SEMAPHORE attributes */
-	atr_clr(i, "QUEUE", GOD);
-	atr_clr(i, "SEMAPHORE", GOD);
+        /* Clear QUEUE and SEMAPHORE attributes */
+        atr_clr(i, "QUEUE", GOD);
+        atr_clr(i, "SEMAPHORE", GOD);
       }
       /* check to see if it's a player */
       if (IsPlayer(i)) {
-	add_player(i);
-	clear_flag_internal(i, "CONNECTED");
+        add_player(i);
+        clear_flag_internal(i, "CONNECTED");
       }
       break;
 
     case '*':
       {
-	char buff[80];
-	ungetc('*', f);
-	fgets(buff, sizeof buff, f);
-	if (strcmp(buff, EOD) != 0) {
-	  do_rawlog(LT_ERR, T("ERROR: No end of dump after object #%d"), i - 1);
-	  return -1;
-	} else {
-	  if(!(indb_flags & DBF_DIVISIONS) || (indb_flags & DBF_TYPE_GARBAGE)) {
-	    dbref master_division;
-	      /* Final Step of DB Conversion
-	       * We're gonna first Create the Master Division
-	       * Second we're gonna loop through the database
-	       * set all players except unregistered players to the master division
-	       * and set all levels appropriate
-	       **/
-	    i = GOD;
-	    master_division = new_object();
-	    set_name(master_division, "Master Division");
-	    Type(master_division) = TYPE_DIVISION;
-	    PUSH(master_division, Contents(i));
-	    Owner(master_division) = i;
-	    CreTime(master_division) = ModTime(master_division) = mudtime;
-	    atr_new_add(master_division, "DESCRIBE",
-		"This is the master division that comes before all divisions.", i,
-		AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
-	    current_state.divisions++;
-	    SLEVEL(master_division) =  LEVEL_DIRECTOR;
-	    SLEVEL(i) = LEVEL_GOD;
-	    /* Division & God Setup now run through the database & set everyitng else up */
-	    for(i = 0; i < db_top; i++)
-	    {
-	      if(has_flag_by_name(i, "UNREGISTERED", TYPE_PLAYER)){
-		SLEVEL(i) = LEVEL_UNREGISTERED;
-		clear_flag_internal(i, "UNREGISTERED");
-	      } else if(i != master_division) {
-		SDIV(i).object = master_division;
-		if(!has_flag_by_name(i, "WIZARD", NOTYPE) &&
-		    !has_flag_by_name(i, "ROYALTY", NOTYPE) && SLEVEL(i) != -500) {
-		  SLEVEL(i) = LEVEL_PLAYER;
-		} else if(SLEVEL(i) == -500) {
-		  SLEVEL(i) = LEVEL_GUEST;
-		} else { /* They look like wizard or royalty.. Set 'em to 29 */
-		  SLEVEL(i) = LEVEL_DIRECTOR;
-		}
-	      }
-	    }
-	       	do_rawlog(LT_ERR, T("DB Conversion complete"));
-	  }
-	  do_rawlog(LT_ERR, "READING: done");
-	  loading_db = 0;
-	  fix_free_list();
-	  dbck();
-	  log_mem_check();
-	  return db_top;
-	}
+        char buff[80];
+        ungetc('*', f);
+        fgets(buff, sizeof buff, f);
+        if (strcmp(buff, EOD) != 0) {
+          do_rawlog(LT_ERR, T("ERROR: No end of dump after object #%d"), i - 1);
+          return -1;
+        } else {
+          if(!(indb_flags & DBF_DIVISIONS) || (indb_flags & DBF_TYPE_GARBAGE)) {
+            dbref master_division;
+              /* Final Step of DB Conversion
+               * We're gonna first Create the Master Division
+               * Second we're gonna loop through the database
+               * set all players except unregistered players to the master division
+               * and set all levels appropriate
+               **/
+            i = GOD;
+            master_division = new_object();
+            set_name(master_division, "Master Division");
+            Type(master_division) = TYPE_DIVISION;
+            PUSH(master_division, Contents(i));
+            Owner(master_division) = i;
+            CreTime(master_division) = ModTime(master_division) = mudtime;
+            atr_new_add(master_division, "DESCRIBE",
+                "This is the master division that comes before all divisions.", i,
+                AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
+            current_state.divisions++;
+            SLEVEL(master_division) =  LEVEL_DIRECTOR;
+            SLEVEL(i) = LEVEL_GOD;
+            /* Division & God Setup now run through the database & set everyitng else up */
+            for(i = 0; i < db_top; i++)
+            {
+              if(has_flag_by_name(i, "UNREGISTERED", TYPE_PLAYER)){
+                SLEVEL(i) = LEVEL_UNREGISTERED;
+                clear_flag_internal(i, "UNREGISTERED");
+              } else if(i != master_division) {
+                SDIV(i).object = master_division;
+                if(!has_flag_by_name(i, "WIZARD", NOTYPE) &&
+                    !has_flag_by_name(i, "ROYALTY", NOTYPE) && SLEVEL(i) != -500) {
+                  SLEVEL(i) = LEVEL_PLAYER;
+                } else if(SLEVEL(i) == -500) {
+                  SLEVEL(i) = LEVEL_GUEST;
+                } else { /* They look like wizard or royalty.. Set 'em to 29 */
+                  SLEVEL(i) = LEVEL_DIRECTOR;
+                }
+              }
+            }
+                do_rawlog(LT_ERR, T("DB Conversion complete"));
+          }
+          do_rawlog(LT_ERR, "READING: done");
+          loading_db = 0;
+          fix_free_list();
+          dbck();
+          log_mem_check();
+          return db_top;
+        }
       }
     default:
       do_rawlog(LT_ERR, T("ERROR: failed object %d"), i);
@@ -1779,20 +1779,20 @@ db_read(FILE * f)
     case '+':
       c = fgetc(f);
       if (c == 'F') {
-	(void) getstring_noalloc(f);
-	flag_read_all(f, "FLAG");
+        (void) getstring_noalloc(f);
+        flag_read_all(f, "FLAG");
       } else if (c == 'P') {
-	(void) getstring_noalloc(f);
-	if(!(indb_flags & DBF_TYPE_GARBAGE))
-	  powers_read_all(f);
-	else {
-	  if(ps_tab._Read_Powers_ == 0)
-	    init_powers();
-	  flag_read_all(f, NULL);
-	}
+        (void) getstring_noalloc(f);
+        if(!(indb_flags & DBF_TYPE_GARBAGE))
+          powers_read_all(f);
+        else {
+          if(ps_tab._Read_Powers_ == 0)
+            init_powers();
+          flag_read_all(f, NULL);
+        }
       } else {
-	do_rawlog(LT_ERR, T("Unrecognized database format!"));
-	return -1;
+        do_rawlog(LT_ERR, T("Unrecognized database format!"));
+        return -1;
       }
       break;
     case '~':
@@ -1802,220 +1802,220 @@ db_read(FILE * f)
     case '!':
       /* Read an object */
       {
-	char *label, *value;
-	/* Thre should be an entry in the enum and following table and
-	   switch for each top-level label associated with an
-	   object. Not finding a label is not an error; the default
-	   set in new_object() is used. Finding a label not listed
-	   below is an error. */
-	enum known_labels {
-	  LBL_NAME, LBL_LOCATION, LBL_CONTENTS, LBL_EXITS,
-	  LBL_NEXT, LBL_PARENT, LBL_LOCKS, LBL_OWNER, LBL_ZONE,
-	  LBL_PENNIES, LBL_TYPE, LBL_FLAGS, LBL_POWERGROUPS, LBL_POWERS, LBL_WARNINGS,
-	  LBL_CREATED, LBL_MODIFIED, LBL_ATTRS, LBL_ERROR, LBL_LEVEL,
-	  LBL_DIVOBJ, LBL_PWRLVL, LBL_LMOD
-	};
-	struct label_table {
-	  const char *label;
-	  enum known_labels tag;
-	};
-	struct label_table fields[] = {
-	  {"name", LBL_NAME},
-	  {"location", LBL_LOCATION},
-	  {"contents", LBL_CONTENTS},
-	  {"exits", LBL_EXITS},
-	  {"next", LBL_NEXT},
-	  {"parent", LBL_PARENT},
-	  {"lockcount", LBL_LOCKS},
-	  {"owner", LBL_OWNER},
-	  {"zone", LBL_ZONE},
-	  {"pennies", LBL_PENNIES},
-	  {"type", LBL_TYPE},
-	  {"flags", LBL_FLAGS},
-	  {"powers", LBL_POWERS},
-	  {"warnings", LBL_WARNINGS},
-	  {"created", LBL_CREATED},
-	  {"modified", LBL_MODIFIED},
-	  {"attrcount", LBL_ATTRS},
-	  {"division_object", LBL_DIVOBJ},
-	  {"level", LBL_LEVEL},
-	  {"powerlevel", LBL_PWRLVL},
-	  {"powergroup", LBL_POWERGROUPS},
-	  {"lastmod", LBL_LMOD},
-	   /* Add new label types here. */
-	  {NULL, LBL_ERROR}
-	}, *entry;
-	enum known_labels the_label;
+        char *label, *value;
+        /* Thre should be an entry in the enum and following table and
+           switch for each top-level label associated with an
+           object. Not finding a label is not an error; the default
+           set in new_object() is used. Finding a label not listed
+           below is an error. */
+        enum known_labels {
+          LBL_NAME, LBL_LOCATION, LBL_CONTENTS, LBL_EXITS,
+          LBL_NEXT, LBL_PARENT, LBL_LOCKS, LBL_OWNER, LBL_ZONE,
+          LBL_PENNIES, LBL_TYPE, LBL_FLAGS, LBL_POWERGROUPS, LBL_POWERS, LBL_WARNINGS,
+          LBL_CREATED, LBL_MODIFIED, LBL_ATTRS, LBL_ERROR, LBL_LEVEL,
+          LBL_DIVOBJ, LBL_PWRLVL, LBL_LMOD
+        };
+        struct label_table {
+          const char *label;
+          enum known_labels tag;
+        };
+        struct label_table fields[] = {
+          {"name", LBL_NAME},
+          {"location", LBL_LOCATION},
+          {"contents", LBL_CONTENTS},
+          {"exits", LBL_EXITS},
+          {"next", LBL_NEXT},
+          {"parent", LBL_PARENT},
+          {"lockcount", LBL_LOCKS},
+          {"owner", LBL_OWNER},
+          {"zone", LBL_ZONE},
+          {"pennies", LBL_PENNIES},
+          {"type", LBL_TYPE},
+          {"flags", LBL_FLAGS},
+          {"powers", LBL_POWERS},
+          {"warnings", LBL_WARNINGS},
+          {"created", LBL_CREATED},
+          {"modified", LBL_MODIFIED},
+          {"attrcount", LBL_ATTRS},
+          {"division_object", LBL_DIVOBJ},
+          {"level", LBL_LEVEL},
+          {"powerlevel", LBL_PWRLVL},
+          {"powergroup", LBL_POWERGROUPS},
+          {"lastmod", LBL_LMOD},
+           /* Add new label types here. */
+          {NULL, LBL_ERROR}
+        }, *entry;
+        enum known_labels the_label;
 
-	i = getref(f);
-	db_grow(i + 1);
-	o = db + i;
-	while (1) {
-	  c = fgetc(f);
-	  ungetc(c, f);
-	  /* At the start of another object or the EOD marker */
-	  if (c == '!' || c == '*')
-	    break;
-	  db_read_labeled_string(f, &label, &value);
-	  the_label = LBL_ERROR;
-	  /* Look up the right enum value in the label table */
-	  for (entry = fields; entry->label; entry++) {
-	    if (strcmp(entry->label, label) == 0) {
-	      the_label = entry->tag;
-	      break;
-	    }
-	  }
-	  switch (the_label) {
-	  case LBL_NAME:
-	    set_name(i, value);
-	    break;
-	  case LBL_LOCATION:
-	    o->location = qparse_dbref(value);
-	    break;
-	  case LBL_CONTENTS:
-	    o->contents = qparse_dbref(value);
-	    break;
-	  case LBL_EXITS:
-	    o->exits = qparse_dbref(value);
-	    break;
-	  case LBL_NEXT:
-	    o->next = qparse_dbref(value);
-	    break;
-	  case LBL_PARENT:
-	    o->parent = qparse_dbref(value);
-	    break;
-	  case LBL_LOCKS:
-	    get_new_locks(i, f, parse_integer(value));
-	    break;
-	  case LBL_LEVEL:
-	    o->division.level = parse_integer(value); 
-	    break;
-	  case LBL_PWRLVL:
-	    /* Do nothing with this value */
-	    break;
-	  case LBL_DIVOBJ:
-	    o->division.object = qparse_dbref(value);
-	    break;
-	  case LBL_OWNER:
-	    o->owner = qparse_dbref(value);
-	    break;
-	  case LBL_ZONE:
-	    o->zone = qparse_dbref(value);
-	    break;
-	  case LBL_PENNIES:
-	    s_Pennies(i, parse_integer(value));
-	    break;
-	  case LBL_TYPE:
-	    o->type = parse_integer(value);
-	    switch (Typeof(i)) {
-	    case TYPE_PLAYER:
-	      current_state.players++;
-	      current_state.garbage--;
-	      break;
-	    case TYPE_DIVISION:
-	      current_state.divisions++;
-	      current_state.garbage--;
-	      break;
-	    case TYPE_THING:
-	      current_state.things++;
-	      current_state.garbage--;
-	      break;
-	    case TYPE_EXIT:
-	      current_state.exits++;
-	      current_state.garbage--;
-	      break;
-	    case TYPE_ROOM:
-	      current_state.rooms++;
-	      current_state.garbage--;
-	      break;
-	    }
-	    break;
-	  case LBL_FLAGS:
-	    o->flags = string_to_bits("FLAG", value);
-	    /* Clear the GOING flags. If it was scheduled for destruction
-	     * when the db was saved, it gets a reprieve.
-	     */
-	    clear_flag_internal(i, "GOING");
-	    clear_flag_internal(i, "GOING_TWICE");
-	    break;
-	  case LBL_POWERS:
-	      div_powers = string_to_dpbits(value);
-	      if(power_is_zero(div_powers, DP_BYTES) == 0) {
-		o->division.dp_bytes = NULL;
-		mush_free(div_powers, "POWER_SPOT");
-	      } else o->division.dp_bytes =  div_powers;
-	    break;
-	  case LBL_POWERGROUPS:
-	    powergroup_db_set(NOTHING, i, value, 0);
-	    break;
-	  case LBL_WARNINGS:
-	    o->warnings = parse_warnings(NOTHING, value);
-	    break;
-	  case LBL_CREATED:
-	    o->creation_time = (time_t) parse_integer(value);
-	    break;
-	  case LBL_MODIFIED:
-	    o->modification_time = (time_t) parse_integer(value);
-	    break;
-	  case LBL_LMOD:
-	    db[i].lastmod = NULL;
-	    set_lmod(i, value);
-	    break;
-	  case LBL_ATTRS:
-	    {
-	      int attrcount = parse_integer(value);
-	      db_read_attrs(f, i, attrcount);
-	    }
-	    break;
-	  case LBL_ERROR:
-	  default:
-	    do_rawlog(LT_ERR, T("Unrecognized field '%s' in object #%d"),
-		      label, i);
-	    return -1;
-	  }
-	}
-	if (IsPlayer(i) && (strlen(o->name) > (size_t) PLAYER_NAME_LIMIT)) {
-	  char buff[BUFFER_LEN + 1];	/* The name plus a NUL */
-	  strncpy(buff, o->name, PLAYER_NAME_LIMIT);
-	  buff[PLAYER_NAME_LIMIT] = '\0';
-	  set_name(i, buff);
-	  do_rawlog(LT_CHECK,
-		    T
-		    (" * Name of #%d is longer than the maximum, truncating.\n"),
-		    i);
-	} else if (!IsPlayer(i) && (strlen(o->name) > OBJECT_NAME_LIMIT)) {
-	  char buff[OBJECT_NAME_LIMIT + 1];	/* The name plus a NUL */
-	  strncpy(buff, o->name, OBJECT_NAME_LIMIT);
-	  buff[OBJECT_NAME_LIMIT] = '\0';
-	  set_name(i, buff);
-	  do_rawlog(LT_CHECK,
-		    T
-		    (" * Name of #%d is longer than the maximum, truncating.\n"),
-		    i);
-	}
-	if (IsPlayer(i)) {
-	  add_player(i);
-	  clear_flag_internal(i, "CONNECTED");
-	}
+        i = getref(f);
+        db_grow(i + 1);
+        o = db + i;
+        while (1) {
+          c = fgetc(f);
+          ungetc(c, f);
+          /* At the start of another object or the EOD marker */
+          if (c == '!' || c == '*')
+            break;
+          db_read_labeled_string(f, &label, &value);
+          the_label = LBL_ERROR;
+          /* Look up the right enum value in the label table */
+          for (entry = fields; entry->label; entry++) {
+            if (strcmp(entry->label, label) == 0) {
+              the_label = entry->tag;
+              break;
+            }
+          }
+          switch (the_label) {
+          case LBL_NAME:
+            set_name(i, value);
+            break;
+          case LBL_LOCATION:
+            o->location = qparse_dbref(value);
+            break;
+          case LBL_CONTENTS:
+            o->contents = qparse_dbref(value);
+            break;
+          case LBL_EXITS:
+            o->exits = qparse_dbref(value);
+            break;
+          case LBL_NEXT:
+            o->next = qparse_dbref(value);
+            break;
+          case LBL_PARENT:
+            o->parent = qparse_dbref(value);
+            break;
+          case LBL_LOCKS:
+            get_new_locks(i, f, parse_integer(value));
+            break;
+          case LBL_LEVEL:
+            o->division.level = parse_integer(value); 
+            break;
+          case LBL_PWRLVL:
+            /* Do nothing with this value */
+            break;
+          case LBL_DIVOBJ:
+            o->division.object = qparse_dbref(value);
+            break;
+          case LBL_OWNER:
+            o->owner = qparse_dbref(value);
+            break;
+          case LBL_ZONE:
+            o->zone = qparse_dbref(value);
+            break;
+          case LBL_PENNIES:
+            s_Pennies(i, parse_integer(value));
+            break;
+          case LBL_TYPE:
+            o->type = parse_integer(value);
+            switch (Typeof(i)) {
+            case TYPE_PLAYER:
+              current_state.players++;
+              current_state.garbage--;
+              break;
+            case TYPE_DIVISION:
+              current_state.divisions++;
+              current_state.garbage--;
+              break;
+            case TYPE_THING:
+              current_state.things++;
+              current_state.garbage--;
+              break;
+            case TYPE_EXIT:
+              current_state.exits++;
+              current_state.garbage--;
+              break;
+            case TYPE_ROOM:
+              current_state.rooms++;
+              current_state.garbage--;
+              break;
+            }
+            break;
+          case LBL_FLAGS:
+            o->flags = string_to_bits("FLAG", value);
+            /* Clear the GOING flags. If it was scheduled for destruction
+             * when the db was saved, it gets a reprieve.
+             */
+            clear_flag_internal(i, "GOING");
+            clear_flag_internal(i, "GOING_TWICE");
+            break;
+          case LBL_POWERS:
+              div_powers = string_to_dpbits(value);
+              if(power_is_zero(div_powers, DP_BYTES) == 0) {
+                o->division.dp_bytes = NULL;
+                mush_free(div_powers, "POWER_SPOT");
+              } else o->division.dp_bytes =  div_powers;
+            break;
+          case LBL_POWERGROUPS:
+            powergroup_db_set(NOTHING, i, value, 0);
+            break;
+          case LBL_WARNINGS:
+            o->warnings = parse_warnings(NOTHING, value);
+            break;
+          case LBL_CREATED:
+            o->creation_time = (time_t) parse_integer(value);
+            break;
+          case LBL_MODIFIED:
+            o->modification_time = (time_t) parse_integer(value);
+            break;
+          case LBL_LMOD:
+            db[i].lastmod = NULL;
+            set_lmod(i, value);
+            break;
+          case LBL_ATTRS:
+            {
+              int attrcount = parse_integer(value);
+              db_read_attrs(f, i, attrcount);
+            }
+            break;
+          case LBL_ERROR:
+          default:
+            do_rawlog(LT_ERR, T("Unrecognized field '%s' in object #%d"),
+                      label, i);
+            return -1;
+          }
+        }
+        if (IsPlayer(i) && (strlen(o->name) > (size_t) PLAYER_NAME_LIMIT)) {
+          char buff[BUFFER_LEN + 1];    /* The name plus a NUL */
+          strncpy(buff, o->name, PLAYER_NAME_LIMIT);
+          buff[PLAYER_NAME_LIMIT] = '\0';
+          set_name(i, buff);
+          do_rawlog(LT_CHECK,
+                    T
+                    (" * Name of #%d is longer than the maximum, truncating.\n"),
+                    i);
+        } else if (!IsPlayer(i) && (strlen(o->name) > OBJECT_NAME_LIMIT)) {
+          char buff[OBJECT_NAME_LIMIT + 1];     /* The name plus a NUL */
+          strncpy(buff, o->name, OBJECT_NAME_LIMIT);
+          buff[OBJECT_NAME_LIMIT] = '\0';
+          set_name(i, buff);
+          do_rawlog(LT_CHECK,
+                    T
+                    (" * Name of #%d is longer than the maximum, truncating.\n"),
+                    i);
+        }
+        if (IsPlayer(i)) {
+          add_player(i);
+          clear_flag_internal(i, "CONNECTED");
+        }
       }
       break;
     case '*':
       {
-	char buff[80];
-	ungetc('*', f);
-	fgets(buff, sizeof buff, f);
-	if (strcmp(buff, EOD) != 0) {
-	  do_rawlog(LT_ERR, T("ERROR: No end of dump after object #%d"), i - 1);
-	  return -1;
-	} else {
-	  loading_db = 0;
-	  log_mem_check();
-	  fix_free_list();
-	  dbck();
-	  log_mem_check();
-	  do_rawlog(LT_ERR, "READING: done");
-	  return db_top;
-	}
+        char buff[80];
+        ungetc('*', f);
+        fgets(buff, sizeof buff, f);
+        if (strcmp(buff, EOD) != 0) {
+          do_rawlog(LT_ERR, T("ERROR: No end of dump after object #%d"), i - 1);
+          return -1;
+        } else {
+          loading_db = 0;
+          log_mem_check();
+          fix_free_list();
+          dbck();
+          log_mem_check();
+          do_rawlog(LT_ERR, "READING: done");
+          return db_top;
+        }
       }
     default:
       do_rawlog(LT_ERR, T("ERROR: failed object %d"), i);
@@ -2035,54 +2035,54 @@ init_objdata_htab(int size)
 void init_postconvert() {
   dbref master_division, i;
 
-	  if((!(indb_flags & DBF_DIVISIONS) || (indb_flags & DBF_TYPE_GARBAGE)) && CreTime(0) != globals.first_start_time ) {
-	    do_rawlog(LT_ERR, "Beginning Pennmush to CobraMUSH database conversion process.");
-	      /* Final Step of DB Conversion
-	       * We're gonna first Create the Master Division
-	       * Second we're gonna loop through the database
-	       * set all players except unregistered players to the master division
-	       * and set all levels appropriate
-	       **/
-	    i = GOD;
-	    master_division = new_object();
-	    set_name(master_division, "Master Division");
-	    Type(master_division) = TYPE_DIVISION;
-	    PUSH(master_division, Contents(i));
-	    Owner(master_division) = i;
-	    CreTime(master_division) = ModTime(master_division) = mudtime;
-	    Location(master_division) = i;
-	    atr_new_add(master_division, "DESCRIBE",
-		"This is the master division that comes before all divisions.", i,
-		AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
-	    current_state.divisions++;
-	    SLEVEL(master_division) =  LEVEL_DIRECTOR;
-	    SLEVEL(i) = LEVEL_GOD;
-	    /* Division & God Setup now run through the database & set everyitng else up */
-	    for(i = 0; i < db_top; i++)
-	    {
-	      if(IsGarbage(i))
-		continue;
-	      if(has_flag_by_name(i, "UNREGISTERED", TYPE_PLAYER)){
-		SLEVEL(i) = LEVEL_UNREGISTERED;
-		clear_flag_internal(i, "UNREGISTERED");
-	      } else if(i != master_division) {
-		SDIV(i).object = master_division;
-		if(!has_flag_by_name(i, "WIZARD", NOTYPE) &&
-		    !has_flag_by_name(i, "ROYALTY", NOTYPE) && SLEVEL(i) != -500) {
-		  SLEVEL(i) = LEVEL_PLAYER;
-		} else if(SLEVEL(i) == -500) {
-		  SLEVEL(i) = LEVEL_GUEST;
-		} else if(has_flag_by_name(i, "WIZARD", NOTYPE)) { /* They look like wizard or royalty.. Set 'em up right */
-		  SLEVEL(i) = LEVEL_DIRECTOR;
-		  powergroup_db_set(GOD, i, "WIZARD", 1);
-		} else if(has_flag_by_name(i, "ROYALTY", NOTYPE)) {
-		  SLEVEL(i) = LEVEL_ADMIN;
-		  powergroup_db_set(GOD, i, "ROYALTY", 1);
-		}
-	      }
-	    }
-	       	do_rawlog(LT_ERR, T("DB Conversion complete"));
-	  }
+          if((!(indb_flags & DBF_DIVISIONS) || (indb_flags & DBF_TYPE_GARBAGE)) && CreTime(0) != globals.first_start_time ) {
+            do_rawlog(LT_ERR, "Beginning Pennmush to CobraMUSH database conversion process.");
+              /* Final Step of DB Conversion
+               * We're gonna first Create the Master Division
+               * Second we're gonna loop through the database
+               * set all players except unregistered players to the master division
+               * and set all levels appropriate
+               **/
+            i = GOD;
+            master_division = new_object();
+            set_name(master_division, "Master Division");
+            Type(master_division) = TYPE_DIVISION;
+            PUSH(master_division, Contents(i));
+            Owner(master_division) = i;
+            CreTime(master_division) = ModTime(master_division) = mudtime;
+            Location(master_division) = i;
+            atr_new_add(master_division, "DESCRIBE",
+                "This is the master division that comes before all divisions.", i,
+                AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
+            current_state.divisions++;
+            SLEVEL(master_division) =  LEVEL_DIRECTOR;
+            SLEVEL(i) = LEVEL_GOD;
+            /* Division & God Setup now run through the database & set everyitng else up */
+            for(i = 0; i < db_top; i++)
+            {
+              if(IsGarbage(i))
+                continue;
+              if(has_flag_by_name(i, "UNREGISTERED", TYPE_PLAYER)){
+                SLEVEL(i) = LEVEL_UNREGISTERED;
+                clear_flag_internal(i, "UNREGISTERED");
+              } else if(i != master_division) {
+                SDIV(i).object = master_division;
+                if(!has_flag_by_name(i, "WIZARD", NOTYPE) &&
+                    !has_flag_by_name(i, "ROYALTY", NOTYPE) && SLEVEL(i) != -500) {
+                  SLEVEL(i) = LEVEL_PLAYER;
+                } else if(SLEVEL(i) == -500) {
+                  SLEVEL(i) = LEVEL_GUEST;
+                } else if(has_flag_by_name(i, "WIZARD", NOTYPE)) { /* They look like wizard or royalty.. Set 'em up right */
+                  SLEVEL(i) = LEVEL_DIRECTOR;
+                  powergroup_db_set(GOD, i, "WIZARD", 1);
+                } else if(has_flag_by_name(i, "ROYALTY", NOTYPE)) {
+                  SLEVEL(i) = LEVEL_ADMIN;
+                  powergroup_db_set(GOD, i, "ROYALTY", 1);
+                }
+              }
+            }
+                do_rawlog(LT_ERR, T("DB Conversion complete"));
+          }
 
 }
 
@@ -2147,9 +2147,9 @@ create_minimal_db(void)
 
   int desc_flags = AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH;
 
-  start_room = new_object();	/* #0 */
-  god = new_object();		/* #1 */
-  master_room = new_object();	/* #2 */
+  start_room = new_object();    /* #0 */
+  god = new_object();           /* #1 */
+  master_room = new_object();   /* #2 */
   master_division = new_object(); /* #3 */
 
   init_objdata_htab(DB_INITIAL_SIZE);
@@ -2158,7 +2158,7 @@ create_minimal_db(void)
   Type(start_room) = TYPE_ROOM;
   Flags(start_room) = string_to_bits("FLAG", "LINK_OK");
   atr_new_add(start_room, "DESCRIBE", "You are in Room Zero.", GOD, desc_flags,
-	      1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
+              1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
   CreTime(start_room) = ModTime(start_room) = mudtime;
   current_state.rooms++;
 
@@ -2190,8 +2190,8 @@ create_minimal_db(void)
   Owner(master_room) = god;
   CreTime(master_room) = ModTime(master_room) = mudtime;
   atr_new_add(master_room, "DESCRIBE",
-	      "This is the master room. Any exit in here is considered global. The same is true for objects with $-commands placed here.",
-	      god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
+              "This is the master room. Any exit in here is considered global. The same is true for objects with $-commands placed here.",
+              god, desc_flags, 1, TRUE_BOOLEXP, TRUE_BOOLEXP, mudtime);
   current_state.rooms++;
 /* Master Division */
   Location(master_division) = god;

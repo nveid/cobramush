@@ -41,7 +41,7 @@ static void end_log(const char *filename);
 
 BUFFERQ *activity_bq = NULL;
 
-HASHTAB htab_logfiles;	/**< Hash table of logfile names and descriptors */
+HASHTAB htab_logfiles;  /**< Hash table of logfile names and descriptors */
 
 /* log file pointers */
 FILE *connlog_fp;  /**< Connect log */
@@ -69,7 +69,7 @@ quick_unparse(dbref object)
   default:
     bp = buff;
     safe_format(buff, &bp, "%s(#%d%s)",
-		Name(object), object, unparse_flags(object, GOD));
+                Name(object), object, unparse_flags(object, GOD));
     *bp = '\0';
   }
 
@@ -100,12 +100,12 @@ start_log(FILE ** fp, const char *filename)
 
       *fp = fopen(newfilename, "a");
       if (*fp == NULL) {
-	fprintf(stderr, T("WARNING: cannot open log %s\n"), newfilename);
-	*fp = stderr;
+        fprintf(stderr, T("WARNING: cannot open log %s\n"), newfilename);
+        *fp = stderr;
       } else {
-	hashadd(strupper(filename), (void *) *fp, &htab_logfiles);
-	fprintf(*fp, "START OF LOG.\n");
-	fflush(*fp);
+        hashadd(strupper(filename), (void *) *fp, &htab_logfiles);
+        fprintf(*fp, "START OF LOG.\n");
+        fflush(*fp);
       }
     }
   }
@@ -276,11 +276,11 @@ do_log(int logtype, dbref player, dbref object, const char *fmt, ...)
     if (GoodObject(object)) {
       strcpy(unp2, quick_unparse(object));
       do_rawlog(logtype, T("CMD: %s %s / %s: %s"),
-		(Suspect(player) ? "SUSPECT" : ""), unp1, unp2, tbuf1);
+                (Suspect(player) ? "SUSPECT" : ""), unp1, unp2, tbuf1);
     } else {
       strcpy(unp2, quick_unparse(Location(player)));
       do_rawlog(logtype, T("CMD: %s %s in %s: %s"),
-		(Suspect(player) ? "SUSPECT" : ""), unp1, unp2, tbuf1);
+                (Suspect(player) ? "SUSPECT" : ""), unp1, unp2, tbuf1);
     }
     break;
   case LT_WIZ:
@@ -306,9 +306,9 @@ do_log(int logtype, dbref player, dbref object, const char *fmt, ...)
       strcpy(unp1, quick_unparse(player));
       strcpy(unp2, quick_unparse(Location(player)));
       do_rawlog(logtype, T("HUH: %s in %s [%s]: %s"),
-		unp1, unp2,
-		(GoodObject(Location(player))) ?
-		Name(Owner(Location(player))) : T("bad object"), tbuf1);
+                unp1, unp2,
+                (GoodObject(Location(player))) ?
+                Name(Owner(Location(player))) : T("bad object"), tbuf1);
     }
     break;
   default:
@@ -351,7 +351,7 @@ do_logwipe(dbref player, int logtype, char *str)
     }
     notify(player, T("Wrong password."));
     do_log(LT_WIZ, player, NOTHING,
-	   T("Invalid attempt to wipe the %s log, password %s"), lname, str);
+           T("Invalid attempt to wipe the %s log, password %s"), lname, str);
     return;
   }
   switch (logtype) {
@@ -464,26 +464,26 @@ notify_activity(dbref player, int num_lines, int dump)
     buf = iter_bufferq(activity_bq, &p, &plr, &type, &timestamp);
     if (skip <= 0) {
       if (buf) {
-	stamp = show_time(timestamp, 0);
-	switch (type) {
-	case LA_CMD:
-	  typestr = "CMD";
-	  break;
-	case LA_PE:
-	  typestr = "EXP";
-	  break;
-	case LA_LOCK:
-	  typestr = "LCK";
-	  break;
-	default:
-	  typestr = "???";
-	  break;
-	}
+        stamp = show_time(timestamp, 0);
+        switch (type) {
+        case LA_CMD:
+          typestr = "CMD";
+          break;
+        case LA_PE:
+          typestr = "EXP";
+          break;
+        case LA_LOCK:
+          typestr = "LCK";
+          break;
+        default:
+          typestr = "???";
+          break;
+        }
 
-	if (dump)
-	  do_rawlog(LT_ERR, "[%s/#%d/%s] %s", stamp, plr, typestr, buf);
-	else
-	  notify_format(player, "[%s/#%d/%s] %s", stamp, plr, typestr, buf);
+        if (dump)
+          do_rawlog(LT_ERR, "[%s/#%d/%s] %s", stamp, plr, typestr, buf);
+        else
+          notify_format(player, "[%s/#%d/%s] %s", stamp, plr, typestr, buf);
       }
     }
     skip--;

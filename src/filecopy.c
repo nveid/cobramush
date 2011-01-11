@@ -21,7 +21,7 @@
 #include "log.h"
 #include "confmagic.h"
 
-extern char confname[BUFFER_LEN];	/* From bsd.c */
+extern char confname[BUFFER_LEN];       /* From bsd.c */
 
 /* This is bad, but only for WIN32, which is bad anyway... */
 #define EMBEDDED_MKINDX
@@ -85,34 +85,34 @@ BOOL  ConcatenateFiles(const char *path, const char *outputfile)
   do {
     if (!(fildata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
       do_rawlog(LT_ERR, "%s: %s, %ld %s", T("    Copying file"),
-		  fildata.cFileName, fildata.nFileSizeLow,
-		  fildata.nFileSizeLow == 1 ? T("byte") : T("bytes"));
+                  fildata.cFileName, fildata.nFileSizeLow,
+                  fildata.nFileSizeLow == 1 ? T("byte") : T("bytes"));
       strcpy(fullname, directory);
       strcat(fullname, fildata.cFileName);
 
 /* Open the input file */
-	f = fopen(fullname, "rb");
+        f = fopen(fullname, "rb");
       if (!f)
-	do_rawlog(LT_ERR, T("    ** Unable to open file: %s"), fullname);
+        do_rawlog(LT_ERR, T("    ** Unable to open file: %s"), fullname);
 
       else {
-	total_files++;
+        total_files++;
 
-	  /* do the copy loop */
-	  while (!feof(f)) {
-	  bytes_in = fread(buff, 1, sizeof(buff), f);
-	  if (bytes_in <= 0)
-	    break;
-	  bytes_out = fwrite(buff, 1, bytes_in, fo);
-	  total_bytes += bytes_out;
-	  if (bytes_in != bytes_out) {
-	    do_rawlog(LT_ERR, T("Unable to write to file: %s"), outputfile);
-	    fclose(f);
-	    break;
-	  }
-	}			/* end of copy loop */
-	fclose(f);
-      }			/* end of being able to open file */
+          /* do the copy loop */
+          while (!feof(f)) {
+          bytes_in = fread(buff, 1, sizeof(buff), f);
+          if (bytes_in <= 0)
+            break;
+          bytes_out = fwrite(buff, 1, bytes_in, fo);
+          total_bytes += bytes_out;
+          if (bytes_in != bytes_out) {
+            do_rawlog(LT_ERR, T("Unable to write to file: %s"), outputfile);
+            fclose(f);
+            break;
+          }
+        }                       /* end of copy loop */
+        fclose(f);
+      }                 /* end of being able to open file */
     }
 
       /* end of not being a directory */
@@ -123,8 +123,8 @@ BOOL  ConcatenateFiles(const char *path, const char *outputfile)
   FindClose(filscan);
   fclose(fo);
   do_rawlog(LT_ERR, T("Copied %i %s, %ld %s"), total_files,
-	      total_files == 1 ? T("file") : T("files"), total_bytes,
-	      total_bytes == 1 ? T("byte") : T("bytes"));
+              total_files == 1 ? T("file") : T("files"), total_bytes,
+              total_bytes == 1 ? T("byte") : T("bytes"));
   if (status == ERROR_NO_MORE_FILES)
     return TRUE;
 
@@ -155,10 +155,10 @@ CheckDatabase(const char *path, FILETIME * modified, long *filesize)
   if (st.wMonth < 1 || st.wMonth > 12)
     st.wMonth = 0;
   do_rawlog(LT_ERR, T
-	      ("File \"%s\" found, size %ld %s, modified on %02d %s %04d %02d:%02d:%02d"),
-	      path, fildata.nFileSizeLow,
-	      fildata.nFileSizeLow == 1 ? T("byte") : T("bytes"), st.wDay,
-	      months[st.wMonth], st.wYear, st.wHour, st.wMinute, st.wSecond);
+              ("File \"%s\" found, size %ld %s, modified on %02d %s %04d %02d:%02d:%02d"),
+              path, fildata.nFileSizeLow,
+              fildata.nFileSizeLow == 1 ? T("byte") : T("bytes"), st.wDay,
+              months[st.wMonth], st.wYear, st.wHour, st.wMinute, st.wSecond);
   if (fildata.nFileSizeHigh == 0 && fildata.nFileSizeLow < 80) {
     do_rawlog(LT_ERR, T("File is too small to be a MUSH database."));
     return FALSE;
@@ -186,7 +186,7 @@ CheckDatabase(const char *path, FILETIME * modified, long *filesize)
     return FALSE;
   }
   return TRUE;
-}				/* end of  CheckDatabase */
+}                               /* end of  CheckDatabase */
 void
 Win32MUSH_setup(void)
 {
@@ -199,17 +199,17 @@ Win32MUSH_setup(void)
   if (GetModuleFileName(NULL, FileName, 256) != 0) {
     if (!strcasecmp(rindex(FileName, '\\') + 1, "cobramush.exe")) {
       if (CopyFile("cobramush.exe", "cobramush_run.exe", FALSE)) {
-	do_rawlog(LT_ERR, "Successfully copied executable, starting copy.");
+        do_rawlog(LT_ERR, "Successfully copied executable, starting copy.");
 #ifdef WIN32SERVICES
-	execl("cobramush_run.exe", "cobramush_run.exe", "/run", NULL);
+        execl("cobramush_run.exe", "cobramush_run.exe", "/run", NULL);
 #else
-	execl("cobramush_run.exe", "cobramush_run.exe", confname, NULL);
+        execl("cobramush_run.exe", "cobramush_run.exe", confname, NULL);
 #endif
       }
     }
   }
 
-#endif				/*  */
+#endif                          /*  */
     ConcatenateFiles("txt\\hlp\\*.hlp", "txt\\help.txt");
   ConcatenateFiles("txt\\nws\\*.nws", "txt\\news.txt");
   ConcatenateFiles("txt\\evt\\*.evt", "txt\\events.txt");
@@ -218,51 +218,51 @@ Win32MUSH_setup(void)
   indb_OK = CheckDatabase(options.input_db, &indb_time, &indb_size);
   outdb_OK = CheckDatabase(options.output_db, &outdb_time, &outdb_size);
   panicdb_OK = CheckDatabase(options.crash_db, &panicdb_time, &panicdb_size);
-  if (indb_OK) {		/* Look at outdb */
-    if (outdb_OK) {		/* Look at panicdb */
-      if (panicdb_OK) {	/* outdb or panicdb or indb */
-	if (CompareFileTime(&panicdb_time, &outdb_time) > 0) {	/* panicdb or indb */
-	  if (CompareFileTime(&panicdb_time, &indb_time) > 0) {	/* panicdb */
-	    ConcatenateFiles(options.crash_db, options.input_db);
-	  } else {		/* indb */
-	  }
-	} else {		/* outdb or indb */
-	  if (CompareFileTime(&outdb_time, &indb_time) > 0) {	/* outdb */
-	    ConcatenateFiles(options.output_db, options.input_db);
-	  } else {		/* indb */
-	  }
-	}
-      } else {			/* outdb or indb */
-	if (CompareFileTime(&outdb_time, &indb_time) > 0) {	/* outdb */
-	  ConcatenateFiles(options.output_db, options.input_db);
-	} else {		/* indb */
-	}
+  if (indb_OK) {                /* Look at outdb */
+    if (outdb_OK) {             /* Look at panicdb */
+      if (panicdb_OK) { /* outdb or panicdb or indb */
+        if (CompareFileTime(&panicdb_time, &outdb_time) > 0) {  /* panicdb or indb */
+          if (CompareFileTime(&panicdb_time, &indb_time) > 0) { /* panicdb */
+            ConcatenateFiles(options.crash_db, options.input_db);
+          } else {              /* indb */
+          }
+        } else {                /* outdb or indb */
+          if (CompareFileTime(&outdb_time, &indb_time) > 0) {   /* outdb */
+            ConcatenateFiles(options.output_db, options.input_db);
+          } else {              /* indb */
+          }
+        }
+      } else {                  /* outdb or indb */
+        if (CompareFileTime(&outdb_time, &indb_time) > 0) {     /* outdb */
+          ConcatenateFiles(options.output_db, options.input_db);
+        } else {                /* indb */
+        }
       }
-    } else {			/* outdb not OK */
-      if (panicdb_OK) {	/* panicdb or indb */
-	if (CompareFileTime(&panicdb_time, &indb_time) > 0) {	/* panicdb */
-	  ConcatenateFiles(options.crash_db, options.input_db);
-	} else {		/* indb */
-	}
-      } else {			/* indb */
+    } else {                    /* outdb not OK */
+      if (panicdb_OK) { /* panicdb or indb */
+        if (CompareFileTime(&panicdb_time, &indb_time) > 0) {   /* panicdb */
+          ConcatenateFiles(options.crash_db, options.input_db);
+        } else {                /* indb */
+        }
+      } else {                  /* indb */
       }
     }
-  } else {			/* indb not OK */
-    if (outdb_OK) {		/* look at panicdb */
-      if (panicdb_OK) {	/* out or panic */
-	if (CompareFileTime(&panicdb_time, &outdb_time) > 0) {	/* panicdb */
-	  ConcatenateFiles(options.crash_db, options.input_db);
-	} else {		/* outdb */
-	  ConcatenateFiles(options.output_db, options.input_db);
-	}
-      } else {			/* outdb */
-	ConcatenateFiles(options.output_db, options.input_db);
+  } else {                      /* indb not OK */
+    if (outdb_OK) {             /* look at panicdb */
+      if (panicdb_OK) { /* out or panic */
+        if (CompareFileTime(&panicdb_time, &outdb_time) > 0) {  /* panicdb */
+          ConcatenateFiles(options.crash_db, options.input_db);
+        } else {                /* outdb */
+          ConcatenateFiles(options.output_db, options.input_db);
+        }
+      } else {                  /* outdb */
+        ConcatenateFiles(options.output_db, options.input_db);
       }
-    } else {			/* outdb not OK */
-      if (panicdb_OK) {	/* panicdb */
-	ConcatenateFiles(options.crash_db, options.input_db);
-      } else {			/* NOTHING */
-	return;
+    } else {                    /* outdb not OK */
+      if (panicdb_OK) { /* panicdb */
+        ConcatenateFiles(options.crash_db, options.input_db);
+      } else {                  /* NOTHING */
+        return;
       }
     }
   }
@@ -278,4 +278,4 @@ Win32MUSH_setup(void)
 }
 
 
-#endif	/* WIN32 */
+#endif  /* WIN32 */

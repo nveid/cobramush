@@ -58,7 +58,7 @@
 #include <unistd.h>
 #endif
 
-#endif				/* _MALLOC_INTERNAL.  */
+#endif                          /* _MALLOC_INTERNAL.  */
 
 #ifdef  __cplusplus
 extern "C" {
@@ -69,14 +69,14 @@ extern "C" {
 #define __P(args)       args
 #undef  __ptr_t
 #define __ptr_t         void *
-#else				/* Not C++ or ANSI C.  */
+#else                           /* Not C++ or ANSI C.  */
 #undef  __P
 #define __P(args)       ()
 #undef  const
 #define const
 #undef  __ptr_t
 #define __ptr_t         char *
-#endif				/* C++ or ANSI C.  */
+#endif                          /* C++ or ANSI C.  */
 
 #if defined (__STDC__) && __STDC__
 #include <stddef.h>
@@ -104,7 +104,7 @@ extern "C" {
 
 /* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
   extern __ptr_t memalign __P((__malloc_size_t __alignment,
-			       __malloc_size_t __size));
+                               __malloc_size_t __size));
 
 /* Allocate SIZE bytes on a page boundary.  */
   extern __ptr_t valloc __P((__malloc_size_t __size));
@@ -138,22 +138,22 @@ extern "C" {
          logarithm to the base two of the fragment size.  */
       int type;
       union {
-	struct {
-	  __malloc_size_t nfree;	/* Free frags in a fragmented block.  */
-	  __malloc_size_t first;	/* First free fragment of the block.  */
-	} frag;
-	/* For a large object, in its first block, this has the number
-	   of blocks in the object.  In the other blocks, this has a
-	   negative number which says how far back the first block is.  */
-	__malloc_ptrdiff_t size;
+        struct {
+          __malloc_size_t nfree;        /* Free frags in a fragmented block.  */
+          __malloc_size_t first;        /* First free fragment of the block.  */
+        } frag;
+        /* For a large object, in its first block, this has the number
+           of blocks in the object.  In the other blocks, this has a
+           negative number which says how far back the first block is.  */
+        __malloc_ptrdiff_t size;
       } info;
     } busy;
     /* Heap information for a free block
        (that may be the first of a free cluster).  */
     struct {
-      __malloc_size_t size;	/* Size (in blocks) of a free cluster.  */
-      __malloc_size_t next;	/* Index of next free cluster.  */
-      __malloc_size_t prev;	/* Index of previous free cluster.  */
+      __malloc_size_t size;     /* Size (in blocks) of a free cluster.  */
+      __malloc_size_t next;     /* Index of next free cluster.  */
+      __malloc_size_t prev;     /* Index of previous free cluster.  */
     } free;
   } malloc_info;
 
@@ -185,8 +185,8 @@ extern "C" {
 /* List of blocks allocated with `memalign' (or `valloc').  */
   struct alignlist {
     struct alignlist *next;
-    __ptr_t aligned;		/* The address that memaligned returned.  */
-    __ptr_t exact;		/* The address that malloc returned.  */
+    __ptr_t aligned;            /* The address that memaligned returned.  */
+    __ptr_t exact;              /* The address that malloc returned.  */
   };
   extern struct alignlist *_aligned_blocks;
 
@@ -199,7 +199,7 @@ extern "C" {
 /* Internal version of `free' used in `morecore' (malloc.c). */
   extern void _free_internal __P((__ptr_t __ptr));
 
-#endif				/* _MALLOC_INTERNAL.  */
+#endif                          /* _MALLOC_INTERNAL.  */
 
 /* Given an address in the middle of a malloc'd object,
    return the address of the beginning of the object.  */
@@ -231,11 +231,11 @@ extern "C" {
 /* Return values for `mprobe': these are the kinds of inconsistencies that
    `mcheck' enables detection of.  */
   enum mcheck_status {
-    MCHECK_DISABLED = -1,	/* Consistency checking is not turned on.  */
-    MCHECK_OK,			/* Block is fine.  */
-    MCHECK_FREE,		/* Block freed twice.  */
-    MCHECK_HEAD,		/* Memory before the block was clobbered.  */
-    MCHECK_TAIL			/* Memory after the block was clobbered.  */
+    MCHECK_DISABLED = -1,       /* Consistency checking is not turned on.  */
+    MCHECK_OK,                  /* Block is fine.  */
+    MCHECK_FREE,                /* Block freed twice.  */
+    MCHECK_HEAD,                /* Memory before the block was clobbered.  */
+    MCHECK_TAIL                 /* Memory after the block was clobbered.  */
   };
 
 /* Activate a standard collection of debugging hooks.  This must be called
@@ -255,11 +255,11 @@ extern "C" {
 
 /* Statistics available to the user.  */
   struct mstats {
-    __malloc_size_t bytes_total;	/* Total size of the heap. */
-    __malloc_size_t chunks_used;	/* Chunks allocated by the user. */
-    __malloc_size_t bytes_used;	/* Byte total of user-allocated chunks. */
-    __malloc_size_t chunks_free;	/* Chunks in the free list. */
-    __malloc_size_t bytes_free;	/* Byte total of chunks in the free list. */
+    __malloc_size_t bytes_total;        /* Total size of the heap. */
+    __malloc_size_t chunks_used;        /* Chunks allocated by the user. */
+    __malloc_size_t bytes_used; /* Byte total of user-allocated chunks. */
+    __malloc_size_t chunks_free;        /* Chunks in the free list. */
+    __malloc_size_t bytes_free; /* Byte total of chunks in the free list. */
   };
 
 /* Pick up the current statistics. */
@@ -267,7 +267,7 @@ extern "C" {
 
 /* Call WARNFUN with a warning message when memory usage is high.  */
   extern void memory_warnings __P((__ptr_t __start,
-				   void (*__warnfun) __P((const char *))));
+                                   void (*__warnfun) __P((const char *))));
 
 
 /* Relocating allocator.  */
@@ -285,26 +285,26 @@ extern "C" {
 #ifdef  __cplusplus
 }
 #endif
-#endif	/* malloc.h  */			/* Allocate memory on a page boundary.
-				   Copyright (C) 1991, 1992, 1993, 1994 Free Software Foundation, Inc.
+#endif  /* malloc.h  */                 /* Allocate memory on a page boundary.
+                                   Copyright (C) 1991, 1992, 1993, 1994 Free Software Foundation, Inc.
 
-				   This library is free software; you can redistribute it and/or
-				   modify it under the terms of the GNU Library General Public License as
-				   published by the Free Software Foundation; either version 2 of the
-				   License, or (at your option) any later version.
+                                   This library is free software; you can redistribute it and/or
+                                   modify it under the terms of the GNU Library General Public License as
+                                   published by the Free Software Foundation; either version 2 of the
+                                   License, or (at your option) any later version.
 
-				   This library is distributed in the hope that it will be useful,
-				   but WITHOUT ANY WARRANTY; without even the implied warranty of
-				   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-				   Library General Public License for more details.
+                                   This library is distributed in the hope that it will be useful,
+                                   but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+                                   Library General Public License for more details.
 
-				   You should have received a copy of the GNU Library General Public
-				   License along with this library; see the file COPYING.LIB.  If
-				   not, write to the Free Software Foundation, Inc., 675 Mass Ave,
-				   Cambridge, MA 02139, USA.
+                                   You should have received a copy of the GNU Library General Public
+                                   License along with this library; see the file COPYING.LIB.  If
+                                   not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+                                   Cambridge, MA 02139, USA.
 
-				   The author may be reached (Email) at the address mike@ai.mit.edu,
-				   or (US mail) as Mike Haertel c/o Free Software Foundation.  */
+                                   The author may be reached (Email) at the address mike@ai.mit.edu,
+                                   or (US mail) as Mike Haertel c/o Free Software Foundation.  */
 #if defined (__GNU_LIBRARY__) || defined (_LIBC)
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -410,7 +410,7 @@ align(size)
 
   result = (*__morecore) (size);
   adj = (unsigned long int) ((unsigned long int) ((char *) result -
-						  (char *) NULL)) % BLOCKSIZE;
+                                                  (char *) NULL)) % BLOCKSIZE;
   if (adj != 0) {
     adj = BLOCKSIZE - adj;
     (void) (*__morecore) (adj);
@@ -546,12 +546,12 @@ malloc(size)
       result = (__ptr_t) next;
       next->prev->next = next->next;
       if (next->next != NULL)
-	next->next->prev = next->prev;
+        next->next->prev = next->prev;
       block = BLOCK(result);
       if (--_heapinfo[block].busy.info.frag.nfree != 0)
-	_heapinfo[block].busy.info.frag.first = (unsigned long int)
-	  ((unsigned long int) ((char *) next->next - (char *) NULL)
-	   % BLOCKSIZE) >> log;
+        _heapinfo[block].busy.info.frag.first = (unsigned long int)
+          ((unsigned long int) ((char *) next->next - (char *) NULL)
+           % BLOCKSIZE) >> log;
 
       /* Update the statistics.  */
       ++_chunks_used;
@@ -563,16 +563,16 @@ malloc(size)
          and break it into fragments, returning the first.  */
       result = malloc(BLOCKSIZE);
       if (result == NULL)
-	return NULL;
+        return NULL;
 
       /* Link all fragments but the first into the free list.  */
       for (i = 1; i < (__malloc_size_t) (BLOCKSIZE >> log); ++i) {
-	next = (struct list *) ((char *) result + (i << log));
-	next->next = _fraghead[log].next;
-	next->prev = &_fraghead[log];
-	next->prev->next = next;
-	if (next->next != NULL)
-	  next->next->prev = next;
+        next = (struct list *) ((char *) result + (i << log));
+        next->next = _fraghead[log].next;
+        next->prev = &_fraghead[log];
+        next->prev->next = next;
+        if (next->next != NULL)
+          next->next->prev = next;
       }
 
       /* Initialize the nfree and first counters for this block.  */
@@ -595,31 +595,31 @@ malloc(size)
     while (_heapinfo[block].free.size < blocks) {
       block = _heapinfo[block].free.next;
       if (block == start) {
-	/* Need to get more from the system.  Check to see if
-	   the new core will be contiguous with the final free
-	   block; if so we don't need to get as much.  */
-	block = _heapinfo[0].free.prev;
-	lastblocks = _heapinfo[block].free.size;
-	if (_heaplimit != 0 && block + lastblocks == _heaplimit &&
-	    (*__morecore) (0) == ADDRESS(block + lastblocks) &&
-	    (morecore((blocks - lastblocks) * BLOCKSIZE)) != NULL) {
-	  /* Which block we are extending (the `final free
-	     block' referred to above) might have changed, if
-	     it got combined with a freed info table.  */
-	  block = _heapinfo[0].free.prev;
-	  _heapinfo[block].free.size += (blocks - lastblocks);
-	  _bytes_free += (blocks - lastblocks) * BLOCKSIZE;
-	  continue;
-	}
-	result = morecore(blocks * BLOCKSIZE);
-	if (result == NULL)
-	  return NULL;
-	block = BLOCK(result);
-	_heapinfo[block].busy.type = 0;
-	_heapinfo[block].busy.info.size = blocks;
-	++_chunks_used;
-	_bytes_used += blocks * BLOCKSIZE;
-	return result;
+        /* Need to get more from the system.  Check to see if
+           the new core will be contiguous with the final free
+           block; if so we don't need to get as much.  */
+        block = _heapinfo[0].free.prev;
+        lastblocks = _heapinfo[block].free.size;
+        if (_heaplimit != 0 && block + lastblocks == _heaplimit &&
+            (*__morecore) (0) == ADDRESS(block + lastblocks) &&
+            (morecore((blocks - lastblocks) * BLOCKSIZE)) != NULL) {
+          /* Which block we are extending (the `final free
+             block' referred to above) might have changed, if
+             it got combined with a freed info table.  */
+          block = _heapinfo[0].free.prev;
+          _heapinfo[block].free.size += (blocks - lastblocks);
+          _bytes_free += (blocks - lastblocks) * BLOCKSIZE;
+          continue;
+        }
+        result = morecore(blocks * BLOCKSIZE);
+        if (result == NULL)
+          return NULL;
+        block = BLOCK(result);
+        _heapinfo[block].busy.type = 0;
+        _heapinfo[block].busy.info.size = blocks;
+        ++_chunks_used;
+        _bytes_used += blocks * BLOCKSIZE;
+        return result;
       }
     }
 
@@ -633,15 +633,15 @@ malloc(size)
       _heapinfo[block + blocks].free.next = _heapinfo[block].free.next;
       _heapinfo[block + blocks].free.prev = _heapinfo[block].free.prev;
       _heapinfo[_heapinfo[block].free.prev].free.next
-	= _heapinfo[_heapinfo[block].free.next].free.prev
-	= _heapindex = block + blocks;
+        = _heapinfo[_heapinfo[block].free.next].free.prev
+        = _heapindex = block + blocks;
     } else {
       /* The block exactly matches our requirements,
          so just remove it from the list. */
       _heapinfo[_heapinfo[block].free.next].free.prev
-	= _heapinfo[block].free.prev;
+        = _heapinfo[block].free.prev;
       _heapinfo[_heapinfo[block].free.prev].free.next
-	= _heapindex = _heapinfo[block].free.next;
+        = _heapindex = _heapinfo[block].free.next;
       --_chunks_free;
     }
 
@@ -755,10 +755,10 @@ _free_internal(ptr)
     i = _heapindex;
     if (i > block)
       while (i > block)
-	i = _heapinfo[i].free.prev;
+        i = _heapinfo[i].free.prev;
     else {
       do
-	i = _heapinfo[i].free.next;
+        i = _heapinfo[i].free.next;
       while (i > 0 && i < block);
       i = _heapinfo[i].free.prev;
     }
@@ -783,23 +783,23 @@ _free_internal(ptr)
        and adding in its size).  */
     if (block + _heapinfo[block].free.size == _heapinfo[block].free.next) {
       _heapinfo[block].free.size
-	+= _heapinfo[_heapinfo[block].free.next].free.size;
+        += _heapinfo[_heapinfo[block].free.next].free.size;
       _heapinfo[block].free.next
-	= _heapinfo[_heapinfo[block].free.next].free.next;
+        = _heapinfo[_heapinfo[block].free.next].free.next;
       _heapinfo[_heapinfo[block].free.next].free.prev = block;
       --_chunks_free;
     }
     /* Now see if we can return stuff to the system.  */
     blocks = _heapinfo[block].free.size;
     if (blocks >= FINAL_FREE_BLOCKS && block + blocks == _heaplimit
-	&& (*__morecore) (0) == ADDRESS(block + blocks)) {
+        && (*__morecore) (0) == ADDRESS(block + blocks)) {
       register __malloc_size_t bytes = blocks * BLOCKSIZE;
       _heaplimit -= blocks;
       (*__morecore) (-bytes);
       _heapinfo[_heapinfo[block].free.prev].free.next
-	= _heapinfo[block].free.next;
+        = _heapinfo[block].free.next;
       _heapinfo[_heapinfo[block].free.next].free.prev
-	= _heapinfo[block].free.prev;
+        = _heapinfo[block].free.prev;
       block = _heapinfo[block].free.prev;
       --_chunks_free;
       _bytes_free -= bytes;
@@ -817,18 +817,18 @@ _free_internal(ptr)
 
     /* Get the address of the first free fragment in this block.  */
     prev = (struct list *) ((char *) ADDRESS(block) +
-			    (_heapinfo[block].busy.info.frag.first << type));
+                            (_heapinfo[block].busy.info.frag.first << type));
 
     if (_heapinfo[block].busy.info.frag.nfree ==
-	(__malloc_size_t) (BLOCKSIZE >> type) - 1) {
+        (__malloc_size_t) (BLOCKSIZE >> type) - 1) {
       /* If all fragments of this block are free, remove them
          from the fragment list and free the whole block.  */
       next = prev;
       for (i = 1; i < (__malloc_size_t) (BLOCKSIZE >> type); ++i)
-	next = next->next;
+        next = next->next;
       prev->prev->next = next;
       if (next != NULL)
-	next->prev = prev->prev;
+        next->prev = prev->prev;
       _heapinfo[block].busy.type = 0;
       _heapinfo[block].busy.info.size = 1;
 
@@ -848,7 +848,7 @@ _free_internal(ptr)
       next->prev = prev;
       prev->next = next;
       if (next->next != NULL)
-	next->next->prev = next;
+        next->next->prev = next;
       ++_heapinfo[block].busy.info.frag.nfree;
     } else {
       /* No fragments of this block are free, so link this
@@ -857,13 +857,13 @@ _free_internal(ptr)
       prev = (struct list *) ptr;
       _heapinfo[block].busy.info.frag.nfree = 1;
       _heapinfo[block].busy.info.frag.first = (unsigned long int)
-	((unsigned long int) ((char *) ptr - (char *) NULL)
-	 % BLOCKSIZE >> type);
+        ((unsigned long int) ((char *) ptr - (char *) NULL)
+         % BLOCKSIZE >> type);
       prev->next = _fraghead[type].next;
       prev->prev = &_fraghead[type];
       prev->prev->next = prev;
       if (prev->next != NULL)
-	prev->next->prev = prev;
+        prev->next->prev = prev;
     }
     break;
   }
@@ -881,7 +881,7 @@ free(ptr)
 
   for (l = _aligned_blocks; l != NULL; l = l->next)
     if (l->aligned == ptr) {
-      l->aligned = NULL;	/* Mark the slot in the list as free.  */
+      l->aligned = NULL;        /* Mark the slot in the list as free.  */
       ptr = l->exact;
       break;
     }
@@ -997,17 +997,17 @@ safe_bcopy(from, to, size)
        bad, I'm trying to err in its favor.  */
     if (to - from < 64) {
       do
-	*--endt = *--endf;
+        *--endt = *--endf;
       while (endf != from);
     } else {
       for (;;) {
-	endt -= (to - from);
-	endf -= (to - from);
+        endt -= (to - from);
+        endf -= (to - from);
 
-	if (endt < to)
-	  break;
+        if (endt < to)
+          break;
 
-	bcopy(endf, endt, to - from);
+        bcopy(endf, endt, to - from);
       }
 
       /* If SIZE wasn't a multiple of TO - FROM, there will be a
@@ -1017,7 +1017,7 @@ safe_bcopy(from, to, size)
     }
   }
 }
-#endif				/* Not emacs.  */
+#endif                          /* Not emacs.  */
 
 #define memmove(to, from, size) safe_bcopy ((from), (to), (size))
 
@@ -1062,9 +1062,9 @@ realloc(ptr, size)
     if (size <= BLOCKSIZE / 2) {
       result = malloc(size);
       if (result != NULL) {
-	memcpy(result, ptr, size);
-	_free_internal(ptr);
-	return result;
+        memcpy(result, ptr, size);
+        _free_internal(ptr);
+        return result;
       }
     }
     /* The new size is a large allocation as well;
@@ -1075,7 +1075,7 @@ realloc(ptr, size)
          excess memory to the free list. */
       _heapinfo[block + blocks].busy.type = 0;
       _heapinfo[block + blocks].busy.info.size
-	= _heapinfo[block].busy.info.size - blocks;
+        = _heapinfo[block].busy.info.size - blocks;
       _heapinfo[block].busy.info.size = blocks;
       /* We have just created a new chunk by splitting a chunk in two.
          Now we will free this chunk; increment the statistics counter
@@ -1098,20 +1098,20 @@ realloc(ptr, size)
       _heaplimit = oldlimit;
       result = malloc(size);
       if (result == NULL) {
-	/* Now we're really in trouble.  We have to unfree
-	   the thing we just freed.  Unfortunately it might
-	   have been coalesced with its neighbors.  */
-	if (_heapindex == block)
-	  (void) malloc(blocks * BLOCKSIZE);
-	else {
-	  __ptr_t previous = malloc((block - _heapindex) * BLOCKSIZE);
-	  (void) malloc(blocks * BLOCKSIZE);
-	  _free_internal(previous);
-	}
-	return NULL;
+        /* Now we're really in trouble.  We have to unfree
+           the thing we just freed.  Unfortunately it might
+           have been coalesced with its neighbors.  */
+        if (_heapindex == block)
+          (void) malloc(blocks * BLOCKSIZE);
+        else {
+          __ptr_t previous = malloc((block - _heapindex) * BLOCKSIZE);
+          (void) malloc(blocks * BLOCKSIZE);
+          _free_internal(previous);
+        }
+        return NULL;
       }
       if (ptr != result)
-	memmove(result, ptr, blocks * BLOCKSIZE);
+        memmove(result, ptr, blocks * BLOCKSIZE);
     }
     break;
 
@@ -1119,7 +1119,7 @@ realloc(ptr, size)
     /* Old size is a fragment; type is logarithm
        to base two of the fragment size.  */
     if (size > (__malloc_size_t) (1 << (type - 1)) &&
-	size <= (__malloc_size_t) (1 << type))
+        size <= (__malloc_size_t) (1 << type))
       /* The new size is the same kind of fragment.  */
       result = ptr;
     else {
@@ -1127,7 +1127,7 @@ realloc(ptr, size)
          and copy the lesser of the new size and the old. */
       result = malloc(size);
       if (result == NULL)
-	return NULL;
+        return NULL;
       memcpy(result, ptr, min(size, (__malloc_size_t) 1 << type));
       free(ptr);
     }
@@ -1272,18 +1272,18 @@ memalign(alignment, size)
   if (result == NULL)
     return NULL;
   adj = (unsigned long int) ((unsigned long int) ((char *) result -
-						  (char *) NULL)) % alignment;
+                                                  (char *) NULL)) % alignment;
   if (adj != 0) {
     struct alignlist *l;
     for (l = _aligned_blocks; l != NULL; l = l->next)
       if (l->aligned == NULL)
-	/* This slot is free.  Use it.  */
-	break;
+        /* This slot is free.  Use it.  */
+        break;
     if (l == NULL) {
       l = (struct alignlist *) malloc(sizeof(struct alignlist));
       if (l == NULL) {
-	free(result);
-	return NULL;
+        free(result);
+        return NULL;
       }
       l->next = _aligned_blocks;
       _aligned_blocks = l;

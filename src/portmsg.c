@@ -206,7 +206,7 @@ main(int argc, char **argv)
   }
   opt = 1;
   if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
-		 (char *) &opt, sizeof(opt)) < 0) {
+                 (char *) &opt, sizeof(opt)) < 0) {
     perror("setsockopt");
     exit(1);
   }
@@ -273,7 +273,7 @@ how_many_fds(void)
 #ifdef HAS_SYSCONF
   errno = 0;
   if ((open_max = sysconf(_SC_OPEN_MAX)) < 0) {
-    if (errno == 0)		/* Value was indeterminate */
+    if (errno == 0)             /* Value was indeterminate */
       open_max = 0;
   }
   if (open_max)

@@ -230,8 +230,8 @@ what_to_destroy(dbref player, char *name, int confirm)
    */
   if (!controls(player, thing) &&
       !(IsExit(thing) &&
-	(controls(player, Destination(thing)) ||
-	 controls(player, Source(thing)))) &&
+        (controls(player, Destination(thing)) ||
+         controls(player, Source(thing)))) &&
       !(DestOk(thing) && eval_lock(player, thing, Destroy_Lock))) {
     notify(player, T("Permission denied."));
     return NOTHING;
@@ -244,11 +244,11 @@ what_to_destroy(dbref player, char *name, int confirm)
   if (REALLY_SAFE) {
     if (Safe(thing) && !DestOk(thing)) {
       notify(player,
-	     T
-	     ("That object is set SAFE. You must set it !SAFE before destroying it."));
+             T
+             ("That object is set SAFE. You must set it !SAFE before destroying it."));
       return NOTHING;
     }
-  } else {			/* REALLY_SAFE */
+  } else {                      /* REALLY_SAFE */
     if (Safe(thing) && !DestOk(thing) && !confirm) {
       notify(player, T("That object is marked SAFE. Use @nuke to destroy it."));
       return NOTHING;
@@ -257,7 +257,7 @@ what_to_destroy(dbref player, char *name, int confirm)
   /* check to make sure there's no accidental destruction */
   if (!confirm && !Owns(player, thing) && !DestOk(thing)) {
     notify(player,
-	   T("That object does not belong to you. Use @nuke to destroy it."));
+           T("That object does not belong to you. Use @nuke to destroy it."));
     return NOTHING;
   }
   /* what kind of thing we are destroying? */
@@ -277,7 +277,7 @@ what_to_destroy(dbref player, char *name, int confirm)
     }
     if (Connected(thing)) {
       notify(player,
-	     T("How gruesome. You may not destroy players who are connected."));
+             T("How gruesome. You may not destroy players who are connected."));
       return NOTHING;
     }
     if (!confirm) {
@@ -344,67 +344,67 @@ do_destroy(dbref player, char *name, int confirm)
   /* Present informative messages. */
   if (!REALLY_SAFE && Safe(thing))
     notify(player,
-	   T
-	   ("Warning: Target is set SAFE, but scheduling for destruction anyway."));
+           T
+           ("Warning: Target is set SAFE, but scheduling for destruction anyway."));
   switch (Typeof(thing)) {
   case TYPE_ROOM:
     /* wait until dbck */
     notify_except(Contents(thing), NOTHING,
-		  T("The room shakes and begins to crumble."), 0);
+                  T("The room shakes and begins to crumble."), 0);
     if (Owns(player, thing))
       notify_format(player,
-		    T("You will be rewarded shortly for %s."),
-		    object_header(player, thing));
+                    T("You will be rewarded shortly for %s."),
+                    object_header(player, thing));
     else {
       notify_format(player,
-		    T
-		    ("The wrecking ball is on its way for %s's %s and its exits."),
-		    Name(Owner(thing)), object_header(player, thing));
+                    T
+                    ("The wrecking ball is on its way for %s's %s and its exits."),
+                    Name(Owner(thing)), object_header(player, thing));
       notify_format(Owner(thing),
-		    T("%s has scheduled your room %s to be destroyed."),
-		    Name(player), object_header(Owner(thing), thing));
+                    T("%s has scheduled your room %s to be destroyed."),
+                    Name(player), object_header(Owner(thing), thing));
     }
     break;
   case TYPE_PLAYER:
     /* wait until dbck */
     notify_format(player,
-		  (DESTROY_POSSESSIONS ?
-		   (REALLY_SAFE ?
-		    T
-		    ("%s and all their (non-SAFE) objects are scheduled to be destroyed.")
-		    :
-		    T
-		    ("%s and all their objects are scheduled to be destroyed."))
-		   : T("%s is scheduled to be destroyed.")),
-		  object_header(player, thing));
+                  (DESTROY_POSSESSIONS ?
+                   (REALLY_SAFE ?
+                    T
+                    ("%s and all their (non-SAFE) objects are scheduled to be destroyed.")
+                    :
+                    T
+                    ("%s and all their objects are scheduled to be destroyed."))
+                   : T("%s is scheduled to be destroyed.")),
+                  object_header(player, thing));
     break;
   case TYPE_DIVISION:
     do_log(LT_WIZ, player, thing, "Division object scheduled for destruction.");
   case TYPE_THING:
     if (!Owns(player, thing)) {
       notify_format(player, T("%s's %s is scheduled to be destroyed."),
-		    Name(Owner(thing)), object_header(player, thing));
+                    Name(Owner(thing)), object_header(player, thing));
       if (!DestOk(thing))
-	notify_format(Owner(thing),
-		      T("%s has scheduled your %s for destruction."),
-		      Name(player), object_header(Owner(thing), thing));
+        notify_format(Owner(thing),
+                      T("%s has scheduled your %s for destruction."),
+                      Name(player), object_header(Owner(thing), thing));
     } else {
       notify_format(player, T("%s is scheduled to be destroyed."),
-		    object_header(player, thing));
+                    object_header(player, thing));
     }
     break;
   case TYPE_EXIT:
     if (!Owns(player, thing)) {
       notify_format(Owner(thing),
-		    T("%s has scheduled your %s for destruction."),
-		    Name(player), object_header(Owner(thing), thing));
+                    T("%s has scheduled your %s for destruction."),
+                    Name(player), object_header(Owner(thing), thing));
       notify_format(player,
-		    T("%s's %s is scheduled to be destroyed."),
-		    Name(Owner(thing)), object_header(player, thing));
+                    T("%s's %s is scheduled to be destroyed."),
+                    Name(Owner(thing)), object_header(player, thing));
     } else
       notify_format(player,
-		    T("%s is scheduled to be destroyed."),
-		    object_header(player, thing));
+                    T("%s is scheduled to be destroyed."),
+                    object_header(player, thing));
     break;
   default:
     do_log(LT_ERR, NOTHING, NOTHING, T("Surprising type in do_destroy."));
@@ -442,15 +442,15 @@ do_undestroy(dbref player, char *name)
     do_log(LT_WIZ, player, thing, "Division object destruction canceled.");
 
   notify_format(Owner(thing),
-		T("Your %s has been spared from destruction."),
-		object_header(Owner(thing), thing));
+                T("Your %s has been spared from destruction."),
+                object_header(Owner(thing), thing));
   if (player != Owner(thing)) {
     notify_format(player,
-		  T("%s's %s has been spared from destruction."),
-		  Name(Owner(thing)), object_header(player, thing));
+                  T("%s's %s has been spared from destruction."),
+                  Name(Owner(thing)), object_header(player, thing));
   }
   } else {
-	  notify(player, T("That can't be undestroyed."));
+          notify(player, T("That can't be undestroyed."));
   }
 }
 
@@ -482,10 +482,10 @@ pre_destroy(dbref player, dbref thing)
   case TYPE_PLAYER:
     if (DESTROY_POSSESSIONS) {
       for (tmp = 0; tmp < db_top; tmp++) {
-	if (Owner(tmp) == thing &&
-	    (tmp != thing) && (!REALLY_SAFE || !Safe(thing))) {
-	  pre_destroy(player, tmp);
-	}
+        if (Owner(tmp) == thing &&
+            (tmp != thing) && (!REALLY_SAFE || !Safe(thing))) {
+          pre_destroy(player, tmp);
+        }
       }
     }
     break;
@@ -497,9 +497,9 @@ pre_destroy(dbref player, dbref thing)
      * whose owner hasn't already been notified. */
     if ((Owner(thing) != Owner(Source(thing))) && Going(Source(thing))) {
       if (!Owns(player, thing)) {
-	notify_format(Owner(thing),
-		      T("%s has scheduled your %s for destruction."),
-		      Name(player), object_header(Owner(thing), thing));
+        notify_format(Owner(thing),
+                      T("%s has scheduled your %s for destruction."),
+                      Name(player), object_header(Owner(thing), thing));
       }
     }
     break;
@@ -539,11 +539,11 @@ undestroy(dbref player, dbref thing)
   if (Going(Owner(thing))) {
     if (Owner(thing) != player) {
       notify_format(player,
-		    T("%s has been spared from destruction."),
-		    object_header(player, Owner(thing)));
+                    T("%s has been spared from destruction."),
+                    object_header(player, Owner(thing)));
       notify_format(Owner(thing),
-		    T("You have been spared from destruction by %s."),
-		    Name(player));
+                    T("You have been spared from destruction by %s."),
+                    Name(player));
     } else {
       notify(player, T("You have been spared from destruction."));
     }
@@ -557,11 +557,11 @@ undestroy(dbref player, dbref thing)
        * be purged when the room is purged.
        */
       for (tmp = 0; tmp < db_top; tmp++) {
-	if (Owns(thing, tmp) &&
-	    (tmp != thing) &&
-	    !(IsExit(tmp) && !Owns(thing, Source(tmp)) && Going(Source(tmp)))) {
-	  (void) undestroy(player, tmp);
-	}
+        if (Owns(thing, tmp) &&
+            (tmp != thing) &&
+            !(IsExit(tmp) && !Owns(thing, Source(tmp)) && Going(Source(tmp)))) {
+          (void) undestroy(player, tmp);
+        }
       }
     break;
   case TYPE_DIVISION:
@@ -572,13 +572,13 @@ undestroy(dbref player, dbref thing)
     if (Going(Source(thing))) {
       (void) undestroy(player, Source(thing));
       notify_format(player,
-		    T("The room %s has been spared from destruction."),
-		    object_header(player, Source(thing)));
+                    T("The room %s has been spared from destruction."),
+                    object_header(player, Source(thing)));
       if (Owner(Source(thing)) != player) {
-	notify_format(Owner(Source(thing)),
-		      T("The room %s has been spared from destruction by %s."),
-		      object_header(Owner(Source(thing)), Source(thing)),
-		      Name(player));
+        notify_format(Owner(Source(thing)),
+                      T("The room %s has been spared from destruction by %s."),
+                      object_header(Owner(Source(thing)), Source(thing)),
+                      Name(player));
       }
     }
     break;
@@ -588,7 +588,7 @@ undestroy(dbref player, dbref thing)
      */
     DOLIST(tmp, Exits(thing)) {
       if (DESTROY_POSSESSIONS ? (!Going(Owner(tmp)) || Safe(tmp)) : 1) {
-	(void) undestroy(player, tmp);
+        (void) undestroy(player, tmp);
       }
     }
     break;
@@ -634,7 +634,7 @@ free_object(dbref thing)
     break;
   default:
     do_log(LT_ERR, NOTHING, NOTHING, T("Unknown type on #%d in free_object."),
-	   thing);
+           thing);
     return;
   }
 
@@ -656,22 +656,22 @@ free_object(dbref thing)
       case TYPE_DIVISION:
       case TYPE_PLAYER:
       case TYPE_THING:
-	Home(i) = DEFAULT_HOME;
-	break;
+        Home(i) = DEFAULT_HOME;
+        break;
       case TYPE_EXIT:
-	/* Huh.  An exit that claims to be from here, but wasn't linked
-	 * in properly. */
-	do_rawlog(LT_ERR,
-		  T("ERROR: Exit %s leading from invalid room #%d destroyed."),
-		  unparse_object(GOD, i), thing);
-	free_object(i);
-	break;
+        /* Huh.  An exit that claims to be from here, but wasn't linked
+         * in properly. */
+        do_rawlog(LT_ERR,
+                  T("ERROR: Exit %s leading from invalid room #%d destroyed."),
+                  unparse_object(GOD, i), thing);
+        free_object(i);
+        break;
       case TYPE_ROOM:
-	/* Hrm.  It claims we're an exit from it, but we didn't agree.
-	 * Clean it up anyway. */
-	do_log(LT_ERR, NOTHING, NOTHING,
-	       T("Found a destroyed exit #%d in room #%d"), thing, i);
-	break;
+        /* Hrm.  It claims we're an exit from it, but we didn't agree.
+         * Clean it up anyway. */
+        do_log(LT_ERR, NOTHING, NOTHING,
+               T("Found a destroyed exit #%d in room #%d"), thing, i);
+        break;
       }
     }
     /* The location check MUST be done AFTER the home check. */
@@ -680,22 +680,22 @@ free_object(dbref thing)
       case TYPE_DIVISION:
       case TYPE_PLAYER:
       case TYPE_THING:
-	/* Huh.  It thought it was here, but we didn't agree. */
-	enter_room(i, Home(i), 0);
-	break;
+        /* Huh.  It thought it was here, but we didn't agree. */
+        enter_room(i, Home(i), 0);
+        break;
       case TYPE_EXIT:
-	/* If our destination is destroyed, then we relink to the
-	 * source room (so that the exit can't be stolen). Yes, it's
-	 * inconsistent with the treatment of exits leading from
-	 * destroyed rooms, but it's a lot better than turning exits
-	 * into nasty limbo exits.
-	 */
-	Destination(i) = Source(i);
-	break;
+        /* If our destination is destroyed, then we relink to the
+         * source room (so that the exit can't be stolen). Yes, it's
+         * inconsistent with the treatment of exits leading from
+         * destroyed rooms, but it's a lot better than turning exits
+         * into nasty limbo exits.
+         */
+        Destination(i) = Source(i);
+        break;
       case TYPE_ROOM:
-	/* Just remove a dropto. */
-	Location(i) = NOTHING;
-	break;
+        /* Just remove a dropto. */
+        Location(i) = NOTHING;
+        break;
       }
     }
     if (Next(i) == thing) {
@@ -737,7 +737,7 @@ free_object(dbref thing)
     else
       current_state.players--;
     break;
-  case TYPE_EXIT:		/* This probably won't be needed, but lets make sure */
+  case TYPE_EXIT:               /* This probably won't be needed, but lets make sure */
     loc = Source(thing);
     if (GoodObject(loc))
       Exits(loc) = remove_first(Exits(loc), thing);
@@ -762,7 +762,7 @@ free_object(dbref thing)
   set_name(thing, "Garbage");
   Exits(thing) = NOTHING;
   Home(thing) = NOTHING;
-  CreTime(thing) = 0;		/* Prevents it from matching objids */
+  CreTime(thing) = 0;           /* Prevents it from matching objids */
   set_lmod(thing, NULL);
 
   clear_objdata(thing);
@@ -785,9 +785,9 @@ empty_contents(dbref thing)
   dbref rest;
   dbref target;
   notify_except(Contents(thing), NOTHING,
-		T
-		("The floor disappears under your feet, you fall through NOTHINGness and then:"),
-		0);
+                T
+                ("The floor disappears under your feet, you fall through NOTHINGness and then:"),
+                0);
   first = Contents(thing);
   Contents(thing) = NOTHING;
   /* send all objects to nowhere */
@@ -799,23 +799,23 @@ empty_contents(dbref thing)
     rest = Next(first);
     /* if home is in thing set it to limbo */
     switch (Typeof(first)) {
-    case TYPE_EXIT:		/* if holding exits, destroy it */
+    case TYPE_EXIT:             /* if holding exits, destroy it */
       free_object(first);
       break;
-    case TYPE_THING:		/* move to home */
+    case TYPE_THING:            /* move to home */
     case TYPE_PLAYER:
       /* Make sure the home is a reasonable object. */
       if (!GoodObject(Home(first)) || IsExit(Home(first)) ||
-	  Home(first) == thing)
-	Home(first) = DEFAULT_HOME;
+          Home(first) == thing)
+        Home(first) = DEFAULT_HOME;
       target = Home(first);
       /* If home isn't a good place to send it, send it to DEFAULT_HOME. */
       if (!GoodObject(target) || recursive_member(target, first, 0))
-	target = DEFAULT_HOME;
+        target = DEFAULT_HOME;
       if (target != NOTHING) {
-	/* Use enter_room() on everything so that AENTER and such
-	 * are all triggered properly. */
-	enter_room(first, target, 0);
+        /* Use enter_room() on everything so that AENTER and such
+         * are all triggered properly. */
+        enter_room(first, target, 0);
       }
       break;
     }
@@ -842,9 +842,9 @@ clear_thing(dbref thing)
   clear_flag_internal(thing, "PUPPET");
   if (!Quiet(thing) && !Quiet(Owner(thing)))
     notify_format(Owner(thing),
-		  T("You get your %d %s deposit back for %s."),
-		  a, ((a == 1) ? MONEY : MONIES),
-		  object_header(Owner(thing), thing));
+                  T("You get your %d %s deposit back for %s."),
+                  a, ((a == 1) ? MONEY : MONIES),
+                  object_header(Owner(thing), thing));
 }
 
 static void
@@ -879,9 +879,9 @@ clear_player(dbref thing)
   for (i = 0; i < db_top; i++) {
     if (Owner(i) == thing && i != thing) {
       if (DESTROY_POSSESSIONS ? (REALLY_SAFE ? Safe(i) : 0) : 1) {
-	chown_object(GOD, i, GOD, 0);
+        chown_object(GOD, i, GOD, 0);
       } else {
-	free_object(i);
+        free_object(i);
       }
     }
   }
@@ -994,9 +994,9 @@ purge(void)
       continue;
     } else if (Going(thing)) {
       if (Going_Twice(thing)) {
-	free_object(thing);
+        free_object(thing);
       } else {
-	set_flag_internal(thing, "GOING_TWICE");
+        set_flag_internal(thing, "GOING_TWICE");
       }
     } else {
       continue;
@@ -1046,20 +1046,20 @@ check_divisions(void) {
   for(i = 0; i < db_top ; i++)
     if(IsDivision(i)) {
        /* first, let's do some smart division setting. if it's not set. 
-	* Just incase some weird corruption hits us
-	*/
+        * Just incase some weird corruption hits us
+        */
       if(Division(i) == -1 && IsDivision(i) && IsDivision(Location(i))) {
-	do_rawlog(LT_ERR, T("Auto-Divisioning #%d to #%d"), i, Location(i));
-	Division(i) = Location(i);
-	Parent(i) = Location(i);
+        do_rawlog(LT_ERR, T("Auto-Divisioning #%d to #%d"), i, Location(i));
+        Division(i) = Location(i);
+        Parent(i) = Location(i);
       }
 
       /* make sure their division is a valid object */
       if((!GoodObject(Division(i)) && Division(i) != NOTHING)
-	 || (GoodObject(Division(i)) && IsGarbage(Division(i)))) {
-	Division(i) = NOTHING;
-	do_rawlog(LT_ERR, T("ERROR: Bad Division(#%d) set on object #%d"),
-		  Division(i), i);
+         || (GoodObject(Division(i)) && IsGarbage(Division(i)))) {
+        Division(i) = NOTHING;
+        do_rawlog(LT_ERR, T("ERROR: Bad Division(#%d) set on object #%d"),
+                  Division(i), i);
       }
 
       /* check for division loops */
@@ -1068,7 +1068,7 @@ check_divisions(void) {
         unsigned j;
 
         for(tmp = Division(i), j = 0; GoodObject(tmp) && j < MAX_DIVISION_DEPTH;
-	    tmp = Division(tmp), j++) {
+            tmp = Division(tmp), j++) {
           if(tmp == i) {
             do_rawlog(LT_ERR, T("ERROR: Division loop detected at #%d"), i);
             Division(i) = NOTHING;
@@ -1079,13 +1079,13 @@ check_divisions(void) {
 
       /* now check parent tree */
       if(Division(i) != -1)
-	Parent(i) = Division(i);
+        Parent(i) = Division(i);
       else 
-	for(n = 0, check = i; n < MAX_PARENTS && check != NOTHING; n++, check = Parent(check))
-	  if(IsDivision(Parent(check))) {
-	    do_rawlog(LT_ERR, T("ERROR: Bad Division Parent Structure."));
-	    Parent(check) = NOTHING;
-	  }
+        for(n = 0, check = i; n < MAX_PARENTS && check != NOTHING; n++, check = Parent(check))
+          if(IsDivision(Parent(check))) {
+            do_rawlog(LT_ERR, T("ERROR: Bad Division Parent Structure."));
+            Parent(check) = NOTHING;
+          }
     }
 }
 
@@ -1102,10 +1102,10 @@ check_fields(void)
       dbref next;
       next = Next(thing);
       if ((!GoodObject(next) || !IsGarbage(next)) && (next != NOTHING)) {
-	do_rawlog(LT_ERR, T("ERROR: Invalid next pointer #%d from object %s"),
-		  next, unparse_object(GOD, thing));
-	Next(thing) = NOTHING;
-	fix_free_list();
+        do_rawlog(LT_ERR, T("ERROR: Invalid next pointer #%d from object %s"),
+                  next, unparse_object(GOD, thing));
+        Next(thing) = NOTHING;
+        fix_free_list();
       }
       continue;
     } else {
@@ -1113,25 +1113,25 @@ check_fields(void)
       dbref zone, loc, parent, home, owner, next;
       zone = Zone(thing);
       if (GoodObject(zone) && IsGarbage(zone))
-	Zone(thing) = NOTHING;
+        Zone(thing) = NOTHING;
       parent = Parent(thing);
       if (GoodObject(parent) && IsGarbage(parent))
-	Parent(thing) = NOTHING;
+        Parent(thing) = NOTHING;
       owner = Owner(thing);
       if (!GoodObject(owner) || IsGarbage(owner) || !IsPlayer(owner)) {
-	do_rawlog(LT_ERR, T("ERROR: Invalid object owner on %s(%d)"),
-		  Name(thing), thing);
-	report();
-	Owner(thing) = GOD;
+        do_rawlog(LT_ERR, T("ERROR: Invalid object owner on %s(%d)"),
+                  Name(thing), thing);
+        report();
+        Owner(thing) = GOD;
       }
       next = Next(thing);
       if ((!GoodObject(next) || IsGarbage(next)) && (next != NOTHING)) {
-	do_rawlog(LT_ERR, T("ERROR: Invalid next pointer #%d from object %s"),
-		  next, unparse_object(GOD, thing));
-	Next(thing) = NOTHING;
+        do_rawlog(LT_ERR, T("ERROR: Invalid next pointer #%d from object %s"),
+                  next, unparse_object(GOD, thing));
+        Next(thing) = NOTHING;
       }
       if((next == thing)) /* its saying itself is next? */
-	Next(thing) = NOTHING;
+        Next(thing) = NOTHING;
       /* This next bit has to be type-specific because of different uses
        * of the home and location fields.
        */
@@ -1141,100 +1141,100 @@ check_fields(void)
       case TYPE_DIVISION:
       case TYPE_PLAYER:
       case TYPE_THING:
-	if (!GoodObject(home) || IsGarbage(home) || IsExit(home))
-	  Home(thing) = DEFAULT_HOME;
-	if (!GoodObject(loc) || IsGarbage(loc) || IsExit(loc))
-	  enter_room(thing, Home(thing), 0);
-	break;
+        if (!GoodObject(home) || IsGarbage(home) || IsExit(home))
+          Home(thing) = DEFAULT_HOME;
+        if (!GoodObject(loc) || IsGarbage(loc) || IsExit(loc))
+          enter_room(thing, Home(thing), 0);
+        break;
       case TYPE_EXIT:
-	if (Contents(thing) != NOTHING) {
-	  /* Eww.. Exits can't have contents. Bad news */
-	  Contents(thing) = NOTHING;
-	  do_rawlog(LT_ERR,
-		    T("ERROR: Exit %s has a contents list. Wiping it out."),
-		    unparse_object(GOD, thing));
-	}
-	if (!GoodObject(loc)
-	    && !((loc == NOTHING) || (loc == AMBIGUOUS) || (loc == HOME))) {
-	  /* Bad news. We're linked to a really impossible object.
-	   * Relink to our source
-	   */
-	  Destination(thing) = Source(thing);
-	  do_rawlog(LT_ERR,
-		    T
-		    ("ERROR: Exit %s leading to invalid room #%d relinked to its source room."),
-		    unparse_object(GOD, thing), home);
-	} else if (GoodObject(loc) && IsGarbage(loc)) {
-	  /* If our destination is destroyed, then we relink to the
-	   * source room (so that the exit can't be stolen). Yes, it's
-	   * inconsistent with the treatment of exits leading from
-	   * destroyed rooms, but it's a lot better than turning exits
-	   * into nasty limbo exits.
-	   */
-	  Destination(thing) = Source(thing);
-	  do_rawlog(LT_ERR,
-		    T
-		    ("ERROR: Exit %s leading to garbage room #%d relinked to its source room."),
-		    unparse_object(GOD, thing), home);
-	}
-	/* This must come last */
-	if (!GoodObject(home) || !IsRoom(home)) {
-	  /* If our source is destroyed, just destroy the exit. */
-	  do_rawlog(LT_ERR,
-		    T
-		    ("ERROR: Exit %s leading from invalid room #%d destroyed."),
-		    unparse_object(GOD, thing), home);
-	  free_object(thing);
-	}
-	break;
+        if (Contents(thing) != NOTHING) {
+          /* Eww.. Exits can't have contents. Bad news */
+          Contents(thing) = NOTHING;
+          do_rawlog(LT_ERR,
+                    T("ERROR: Exit %s has a contents list. Wiping it out."),
+                    unparse_object(GOD, thing));
+        }
+        if (!GoodObject(loc)
+            && !((loc == NOTHING) || (loc == AMBIGUOUS) || (loc == HOME))) {
+          /* Bad news. We're linked to a really impossible object.
+           * Relink to our source
+           */
+          Destination(thing) = Source(thing);
+          do_rawlog(LT_ERR,
+                    T
+                    ("ERROR: Exit %s leading to invalid room #%d relinked to its source room."),
+                    unparse_object(GOD, thing), home);
+        } else if (GoodObject(loc) && IsGarbage(loc)) {
+          /* If our destination is destroyed, then we relink to the
+           * source room (so that the exit can't be stolen). Yes, it's
+           * inconsistent with the treatment of exits leading from
+           * destroyed rooms, but it's a lot better than turning exits
+           * into nasty limbo exits.
+           */
+          Destination(thing) = Source(thing);
+          do_rawlog(LT_ERR,
+                    T
+                    ("ERROR: Exit %s leading to garbage room #%d relinked to its source room."),
+                    unparse_object(GOD, thing), home);
+        }
+        /* This must come last */
+        if (!GoodObject(home) || !IsRoom(home)) {
+          /* If our source is destroyed, just destroy the exit. */
+          do_rawlog(LT_ERR,
+                    T
+                    ("ERROR: Exit %s leading from invalid room #%d destroyed."),
+                    unparse_object(GOD, thing), home);
+          free_object(thing);
+        }
+        break;
       case TYPE_ROOM:
-	if (GoodObject(home) && IsGarbage(home)) {
-	  /* Eww. Destroyed exit. This isn't supposed to happen. */
-	  do_log(LT_ERR, NOTHING, NOTHING,
-		 T("Found a destroyed exit #%d in room #%d"), home, thing);
-	}
-	if (GoodObject(loc) && (IsGarbage(loc) || IsExit(loc))) {
-	  /* Just remove a dropto. */
-	  Location(thing) = NOTHING;
-	}
-	break;
+        if (GoodObject(home) && IsGarbage(home)) {
+          /* Eww. Destroyed exit. This isn't supposed to happen. */
+          do_log(LT_ERR, NOTHING, NOTHING,
+                 T("Found a destroyed exit #%d in room #%d"), home, thing);
+        }
+        if (GoodObject(loc) && (IsGarbage(loc) || IsExit(loc))) {
+          /* Just remove a dropto. */
+          Location(thing) = NOTHING;
+        }
+        break;
       }
       /* Check if this guy isn't in a division, if he's not.. Then we need fix their level & zap
        * powers
        */
       if(!IsDivision(thing) && !IsDivision(Division(thing))) {
-	if(LEVEL(thing) > LEVEL_UNREGISTERED) {
-	  do_log(LT_ERR, NOTHING, NOTHING, T("Found' #%d' at Level '%d' without a valid division, setting to Unregistered level '%d'"), 
-	      thing, LEVEL(thing), LEVEL_UNREGISTERED);
-	  SLEVEL(thing) = LEVEL_UNREGISTERED;
-	}
-	if(!!DPBITS(thing)) { /* Zap powers */
-	  do_log(LT_ERR, NOTHING, NOTHING, T("Found '#%d' with no division and powers set, removing."), thing);
-	  mush_free(DPBITS(thing), "POWER_SPOT");
-	  DPBITS(thing) = NULL;
-	}
+        if(LEVEL(thing) > LEVEL_UNREGISTERED) {
+          do_log(LT_ERR, NOTHING, NOTHING, T("Found' #%d' at Level '%d' without a valid division, setting to Unregistered level '%d'"), 
+              thing, LEVEL(thing), LEVEL_UNREGISTERED);
+          SLEVEL(thing) = LEVEL_UNREGISTERED;
+        }
+        if(!!DPBITS(thing)) { /* Zap powers */
+          do_log(LT_ERR, NOTHING, NOTHING, T("Found '#%d' with no division and powers set, removing."), thing);
+          mush_free(DPBITS(thing), "POWER_SPOT");
+          DPBITS(thing) = NULL;
+        }
       }
       /* Zap power allocation if they don't have any */
       if(!!DPBITS(thing) && (power_is_zero(DPBITS(thing), DP_BYTES) == 0)) {
-	mush_free(DPBITS(thing), "POWER_SPOT");
+        mush_free(DPBITS(thing), "POWER_SPOT");
         DPBITS(thing) = NULL;
       }
       /* Check attribute ownership. If the attribute is owned by
        * an invalid dbref, change its ownership to powerless.
        */
       if (!IsGarbage(thing))
-	atr_iter_get(options.powerless, thing, "**", 0, attribute_owner_helper, NULL);
+        atr_iter_get(options.powerless, thing, "**", 0, attribute_owner_helper, NULL);
     }
   }
 }
 
 static int
 attribute_owner_helper(dbref player __attribute__ ((__unused__)),
-		       dbref thing __attribute__ ((__unused__)),
-		       dbref parent __attribute__ ((__unused__)),
-		       char const *pattern
-		       __attribute__ ((__unused__)), ATTR *atr, void *args
-		       __attribute__ ((__unused__)))
+                       dbref thing __attribute__ ((__unused__)),
+                       dbref parent __attribute__ ((__unused__)),
+                       char const *pattern
+                       __attribute__ ((__unused__)), ATTR *atr, void *args
+                       __attribute__ ((__unused__)))
 {
   if (!GoodObject(AL_CREATOR(atr)))
     AL_CREATOR(atr) = options.powerless; /* set to a powerless object so twinchecks don't backfire */
@@ -1272,14 +1272,14 @@ check_connected_marks(void)
       ClearMarked(loc);
     else if (IsRoom(loc)) {
       if (!Name(loc)) {
-	do_log(LT_ERR, NOTHING, NOTHING, T("ERROR: no name for room #%d."),
-	       loc);
-	set_name(loc, "XXXX");
+        do_log(LT_ERR, NOTHING, NOTHING, T("ERROR: no name for room #%d."),
+               loc);
+        set_name(loc, "XXXX");
       }
       if (!Going(loc) && !Floating(loc) && !NoWarnable(loc) &&
-	  (!EXITS_CONNECT_ROOMS || (Exits(loc) == NOTHING))) {
-	notify_format(Owner(loc), T("You own a disconnected room, %s"),
-		      object_header(Owner(loc), loc));
+          (!EXITS_CONNECT_ROOMS || (Exits(loc) == NOTHING))) {
+        notify_format(Owner(loc), T("You own a disconnected room, %s"),
+                      object_header(Owner(loc), loc));
       }
     }
 }
@@ -1298,16 +1298,16 @@ check_zones(void)
       continue;
     if (ZONE_CONTROL_ZMP && !IsPlayer(zone))
       continue;
-    if (zone != n)		/* Objects can be zoned to themselves */
+    if (zone != n)              /* Objects can be zoned to themselves */
       for (tmp = Zone(zone); GoodObject(tmp); tmp = Zone(tmp)) {
-	if (tmp == n) {
-	  notify_format(Owner(n),
-			T("You own an object in a circular zone chain: %s"),
-			object_header(Owner(n), n));
-	  break;
-	}
-	if (tmp == Zone(tmp))	/* Object zoned to itself */
-	  break;
+        if (tmp == n) {
+          notify_format(Owner(n),
+                        T("You own an object in a circular zone chain: %s"),
+                        object_header(Owner(n), n));
+          break;
+        }
+        if (tmp == Zone(tmp))   /* Object zoned to itself */
+          break;
       }
 
     if (Marked(zone))
@@ -1320,9 +1320,9 @@ check_zones(void)
     if (!IsGarbage(n) && Marked(n)) {
       ClearMarked(n);
       notify_format(Owner(n),
-		    T
-		    ("You own an object without a @lock/zone being used as a zone: %s"),
-		    object_header(Owner(n), n));
+                    T
+                    ("You own an object without a @lock/zone being used as a zone: %s"),
+                    object_header(Owner(n), n));
     }
   }
 }
@@ -1375,7 +1375,7 @@ mark_contents(dbref thing)
     break;
   default:
     do_rawlog(LT_ERR, T("Bad object type found for %s in mark_contents"),
-	      unparse_object(GOD, thing));
+              unparse_object(GOD, thing));
     break;
   }
 }
@@ -1398,10 +1398,10 @@ check_contents(void)
   for (thing = 0; thing < db_top; thing++) {
     if (!IsRoom(thing) && !IsGarbage(thing) && !Marked(thing)) {
       do_rawlog(LT_ERR, T("Object %s not pointed to by anything."),
-		unparse_object(GOD, thing));
+                unparse_object(GOD, thing));
       notify_format(Owner(thing),
-		    T("You own an object %s that was \'orphaned\'."),
-		    object_header(Owner(thing), thing));
+                    T("You own an object %s that was \'orphaned\'."),
+                    object_header(Owner(thing), thing));
       /* We try to fix this by trying to send players and things to
        * their current location, to their home, or to DEFAULT_HOME, in
        * that order, and relinking exits to their source.
@@ -1410,53 +1410,53 @@ check_contents(void)
       switch (Typeof(thing)) {
       case TYPE_PLAYER:
       case TYPE_THING:
-	if (GoodObject(Location(thing)) &&
-	    !IsGarbage(Location(thing)) && Marked(Location(thing))) {
-	  PUSH(thing, Contents(Location(thing)));
-	} else if (GoodObject(Home(thing)) &&
-		   !IsGarbage(Home(thing)) && Marked(Home(thing))) {
-	  Contents(Location(thing)) =
-	    remove_first(Contents(Location(thing)), thing);
-	  PUSH(thing, Contents(Home(thing)));
-	  Location(thing) = Home(thing);
-	} else {
-	  Contents(Location(thing)) =
-	    remove_first(Contents(Location(thing)), thing);
-	  PUSH(thing, Contents(DEFAULT_HOME));
-	  Location(thing) = DEFAULT_HOME;
-	}
-	enter_room(thing, Location(thing), 0);
-	/* If we've managed to reconnect it, then we've reconnected
-	 * its contents. */
-	mark_contents(Contents(thing));
-	notify_format(Owner(thing), T("It was moved to %s."),
-		      object_header(Owner(thing), Location(thing)));
-	do_rawlog(LT_ERR, T("Moved to %s."),
-		  unparse_object(GOD, Location(thing)));
-	break;
+        if (GoodObject(Location(thing)) &&
+            !IsGarbage(Location(thing)) && Marked(Location(thing))) {
+          PUSH(thing, Contents(Location(thing)));
+        } else if (GoodObject(Home(thing)) &&
+                   !IsGarbage(Home(thing)) && Marked(Home(thing))) {
+          Contents(Location(thing)) =
+            remove_first(Contents(Location(thing)), thing);
+          PUSH(thing, Contents(Home(thing)));
+          Location(thing) = Home(thing);
+        } else {
+          Contents(Location(thing)) =
+            remove_first(Contents(Location(thing)), thing);
+          PUSH(thing, Contents(DEFAULT_HOME));
+          Location(thing) = DEFAULT_HOME;
+        }
+        enter_room(thing, Location(thing), 0);
+        /* If we've managed to reconnect it, then we've reconnected
+         * its contents. */
+        mark_contents(Contents(thing));
+        notify_format(Owner(thing), T("It was moved to %s."),
+                      object_header(Owner(thing), Location(thing)));
+        do_rawlog(LT_ERR, T("Moved to %s."),
+                  unparse_object(GOD, Location(thing)));
+        break;
       case TYPE_EXIT:
-	if (GoodObject(Source(thing)) && IsRoom(Source(thing))) {
-	  PUSH(thing, Exits(Source(thing)));
-	  notify_format(Owner(thing), T("It was moved to %s."),
-			object_header(Owner(thing), Source(thing)));
-	  do_rawlog(LT_ERR, T("Moved to %s."),
-		    unparse_object(GOD, Source(thing)));
-	} else {
-	  /* Just destroy the exit. */
-	  Source(thing) = NOTHING;
-	  notify(Owner(thing), T("It was destroyed."));
-	  do_rawlog(LT_ERR, T("Orphaned exit destroyed."));
-	  free_object(thing);
-	}
-	break;
+        if (GoodObject(Source(thing)) && IsRoom(Source(thing))) {
+          PUSH(thing, Exits(Source(thing)));
+          notify_format(Owner(thing), T("It was moved to %s."),
+                        object_header(Owner(thing), Source(thing)));
+          do_rawlog(LT_ERR, T("Moved to %s."),
+                    unparse_object(GOD, Source(thing)));
+        } else {
+          /* Just destroy the exit. */
+          Source(thing) = NOTHING;
+          notify(Owner(thing), T("It was destroyed."));
+          do_rawlog(LT_ERR, T("Orphaned exit destroyed."));
+          free_object(thing);
+        }
+        break;
       case TYPE_ROOM:
-	/* We should never get here. */
-	do_log(LT_ERR, NOTHING, NOTHING, T("Disconnected room. So what?"));
-	break;
+        /* We should never get here. */
+        do_log(LT_ERR, NOTHING, NOTHING, T("Disconnected room. So what?"));
+        break;
       default:
-	do_log(LT_ERR, NOTHING, NOTHING,
-	       T("Surprising type on #%d found in check_cycles."), thing);
-	break;
+        do_log(LT_ERR, NOTHING, NOTHING,
+               T("Surprising type on #%d found in check_cycles."), thing);
+        break;
       }
     }
   }
@@ -1478,43 +1478,43 @@ check_locations(void)
   for (loc = 0; loc < db_top; loc++) {
     if (!IsExit(loc)) {
       for (thing = Contents(loc); thing != NOTHING; thing = Next(thing)) {
-	if (!Mobile(thing)) {
-	  do_rawlog(LT_ERR,
-		    T
-		    ("ERROR: Contents of object %d corrupt at object %d cleared"),
-		    loc, thing);
-	  /* Remove this from the list and start over. */
-	  Contents(loc) = remove_first(Contents(loc), thing);
-	  thing = Contents(loc);
-	  continue;
-	} else if (Location(thing) != loc) {
-	  /* Well, it would fit here, and it can't be elsewhere because
-	   * we've done a check_contents already, so let's just put it
-	   * here.
-	   */
-	  do_rawlog(LT_ERR,
-		    T("Incorrect location on object %s. Reset to #%d."),
-		    unparse_object(GOD, thing), loc);
-	  Location(thing) = loc;
-	}
-	SetMarked(thing);
+        if (!Mobile(thing)) {
+          do_rawlog(LT_ERR,
+                    T
+                    ("ERROR: Contents of object %d corrupt at object %d cleared"),
+                    loc, thing);
+          /* Remove this from the list and start over. */
+          Contents(loc) = remove_first(Contents(loc), thing);
+          thing = Contents(loc);
+          continue;
+        } else if (Location(thing) != loc) {
+          /* Well, it would fit here, and it can't be elsewhere because
+           * we've done a check_contents already, so let's just put it
+           * here.
+           */
+          do_rawlog(LT_ERR,
+                    T("Incorrect location on object %s. Reset to #%d."),
+                    unparse_object(GOD, thing), loc);
+          Location(thing) = loc;
+        }
+        SetMarked(thing);
       }
     }
     if (IsRoom(loc)) {
       for (thing = Exits(loc); thing != NOTHING; thing = Next(thing)) {
-	if (!IsExit(thing)) {
-	  do_rawlog(LT_ERR,
-		    T("ERROR: Exits of room %d corrupt at object %d cleared"),
-		    loc, thing);
-	  /* Remove this from the list and start over. */
-	  Exits(loc) = remove_first(Exits(loc), thing);
-	  thing = Exits(loc);
-	  continue;
-	} else if (Source(thing) != loc) {
-	  do_rawlog(LT_ERR,
-		    T("Incorrect source on exit %s. Reset to #%d."),
-		    unparse_object(GOD, thing), loc);
-	}
+        if (!IsExit(thing)) {
+          do_rawlog(LT_ERR,
+                    T("ERROR: Exits of room %d corrupt at object %d cleared"),
+                    loc, thing);
+          /* Remove this from the list and start over. */
+          Exits(loc) = remove_first(Exits(loc), thing);
+          thing = Exits(loc);
+          continue;
+        } else if (Source(thing) != loc) {
+          do_rawlog(LT_ERR,
+                    T("Incorrect source on exit %s. Reset to #%d."),
+                    unparse_object(GOD, thing), loc);
+        }
       }
     }
   }

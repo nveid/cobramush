@@ -16,12 +16,12 @@ typedef struct flag_info FLAG;
  * available for setting on objects in the game.
  */
 struct flag_info {
-  const char *name;	/**< Name of the flag */
-  char letter;		/**< Flag character, which may be nul */
-  int type;		/**< Bitflags of object types this flag applies to */
-  int bitpos;		/**< Bit position assigned to this flag for now */
-  int perms;		/**< Bitflags of who can set this flag */
-  int negate_perms;	/**< Bitflags of who can clear this flag */
+  const char *name;     /**< Name of the flag */
+  char letter;          /**< Flag character, which may be nul */
+  int type;             /**< Bitflags of object types this flag applies to */
+  int bitpos;           /**< Bit position assigned to this flag for now */
+  int perms;            /**< Bitflags of who can set this flag */
+  int negate_perms;     /**< Bitflags of who can clear this flag */
 };
 
 typedef struct flag_alias FLAG_ALIAS;
@@ -30,8 +30,8 @@ typedef struct flag_alias FLAG_ALIAS;
  * A simple structure that associates an alias with a canonical flag name.
  */
 struct flag_alias {
-  const char *alias;		/**< The alias name */
-  const char *realname;		/**< The real name of the flag */
+  const char *alias;            /**< The alias name */
+  const char *realname;         /**< The real name of the flag */
 };
 
 typedef struct flagspace FLAGSPACE;
@@ -41,11 +41,11 @@ typedef struct flagspace FLAGSPACE;
  * a set of flags, powers, or whatever.
  */
 struct flagspace {
-  PTAB *tab;			/**< Prefix table storing flags by name/alias */
-  FLAG **flags;			/**< Variable-length array of pointers to canonical flags, indexed by bit */
-  int flagbits;			/**< Current length of the flags array */
-  FLAG *flag_table;		/**< Pointer to flag table */
-  FLAG_ALIAS *flag_alias_table;	/**< Pointer to flag alias table */
+  PTAB *tab;                    /**< Prefix table storing flags by name/alias */
+  FLAG **flags;                 /**< Variable-length array of pointers to canonical flags, indexed by bit */
+  int flagbits;                 /**< Current length of the flags array */
+  FLAG *flag_table;             /**< Pointer to flag table */
+  FLAG_ALIAS *flag_alias_table; /**< Pointer to flag alias table */
 };
 
 
@@ -55,10 +55,10 @@ extern const char *unparse_flags(dbref thing, dbref player);
 extern const char *flag_description(dbref player, dbref thing);
 extern int sees_flag(dbref privs, dbref thing, const char *name);
 extern void set_flag(dbref player, dbref thing, const char *flag, int negate,
-		     int hear, int listener);
+                     int hear, int listener);
 extern int flaglist_check(const char *ns, dbref player, dbref it, const char *fstr, int type);
 extern int flaglist_check_long(const char *ns, dbref player, dbref it, const char *fstr,
-			       int type);
+                               int type);
 extern FLAG *match_flag(const char *name);
 extern const char *show_command_flags(object_flag_type flags, div_pbits powers);
 extern void twiddle_flag_internal(const char *ns, dbref thing, const char *flag, int negate);
@@ -76,14 +76,14 @@ extern int null_flagmask(const char *ns, object_flag_type source);
 extern int has_any_bits(const char *ns, object_flag_type source, object_flag_type bitmask);
 extern object_flag_type string_to_bits(const char *ns, const char *str);
 extern const char *bits_to_string(const char *ns, object_flag_type bitmask, dbref privs,
-				  dbref thing);
+                                  dbref thing);
 extern void flag_write_all(FILE *, const char *);
 extern void flag_read_all(FILE *, const char *);
 extern int type_from_old_flags(long old_flags);
 extern object_flag_type flags_from_old_flags(long old_flags, long old_toggles,
-					     int type);
+                                             int type);
 extern FLAG *add_flag(const char *name, const char letter, int type,
-		      int perms, int negate_perms);
+                      int perms, int negate_perms);
 extern void do_list_flags(dbref player, const char *arg, int lc);
 extern char *list_all_flags(const char *ns, const char *name, dbref privs, int which);
 extern void do_flag_info(const char *ns, dbref player, const char *name);
@@ -92,7 +92,7 @@ extern void do_flag_disable(dbref player, const char *name);
 extern void do_flag_alias(dbref player, const char *name, const char *alias);
 extern void do_flag_enable(dbref player, const char *name);
 extern void do_flag_restrict(dbref player, const char *name,
-			     char *args_right[]);
+                             char *args_right[]);
 extern void do_flag_add(dbref player, const char *name, char *args_right[]);
 extern void do_flag_letter(dbref player, const char *name, const char *letter);
 extern void do_flag_type(const char *ns, dbref player, const char *name, char *type_string);
@@ -118,7 +118,7 @@ extern void decompile_flags(dbref player, dbref thing, const char *name);
 #define TYPE_PLAYER     0x8
 #define TYPE_GARBAGE    0x10
 #define TYPE_MARKED     0x20
-#define TYPE_DIVISION	0x40
+#define TYPE_DIVISION   0x40
 #define NOTYPE          0xFFFF
 
 #define ALLTYPES (0 | TYPE_ROOM | TYPE_THING | TYPE_EXIT | TYPE_PLAYER | TYPE_DIVISION)
@@ -130,17 +130,17 @@ extern void decompile_flags(dbref player, dbref thing, const char *name);
  * Flag permissions
  */
 
-#define F_ANY           0x10	/* can be set by anyone - obsolete now */
-#define F_OWNED         0x40	/* can be set on owned objects */
-#define F_PRIVILEGE	0x80	/* can only be set by privileged players */
-#define F_GOD           0x200	/* can only be set by God */
-#define F_INTERNAL      0x400	/* only the game can set this */
-#define F_DARK          0x800	/* only God can see this flag */
-#define F_MDARK         0x1000	/* admin/God can see this flag */
-#define F_ODARK         0x2000	/* owner/admin/God can see this flag */
-#define F_DISABLED      0x4000	/* flag can't be used */
-/* RESERVED		0x8000 */
-#define F_SELF		0x10000	/* can set on self, regardless of the above */
+#define F_ANY           0x10    /* can be set by anyone - obsolete now */
+#define F_OWNED         0x40    /* can be set on owned objects */
+#define F_PRIVILEGE     0x80    /* can only be set by privileged players */
+#define F_GOD           0x200   /* can only be set by God */
+#define F_INTERNAL      0x400   /* only the game can set this */
+#define F_DARK          0x800   /* only God can see this flag */
+#define F_MDARK         0x1000  /* admin/God can see this flag */
+#define F_ODARK         0x2000  /* owner/admin/God can see this flag */
+#define F_DISABLED      0x4000  /* flag can't be used */
+/* RESERVED             0x8000 */
+#define F_SELF          0x10000 /* can set on self, regardless of the above */
 
 
 /* we don't use these anymore.. but kept aroudn for DB conversion */
@@ -186,4 +186,4 @@ extern void decompile_flags(dbref player, dbref thing, const char *name);
 
 
 
-#endif				/* __FLAGS_H */
+#endif                          /* __FLAGS_H */

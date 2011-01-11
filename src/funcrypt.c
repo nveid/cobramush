@@ -55,8 +55,8 @@ crunch_code(char *code)
   while (*in) {
     while (*in == ESC_CHAR) {
       while (*in && *in != 'm')
-	in++;
-      in++;			/* skip 'm' */
+        in++;
+      in++;                     /* skip 'm' */
     }
     if ((*in >= 32) && (*in <= 126)) {
       *out++ = *in;
@@ -145,8 +145,8 @@ FUNCTION(fun_sha0)
   shsUpdate(&shsInfo, (const BYTE *) args[0], arglens[0]);
   shsFinal(&shsInfo);
   safe_format(buff, bp, "%0x%0x%0x%0x%0x", shsInfo.digest[0],
-	      shsInfo.digest[1], shsInfo.digest[2], shsInfo.digest[3],
-	      shsInfo.digest[4]);
+              shsInfo.digest[1], shsInfo.digest[2], shsInfo.digest[3],
+              shsInfo.digest[4]);
 #endif
 }
 
@@ -179,8 +179,8 @@ FUNCTION(fun_digest)
     shsUpdate(&shsInfo, (const BYTE *) args[0], arglens[0]);
     shsFinal(&shsInfo);
     safe_format(buff, bp, "%0x%0x%0x%0x%0x", shsInfo.digest[0],
-		shsInfo.digest[1], shsInfo.digest[2], shsInfo.digest[3],
-		shsInfo.digest[4]);
+                shsInfo.digest[1], shsInfo.digest[2], shsInfo.digest[3],
+                shsInfo.digest[4]);
   } else {
     safe_str(T("#-1 UNSUPPORTED DIGEST TYPE"), buff, bp);
   }

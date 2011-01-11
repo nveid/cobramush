@@ -17,7 +17,7 @@
 
 extern int depth;
 
-extern dbref first_free;	/* pointer to free list */
+extern dbref first_free;        /* pointer to free list */
 
 /*-------------------------------------------------------------------------
  * Database access macros
@@ -66,7 +66,7 @@ extern dbref first_free;	/* pointer to free list */
 #define IsRoom(x)       (!!(Typeof(x) & TYPE_ROOM))
 #define IsThing(x)      (!!(Typeof(x) & TYPE_THING))
 #define IsExit(x)       (!!(Typeof(x) & TYPE_EXIT))
-#define IsDivision(x)	(GoodObject(x) && !!(Typeof(x) & TYPE_DIVISION))
+#define IsDivision(x)   (GoodObject(x) && !!(Typeof(x) & TYPE_DIVISION))
 #define IsMasterDivision(x) (GoodObject(x) && IsDivision(x) && Division(x) == NOTHING)
 
 /* Was Destroyed() */
@@ -82,26 +82,26 @@ extern dbref first_free;	/* pointer to free list */
 #define Leave_Behind(x) has_flag_by_name(x, "LEAVE_BEHIND", TYPE_THING | TYPE_PLAYER)
 
 /* Can guy talk? */
-#define Mute(x)		(has_flag_by_name(x, "MUTE", TYPE_THING | TYPE_PLAYER | TYPE_ROOM))
-#define IsMuted(x,y)	(Mute(x) || Mute(Location(x)))
-#define CanSpeak(x,y)	(!Mute(x) && (Admin(x) || Loud(x) || (!Mute(y) && eval_lock(x, y, Speech_Lock))))
+#define Mute(x)         (has_flag_by_name(x, "MUTE", TYPE_THING | TYPE_PLAYER | TYPE_ROOM))
+#define IsMuted(x,y)    (Mute(x) || Mute(Location(x)))
+#define CanSpeak(x,y)   (!Mute(x) && (Admin(x) || Loud(x) || (!Mute(y) && eval_lock(x, y, Speech_Lock))))
 
 /******* Player toggles */
-#define Connected(x)    (IS(x, TYPE_PLAYER, "CONNECTED"))	/* 0x200 */
-#define Track_Money(x)	(IS(x, TYPE_PLAYER, "TRACK_MONEY"))
-#define Inheritable(x)	(IS(x, TYPE_PLAYER, "INHERITABLE"))
-#define ZMaster(x)      (IS(x, TYPE_PLAYER, "ZONE"))	/* 0x800 */
+#define Connected(x)    (IS(x, TYPE_PLAYER, "CONNECTED"))       /* 0x200 */
+#define Track_Money(x)  (IS(x, TYPE_PLAYER, "TRACK_MONEY"))
+#define Inheritable(x)  (IS(x, TYPE_PLAYER, "INHERITABLE"))
+#define ZMaster(x)      (IS(x, TYPE_PLAYER, "ZONE"))    /* 0x800 */
 #define Unregistered(x) (LEVEL(x) <= LEVEL_UNREGISTERED)
 #define Fixed(x)        (IS(Owner(x), TYPE_PLAYER, "FIXED"))
 #ifdef RPMODE_SYS
-#define RPMODE(x)	(IS(Owner(x), TYPE_PLAYER, "RPMODE"))
-#define Blind(x)	(IS(x, TYPE_PLAYER, "BLIND") && (ICRoom(Location(x)) || RPAPPROVED(Location(x))))
-#define ICRoom(x)	(IS(x, TYPE_ROOM, "ICFUNCS"))
-#define RPAPPROVED(x)	(IS(x, TYPE_THING, "RPAPPROVED"))
-#define Paralyzed(x)	(IS(x, TYPE_PLAYER, "PARALYZED") && (ICRoom(Location(x)) || RPAPPROVED(Location(x))))
+#define RPMODE(x)       (IS(Owner(x), TYPE_PLAYER, "RPMODE"))
+#define Blind(x)        (IS(x, TYPE_PLAYER, "BLIND") && (ICRoom(Location(x)) || RPAPPROVED(Location(x))))
+#define ICRoom(x)       (IS(x, TYPE_ROOM, "ICFUNCS"))
+#define RPAPPROVED(x)   (IS(x, TYPE_THING, "RPAPPROVED"))
+#define Paralyzed(x)    (IS(x, TYPE_PLAYER, "PARALYZED") && (ICRoom(Location(x)) || RPAPPROVED(Location(x))))
 #define IsParalyzed(x)  (Paralyzed(x) || Paralyzed(Owner(x)))
 #else
-#define RPMODE(x)	(Fixed(x))
+#define RPMODE(x)       (Fixed(x))
 #endif
 
 /* Flags that apply to players, and all their stuff,
@@ -115,31 +115,31 @@ extern dbref first_free;	/* pointer to free list */
 #define Gagged(x)       (IS(Owner(x), TYPE_PLAYER, "GAGGED"))
 #define ShowAnsi(x)     (IS(Owner(x), TYPE_PLAYER, "ANSI"))
 #define ShowAnsiColor(x) (IS(Owner(x), TYPE_PLAYER, "COLOR"))
-#define InProg(x)	(IS(x, TYPE_PLAYER, "INPROGRAM"))
+#define InProg(x)       (IS(x, TYPE_PLAYER, "INPROGRAM"))
 
 /******* Thing toggles */
 #define DestOk(x)       (IS(x, TYPE_THING, "DESTROY_OK"))
 #define NoLeave(x)      (IS(x, TYPE_THING, "NOLEAVE"))
 #define ThingListen(x)  (IS(x, TYPE_THING, "MONITOR"))
 #define ThingInhearit(x) \
-                        (IS(x, TYPE_THING, "LISTEN_PARENT"))	/* 0x80 */
+                        (IS(x, TYPE_THING, "LISTEN_PARENT"))    /* 0x80 */
 #define ThingZTel(x)            (IS(x, TYPE_THING, "Z_TEL"))
 
 /******* Room toggles */
-#define Floating(x)     (IS(x, TYPE_ROOM, "FLOATING"))	/* 0x8 */
-#define Abode(x)        (IS(x, TYPE_ROOM, "ABODE"))	/* 0x10 */
-#define JumpOk(x)       (IS(x, TYPE_ROOM, "JUMP_OK"))	/* 0x20 */
-#define NoTel(x)        (IS(x, TYPE_ROOM, "NO_TEL"))	/* 0x40 */
-#define RoomListen(x)   (IS(x, TYPE_ROOM, "LISTENER"))	/* 0x100 */
-#define RoomZTel(x)             (IS(x, TYPE_ROOM, "Z_TEL"))	/* 0x200 */
-#define RoomInhearit(x) (IS(x, TYPE_ROOM, "LISTEN_PARENT"))	/* 0x400 */
+#define Floating(x)     (IS(x, TYPE_ROOM, "FLOATING"))  /* 0x8 */
+#define Abode(x)        (IS(x, TYPE_ROOM, "ABODE"))     /* 0x10 */
+#define JumpOk(x)       (IS(x, TYPE_ROOM, "JUMP_OK"))   /* 0x20 */
+#define NoTel(x)        (IS(x, TYPE_ROOM, "NO_TEL"))    /* 0x40 */
+#define RoomListen(x)   (IS(x, TYPE_ROOM, "LISTENER"))  /* 0x100 */
+#define RoomZTel(x)             (IS(x, TYPE_ROOM, "Z_TEL"))     /* 0x200 */
+#define RoomInhearit(x) (IS(x, TYPE_ROOM, "LISTEN_PARENT"))     /* 0x400 */
 
-#define Uninspected(x)  (IS(x, TYPE_ROOM, "UNINSPECTED"))	/* 0x1000 */
+#define Uninspected(x)  (IS(x, TYPE_ROOM, "UNINSPECTED"))       /* 0x1000 */
 
 #define ZTel(x) (ThingZTel(x) || RoomZTel(x))
 
 /******* Exit toggles */
-#define Cloudy(x)       (IS(x, TYPE_EXIT, "CLOUDY"))	/* 0x8 */
+#define Cloudy(x)       (IS(x, TYPE_EXIT, "CLOUDY"))    /* 0x8 */
 
 /* Flags anything can have */
 
@@ -153,10 +153,10 @@ extern dbref first_free;	/* pointer to free list */
 #define Going_Twice(x)  (has_flag_by_name(x, "GOING_TWICE", NOTYPE))
 #define Halted(x)       (has_flag_by_name(x, "HALT", NOTYPE))
 #define Haven(x)        (has_flag_by_name(x, "HAVEN", NOTYPE))
-#define Inherit(x)	(has_flag_by_name(x, "INHERIT", TYPE_THING|TYPE_EXIT|TYPE_ROOM))
+#define Inherit(x)      (has_flag_by_name(x, "INHERIT", TYPE_THING|TYPE_EXIT|TYPE_ROOM))
 #define Light(x)        (has_flag_by_name(x, "LIGHT", NOTYPE))
 #define LinkOk(x)       (has_flag_by_name(x, "LINK_OK", NOTYPE))
-#define Loud(x)		(has_flag_by_name(x, "LOUD", NOTYPE))
+#define Loud(x)         (has_flag_by_name(x, "LOUD", NOTYPE))
 #define Mistrust(x)     (has_flag_by_name(x, "MISTRUST", TYPE_THING|TYPE_EXIT|TYPE_ROOM))
 #define NoCommand(x)    (has_flag_by_name(x, "NO_COMMAND", NOTYPE))
 #define NoWarn(x)       (has_flag_by_name(x, "NOWARN", NOTYPE))
@@ -198,11 +198,11 @@ extern dbref first_free;	/* pointer to free list */
 
 /* Non-mortal checks */
 #define TC_God(x)  ((x) == GOD)
-#define God(x)		OOREF(x,TC_God(x),TC_God(ooref))
-#define TC_Director(x)	(God(x) || (LEVEL(x) >= LEVEL_DIRECTOR && div_powover(x,x,"Privilege")))
-#define Director(x)	OOREF(x,TC_Director(x),TC_Director(ooref))
-#define TC_Admin(x)	(LEVEL(x) >= LEVEL_ADMIN && div_powover(x,x,"Privilege"))
-#define Admin(x)	OOREF(x,TC_Admin(x), TC_Admin(ooref))
+#define God(x)          OOREF(x,TC_God(x),TC_God(ooref))
+#define TC_Director(x)  (God(x) || (LEVEL(x) >= LEVEL_DIRECTOR && div_powover(x,x,"Privilege")))
+#define Director(x)     OOREF(x,TC_Director(x),TC_Director(ooref))
+#define TC_Admin(x)     (LEVEL(x) >= LEVEL_ADMIN && div_powover(x,x,"Privilege"))
+#define Admin(x)        OOREF(x,TC_Admin(x), TC_Admin(ooref))
 
 #define IsQuiet(x)      (Quiet(x) || Quiet(Owner(x)))
 #define AreQuiet(x,y)   (Quiet(x) || (Quiet(y) && (Owner(y) == x)))
@@ -211,7 +211,7 @@ extern dbref first_free;	/* pointer to free list */
    (Audible(x) && atr_get_noparent(x,"FORWARDLIST")))
 /* Was Dark() */
 #define TC_DarkLegal(x)    (Dark(x) && (Admin(x) || !Alive(x)))
-#define DarkLegal(x)	OOREF(x,TC_DarkLegal(x), TC_DarkLegal(ooref))
+#define DarkLegal(x)    OOREF(x,TC_DarkLegal(x), TC_DarkLegal(ooref))
 
 
 /* This is carefully ordered, from most to least likely. Hopefully. */
@@ -220,7 +220,7 @@ extern dbref first_free;	/* pointer to free list */
 
 /* AF_PUBLIC overrides SAFER_UFUN */
 #define TC_CanEvalAttr(x,y,a) (CanEval(x,y) || AF_Public(a))
-#define CanEvalAttr(x,y,a)	OOREF(x,TC_CanEvalAttr(x,y,a), TC_CanEvalAttr(ooref,y,a))
+#define CanEvalAttr(x,y,a)      OOREF(x,TC_CanEvalAttr(x,y,a), TC_CanEvalAttr(ooref,y,a))
 
 /* Note that this is a utility to determine the objects which may or may */
 /* not be controlled, rather than a strict check for the INHERIT flag */
@@ -252,42 +252,42 @@ struct rplog_t {
  *
  */
 struct object {
-  const char *name;		/**< The name of the object */
+  const char *name;             /**< The name of the object */
   /** An overloaded pointer.
    * For things and players, points to container object.
    * For exits, points to destination.
    * For rooms, points to drop-to.
    */
   dbref location;
-  dbref contents;		/**< Pointer to first item */
+  dbref contents;               /**< Pointer to first item */
   /** An overloaded pointer.
    * For things and players, points to home.
    * For rooms, points to first exit.
    * For exits, points to source room.
    */
   dbref exits;
-  dbref next;			/**< pointer to next in contents/exits chain */
-  dbref parent;			/**< pointer to parent object */
-  struct lock_list *locks;	/**< list of locks set on the object */
-  dbref owner;			/**< who controls this object */
-  dbref zone;			/**< zone master object number */
-  int penn;			/**< number of pennies object contains */
-  int warnings;			/**< bitflags of warning types */
-  time_t creation_time;		/**< Time/date of object creation */
+  dbref next;                   /**< pointer to next in contents/exits chain */
+  dbref parent;                 /**< pointer to parent object */
+  struct lock_list *locks;      /**< list of locks set on the object */
+  dbref owner;                  /**< who controls this object */
+  dbref zone;                   /**< zone master object number */
+  int penn;                     /**< number of pennies object contains */
+  int warnings;                 /**< bitflags of warning types */
+  time_t creation_time;         /**< Time/date of object creation */
   /** Last modifiction time.
    * For players, the number of failed logins.
    * For other objects, the time/date of last modification to its attributes.
    */
   time_t modification_time;
   const char *lastmod; /**< Last Modification */
-  int attrcount;		/**< Number of attribs on the object */
-  int type;			/**< Object's type */
-  object_flag_type flags;	/**< Pointer to flag bit array */
-  DIVISION division;		/**< Division info for object */
+  int attrcount;                /**< Number of attribs on the object */
+  int type;                     /**< Object's type */
+  object_flag_type flags;       /**< Pointer to flag bit array */
+  DIVISION division;            /**< Division info for object */
 #ifdef RPMODE_SYS
   struct rplog_t rplog;
 #endif /* RPMODE_SYS */
-  ALIST *list;			/**< list of attributes on the object */
+  ALIST *list;                  /**< list of attributes on the object */
 };
 
 /** A structure to hold database statistics.
@@ -295,14 +295,14 @@ struct object {
  * counts of various objects in the database.
  */
 struct db_stat_info {
-  int total;	/**< Total count */
-  int players;	/**< Player count */
-  int rooms;	/**< Room count */
-  int exits;	/**< Exit count */
-  int things;	/**< Thing count */
-  int divisions;	/**< Division count */
+  int total;    /**< Total count */
+  int players;  /**< Player count */
+  int rooms;    /**< Room count */
+  int exits;    /**< Exit count */
+  int things;   /**< Thing count */
+  int divisions;        /**< Division count */
   int channels; /**< Channel count */
-  int garbage;	/**< Garbage count */
+  int garbage;  /**< Garbage count */
 };
 
 extern struct object *db;
@@ -312,8 +312,8 @@ extern void *get_objdata(dbref thing, const char *keybase);
 extern void *set_objdata(dbref thing, const char *keybase, void *data);
 extern void clear_objdata(dbref thing);
 extern void convert_object_powers(dbref, int); /* the code is in division.c.. 
-						    * but proto put here cause it uses the object struct
-						    */
+                                                    * but proto put here cause it uses the object struct
+                                                    */
 
 #define DOLIST(var, first)\
     for((var) = (first); GoodObject((var)); (var) = Next(var))
@@ -330,15 +330,15 @@ extern void convert_object_powers(dbref, int); /* the code is in division.c..
  * stored in a doubly-linked list sorted by message recipient.
  */
 struct mail {
-  struct mail *next;		/**< Pointer to next message */
-  struct mail *prev;		/**< Pointer to previous message */
-  dbref to;			/**< Recipient dbref */
-  dbref from;			/**< Sender's dbref */
-  time_t from_ctime;		/**< Sender's creation time */
-  chunk_reference_t msgid;	/**< Message text, compressed */
-  time_t time;			/**< Message date/time */
-  unsigned char *subject;	/**< Message subject, compressed */
-  int read;			/**< Bitflags of message status */
+  struct mail *next;            /**< Pointer to next message */
+  struct mail *prev;            /**< Pointer to previous message */
+  dbref to;                     /**< Recipient dbref */
+  dbref from;                   /**< Sender's dbref */
+  time_t from_ctime;            /**< Sender's creation time */
+  chunk_reference_t msgid;      /**< Message text, compressed */
+  time_t time;                  /**< Message date/time */
+  unsigned char *subject;       /**< Message subject, compressed */
+  int read;                     /**< Bitflags of message status */
 };
 
 typedef struct mail MAIL;
@@ -350,4 +350,4 @@ extern const char *EOD;
   if (SW_ISSET(sw, SWITCH_SPOOF) && (controls(player, cause) || Can_Nspemit(player))) \
     player = cause;
 
-#endif				/* __DBDEFS_H */
+#endif                          /* __DBDEFS_H */

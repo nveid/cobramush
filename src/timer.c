@@ -91,7 +91,7 @@ usr1_handler(int x __attribute__ ((__unused__)))
   reload_sig_handler(SIGUSR1, usr1_handler);
 }
 
-#endif				/* WIN32 */
+#endif                          /* WIN32 */
 
 /** Set up signal handlers.
  */
@@ -135,15 +135,15 @@ migrate_stuff(int amount)
   do {
     for (aptr = List(end_obj); aptr; aptr = AL_NEXT(aptr))
       if (aptr->data != NULL_CHUNK_REFERENCE)
-	actual++;
+        actual++;
     for (lptr = Locks(end_obj); lptr; lptr = L_NEXT(lptr))
       if (L_KEY(lptr) != NULL_CHUNK_REFERENCE)
-	actual++;
+        actual++;
 #ifdef USE_MAILER
     if (IsPlayer(end_obj)) {
       for (mp = find_exact_starting_point(end_obj); mp; mp = mp->next)
-	if (mp->msgid != NULL_CHUNK_REFERENCE)
-	  actual++;
+        if (mp->msgid != NULL_CHUNK_REFERENCE)
+          actual++;
     }
 #endif
     end_obj = (end_obj + 1) % db_top;
@@ -157,35 +157,35 @@ migrate_stuff(int amount)
       mush_free((Malloc_t) refs, "migration reference array");
     refs =
       (chunk_reference_t **) mush_malloc(actual * sizeof(chunk_reference_t *),
-					 "migration reference array");
+                                         "migration reference array");
     refs_size = actual;
     if (!refs)
       mush_panic("Could not allocate migration reference array");
   }
 #ifdef DEBUG_MIGRATE
   do_rawlog(LT_TRACE, "Migrate asked %d, actual objects #%d to #%d for %d",
-	    amount, start_obj, (end_obj + db_top - 1) % db_top, actual);
+            amount, start_obj, (end_obj + db_top - 1) % db_top, actual);
 #endif
 
   actual = 0;
   do {
     for (aptr = List(start_obj); aptr; aptr = AL_NEXT(aptr))
       if (aptr->data != NULL_CHUNK_REFERENCE) {
-	refs[actual] = &(aptr->data);
-	actual++;
+        refs[actual] = &(aptr->data);
+        actual++;
       }
     for (lptr = Locks(start_obj); lptr; lptr = L_NEXT(lptr))
       if (L_KEY(lptr) != NULL_CHUNK_REFERENCE) {
-	refs[actual] = &(lptr->key);
-	actual++;
+        refs[actual] = &(lptr->key);
+        actual++;
       }
 #ifdef USE_MAILER
     if (IsPlayer(start_obj)) {
       for (mp = find_exact_starting_point(start_obj); mp; mp = mp->next)
-	if (mp->msgid != NULL_CHUNK_REFERENCE) {
-	  refs[actual] = &(mp->msgid);
-	  actual++;
-	}
+        if (mp->msgid != NULL_CHUNK_REFERENCE) {
+          refs[actual] = &(mp->msgid);
+          actual++;
+        }
     }
 #endif
     start_obj = (start_obj + 1) % db_top;
@@ -219,8 +219,8 @@ dispatch(void)
   }
   /* A USR1 does a shutdown/reboot */
   if (usr1_triggered) {
-    do_reboot(NOTHING, 0);	/* We don't return from this */
-    usr1_triggered = 0;		/* But just in case */
+    do_reboot(NOTHING, 0);      /* We don't return from this */
+    usr1_triggered = 0;         /* But just in case */
   }
   if (!globals.on_second)
     return;
@@ -265,15 +265,15 @@ dispatch(void)
     fork_and_dump(1);
     strcpy(global_eval_context.ccom, "");
     flag_broadcast(0, "ON-VACATION", "%s",
-		   T
-		   ("Your ON-VACATION flag is set! If you're back, clear it."));
+                   T
+                   ("Your ON-VACATION flag is set! If you're back, clear it."));
   } else if (NO_FORK &&
-	     (options.dump_counter - 60 == mudtime) &&
-	     *options.dump_warning_1min) {
+             (options.dump_counter - 60 == mudtime) &&
+             *options.dump_warning_1min) {
     flag_broadcast(0, 0, "%s", options.dump_warning_1min);
   } else if (NO_FORK &&
-	     (options.dump_counter - 300 == mudtime) &&
-	     *options.dump_warning_5min) {
+             (options.dump_counter - 300 == mudtime) &&
+             *options.dump_warning_5min) {
     flag_broadcast(0, 0, "%s", options.dump_warning_5min);
   }
   if (options.warn_interval && (options.warn_counter <= mudtime)) {
@@ -298,7 +298,7 @@ dispatch(void)
 }
 
 sig_atomic_t cpu_time_limit_hit = 0;  /** Was the cpu time limit hit? */
-int cpu_limit_warning_sent = 0;	 /** Have we issued a cpu limit warning? */
+int cpu_limit_warning_sent = 0;  /** Have we issued a cpu limit warning? */
 
 #ifndef PROFILING
 #if defined(HAS_ITIMER)
@@ -324,7 +324,7 @@ win32_timer(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 }
 #endif
 #endif
-int timer_set = 0;	/**< Is a CPU timer set? */
+int timer_set = 0;      /**< Is a CPU timer set? */
 
 /** Start the cpu timer (before running a command).
  */
@@ -335,7 +335,7 @@ start_cpu_timer(void)
   cpu_time_limit_hit = 0;
   cpu_limit_warning_sent = 0;
   timer_set = 1;
-#if defined(HAS_ITIMER)		/* UNIX way */
+#if defined(HAS_ITIMER)         /* UNIX way */
   {
     struct itimerval time_limit;
     if (options.queue_entry_cpu_time > 0) {
@@ -347,16 +347,16 @@ start_cpu_timer(void)
       time_limit.it_interval.tv_sec = 0;
       time_limit.it_interval.tv_usec = 0;
       if (setitimer(ITIMER_PROF, &time_limit, NULL)) {
-	perror("setitimer");
-	timer_set = 0;
+        perror("setitimer");
+        timer_set = 0;
       }
     } else
       timer_set = 0;
   }
-#elif defined(WIN32)		/* Windoze way */
+#elif defined(WIN32)            /* Windoze way */
   if (options.queue_entry_cpu_time > 0)
     timer_id = SetTimer(NULL, 0, (unsigned) options.queue_entry_cpu_time,
-			(TIMERPROC) win32_timer);
+                        (TIMERPROC) win32_timer);
   else
     timer_set = 0;
 #endif

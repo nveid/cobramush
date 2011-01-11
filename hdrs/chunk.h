@@ -12,10 +12,10 @@ typedef u_int_32 chunk_reference_t;
 #define NULL_CHUNK_REFERENCE 0
 
 chunk_reference_t chunk_create(unsigned char const *data, u_int_16 len,
-			       unsigned char derefs);
+                               unsigned char derefs);
 void chunk_delete(chunk_reference_t reference);
 u_int_16 chunk_fetch(chunk_reference_t reference,
-		     unsigned char *buffer, u_int_16 buffer_len);
+                     unsigned char *buffer, u_int_16 buffer_len);
 u_int_16 chunk_len(chunk_reference_t reference);
 unsigned char chunk_derefs(chunk_reference_t reference);
 void chunk_migration(int count, chunk_reference_t ** references);
@@ -32,4 +32,4 @@ void chunk_fork_parent(void);
 void chunk_fork_child(void);
 void chunk_fork_done(void);
 
-#endif				/* _CHUNK_H_ */
+#endif                          /* _CHUNK_H_ */

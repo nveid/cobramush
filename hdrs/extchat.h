@@ -53,22 +53,22 @@
  * Each chat channel maintains a linked list of users.
  */
 struct chanuser {
-  dbref who;			/**< Dbref of joined object */
-  long int type;		/**< Bitflags for this user */
-  char title[CU_TITLE_LEN];	/**< User's channel title */
-  struct chanuser *next;	/**< Pointer to next user in list */
+  dbref who;                    /**< Dbref of joined object */
+  long int type;                /**< Bitflags for this user */
+  char title[CU_TITLE_LEN];     /**< User's channel title */
+  struct chanuser *next;        /**< Pointer to next user in list */
 };
 
 /* Flags and macros for channel users */
-#define CU_QUIET    0x1		/* Do not hear connection messages */
-#define CU_HIDE     0x2		/* Do not appear on the user list */
-#define CU_GAG      0x4		/* Do not hear any messages */
+#define CU_QUIET    0x1         /* Do not hear connection messages */
+#define CU_HIDE     0x2         /* Do not appear on the user list */
+#define CU_GAG      0x4         /* Do not hear any messages */
 #define CU_DEFAULT_FLAGS 0x0
 
 /* channel_broadcast flags */
-#define CB_CHECKQUIET 0x1	/* Check for quiet flag on recipients */
-#define CB_NOSPOOF    0x2	/* Use nospoof emits */
-#define CB_PRESENCE   0x4	/* This is a presence message, not sound */
+#define CB_CHECKQUIET 0x1       /* Check for quiet flag on recipients */
+#define CB_NOSPOOF    0x2       /* Use nospoof emits */
+#define CB_PRESENCE   0x4       /* This is a presence message, not sound */
 
 #define CUdbref(u) ((u)->who)
 #define CUtype(u) ((u)->type)
@@ -86,23 +86,23 @@ struct chanuser {
  * into a sorted linked list.
  */
 struct channel {
-  char name[CHAN_NAME_LEN];	/**< Channel name */
-  char title[CHAN_TITLE_LEN];	/**< Channel description */
-  long int type;		/**< Channel flags */
-  long int cost;		/**< What it cost to make this channel */
-  long int creator;		/**< This is who paid the cost for the channel */
-  long int cobj;		/**< Channel object or #-1 */
-  long int num_users;		/**< Number of connected users */
-  long int max_users;		/**< Maximum allocated users */
-  struct chanuser *users;	/**< Linked list of current users */
-  long int num_messages;	/**< How many messages handled by this chan since startup */
-  boolexp joinlock;	/**< Who may join */
-  boolexp speaklock;	/**< Who may speak */
-  boolexp modifylock;	/**< Who may change things and boot people */
-  boolexp seelock;	/**< Who can see this in a list */
-  boolexp hidelock;	/**< Who may hide from view */
-  struct channel *next;		/**< Next channel in linked list */
-  BUFFERQ *bufferq;		/**< Pointer to channel recall buffer queue */
+  char name[CHAN_NAME_LEN];     /**< Channel name */
+  char title[CHAN_TITLE_LEN];   /**< Channel description */
+  long int type;                /**< Channel flags */
+  long int cost;                /**< What it cost to make this channel */
+  long int creator;             /**< This is who paid the cost for the channel */
+  long int cobj;                /**< Channel object or #-1 */
+  long int num_users;           /**< Number of connected users */
+  long int max_users;           /**< Maximum allocated users */
+  struct chanuser *users;       /**< Linked list of current users */
+  long int num_messages;        /**< How many messages handled by this chan since startup */
+  boolexp joinlock;     /**< Who may join */
+  boolexp speaklock;    /**< Who may speak */
+  boolexp modifylock;   /**< Who may change things and boot people */
+  boolexp seelock;      /**< Who can see this in a list */
+  boolexp hidelock;     /**< Who may hide from view */
+  struct channel *next;         /**< Next channel in linked list */
+  BUFFERQ *bufferq;             /**< Pointer to channel recall buffer queue */
 };
 
 /** A list of channels on an object.
@@ -110,8 +110,8 @@ struct channel {
  * with each object
  */
 struct chanlist {
-  CHAN *chan;			/**< Channel data */
-  struct chanlist *next;	/**< Next channel in list */
+  CHAN *chan;                   /**< Channel data */
+  struct chanlist *next;        /**< Next channel in list */
 };
 
 #define Chanlist(x) ((struct chanlist *)get_objdata(x, "CHANNELS"))
@@ -119,25 +119,25 @@ struct chanlist {
 
 /** A structure for passing channel data to notify_anything */
 struct na_cpass {
-  CHANUSER *u;		  /**< Pointer to channel user */
-  int checkquiet;	    /**< Should quiet property be checked? */
+  CHANUSER *u;            /**< Pointer to channel user */
+  int checkquiet;           /**< Should quiet property be checked? */
 };
 
 
 /* Channel type flags and macros */
-#define CHANNEL_PLAYER  0x1	/* Players may join */
-#define CHANNEL_OBJECT  0x2	/* Objects may join */
-#define CHANNEL_DISABLED 0x4	/* Channel is turned off */
-#define CHANNEL_QUIET   0x8	/* No broadcasts connect/disconnect */
-#define CHANNEL_ADMIN   0x10	/* Admins only */
-#define CHANNEL_DIRECTOR 0x20	/* Directors only */
-#define CHANNEL_CANHIDE 0x40	/* Can non-DARK players hide here? */
-#define CHANNEL_OPEN    0x80	/* Can you speak if you're not joined? */
-#define CHANNEL_NOTITLES 0x100	/* Don't show titles of speakers */
-#define CHANNEL_NONAMES 0x200	/* Don't show names of speakers */
-#define CHANNEL_NOCEMIT 0x400	/* Disallow @cemit */
-#define CHANNEL_COBJ	0x800  /* Channel with a channel object */
-#define CHANNEL_INTERACT	0x1000	/* Filter channel output through interactions */
+#define CHANNEL_PLAYER  0x1     /* Players may join */
+#define CHANNEL_OBJECT  0x2     /* Objects may join */
+#define CHANNEL_DISABLED 0x4    /* Channel is turned off */
+#define CHANNEL_QUIET   0x8     /* No broadcasts connect/disconnect */
+#define CHANNEL_ADMIN   0x10    /* Admins only */
+#define CHANNEL_DIRECTOR 0x20   /* Directors only */
+#define CHANNEL_CANHIDE 0x40    /* Can non-DARK players hide here? */
+#define CHANNEL_OPEN    0x80    /* Can you speak if you're not joined? */
+#define CHANNEL_NOTITLES 0x100  /* Don't show titles of speakers */
+#define CHANNEL_NONAMES 0x200   /* Don't show names of speakers */
+#define CHANNEL_NOCEMIT 0x400   /* Disallow @cemit */
+#define CHANNEL_COBJ    0x800  /* Channel with a channel object */
+#define CHANNEL_INTERACT        0x1000  /* Filter channel output through interactions */
 #define CHANNEL_DEFAULT_FLAGS   (CHANNEL_PLAYER)
 #define CL_JOIN 0x1
 #define CL_SPEAK 0x2
@@ -203,10 +203,10 @@ int ChanObjCheck _((CHAN *c));
       (eval_chan_lock(c,p,CLOCK_MOD))))
 #define Chan_Can_See(c,p) \
      ((Admin(p) || See_All(p)) || (Chan_Can_Access(c,p) && \
-				 (eval_chan_lock(c,p,CLOCK_SEE))))
+                                 (eval_chan_lock(c,p,CLOCK_SEE))))
 #define Chan_Can_Hide(c,p) \
      (Can_Hide(p) || (Channel_CanHide(c) && Chan_Can_Access(c,p) && \
-		      (eval_chan_lock(c,p,CLOCK_HIDE))))
+                      (eval_chan_lock(c,p,CLOCK_HIDE))))
 #define Chan_Can_Nuke(c,p) (ChanCreator(c) == (p) || div_powover(p, ChanCreator(c), "Chat"))
 #define Chan_Can_Decomp(c,p) (See_All(p) || (ChanCreator(c) == (p)))
 
@@ -236,7 +236,7 @@ extern void do_chan_what(dbref player, const char *partname);
 extern void do_chan_desc(dbref player, const char *name, const char *title);
 extern void do_chan_title(dbref player, const char *name, const char *title);
 extern void do_chan_recall(dbref player, const char *name, char *lineinfo[],
-			   int quiet);
+                           int quiet);
 extern void do_chan_buffer(dbref player, const char *name, const char *lines);
 extern void init_chat(void);
 extern void do_channel
@@ -246,7 +246,7 @@ extern void do_chan_admin
   (dbref player, char *name, const char *perms, int flag);
 extern enum cmatch_type find_channel(const char *p, CHAN **chan, dbref player);
 extern enum cmatch_type find_channel_partial(const char *p, CHAN **chan,
-					     dbref player);
+                                             dbref player);
 extern void do_channel_list(dbref player, const char *partname);
 extern int do_chat_by_name
   (dbref player, const char *name, const char *msg, int source);
@@ -265,5 +265,5 @@ enum chan_match_type {
 };
 
 
-#endif				/* CHAT_SYSTEM */
-#endif				/* __EXTCHAT_H */
+#endif                          /* CHAT_SYSTEM */
+#endif                          /* __EXTCHAT_H */

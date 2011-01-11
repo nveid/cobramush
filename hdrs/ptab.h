@@ -9,11 +9,11 @@ struct ptab_entry;
  * data is looked up by the best matching prefix of the given key.
  */
 typedef struct ptab {
-  int state;			/**< Internal table state */
-  int len;			/**< Table size */
-  int maxlen;			/**< Maximum table size */
-  int current;			/**< Internal table state */
-  struct ptab_entry **tab;	/**< Pointer to array of entries */
+  int state;                    /**< Internal table state */
+  int len;                      /**< Table size */
+  int maxlen;                   /**< Maximum table size */
+  int current;                  /**< Internal table state */
+  struct ptab_entry **tab;      /**< Pointer to array of entries */
 } PTAB;
 
 
@@ -32,4 +32,4 @@ void *ptab_nextentry_new(PTAB *, char *key);
 #define ptab_firstentry(x) ptab_firstentry_new(x,NULL)
 #define ptab_nextentry(x) ptab_nextentry_new(x,NULL)
 
-#endif				/* PTAB_H */
+#endif                          /* PTAB_H */

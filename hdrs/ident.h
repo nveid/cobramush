@@ -44,9 +44,9 @@ extern "C" {
    * This structure stores the result of an ident call.
    */
   typedef struct {
-    char *identifier;		/**< Normally user name */
-    char *opsys;		/**< Operating system */
-    char *charset;		/**< Character set */
+    char *identifier;           /**< Normally user name */
+    char *opsys;                /**< Operating system */
+    char *charset;              /**< Character set */
   } IDENT;
 
 /* High-level calls */
@@ -54,8 +54,8 @@ extern "C" {
   extern char *ident_id(int fd, int *timeout);
 
   extern IDENT *ident_query(struct sockaddr *laddr, socklen_t llen,
-			    struct sockaddr *raddr, socklen_t rlen,
-			    int *timeout);
+                            struct sockaddr *raddr, socklen_t rlen,
+                            int *timeout);
 
   void ident_free(IDENT *id);
 

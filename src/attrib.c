@@ -102,14 +102,14 @@ static ATTR *find_atr_in_list(ATTR * atr, char const *name);
 
 /*
 #define Cannot_Write_This_Attr(p,a,o,s,n) (!God(p) && AF_Internal(a) || \
-	      (s && AF_Safe(a)) || \
-	    ( ((AL_FLAGS(a) & AF_PRIVILEGE) && !(Prived(p) || (Inherit_Powers(p) && Prived(Owner(p)) )))   ||  \
-	      !(  (controls(p, o) && ( (Owner(o) == Owner(lo)) || controls(p,lo)) && catchall && AL_WLock(a) == TRUE_BOOLEXP ? \
-		      AL_CREATOR(catchall) : AL_CREATOR(a)))) ||   ((AL_WLock(a) == TRUE_BOOLEXP && (!n || !catchall || \
-		      (AL_WLock(catchall) == TRUE_BOOLEXP))) && controls(p,o) ) ||   ((AL_WLock(a) != TRUE_BOOLEXP ? \
-		       eval_boolexp(p, AL_WLock(a), o, NULL) : (n && catchall && AL_WLock(catchall) != TRUE_BOOLEXP && \
-						  eval_boolexp(p, AL_WLock(catchall), o, NULL))) )) 
-						  */
+              (s && AF_Safe(a)) || \
+            ( ((AL_FLAGS(a) & AF_PRIVILEGE) && !(Prived(p) || (Inherit_Powers(p) && Prived(Owner(p)) )))   ||  \
+              !(  (controls(p, o) && ( (Owner(o) == Owner(lo)) || controls(p,lo)) && catchall && AL_WLock(a) == TRUE_BOOLEXP ? \
+                      AL_CREATOR(catchall) : AL_CREATOR(a)))) ||   ((AL_WLock(a) == TRUE_BOOLEXP && (!n || !catchall || \
+                      (AL_WLock(catchall) == TRUE_BOOLEXP))) && controls(p,o) ) ||   ((AL_WLock(a) != TRUE_BOOLEXP ? \
+                       eval_boolexp(p, AL_WLock(a), o, NULL) : (n && catchall && AL_WLock(catchall) != TRUE_BOOLEXP && \
+                                                  eval_boolexp(p, AL_WLock(catchall), o, NULL))) )) 
+                                                  */
 
 
 /*
@@ -151,7 +151,7 @@ int cannot_write_this_attr_internal(dbref player, ATTR *attr, dbref obj, char sa
     return 1;
 
   if(AF_Mdark(attr) && !(Admin(player)
-			 || (Inherit_Powers(player) && Admin(Owner(player)))))
+                         || (Inherit_Powers(player) && Admin(Owner(player)))))
     return 1;
 
   if(ns_chk && catchall && !controls(player, AL_CREATOR(catchall)) && AL_WLock(catchall) != TRUE_BOOLEXP && 
@@ -420,7 +420,7 @@ can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
       AL_NAME(atr) = missing_name;
       set_default_flags(atr, flags, lock_owner, ns_chk);
       if(lock_owner == NOTHING)
-	lock_owner = AL_CREATOR(atr);
+        lock_owner = AL_CREATOR(atr);
       num_new++;
     }
     if (Cannot_Write_This_Attr(player, atr, obj, 1, ns_chk, lock_owner)) {
@@ -1176,8 +1176,8 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
     *s++ = '\0';
     if (type == '^' && !AF_Ahear(ptr)) {
       if ((thing == player && !AF_Mhear(ptr))
-	  || (thing != player && AF_Mhear(ptr)))
-	continue;
+          || (thing != player && AF_Mhear(ptr)))
+        continue;
     }
 
     if (AF_Regexp(ptr)) {
@@ -1296,9 +1296,9 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
         continue;
       *s++ = '\0';
       if (type == '^' && !AF_Ahear(ptr)) {
-	if ((thing == player && !AF_Mhear(ptr))
-	    || (thing != player && AF_Mhear(ptr)))
-	  continue;
+        if ((thing == player && !AF_Mhear(ptr))
+            || (thing != player && AF_Mhear(ptr)))
+          continue;
       }
 
       if (AF_Regexp(ptr)) {
@@ -1754,46 +1754,46 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
       /* Old alias - we're allowed to change to a different case */
       strcpy(tbuf1, atr_value(old));
       if (s && !*s) {
-	notify_format(player, T("'%s' is not a valid alias."), s);
-	return -1;
+        notify_format(player, T("'%s' is not a valid alias."), s);
+        return -1;
       }
       if (s && strcasecmp(s, tbuf1)) {
-	int opae_res = ok_player_alias(s, player, thing);
-	switch (opae_res) {
-	case OPAE_INVALID:
-	  notify_format(player, T("'%s' is not a valid alias."), s);
-	  break;
-	case OPAE_TOOMANY:
-	  notify_format(player, T("'%s' contains too many aliases."), s);
-	  break;
-	case OPAE_NULL:
-	  notify_format(player, T("Null aliases are not valid."));
-	  break;
-	}
-	if (opae_res != OPAE_SUCCESS)
-	  return -1;
+        int opae_res = ok_player_alias(s, player, thing);
+        switch (opae_res) {
+        case OPAE_INVALID:
+          notify_format(player, T("'%s' is not a valid alias."), s);
+          break;
+        case OPAE_TOOMANY:
+          notify_format(player, T("'%s' contains too many aliases."), s);
+          break;
+        case OPAE_NULL:
+          notify_format(player, T("Null aliases are not valid."));
+          break;
+        }
+        if (opae_res != OPAE_SUCCESS)
+          return -1;
       }
     } else {
       /* No old alias */
       if (s && *s) {
-	int opae_res = ok_player_alias(s, player, thing);
-	switch (opae_res) {
-	case OPAE_INVALID:
-	  notify_format(player, T("'%s' is not a valid alias."), s);
-	  break;
-	case OPAE_TOOMANY:
-	  notify_format(player, T("'%s' contains too many aliases."), s);
-	  break;
-	case OPAE_NULL:
-	  notify_format(player, T("Null aliases are not valid."));
-	  break;
-	}
-	if (opae_res != OPAE_SUCCESS)
-	  return -1;
+        int opae_res = ok_player_alias(s, player, thing);
+        switch (opae_res) {
+        case OPAE_INVALID:
+          notify_format(player, T("'%s' is not a valid alias."), s);
+          break;
+        case OPAE_TOOMANY:
+          notify_format(player, T("'%s' contains too many aliases."), s);
+          break;
+        case OPAE_NULL:
+          notify_format(player, T("Null aliases are not valid."));
+          break;
+        }
+        if (opae_res != OPAE_SUCCESS)
+          return -1;
       }
     }
   } else if (s && *s && (!strcmp(name, "FORWARDLIST")
-			 || !strcmp(name, "MAILFORWARDLIST")
+                         || !strcmp(name, "MAILFORWARDLIST")
                          || !strcmp(name, "DEBUGFORWARDLIST"))) {
     /* You can only set this to dbrefs of things you're allowed to
      * forward to. If you get one wrong, we puke.
@@ -1813,14 +1813,14 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
         return -1;
       }
       if ((!strcmp(name, "FORWARDLIST") || !strcmp(name, "DEBUGFORWARDLIST"))
-	  && !Can_Forward(thing, fwd)) {
+          && !Can_Forward(thing, fwd)) {
         notify_format(player, T("I don't think #%d wants to hear from %s."),
-		      fwd, Name(thing));
+                      fwd, Name(thing));
         return -1;
       }
       if (!strcmp(name, "MAILFORWARDLIST") && !Can_MailForward(thing, fwd)) {
-	notify_format(player, T("I don't think #%d wants %s's mail."), fwd,
-		      Name(thing));
+        notify_format(player, T("I don't think #%d wants %s's mail."), fwd,
+                      Name(thing));
         return -1;
       }
     }
@@ -1835,7 +1835,7 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
       : atr_clr(thing, name, player);
   if (res == AE_SAFE) {
     notify_format(player, T("Attribute %s is SAFE. Set it !SAFE to modify it."),
-		  name);
+                  name);
     return 0;
   } else if (res == AE_BADNAME) {
     notify(player, T("That's not a very good name for an attribute."));
@@ -2130,12 +2130,12 @@ can_read_attr_internal(dbref player, dbref obj, ATTR * atr)
 
   if(!Admin(player)
      && (AF_Mdark(atr)
-	 || !(cansee
-	      || ((AF_Visual(atr)
-		   || ((AL_RLock(atr) != TRUE_BOOLEXP) && r_lock))
-		  && (!AF_Nearby(atr) || canlook))
-	      || (!visible && !Mistrust(player)
-		  && (Owner(AL_CREATOR(atr)) == Owner(player))))))
+         || !(cansee
+              || ((AF_Visual(atr)
+                   || ((AL_RLock(atr) != TRUE_BOOLEXP) && r_lock))
+                  && (!AF_Nearby(atr) || canlook))
+              || (!visible && !Mistrust(player)
+                  && (Owner(AL_CREATOR(atr)) == Owner(player))))))
     return 0;
 
   /* If the attribute isn't on a branch, then that's also easy. */

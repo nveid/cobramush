@@ -37,21 +37,21 @@
 #include "cmds.h"
 #include "confmagic.h"
 
-PTAB ptab_command;	/**< Prefix table for command names. */
-PTAB ptab_command_perms;	/**< Prefix table for command permissions */
+PTAB ptab_command;      /**< Prefix table for command names. */
+PTAB ptab_command_perms;        /**< Prefix table for command permissions */
 
-HASHTAB htab_reserved_aliases;	/**< Hash table for reserved command aliases */
+HASHTAB htab_reserved_aliases;  /**< Hash table for reserved command aliases */
 
 static const char *command_isattr(char *command);
 static int command_check(dbref player, COMMAND_INFO *cmd, switch_mask sw);
 static int switch_find(COMMAND_INFO *cmd, char *sw);
 static void strccat(char *buff, char **bp, const char *from);
 static int has_hook(struct hook_data *hook);
-extern int global_fun_invocations;	/**< Counter for function invocations */
-extern int global_fun_recursions;	/**< Counter for function recursion */
+extern int global_fun_invocations;      /**< Counter for function invocations */
+extern int global_fun_recursions;       /**< Counter for function recursion */
 
 int run_hook(dbref player, dbref cause, struct hook_data *hook,
-	     char *saveregs[], int save);
+             char *saveregs[], int save);
 int command_lock(const char *name, const char *lock);
 
 /** The list of standard commands. Additional commands can be added
@@ -414,7 +414,7 @@ strccat(char *buff, char **bp, const char *from)
 }
 static int
 switch_find(COMMAND_INFO *cmd, char *sw)
-	{
+        {
   SWITCH_VALUE *sw_val;
   int len;
 
@@ -426,14 +426,14 @@ switch_find(COMMAND_INFO *cmd, char *sw)
   if (!cmd) {
     while (sw_val->name) {
       if (strcmp(sw_val->name, sw) == 0)
-	return sw_val->value;
+        return sw_val->value;
       sw_val++;
     }
     return 0;
   } else {
     while (sw_val->name) {
-	  if (SW_ISSET(cmd->sw, sw_val->value) && (strncmp(sw_val->name, sw, len) == 0))
-		  return sw_val->value;
+          if (SW_ISSET(cmd->sw, sw_val->value) && (strncmp(sw_val->name, sw, len) == 0))
+                  return sw_val->value;
       sw_val++;
     }
   }
@@ -494,7 +494,7 @@ command_add(const char *name, int type, const char *switchstr, command_func func
 
   ptab_start_inserts(&ptab_command);
   ptab_insert(&ptab_command, name,
-	      make_command(name, type, sw, func, command_lock));
+              make_command(name, type, sw, func, command_lock));
   ptab_end_inserts(&ptab_command);
   return command_find(name);
 }
@@ -641,8 +641,8 @@ command_init_preconfig(void)
   ptab_start_inserts(&ptab_command);
   for (cmd = commands; cmd->name; cmd++) {
     ptab_insert(&ptab_command, cmd->name,
-		make_command(cmd->name, cmd->type, switchmask(cmd->switches),
-			     cmd->func, cmd->command_lock));
+                make_command(cmd->name, cmd->type, switchmask(cmd->switches),
+                             cmd->func, cmd->command_lock));
   }
   ptab_end_inserts(&ptab_command);
 
@@ -715,8 +715,8 @@ int rhs_present;
  */
 void
 command_argparse(dbref player, dbref realcause, dbref cause, char **from, char *to,
-		 char *argv[], COMMAND_INFO *cmd, int right_side,
-		 int forcenoparse)
+                 char *argv[], COMMAND_INFO *cmd, int right_side,
+                 int forcenoparse)
 {
   int parse, split, args, i, done;
   char *t, *f;
@@ -766,16 +766,16 @@ command_argparse(dbref player, dbref realcause, dbref cause, char **from, char *
     while (*f == ' ')
       f++;
     process_expression(to, &t, (const char **) &f, player, realcause, cause,
-		       parse, (split | args), NULL);
+                       parse, (split | args), NULL);
     *t = '\0';
     if (args) {
       argv[i] = aold;
       if (*f)
-	f++;
+        f++;
       i++;
       t++;
       if (i == MAX_ARG)
-	done = 1;
+        done = 1;
     }
     if (split && (*f == '=')) {
       rhs_present = 1;
@@ -898,9 +898,9 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
   if (*p == '[') {
     if ((cmd = command_find("WARN_ON_MISSING"))) {
       if (!(cmd->type & CMD_T_DISABLED)) {
-	cmd->func(cmd, player, cause, sw, string, NULL, NULL, ls, lsa, rs, rsa, fromport);
-	command_parse_free_args;
-	return NULL;
+        cmd->func(cmd, player, cause, sw, string, NULL, NULL, ls, lsa, rs, rsa, fromport);
+        command_parse_free_args;
+        return NULL;
       }
     }
   }
@@ -912,7 +912,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
   case SAY_TOKEN:
     replacer = "SAY";
     if (CHAT_STRIP_QUOTE)
-      p--;			/* Since 'say' strips out the '"' */
+      p--;                      /* Since 'say' strips out the '"' */
     break;
   case POSE_TOKEN:
     replacer = "POSE";
@@ -975,10 +975,10 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     while (*p == ' ')
       p++;
     process_expression(command, &c, (const char **) &p, player, realcause,
-		       cause, noevtoken ? PE_NOTHING :
-					  ((PE_DEFAULT & ~PE_FUNCTION_CHECK)
-					   | PE_COMMAND_BRACES),
-		       PT_SPACE, NULL);
+                       cause, noevtoken ? PE_NOTHING :
+                                          ((PE_DEFAULT & ~PE_FUNCTION_CHECK)
+                                           | PE_COMMAND_BRACES),
+                       PT_SPACE, NULL);
     *c = '\0';
     strcpy(commandraw, command);
     upcasestr(command);
@@ -992,14 +992,14 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     } else {
       c = command;
       while ((*c) && (*c != '/') && (*c != ' '))
-	c++;
+        c++;
       b = *c;
       *c = '\0';
       cmd = command_find(command);
       *c = b;
       /* Is this for internal use? If so, players can't use it! */
       if (cmd && (cmd->type & CMD_T_INTERNAL))
-	cmd = NULL;
+        cmd = NULL;
     }
   }
 
@@ -1038,13 +1038,13 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
   if (!cmd || (cmd->type & CMD_T_DISABLED)) {
     if (*p) {
       if (*p == ' ') {
-	safe_chr(' ', commandraw, &c2);
-	p++;
+        safe_chr(' ', commandraw, &c2);
+        p++;
       }
       process_expression(commandraw, &c2, (const char **) &p, player, realcause,
-			 cause, noevtoken ? PE_NOTHING :
-			 ((PE_DEFAULT & ~PE_FUNCTION_CHECK) |
-			  PE_COMMAND_BRACES), PT_DEFAULT, NULL);
+                         cause, noevtoken ? PE_NOTHING :
+                         ((PE_DEFAULT & ~PE_FUNCTION_CHECK) |
+                          PE_COMMAND_BRACES), PT_DEFAULT, NULL);
     }
     *c2 = '\0';
     command_parse_free_args;
@@ -1065,21 +1065,21 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
       t = swtch;
       c++;
       while ((*c) && (*c != ' ') && (*c != '/'))
-	*t++ = *c++;
+        *t++ = *c++;
       *t = '\0';
       switchnum = switch_find(cmd, upcasestr(swtch));
       if (!switchnum) {
-	if (cmd->type & CMD_T_SWITCHES) {
-	  if (*swp)
-	    strcat(swp, " ");
-	  strcat(swp, swtch);
-	} else {
-	  if (se == switch_err)
-	    safe_format(switch_err, &se,
-			T("%s doesn't know switch %s."), cmd->name, swtch);
-	}
+        if (cmd->type & CMD_T_SWITCHES) {
+          if (*swp)
+            strcat(swp, " ");
+          strcat(swp, swtch);
+        } else {
+          if (se == switch_err)
+            safe_format(switch_err, &se,
+                        T("%s doesn't know switch %s."), cmd->name, swtch);
+        }
       } else {
-	SW_SET(sw, switchnum);
+        SW_SET(sw, switchnum);
       }
     }
   }
@@ -1121,16 +1121,16 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     /* Special case: eqsplit, noeval of rhs only */
     command_argparse(player, realcause, cause, &p, ls, lsa, cmd, 0, 0);
     command_argparse(player, realcause, cause, &p, rs, rsa, cmd, 1, 1);
-    SW_SET(sw, SWITCH_NOEVAL);	/* Needed for ATTRIB_SET */
+    SW_SET(sw, SWITCH_NOEVAL);  /* Needed for ATTRIB_SET */
   } else {
     noeval = SW_ISSET(sw, SWITCH_NOEVAL) || noevtoken;
     if (cmd->type & CMD_T_EQSPLIT) {
       char *savep = p;
       command_argparse(player, realcause, cause, &p, ls, lsa, cmd, 0, noeval);
       if (noeval && !noevtoken && *p) {
-	/* oops, we have a right hand side, should have evaluated */
-	p = savep;
-	command_argparse(player, realcause, cause, &p, ls, lsa, cmd, 0, 0);
+        /* oops, we have a right hand side, should have evaluated */
+        p = savep;
+        command_argparse(player, realcause, cause, &p, ls, lsa, cmd, 0, 0);
       }
       command_argparse(player, realcause, cause, &p, rs, rsa, cmd, 1, noeval);
     } else {
@@ -1149,10 +1149,10 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     if (cmd->type & CMD_T_ARGS) {
       int lsa_index;
       if (lsa[1]) {
-	safe_str(lsa[1], commandraw, &c2);
-	for (lsa_index = 2; lsa[lsa_index]; lsa_index++) {
-	  safe_chr(',', commandraw, &c2);
-	  safe_str(lsa[lsa_index], commandraw, &c2);
+        safe_str(lsa[1], commandraw, &c2);
+        for (lsa_index = 2; lsa[lsa_index]; lsa_index++) {
+          safe_chr(',', commandraw, &c2);
+          safe_str(lsa[lsa_index], commandraw, &c2);
         }
       }
     } else {
@@ -1161,25 +1161,25 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     if (cmd->type & CMD_T_EQSPLIT) {
       safe_chr('=', commandraw, &c2);
       if (cmd->type & CMD_T_RS_ARGS) {
-	int rsa_index;
-	/* This is counterintuitive, but rsa[]
-	 * starts at 1. */
-	if (rsa[1]) {
-	  safe_str(rsa[1], commandraw, &c2);
-	  for (rsa_index = 2; rsa[rsa_index]; rsa_index++) {
-	    safe_chr(',', commandraw, &c2);
-	    safe_str(rsa[rsa_index], commandraw, &c2);
-	  }
-	}
+        int rsa_index;
+        /* This is counterintuitive, but rsa[]
+         * starts at 1. */
+        if (rsa[1]) {
+          safe_str(rsa[1], commandraw, &c2);
+          for (rsa_index = 2; rsa[rsa_index]; rsa_index++) {
+            safe_chr(',', commandraw, &c2);
+            safe_str(rsa[rsa_index], commandraw, &c2);
+          }
+        }
       } else {
         safe_str(rs, commandraw, &c2);
       }
 #ifdef NEVER
       /* We used to do this, but we're not sure why */
       process_expression(commandraw, &c2, (const char **) &p, player, realcause,
-			 cause, noevtoken ? PE_NOTHING :
-			 ((PE_DEFAULT & ~PE_FUNCTION_CHECK) |
-			  PE_COMMAND_BRACES), PT_DEFAULT, NULL);
+                         cause, noevtoken ? PE_NOTHING :
+                         ((PE_DEFAULT & ~PE_FUNCTION_CHECK) |
+                          PE_COMMAND_BRACES), PT_DEFAULT, NULL);
 #endif
     }
     *c2 = '\0';
@@ -1197,25 +1197,25 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     if (run_hook(player, cause, &cmd->hooks.ignore, saveregs, 1)) {
       /* If we have a hook/override, we use that instead */
       if (!has_hook(&cmd->hooks.override) ||
-	  !one_comm_match(cmd->hooks.override.obj, player,
-			  cmd->hooks.override.attrname, commandraw)) {
-	/* Otherwise, we do hook/before, the command, and hook/after */
-	/* But first, let's see if we had an invalid switch */
-	if (*switch_err) {
-	  notify(player, switch_err);
-	  free_global_regs("hook.regs", saveregs);
-	  command_parse_free_args;
-	  return NULL;
-	}
-	run_hook(player, cause, &cmd->hooks.before, saveregs, 1);
-	cmd->func(cmd, player, cause, sw, string, swp, ap, ls, lsa, rs, rsa, fromport);
-	run_hook(player, cause, &cmd->hooks.after, saveregs, 0);
+          !one_comm_match(cmd->hooks.override.obj, player,
+                          cmd->hooks.override.attrname, commandraw)) {
+        /* Otherwise, we do hook/before, the command, and hook/after */
+        /* But first, let's see if we had an invalid switch */
+        if (*switch_err) {
+          notify(player, switch_err);
+          free_global_regs("hook.regs", saveregs);
+          command_parse_free_args;
+          return NULL;
+        }
+        run_hook(player, cause, &cmd->hooks.before, saveregs, 1);
+        cmd->func(cmd, player, cause, sw, string, swp, ap, ls, lsa, rs, rsa, fromport);
+        run_hook(player, cause, &cmd->hooks.after, saveregs, 0);
       }
       /* Either way, we might log */
       if (cmd->type & CMD_T_LOGARGS)
-	do_log(LT_CMD, player, cause, "%s", string);
+        do_log(LT_CMD, player, cause, "%s", string);
       else if (cmd->type & CMD_T_LOGNAME)
-	do_log(LT_CMD, player, cause, "%s", commandraw);
+        do_log(LT_CMD, player, cause, "%s", commandraw);
     } else {
       retval = commandraw;
     }
@@ -1328,9 +1328,9 @@ restrict_command(const char *name, const char *restriction)
 
     if ((c = ptab_find(&ptab_command_perms, restriction))) {
       if (clear)
-	command->type &= ~c->type;
+        command->type &= ~c->type;
       else
-	command->type |= c->type;
+        command->type |= c->type;
     }
     restriction = tp;
   }
@@ -1350,7 +1350,7 @@ int command_lock(const char *name, const char *lock) {
     *(message++) = '\0';
     if((message = trim_space_sep(message, ' ')) && *message) {
       if(command->restrict_message) 
-	mush_free((Malloc_t) command->restrict_message, "cmd_restrict_message");
+        mush_free((Malloc_t) command->restrict_message, "cmd_restrict_message");
       command->restrict_message = mush_strdup(message, "cmd_restrict_message");
     }
   }
@@ -1380,16 +1380,16 @@ COMMAND (cmd_unimplemented) {
       init_global_regs(saveregs);
       if (run_hook(player, cause, &cmd->hooks.ignore, saveregs, 1)) {
       /* If we have a hook/override, we use that instead */
-	if (!has_hook(&cmd->hooks.override) ||
-	    !one_comm_match(cmd->hooks.override.obj, player,
-			    cmd->hooks.override.attrname, "HUH_COMMAND")) {
-	  /* Otherwise, we do hook/before, the command, and hook/after */
-	  run_hook(player, cause, &cmd->hooks.before, saveregs, 1);
+        if (!has_hook(&cmd->hooks.override) ||
+            !one_comm_match(cmd->hooks.override.obj, player,
+                            cmd->hooks.override.attrname, "HUH_COMMAND")) {
+          /* Otherwise, we do hook/before, the command, and hook/after */
+          run_hook(player, cause, &cmd->hooks.before, saveregs, 1);
 
-	  cmd->func(cmd, player, cause, sw, raw, switches, args_raw,
-		    arg_left, args_left, arg_right, args_right, fromport);
-	  run_hook(player, cause, &cmd->hooks.after, saveregs, 0);
-	}
+          cmd->func(cmd, player, cause, sw, raw, switches, args_raw,
+                    arg_left, args_left, arg_right, args_right, fromport);
+          run_hook(player, cause, &cmd->hooks.after, saveregs, 0);
+        }
       }
       free_global_regs("hook.regs", saveregs);
       return;
@@ -1426,8 +1426,8 @@ do_command_add(dbref player, char *name, int flags)
       notify(player, T("Bad command name."));
     } else {
       command_add(mush_strdup(name, "command_add"),
-		  flags, (flags & CMD_T_NOPARSE ? NULL : "NOEVAL"),
-		  cmd_unimplemented, NULL);
+                  flags, (flags & CMD_T_NOPARSE ? NULL : "NOEVAL"),
+                  cmd_unimplemented, NULL);
       notify_format(player, T("Command %s added."), name);
     }
   } else {
@@ -1458,8 +1458,8 @@ do_command_delete(dbref player, char *name)
   upcasestr(name);
   command = command_find_exact(name);
   if(!command) {
-	  notify(player, T("No such command."));
-	  return;
+          notify(player, T("No such command."));
+          return;
   }
   if (strcasecmp(command->name, name) == 0) {
     /* This is the command, not an alias */
@@ -1514,20 +1514,20 @@ COMMAND (cmd_command) {
     flags |= SW_ISSET(sw, SWITCH_EQSPLIT) ? CMD_T_EQSPLIT : 0;
     if (SW_ISSET(sw, SWITCH_NOEVAL))
       notify(player,
-	     T
-	     ("WARNING: /NOEVAL no longer creates a Noparse command.\n         Use /NOPARSE if that's what you meant."));
+             T
+             ("WARNING: /NOEVAL no longer creates a Noparse command.\n         Use /NOPARSE if that's what you meant."));
     do_command_add(player, arg_left, flags);
     return;
   }
   if (SW_ISSET(sw, SWITCH_ALIAS)) {
     if (Director(player)) {
       if (!ok_command_name(upcasestr(arg_right))) {
-	notify(player, "I can't alias a command to that!");
+        notify(player, "I can't alias a command to that!");
       } else if (!alias_command(arg_left, arg_right)) {
-	notify(player, "Unable to set alias.");
+        notify(player, "Unable to set alias.");
       } else {
-	if (!SW_ISSET(sw, SWITCH_QUIET))
-	  notify(player, "Alias set.");
+        if (!SW_ISSET(sw, SWITCH_QUIET))
+          notify(player, "Alias set.");
       }
     } else {
       notify(player, T("Permission denied."));
@@ -1552,32 +1552,32 @@ COMMAND (cmd_command) {
 
     if(SW_ISSET(sw, SWITCH_LOCK)) {
       if(arg_right && *arg_right) {
-	boolexp key;
+        boolexp key;
 
-	key = parse_boolexp(player, arg_right, "Command");
-	if(key != TRUE_BOOLEXP)  {
-	  if(command->lock != TRUE_BOOLEXP)
-	    free_boolexp(command->lock);
-	  command->lock = key;
-	  notify(player, "Command locked.");
-	} else notify(player, T("I don't understand that key."));
+        key = parse_boolexp(player, arg_right, "Command");
+        if(key != TRUE_BOOLEXP)  {
+          if(command->lock != TRUE_BOOLEXP)
+            free_boolexp(command->lock);
+          command->lock = key;
+          notify(player, "Command locked.");
+        } else notify(player, T("I don't understand that key."));
       } else {
-	if(command->lock != TRUE_BOOLEXP) 
-	  free_boolexp(command->lock);
-	command->lock = TRUE_BOOLEXP;
-	notify(player, "Command unlocked.");
+        if(command->lock != TRUE_BOOLEXP) 
+          free_boolexp(command->lock);
+        command->lock = TRUE_BOOLEXP;
+        notify(player, "Command unlocked.");
       }
       return;
     }
 
     if (SW_ISSET(sw, SWITCH_RESTRICT)) {
       if (!arg_right || !arg_right[0]) {
-	notify(player, T("How do you want to restrict the command?"));
-	return;
+        notify(player, T("How do you want to restrict the command?"));
+        return;
       }
 
       if (!restrict_command(arg_left, arg_right))
-	notify(player, T("Restrict attempt failed."));
+        notify(player, T("Restrict attempt failed."));
     }
 
     if ((command->func == cmd_command) && (command->type & CMD_T_DISABLED)) {
@@ -1587,22 +1587,22 @@ COMMAND (cmd_command) {
   }
   if (!SW_ISSET(sw, SWITCH_QUIET)) {
     notify_format(player,
-		  "Name         : %s (%s)", command->name,
-		  (command->type & CMD_T_DISABLED) ? "Disabled" : "Enabled");
+                  "Name         : %s (%s)", command->name,
+                  (command->type & CMD_T_DISABLED) ? "Disabled" : "Enabled");
     if ((command->type & CMD_T_ANY) == CMD_T_ANY)
       safe_strl("Any", 3, buff, &bp);
     else {
       buff[0] = '\0';
       if (command->type & CMD_T_ROOM)
-	strccat(buff, &bp, "Room");
+        strccat(buff, &bp, "Room");
       if (command->type & CMD_T_THING)
-	strccat(buff, &bp, "Thing");
+        strccat(buff, &bp, "Thing");
       if (command->type & CMD_T_EXIT)
-	strccat(buff, &bp, "Exit");
+        strccat(buff, &bp, "Exit");
       if (command->type & CMD_T_PLAYER)
-	strccat(buff, &bp, "Player");
+        strccat(buff, &bp, "Player");
       if (command->type & CMD_T_DIVISION)
-	strccat(buff, &bp, "Division");
+        strccat(buff, &bp, "Division");
     }
     *bp = '\0';
     notify_format(player, "Types        : %s", buff);
@@ -1633,16 +1633,16 @@ COMMAND (cmd_command) {
     bp = buff;
     for (sw_val = switch_list; sw_val->name; sw_val++)
       if (SW_ISSET(command->sw, sw_val->value))
-	strccat(buff, &bp, sw_val->name);
+        strccat(buff, &bp, sw_val->name);
     *bp = '\0';
     notify_format(player, "Switches     : %s", buff);
     buff[0] = '\0';
     bp = buff;
     if (command->type & CMD_T_LS_ARGS) {
       if (command->type & CMD_T_LS_SPACE)
-	strccat(buff, &bp, "Space-Args");
+        strccat(buff, &bp, "Space-Args");
       else
-	strccat(buff, &bp, "Args");
+        strccat(buff, &bp, "Args");
     }
     if (command->type & CMD_T_LS_NOPARSE)
       strccat(buff, &bp, "Noparse");
@@ -1652,13 +1652,13 @@ COMMAND (cmd_command) {
       buff[0] = '\0';
       bp = buff;
       if (command->type & CMD_T_RS_ARGS) {
-	if (command->type & CMD_T_RS_SPACE)
-	  strccat(buff, &bp, "Space-Args");
-	else
-	  strccat(buff, &bp, "Args");
+        if (command->type & CMD_T_RS_SPACE)
+          strccat(buff, &bp, "Space-Args");
+        else
+          strccat(buff, &bp, "Args");
       }
       if (command->type & CMD_T_RS_NOPARSE)
-	strccat(buff, &bp, "Noparse");
+        strccat(buff, &bp, "Noparse");
       *bp = '\0';
       notify_format(player, "Rightside    : %s", buff);
     } else {
@@ -1720,7 +1720,7 @@ command_check(dbref player, COMMAND_INFO *cmd, switch_mask switches)
 
   /* God doesn't get fucked with */
   if(LEVEL(player) >= LEVEL_GOD)
-	  return 1;
+          return 1;
   /* If disabled, return silently */
   if (cmd->type & CMD_T_DISABLED)
     return 0;
@@ -1734,8 +1734,8 @@ command_check(dbref player, COMMAND_INFO *cmd, switch_mask switches)
   }
 #ifdef RPMODE_SYS
   if((cmd->type & CMD_T_NORPMODE) && RPMODE(player)) {
-	  mess = T("You cannot do that while in RPMODE");
-	  goto send_error;
+          mess = T("You cannot do that while in RPMODE");
+          goto send_error;
   }
 #endif
   if ((cmd->type & CMD_T_NOGUEST) && Guest(player)) {
@@ -1775,8 +1775,8 @@ command_check(dbref player, COMMAND_INFO *cmd, switch_mask switches)
   ok = 1;
 
   if(!God(player) && !eval_boolexp(player, cmd->lock, player, switches) ) {
-	 mess =  T("Permission denied.");
-	 goto send_error;
+         mess =  T("Permission denied.");
+         goto send_error;
   }
 
   return ok;
@@ -1828,7 +1828,7 @@ has_hook(struct hook_data *hook)
  */
 int
 run_hook(dbref player, dbref cause, struct hook_data *hook, char *saveregs[],
-	 int save)
+         int save)
 {
   ATTR *atr;
   char *code;
@@ -1856,7 +1856,7 @@ run_hook(dbref player, dbref cause, struct hook_data *hook, char *saveregs[],
   bp = buff;
 
   process_expression(buff, &bp, &cp, hook->obj, cause, player, PE_DEFAULT,
-		     PT_DEFAULT, NULL);
+                     PT_DEFAULT, NULL);
   *bp = '\0';
 
   if (save)
@@ -1880,7 +1880,7 @@ run_hook(dbref player, dbref cause, struct hook_data *hook, char *saveregs[],
  */
 void
 do_hook(dbref player, char *command, char *obj, char *attrname,
-	enum hook_type flag)
+        enum hook_type flag)
 {
   COMMAND_INFO *cmd;
   struct hook_data *h;
@@ -1951,15 +1951,15 @@ do_hook_list(dbref player, char *command)
   if (Site(player)) {
     if (GoodObject(cmd->hooks.before.obj))
       notify_format(player, "@hook/before: #%d/%s",
-		    cmd->hooks.before.obj, cmd->hooks.before.attrname);
+                    cmd->hooks.before.obj, cmd->hooks.before.attrname);
     if (GoodObject(cmd->hooks.after.obj))
       notify_format(player, "@hook/after: #%d/%s", cmd->hooks.after.obj,
-		    cmd->hooks.after.attrname);
+                    cmd->hooks.after.attrname);
     if (GoodObject(cmd->hooks.ignore.obj))
       notify_format(player, "@hook/ignore: #%d/%s",
-		    cmd->hooks.ignore.obj, cmd->hooks.ignore.attrname);
+                    cmd->hooks.ignore.obj, cmd->hooks.ignore.attrname);
     if (GoodObject(cmd->hooks.override.obj))
       notify_format(player, "@hook/override: #%d/%s",
-		    cmd->hooks.override.obj, cmd->hooks.override.attrname);
+                    cmd->hooks.override.obj, cmd->hooks.override.attrname);
   }
 }

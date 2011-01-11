@@ -53,10 +53,10 @@ typedef int dbref;
 typedef long int warn_type;
 
 /* special dbref's */
-#define NOTHING (-1)		/* null dbref */
-#define AMBIGUOUS (-2)		/* multiple possibilities, for matchers */
-#define HOME (-3)		/* virtual room, represents mover's home */
-#define ANY_OWNER (-2)		/* For lstats and @stat */
+#define NOTHING (-1)            /* null dbref */
+#define AMBIGUOUS (-2)          /* multiple possibilities, for matchers */
+#define HOME (-3)               /* virtual room, represents mover's home */
+#define ANY_OWNER (-2)          /* For lstats and @stat */
 
 
 #define INTERACT_SEE 0x1
@@ -82,12 +82,12 @@ typedef struct debug_info Debug_Info;
  * this struct unless you _really_ want to get your hands dirty.
  */
 struct pe_info {
-  int fun_invocations;		/**< Invocation count */
-  int fun_depth;		/**< Recursion count */
-  int nest_depth;		/**< Depth of function nesting, for DEBUG */
-  int call_depth;		/**< Function call counter */
-  Debug_Info *debug_strings;	/**< DEBUG infromation */
-  int arg_count;		/**< Number of arguments passed to function */
+  int fun_invocations;          /**< Invocation count */
+  int fun_depth;                /**< Recursion count */
+  int nest_depth;               /**< Depth of function nesting, for DEBUG */
+  int call_depth;               /**< Function call counter */
+  Debug_Info *debug_strings;    /**< DEBUG infromation */
+  int arg_count;                /**< Number of arguments passed to function */
 };
 
 /* new attribute foo */
@@ -96,10 +96,10 @@ typedef ATTR ALIST;
 
 /* from prog.c */
 typedef struct prog_info_t {
-  dbref object;		/* object the program is located on */
-  ATTR *atr;		/* attribute to handle the program */
-  int lock;		/* whether or not the player is locked in the program */
-  int (*function)();	/* For internal programs.  Function to goto next */
+  dbref object;         /* object the program is located on */
+  ATTR *atr;            /* attribute to handle the program */
+  int lock;             /* whether or not the player is locked in the program */
+  int (*function)();    /* For internal programs.  Function to goto next */
 } PROG;
 
 typedef struct su_exit_path_t {
@@ -110,16 +110,16 @@ typedef struct su_exit_path_t {
 /** A text block
  */
 struct text_block {
-  int nchars;			/**< Number of characters in the block */
-  struct text_block *nxt;	/**< Pointer to next block in queue */
-  unsigned char *start;		/**< Start of text */
-  unsigned char *buf;		/**< Current position in text */
+  int nchars;                   /**< Number of characters in the block */
+  struct text_block *nxt;       /**< Pointer to next block in queue */
+  unsigned char *start;         /**< Start of text */
+  unsigned char *buf;           /**< Current position in text */
 };
 /** A queue of text blocks.
  */
 struct text_queue {
-  struct text_block *head;	/**< Pointer to the head of the queue */
-  struct text_block **tail;	/**< Pointer to pointer to tail of the queue */
+  struct text_block *head;      /**< Pointer to the head of the queue */
+  struct text_block **tail;     /**< Pointer to pointer to tail of the queue */
 };
 
 
@@ -141,53 +141,53 @@ typedef struct descriptor_data DESC;
  * with a lot of other relevant information.
  */
 struct descriptor_data {
-  int descriptor;	/**< Connection socket (fd) */
-  int connected;	/**< Connection status */
-  char addr[101];	/**< Hostname of connection source */
-  char ip[101];		/**< IP address of connection source */
-  dbref player;		/**< Dbref of player associated with connection */
-  dbref snooper[MAX_SNOOPS];	/**< dbrefs of snoopers */ 
-  unsigned char *output_prefix;	/**< Text to show before output */
-  unsigned char *output_suffix;	/**< Text to show after output */
-  int output_size;		/**< Size of output left to send */
-  struct text_queue output;	/**< Output text queue */
-  struct text_queue input;	/**< Input text queue */
-  unsigned char *raw_input;	/**< Pointer to start of next raw input */
-  unsigned char *raw_input_at;	/**< Pointer to position in raw input */
-  int (*input_handler)(DESC *, char *);	/**< Pointer to input handler */
-  long connected_at;	/**< Time of connection */
-  long last_time;	/**< Time of last activity */
+  int descriptor;       /**< Connection socket (fd) */
+  int connected;        /**< Connection status */
+  char addr[101];       /**< Hostname of connection source */
+  char ip[101];         /**< IP address of connection source */
+  dbref player;         /**< Dbref of player associated with connection */
+  dbref snooper[MAX_SNOOPS];    /**< dbrefs of snoopers */ 
+  unsigned char *output_prefix; /**< Text to show before output */
+  unsigned char *output_suffix; /**< Text to show after output */
+  int output_size;              /**< Size of output left to send */
+  struct text_queue output;     /**< Output text queue */
+  struct text_queue input;      /**< Input text queue */
+  unsigned char *raw_input;     /**< Pointer to start of next raw input */
+  unsigned char *raw_input_at;  /**< Pointer to position in raw input */
+  int (*input_handler)(DESC *, char *); /**< Pointer to input handler */
+  long connected_at;    /**< Time of connection */
+  long last_time;       /**< Time of last activity */
   long idle_total; /**< Total Idle Secs Expended.. This / Idle_Times == Idle Average for session */
   int unidle_times; /**< Amoutn of Times unidled from 10 seconds */
-  int quota;		/**< Quota of commands allowed */
-  int cmds;		/**< Number of commands sent */
-  int hide;		/**< Hide status */
-  char doing[DOING_LEN];	/**< Player's doing string */
+  int quota;            /**< Quota of commands allowed */
+  int cmds;             /**< Number of commands sent */
+  int hide;             /**< Hide status */
+  char doing[DOING_LEN];        /**< Player's doing string */
 #ifdef NT_TCP
   /* these are for the Windows NT TCP/IO */
-  char input_buffer[512];	/**< WinNT: buffer for reading */
-  char output_buffer[512];	/**< WinNT: buffer for writing */
-  OVERLAPPED InboundOverlapped;	/**< WinNT: for asynchronous reading */
-  OVERLAPPED OutboundOverlapped;	/**< WinNT: for asynchronous writing */
-  BOOL bWritePending;		/**< WinNT: true if in process of writing */
-  BOOL bConnectionDropped;	/**< WinNT: true if we cannot send to player */
-  BOOL bConnectionShutdown;	/**< WinNT: true if connection has been shutdown */
+  char input_buffer[512];       /**< WinNT: buffer for reading */
+  char output_buffer[512];      /**< WinNT: buffer for writing */
+  OVERLAPPED InboundOverlapped; /**< WinNT: for asynchronous reading */
+  OVERLAPPED OutboundOverlapped;        /**< WinNT: for asynchronous writing */
+  BOOL bWritePending;           /**< WinNT: true if in process of writing */
+  BOOL bConnectionDropped;      /**< WinNT: true if we cannot send to player */
+  BOOL bConnectionShutdown;     /**< WinNT: true if connection has been shutdown */
 #endif
-  struct descriptor_data *next;	/**< Next descriptor in linked list */
-  struct descriptor_data *prev;	/**< Previous descriptor in linked list */
+  struct descriptor_data *next; /**< Next descriptor in linked list */
+  struct descriptor_data *prev; /**< Previous descriptor in linked list */
 #ifdef USE_MAILER
-  struct mail *mailp;	/**< Pointer to start of player's mail chain */
+  struct mail *mailp;   /**< Pointer to start of player's mail chain */
 #endif
-  int conn_flags;	/**< Flags of connection (telnet status, etc.) */
-  unsigned long input_chars;	/**< Characters received */
-  unsigned long output_chars;	/**< Characters sent */
-  int width;			/**< Screen width */
-  int height;			/**< Screen height */
-  char *ttype;			/**< Terminal type */
-  SU_PATH *su_exit_path;		/**< Su Exit Path */
+  int conn_flags;       /**< Flags of connection (telnet status, etc.) */
+  unsigned long input_chars;    /**< Characters received */
+  unsigned long output_chars;   /**< Characters sent */
+  int width;                    /**< Screen width */
+  int height;                   /**< Screen height */
+  char *ttype;                  /**< Terminal type */
+  SU_PATH *su_exit_path;                /**< Su Exit Path */
 #ifdef HAS_OPENSSL
-  SSL *ssl;			/**< SSL object */
-  int ssl_state;		/**< Keep track of state of SSL object */
+  SSL *ssl;                     /**< SSL object */
+  int ssl_state;                /**< Keep track of state of SSL object */
 #endif
   char checksum[PUEBLO_CHECKSUM_LEN+1]; /**<Pueblo checksum */
   char prompt_info[1]; /* prompt info. 0 - in prompt, 1 - fed prompt */ 

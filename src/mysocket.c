@@ -119,7 +119,7 @@ hostname_convert(struct sockaddr *host, int len)
   static char port[NI_MAXSERV];
 
   if (getnameinfo(host, len, hostname, sizeof hostname, port, sizeof port,
-		  (USE_DNS ? 0 : NI_NUMERICHOST) | NI_NUMERICSERV) != 0) {
+                  (USE_DNS ? 0 : NI_NUMERICHOST) | NI_NUMERICSERV) != 0) {
     return NULL;
   }
   hi.hostname = hostname;
@@ -140,14 +140,14 @@ ip_convert(struct sockaddr *host, int len)
   static char port[NI_MAXSERV];
 
   if (getnameinfo(host, len, hostname, sizeof hostname, port, sizeof port,
-		  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
+                  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
     return NULL;
   }
   hi.hostname = hostname;
   hi.port = port;
   return &hi;
 }
-#endif				/* INFOSLAVE */
+#endif                          /* INFOSLAVE */
 
 /** Open a tcp connection to a given host and port. Basically
  * tcp_connect from UNPv1
@@ -160,7 +160,7 @@ ip_convert(struct sockaddr *host, int len)
  */
 int
 make_socket_conn(const char *host, struct sockaddr *myiterface,
-		 socklen_t myilen, Port_t port, int *timeout)
+                 socklen_t myilen, Port_t port, int *timeout)
 {
   struct addrinfo hints, *server, *save;
   char cport[NI_MAXSERV];
@@ -170,7 +170,7 @@ make_socket_conn(const char *host, struct sockaddr *myiterface,
 
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_flags = AI_PASSIVE;
-  hints.ai_family = AF_UNSPEC;	/* Try to use IPv6 if available */
+  hints.ai_family = AF_UNSPEC;  /* Try to use IPv6 if available */
   hints.ai_socktype = SOCK_STREAM;
 
   sprintf(cport, "%hu", port);
@@ -198,11 +198,11 @@ make_socket_conn(const char *host, struct sockaddr *myiterface,
     if (myiterface && myilen > 0) {
       /* Bind to a specific interface. Needed for ident lookups */
       if (bind(s, myiterface, myilen) < 0)
-	perror("bind failed (Possibly harmless)");
+        perror("bind failed (Possibly harmless)");
     }
 
     if ((err = connect_nonb(s, server->ai_addr, server->ai_addrlen, timeout)) ==
-	0)
+        0)
       break;
 
 #ifdef DEBUG
@@ -243,7 +243,7 @@ make_socket_conn(const char *host, struct sockaddr *myiterface,
  */
 int
 make_socket(Port_t port, union sockaddr_u *addr, socklen_t *len,
-	    const char *host)
+            const char *host)
 {
   int s, opt, ipv = 4;
   /* Use getaddrinfo() to fill in the sockaddr fields. This
@@ -258,10 +258,10 @@ make_socket(Port_t port, union sockaddr_u *addr, socklen_t *len,
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_flags = AI_PASSIVE;
 #ifdef FORCE_IPV4
-  hints.ai_family = AF_INET;	/* OpenBSD apparently doesn't properly
-				   map IPv4 connections to IPv6 servers. */
+  hints.ai_family = AF_INET;    /* OpenBSD apparently doesn't properly
+                                   map IPv4 connections to IPv6 servers. */
 #else
-  hints.ai_family = AF_UNSPEC;	/* Try to use IPv6 if available */
+  hints.ai_family = AF_UNSPEC;  /* Try to use IPv6 if available */
 #endif
   hints.ai_socktype = SOCK_STREAM;
 
@@ -295,7 +295,7 @@ make_socket(Port_t port, union sockaddr_u *addr, socklen_t *len,
     }
 
     if (bind(s, server->ai_addr, server->ai_addrlen) == 0)
-      break;			/* Success */
+      break;                    /* Success */
 
     perror("binding stream socket (Possibly ignorable)");
     closesocket(s);
@@ -343,7 +343,7 @@ make_nonblocking(int s)
   }
 
   if (fcntl(s, F_SETFL, flags | O_NDELAY) == -1) {
-#endif				/* WIN32 */
+#endif                          /* WIN32 */
     perror("make_nonblocking: fcntl");
 #ifndef INFOSLAVE
     mush_panic("O_NDELAY fcntl failed");
@@ -370,7 +370,7 @@ set_keepalive(int s __attribute__ ((__unused__)))
 
   /* enable TCP keepalive */
   if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE,
-		 (void *) &keepalive, sizeof(keepalive)) == -1)
+                 (void *) &keepalive, sizeof(keepalive)) == -1)
     fprintf(stderr, "[%d] could not set SO_KEEPALIVE: errno %d", s, errno);
 
   /* And set the ping time to something reasonable instead of the
@@ -378,11 +378,11 @@ set_keepalive(int s __attribute__ ((__unused__)))
      this. OS X and possibly others use TCP_KEEPALIVE. */
 #if defined(TCP_KEEPIDLE)
   if (setsockopt(s, IPPROTO_TCP, TCP_KEEPIDLE,
-		 (void *) &keepidle, sizeof(keepidle)) == -1)
+                 (void *) &keepidle, sizeof(keepidle)) == -1)
     fprintf(stderr, "[%d] could not set TCP_KEEPIDLE: errno %d", s, errno);
 #elif defined(TCP_KEEPALIVE)
   if (setsockopt(s, IPPROTO_TCP, TCP_KEEPALIVE,
-		 (void *) &keepidle, sizeof(keepidle)) == -1)
+                 (void *) &keepidle, sizeof(keepidle)) == -1)
     fprintf(stderr, "[%d] could not set TCP_KEEPALIVE: errno %d", s, errno);
 #endif
 #endif
@@ -405,7 +405,7 @@ set_keepalive(int s __attribute__ ((__unused__)))
  */
 int
 connect_nonb(int sockfd, const struct sockaddr *saptr, socklen_t salen,
-	     int *timeout)
+             int *timeout)
 {
   int n, error;
   time_t start, end;
@@ -437,7 +437,7 @@ connect_nonb(int sockfd, const struct sockaddr *saptr, socklen_t salen,
   time(&start);
 
   if ((n = select(sockfd + 1, &rset, &wset, NULL, &tval)) == 0) {
-    closesocket(sockfd);	/* timeout */
+    closesocket(sockfd);        /* timeout */
     errno = ETIMEDOUT;
     return -1;
   }
@@ -449,14 +449,14 @@ connect_nonb(int sockfd, const struct sockaddr *saptr, socklen_t salen,
   if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) {
     len = sizeof(error);
     if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (__ptr_t) &error, &len) < 0)
-      return -1;		/* Solaris pending error */
+      return -1;                /* Solaris pending error */
   } else
     return -1;
 
 done:
 
   if (error) {
-    closesocket(sockfd);	/* just in case */
+    closesocket(sockfd);        /* just in case */
     errno = error;
     return -1;
   }
@@ -501,7 +501,7 @@ done:
 #define INT16SZ          2
 
 #ifndef AF_INET6
-#define AF_INET6        AF_MAX+1	/* just to let this compile */
+#define AF_INET6        AF_MAX+1        /* just to let this compile */
 #endif
 
 /*
@@ -597,14 +597,14 @@ inet_ntop6(const unsigned char *src, char *dst, size_t size)
   for (i = 0; i < (IN6ADDRSZ / INT16SZ); i++) {
     if (words[i] == 0) {
       if (cur.base == -1)
-	cur.base = i, cur.len = 1;
+        cur.base = i, cur.len = 1;
       else
-	cur.len++;
+        cur.len++;
     } else {
       if (cur.base != -1) {
-	if (best.base == -1 || cur.len > best.len)
-	  best = cur;
-	cur.base = -1;
+        if (best.base == -1 || cur.len > best.len)
+          best = cur;
+        cur.base = -1;
       }
     }
   }
@@ -623,7 +623,7 @@ inet_ntop6(const unsigned char *src, char *dst, size_t size)
     /* Are we inside the best run of 0x00's? */
     if (best.base != -1 && i >= best.base && i < (best.base + best.len)) {
       if (i == best.base)
-	*tp++ = ':';
+        *tp++ = ':';
       continue;
     }
     /* Are we following an initial run of 0x00s or any real hex? */
@@ -631,9 +631,9 @@ inet_ntop6(const unsigned char *src, char *dst, size_t size)
       *tp++ = ':';
     /* Is this address an encapsulated IPv4? */
     if (i == 6 && best.base == 0 &&
-	(best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {
+        (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {
       if (!inet_ntop4(src + 12, tp, sizeof tmp - (tp - tmp)))
-	return (NULL);
+        return (NULL);
       tp += strlen(tp);
       break;
     }
@@ -737,16 +737,16 @@ inet_pton4(const char *src, unsigned char *dst)
       unsigned int new = *tp * 10 + (pch - digits);
 
       if (new > 255)
-	return (0);
+        return (0);
       *tp = new;
       if (!saw_digit) {
-	if (++octets > 4)
-	  return (0);
-	saw_digit = 1;
+        if (++octets > 4)
+          return (0);
+        saw_digit = 1;
       }
     } else if (ch == '.' && saw_digit) {
       if (octets == 4)
-	return (0);
+        return (0);
       *++tp = 0;
       saw_digit = 0;
     } else
@@ -801,20 +801,20 @@ inet_pton6(const char *src, unsigned char *dst)
       val <<= 4;
       val |= (pch - xdigits);
       if (val > 0xffff)
-	return (0);
+        return (0);
       saw_xdigit = 1;
       continue;
     }
     if (ch == ':') {
       curtok = src;
       if (!saw_xdigit) {
-	if (colonp)
-	  return (0);
-	colonp = tp;
-	continue;
+        if (colonp)
+          return (0);
+        colonp = tp;
+        continue;
       }
       if (tp + INT16SZ > endp)
-	return (0);
+        return (0);
       *tp++ = (unsigned char) (val >> 8) & 0xff;
       *tp++ = (unsigned char) val & 0xff;
       saw_xdigit = 0;
@@ -824,7 +824,7 @@ inet_pton6(const char *src, unsigned char *dst)
     if (ch == '.' && ((tp + INADDRSZ) <= endp) && inet_pton4(curtok, tp) > 0) {
       tp += INADDRSZ;
       saw_xdigit = 0;
-      break;			/* '\0' was seen by inet_pton4(). */
+      break;                    /* '\0' was seen by inet_pton4(). */
     }
     return (0);
   }
@@ -858,7 +858,7 @@ inet_pton6(const char *src, unsigned char *dst)
 
 #ifndef HAS_GETNAMEINFO
 static int gn_ipv46(char *, size_t, char *, size_t, void *, size_t,
-		    int, int, int);
+                    int, int, int);
 
 /*
  * Handle either an IPv4 or an IPv6 address and port.
@@ -867,7 +867,7 @@ static int gn_ipv46(char *, size_t, char *, size_t, void *, size_t,
 /* include gn_ipv46 */
 static int
 gn_ipv46(char *host, size_t hostlen, char *serv, size_t servlen,
-	 void *aptr, size_t alen, int family, int port, int flags)
+         void *aptr, size_t alen, int family, int port, int flags)
 {
   char *ptr;
   struct hostent *hptr;
@@ -875,25 +875,25 @@ gn_ipv46(char *host, size_t hostlen, char *serv, size_t servlen,
   if (hostlen > 0) {
     if (flags & NI_NUMERICHOST) {
       if (inet_ntop(family, aptr, host, hostlen) == NULL)
-	return (1);
+        return (1);
     } else {
       hptr = gethostbyaddr(aptr, alen, family);
       if (hptr != NULL && hptr->h_name != NULL) {
-	if (flags & NI_NOFQDN) {
-	  if ((ptr = strchr(hptr->h_name, '.')) != NULL)
-	    *ptr = 0;		/* overwrite first dot */
-	}
+        if (flags & NI_NOFQDN) {
+          if ((ptr = strchr(hptr->h_name, '.')) != NULL)
+            *ptr = 0;           /* overwrite first dot */
+        }
 #ifdef HAS_SNPRINTF
-	snprintf(host, hostlen, "%s", hptr->h_name);
+        snprintf(host, hostlen, "%s", hptr->h_name);
 #else
-	strncpy(host, hptr->h_name, hostlen);
-	host[hostlen - 1] = '\0';
+        strncpy(host, hptr->h_name, hostlen);
+        host[hostlen - 1] = '\0';
 #endif
       } else {
-	if (flags & NI_NAMEREQD)
-	  return (1);
-	if (inet_ntop(family, aptr, host, hostlen) == NULL)
-	  return (1);
+        if (flags & NI_NAMEREQD)
+          return (1);
+        if (inet_ntop(family, aptr, host, hostlen) == NULL)
+          return (1);
       }
     }
   }
@@ -924,7 +924,7 @@ gn_ipv46(char *host, size_t hostlen, char *serv, size_t servlen,
 /* include getnameinfo */
 int
 getnameinfo(const struct sockaddr *sa, socklen_t salen,
-	    char *host, size_t hostlen, char *serv, size_t servlen, int flags)
+            char *host, size_t hostlen, char *serv, size_t servlen, int flags)
 {
 
   switch (sa->sa_family) {
@@ -933,8 +933,8 @@ getnameinfo(const struct sockaddr *sa, socklen_t salen,
       struct sockaddr_in *sain = (struct sockaddr_in *) sa;
 
       return (gn_ipv46(host, hostlen, serv, servlen,
-		       &sain->sin_addr, sizeof(struct in_addr),
-		       AF_INET, sain->sin_port, flags));
+                       &sain->sin_addr, sizeof(struct in_addr),
+                       AF_INET, sain->sin_port, flags));
     }
 #endif
 
@@ -943,8 +943,8 @@ getnameinfo(const struct sockaddr *sa, socklen_t salen,
       struct sockaddr_in6 *sain = (struct sockaddr_in6 *) sa;
 
       return (gn_ipv46(host, hostlen, serv, servlen,
-		       &sain->sin6_addr, sizeof(struct in6_addr),
-		       AF_INET6, sain->sin6_port, flags));
+                       &sain->sin6_addr, sizeof(struct in6_addr),
+                       AF_INET6, sain->sin6_port, flags));
     }
 #endif
 
@@ -961,12 +961,12 @@ getnameinfo(const struct sockaddr *sa, socklen_t salen,
 
 /* include ga1 */
 struct search {
-  const char *host;		/* hostname or address string */
-  int family;			/* AF_xxx */
+  const char *host;             /* hostname or address string */
+  int family;                   /* AF_xxx */
 };
 
 static int ga_aistruct(struct addrinfo ***, const struct addrinfo *,
-		       const void *, int);
+                       const void *, int);
 static struct addrinfo *ga_clone(struct addrinfo *);
 static int ga_echeck(const char *, const char *, int, int, int, int);
 static int ga_nsearch(const char *, const struct addrinfo *, struct search *);
@@ -976,7 +976,7 @@ static int ga_serv(struct addrinfo *, const struct addrinfo *, const char *);
 
 int
 getaddrinfo(const char *hostname, const char *servname,
-	    const struct addrinfo *hintsp, struct addrinfo **result)
+            const struct addrinfo *hintsp, struct addrinfo **result)
 {
   int rc, error, nsearch;
   char **ap, *canon;
@@ -990,7 +990,7 @@ getaddrinfo(const char *hostname, const char *servname,
    */
 #define error(e) { error = (e); goto bad; }
 
-  aihead = NULL;		/* initialize automatic variables */
+  aihead = NULL;                /* initialize automatic variables */
   aipnext = &aihead;
   canon = NULL;
 
@@ -998,11 +998,11 @@ getaddrinfo(const char *hostname, const char *servname,
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
   } else
-    hints = *hintsp;		/* struct copy */
+    hints = *hintsp;            /* struct copy */
 
   /* 4first some basic error checking */
   if ((rc = ga_echeck(hostname, servname, hints.ai_flags, hints.ai_family,
-		      hints.ai_socktype, hints.ai_protocol)) != 0)
+                      hints.ai_socktype, hints.ai_protocol)) != 0)
     error(rc);
 
   /* end ga1 */
@@ -1017,14 +1017,14 @@ getaddrinfo(const char *hostname, const char *servname,
       struct in_addr inaddr;
 
       if (inet_pton(AF_INET, sptr->host, &inaddr) == 1) {
-	if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET)
-	  error(EAI_ADDRFAMILY);
-	if (sptr->family != AF_INET)
-	  continue;		/* ignore */
-	rc = ga_aistruct(&aipnext, &hints, &inaddr, AF_INET);
-	if (rc != 0)
-	  error(rc);
-	continue;
+        if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET)
+          error(EAI_ADDRFAMILY);
+        if (sptr->family != AF_INET)
+          continue;             /* ignore */
+        rc = ga_aistruct(&aipnext, &hints, &inaddr, AF_INET);
+        if (rc != 0)
+          error(rc);
+        continue;
       }
     }
 #endif
@@ -1032,18 +1032,18 @@ getaddrinfo(const char *hostname, const char *servname,
 #ifdef  HAS_IPV6
     /* 4check for an IPv6 hex string */
     if ((isxdigit((unsigned char) sptr->host[0]) || sptr->host[0] == ':') &&
-	(strchr(sptr->host, ':') != NULL)) {
+        (strchr(sptr->host, ':') != NULL)) {
       struct in6_addr in6addr;
 
       if (inet_pton(AF_INET6, sptr->host, &in6addr) == 1) {
-	if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET6)
-	  error(EAI_ADDRFAMILY);
-	if (sptr->family != AF_INET6)
-	  continue;		/* ignore */
-	rc = ga_aistruct(&aipnext, &hints, &in6addr, AF_INET6);
-	if (rc != 0)
-	  error(rc);
-	continue;
+        if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET6)
+          error(EAI_ADDRFAMILY);
+        if (sptr->family != AF_INET6)
+          continue;             /* ignore */
+        rc = ga_aistruct(&aipnext, &hints, &in6addr, AF_INET6);
+        if (rc != 0)
+          error(rc);
+        continue;
       }
     }
 #endif
@@ -1052,7 +1052,7 @@ getaddrinfo(const char *hostname, const char *servname,
     /* 4remainder of for() to look up hostname */
 #ifdef  HAS_IPV6
     if ((_res.options & RES_INIT) == 0)
-      res_init();		/* need this to set _res.options */
+      res_init();               /* need this to set _res.options */
 #endif
 
     if (nsearch == 2) {
@@ -1063,27 +1063,27 @@ getaddrinfo(const char *hostname, const char *servname,
     } else {
 #ifdef  HAS_IPV6
       if (sptr->family == AF_INET6)
-	_res.options |= RES_USE_INET6;
+        _res.options |= RES_USE_INET6;
       else
-	_res.options &= ~RES_USE_INET6;
+        _res.options &= ~RES_USE_INET6;
 #endif
       hptr = gethostbyname(sptr->host);
     }
     if (hptr == NULL) {
       if (nsearch == 2)
-	continue;		/* failure OK if multiple searches */
+        continue;               /* failure OK if multiple searches */
 
       switch (h_errno) {
       case HOST_NOT_FOUND:
-	error(EAI_NONAME);
+        error(EAI_NONAME);
       case TRY_AGAIN:
-	error(EAI_AGAIN);
+        error(EAI_AGAIN);
       case NO_RECOVERY:
-	error(EAI_FAIL);
+        error(EAI_FAIL);
       case NO_DATA:
-	error(EAI_NODATA);
+        error(EAI_NODATA);
       default:
-	error(EAI_NONAME);
+        error(EAI_NONAME);
       }
     }
 
@@ -1093,30 +1093,30 @@ getaddrinfo(const char *hostname, const char *servname,
 
     /* 4save canonical name first time */
     if (hostname != NULL && hostname[0] != '\0' &&
-	(hints.ai_flags & AI_CANONNAME) && canon == NULL) {
+        (hints.ai_flags & AI_CANONNAME) && canon == NULL) {
       if ((canon = strdup(hptr->h_name)) == NULL)
-	error(EAI_MEMORY);
+        error(EAI_MEMORY);
     }
 
     /* 4create one addrinfo{} for each returned address */
     for (ap = hptr->h_addr_list; *ap != NULL; ap++) {
       rc = ga_aistruct(&aipnext, &hints, *ap, hptr->h_addrtype);
       if (rc != 0)
-	error(rc);
+        error(rc);
     }
   }
   if (aihead == NULL)
-    error(EAI_NONAME);		/* nothing found */
+    error(EAI_NONAME);          /* nothing found */
   /* end ga4 */
 
 /* include ga5 */
   /* 4return canonical name */
   if (hostname != NULL && hostname[0] != '\0' && hints.ai_flags & AI_CANONNAME) {
     if (canon != NULL)
-      aihead->ai_canonname = canon;	/* strdup'ed earlier */
+      aihead->ai_canonname = canon;     /* strdup'ed earlier */
     else {
       if ((aihead->ai_canonname = strdup(search[0].host)) == NULL)
-	error(EAI_MEMORY);
+        error(EAI_MEMORY);
     }
   }
 
@@ -1126,11 +1126,11 @@ getaddrinfo(const char *hostname, const char *servname,
       error(rc);
   }
 
-  *result = aihead;		/* pointer to first structure in linked list */
+  *result = aihead;             /* pointer to first structure in linked list */
   return (0);
 
 bad:
-  freeaddrinfo(aihead);		/* free any alloc'ed memory */
+  freeaddrinfo(aihead);         /* free any alloc'ed memory */
   return (error);
 }
 
@@ -1143,14 +1143,14 @@ bad:
 /* include ga_echeck */
 static int
 ga_echeck(const char *hostname, const char *servname,
-	  int flags, int family, int socktype, int protocol)
+          int flags, int family, int socktype, int protocol)
 {
   if (flags & ~(AI_PASSIVE | AI_CANONNAME))
-    return (EAI_BADFLAGS);	/* unknown flag bits */
+    return (EAI_BADFLAGS);      /* unknown flag bits */
 
   if (hostname == NULL || hostname[0] == '\0') {
     if (servname == NULL || servname[0] == '\0')
-      return (EAI_NONAME);	/* host or service must be specified */
+      return (EAI_NONAME);      /* host or service must be specified */
   }
 
   switch (family) {
@@ -1159,21 +1159,21 @@ ga_echeck(const char *hostname, const char *servname,
 #ifdef  IPv4
   case AF_INET:
     if (socktype != 0 &&
-	(socktype != SOCK_STREAM &&
-	 socktype != SOCK_DGRAM && socktype != SOCK_RAW))
-      return (EAI_SOCKTYPE);	/* invalid socket type */
+        (socktype != SOCK_STREAM &&
+         socktype != SOCK_DGRAM && socktype != SOCK_RAW))
+      return (EAI_SOCKTYPE);    /* invalid socket type */
     break;
 #endif
 #ifdef  HAS_IPV6
   case AF_INET6:
     if (socktype != 0 &&
-	(socktype != SOCK_STREAM &&
-	 socktype != SOCK_DGRAM && socktype != SOCK_RAW))
-      return (EAI_SOCKTYPE);	/* invalid socket type */
+        (socktype != SOCK_STREAM &&
+         socktype != SOCK_DGRAM && socktype != SOCK_RAW))
+      return (EAI_SOCKTYPE);    /* invalid socket type */
     break;
 #endif
   default:
-    return (EAI_FAMILY);	/* unknown protocol family */
+    return (EAI_FAMILY);        /* unknown protocol family */
   }
   return (0);
 }
@@ -1189,7 +1189,7 @@ ga_echeck(const char *hostname, const char *servname,
 /* include ga_nsearch1 */
 static int
 ga_nsearch(const char *hostname, const struct addrinfo *hintsp,
-	   struct search *search)
+           struct search *search)
 {
   int nsearch = 0;
 
@@ -1199,30 +1199,30 @@ ga_nsearch(const char *hostname, const struct addrinfo *hintsp,
       switch (hintsp->ai_family) {
 #ifdef  IPv4
       case AF_INET:
-	search[nsearch].host = "0.0.0.0";
-	search[nsearch].family = AF_INET;
-	nsearch++;
-	break;
+        search[nsearch].host = "0.0.0.0";
+        search[nsearch].family = AF_INET;
+        nsearch++;
+        break;
 #endif
 #ifdef  HAS_IPV6
       case AF_INET6:
-	search[nsearch].host = "0::0";
-	search[nsearch].family = AF_INET6;
-	nsearch++;
-	break;
+        search[nsearch].host = "0::0";
+        search[nsearch].family = AF_INET6;
+        nsearch++;
+        break;
 #endif
       case AF_UNSPEC:
 #ifdef  HAS_IPV6
-	search[nsearch].host = "0::0";	/* IPv6 first, then IPv4 */
-	search[nsearch].family = AF_INET6;
-	nsearch++;
+        search[nsearch].host = "0::0";  /* IPv6 first, then IPv4 */
+        search[nsearch].family = AF_INET6;
+        nsearch++;
 #endif
 #ifdef  IPv4
-	search[nsearch].host = "0.0.0.0";
-	search[nsearch].family = AF_INET;
-	nsearch++;
+        search[nsearch].host = "0.0.0.0";
+        search[nsearch].family = AF_INET;
+        nsearch++;
 #endif
-	break;
+        break;
       }
       /* end ga_nsearch1 */
       /* include ga_nsearch2 */
@@ -1231,35 +1231,35 @@ ga_nsearch(const char *hostname, const struct addrinfo *hintsp,
       switch (hintsp->ai_family) {
 #ifdef  IPv4
       case AF_INET:
-	search[nsearch].host = "localhost";	/* 127.0.0.1 */
-	search[nsearch].family = AF_INET;
-	nsearch++;
-	break;
+        search[nsearch].host = "localhost";     /* 127.0.0.1 */
+        search[nsearch].family = AF_INET;
+        nsearch++;
+        break;
 #endif
 #ifdef  HAS_IPV6
       case AF_INET6:
-	search[nsearch].host = "0::1";
-	search[nsearch].family = AF_INET6;
-	nsearch++;
-	break;
+        search[nsearch].host = "0::1";
+        search[nsearch].family = AF_INET6;
+        nsearch++;
+        break;
 #endif
       case AF_UNSPEC:
 #ifdef  HAS_IPV6
-	search[nsearch].host = "0::1";	/* IPv6 first, then IPv4 */
-	search[nsearch].family = AF_INET6;
-	nsearch++;
+        search[nsearch].host = "0::1";  /* IPv6 first, then IPv4 */
+        search[nsearch].family = AF_INET6;
+        nsearch++;
 #endif
 #ifdef  IPv4
-	search[nsearch].host = "localhost";
-	search[nsearch].family = AF_INET;
-	nsearch++;
+        search[nsearch].host = "localhost";
+        search[nsearch].family = AF_INET;
+        nsearch++;
 #endif
-	break;
+        break;
       }
     }
     /* end ga_nsearch2 */
     /* include ga_nsearch3 */
-  } else {			/* host is specified */
+  } else {                      /* host is specified */
     switch (hintsp->ai_family) {
 #ifdef  IPv4
     case AF_INET:
@@ -1278,12 +1278,12 @@ ga_nsearch(const char *hostname, const struct addrinfo *hintsp,
     case AF_UNSPEC:
 #ifdef  HAS_IPV6
       search[nsearch].host = hostname;
-      search[nsearch].family = AF_INET6;	/* IPv6 first */
+      search[nsearch].family = AF_INET6;        /* IPv6 first */
       nsearch++;
 #endif
 #ifdef  IPv4
       search[nsearch].host = hostname;
-      search[nsearch].family = AF_INET;	/* then IPv4 */
+      search[nsearch].family = AF_INET; /* then IPv4 */
       nsearch++;
 #endif
       break;
@@ -1306,7 +1306,7 @@ ga_nsearch(const char *hostname, const struct addrinfo *hintsp,
 /* include ga_aistruct1 */
 int
 ga_aistruct(struct addrinfo ***paipnext, const struct addrinfo *hintsp,
-	    const void *addr, int family)
+            const void *addr, int family)
 {
   struct addrinfo *ai;
 
@@ -1331,7 +1331,7 @@ ga_aistruct(struct addrinfo ***paipnext, const struct addrinfo *hintsp,
 
       /* 4allocate sockaddr_in{} and fill in all but port */
       if ((sinptr = calloc(1, sizeof(struct sockaddr_in))) == NULL)
-	return (EAI_MEMORY);
+        return (EAI_MEMORY);
 #ifdef  HAVE_SOCKADDR_SA_LEN
       sinptr->sin_len = sizeof(struct sockaddr_in);
 #endif
@@ -1341,14 +1341,14 @@ ga_aistruct(struct addrinfo ***paipnext, const struct addrinfo *hintsp,
       ai->ai_addrlen = sizeof(struct sockaddr_in);
       break;
     }
-#endif				/* IPV4 */
+#endif                          /* IPV4 */
 #ifdef  HAS_IPV6
   case AF_INET6:{
       struct sockaddr_in6 *sin6ptr;
 
       /* 4allocate sockaddr_in6{} and fill in all but port */
       if ((sin6ptr = calloc(1, sizeof(struct sockaddr_in6))) == NULL)
-	return (EAI_MEMORY);
+        return (EAI_MEMORY);
 #ifdef  HAVE_SOCKADDR_SA_LEN
       sin6ptr->sin6_len = sizeof(struct sockaddr_in6);
 #endif
@@ -1358,7 +1358,7 @@ ga_aistruct(struct addrinfo ***paipnext, const struct addrinfo *hintsp,
       ai->ai_addrlen = sizeof(struct sockaddr_in6);
       break;
     }
-#endif				/* IPV6 */
+#endif                          /* IPV6 */
 
   }
   return (0);
@@ -1373,34 +1373,34 @@ ga_aistruct(struct addrinfo ***paipnext, const struct addrinfo *hintsp,
 /* include ga_serv */
 int
 ga_serv(struct addrinfo *aihead, const struct addrinfo *hintsp,
-	const char *serv)
+        const char *serv)
 {
   int port, rc, nfound;
 
   nfound = 0;
-  if (isdigit((unsigned char) serv[0])) {	/* check for port number string first */
+  if (isdigit((unsigned char) serv[0])) {       /* check for port number string first */
     port = (int) htons((unsigned short) atoi(serv));
     if (hintsp->ai_socktype) {
       /* 4caller specifies socket type */
       if ((rc = ga_port(aihead, port, hintsp->ai_socktype)) < 0)
-	return (EAI_MEMORY);
+        return (EAI_MEMORY);
       nfound += rc;
     } else {
       /* 4caller does not specify socket type */
       if ((rc = ga_port(aihead, port, SOCK_STREAM)) < 0)
-	return (EAI_MEMORY);
+        return (EAI_MEMORY);
       nfound += rc;
       if ((rc = ga_port(aihead, port, SOCK_DGRAM)) < 0)
-	return (EAI_MEMORY);
+        return (EAI_MEMORY);
       nfound += rc;
     }
   }
 
   if (nfound == 0) {
     if (hintsp->ai_socktype == 0)
-      return (EAI_NONAME);	/* all calls to getservbyname() failed */
+      return (EAI_NONAME);      /* all calls to getservbyname() failed */
     else
-      return (EAI_SERVICE);	/* service not supported for socket type */
+      return (EAI_SERVICE);     /* service not supported for socket type */
   }
   return (0);
 }
@@ -1437,7 +1437,7 @@ ga_serv(struct addrinfo *aihead, const struct addrinfo *hintsp,
 /* include ga_port */
 int
 ga_port(struct addrinfo *aihead, int port, int socktype)
-		/* port must be in network byte order */
+                /* port must be in network byte order */
 {
   int nfound = 0;
   struct addrinfo *ai;
@@ -1445,12 +1445,12 @@ ga_port(struct addrinfo *aihead, int port, int socktype)
   for (ai = aihead; ai != NULL; ai = ai->ai_next) {
     if (ai->ai_flags & AI_CLONE) {
       if (ai->ai_socktype != 0) {
-	if ((ai = ga_clone(ai)) == NULL)
-	  return (-1);		/* memory allocation error */
-	/* ai points to newly cloned entry, which is what we want */
+        if ((ai = ga_clone(ai)) == NULL)
+          return (-1);          /* memory allocation error */
+        /* ai points to newly cloned entry, which is what we want */
       }
     } else if (ai->ai_socktype != socktype)
-      continue;			/* ignore if mismatch on socket type */
+      continue;                 /* ignore if mismatch on socket type */
 
     ai->ai_socktype = socktype;
 
@@ -1490,7 +1490,7 @@ ga_clone(struct addrinfo *ai)
   new->ai_next = ai->ai_next;
   ai->ai_next = new;
 
-  new->ai_flags = 0;		/* make sure AI_CLONE is off */
+  new->ai_flags = 0;            /* make sure AI_CLONE is off */
   new->ai_family = ai->ai_family;
   new->ai_socktype = ai->ai_socktype;
   new->ai_protocol = ai->ai_protocol;
@@ -1504,7 +1504,7 @@ ga_clone(struct addrinfo *ai)
 }
 
 /* end ga_clone */
-#endif				/* HAS_GETADDRINFO */
+#endif                          /* HAS_GETADDRINFO */
 
 /*
  * Return a string containing some additional information after an
@@ -1542,7 +1542,7 @@ gai_strerror(int err)
     return ("unknown getaddrinfo() error");
   }
 }
-#endif				/* HAS_GAI_STRERROR */
+#endif                          /* HAS_GAI_STRERROR */
 
 #ifndef HAS_GETADDRINFO
 
@@ -1554,16 +1554,16 @@ freeaddrinfo(struct addrinfo *aihead)
 
   for (ai = aihead; ai != NULL; ai = ainext) {
     if (ai->ai_addr != NULL)
-      free(ai->ai_addr);	/* socket address structure */
+      free(ai->ai_addr);        /* socket address structure */
 
     if (ai->ai_canonname != NULL)
       free(ai->ai_canonname);
 
-    ainext = ai->ai_next;	/* can't fetch ai_next after free() */
-    free(ai);			/* the addrinfo{} itself */
+    ainext = ai->ai_next;       /* can't fetch ai_next after free() */
+    free(ai);                   /* the addrinfo{} itself */
   }
 }
 
 /* end freeaddrinfo */
 
-#endif				/* HAS_GETADDRINFO */
+#endif                          /* HAS_GETADDRINFO */

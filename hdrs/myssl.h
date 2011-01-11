@@ -18,14 +18,14 @@ int ssl_need_accept(int state);
 int ssl_need_handshake(int state);
 int ssl_want_write(int state);
 int ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
-	     char *buf, int bufsize, int *bytes_read);
+             char *buf, int bufsize, int *bytes_read);
 int ssl_write(SSL * ssl, int state, int net_read_ready, int net_write_ready,
-	      unsigned char *buf, int bufsize, int *offset);
+              unsigned char *buf, int bufsize, int *offset);
 void ssl_write_session(FILE * fp, SSL * ssl);
 void ssl_read_session(FILE * fp);
 void ssl_write_ssl(FILE * fp, SSL * ssl);
 SSL *ssl_read_ssl(FILE * fp, int sock);
 
 
-#endif				/* HAS_OPENSSL */
-#endif				/* _MYSSL_H */
+#endif                          /* HAS_OPENSSL */
+#endif                          /* _MYSSL_H */

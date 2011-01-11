@@ -32,7 +32,7 @@ do_version(player)
   notify_format(player, T("You are connected to %s"), MUDNAME);
 
   strcpy(buff, ctime(&globals.start_time));
-  buff[strlen(buff) - 1] = '\0';	/* eat the newline */
+  buff[strlen(buff) - 1] = '\0';        /* eat the newline */
   notify_format(player, T("Last restarted: %s"), buff);
 
   notify_format(player, "CobraMUSH v%s [%s]", VERSION, VBRANCH);

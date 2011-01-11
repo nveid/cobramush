@@ -34,7 +34,7 @@
 #include "mymalloc.h"
 #include "confmagic.h"
 
-extern char *absp[], *obj[], *poss[], *subj[];	/* fundb.c */
+extern char *absp[], *obj[], *poss[], *subj[];  /* fundb.c */
 extern int inum, inum_limit;
 extern char *iter_rep[];
 int global_fun_invocations;
@@ -48,9 +48,9 @@ extern int iter_break;
 
 /** Structure for storing DEBUG output in a linked list */
 struct debug_info {
-  char *string;		/**< A DEBUG string */
-  Debug_Info *prev;	/**< Previous node in the linked list */
-  Debug_Info *next;	/**< Next node in the linked list */
+  char *string;         /**< A DEBUG string */
+  Debug_Info *prev;     /**< Previous node in the linked list */
+  Debug_Info *next;     /**< Next node in the linked list */
 };
 
 FUNCTION_PROTO(fun_gfun);
@@ -159,7 +159,7 @@ parse_objid(char const *str)
       time_t matchtime;
       p++;
       if (!is_strict_integer(p))
-	return NOTHING;
+        return NOTHING;
       matchtime = parse_integer(p);
       return (CreTime(it) == matchtime) ? it : NOTHING;
     } else
@@ -199,12 +199,12 @@ parse_boolean(char const *str)
       return 0;
     /* Non-zero numbers are true, zero is false */
     if (is_strict_number(str))
-      return parse_number(str) != 0;	/* avoid rounding problems */
+      return parse_number(str) != 0;    /* avoid rounding problems */
     /* Skip blanks */
     while (*str == ' ')
       str++;
     /* If there's any non-blanks left, it's true */
-    return *str != '\0';	/* force to 1 or 0 */
+    return *str != '\0';        /* force to 1 or 0 */
   }
 }
 
@@ -394,7 +394,7 @@ extern char active_table[UCHAR_MAX + 1];
 extern signed char qreg_indexes[UCHAR_MAX + 1];
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4761)        /* NJG: disable warning re conversion */
 #endif
 
 
@@ -450,8 +450,8 @@ extern signed char qreg_indexes[UCHAR_MAX + 1];
  */
 int
 process_expression(char *buff, char **bp, char const **str,
-		   dbref executor, dbref caller, dbref enactor,
-		   int eflags, int tflags, PE_Info * pe_info)
+                   dbref executor, dbref caller, dbref enactor,
+                   int eflags, int tflags, PE_Info * pe_info)
 {
   int debugging = 0, made_info = 0;
   char *debugstr = NULL, *sourcestr = NULL;
@@ -477,11 +477,11 @@ process_expression(char *buff, char **bp, char const **str,
        * it might never get displayed.
        */
       if (!Quiet(enactor))
-	notify(enactor, T("CPU usage exceeded."));
+        notify(enactor, T("CPU usage exceeded."));
       do_rawlog(LT_TRACE,
-		T
-		("CPU time limit exceeded. enactor=#%d executor=#%d caller=#%d code=%s"),
-		enactor, executor, caller, *str);
+                T
+                ("CPU time limit exceeded. enactor=#%d executor=#%d caller=#%d code=%s"),
+                enactor, executor, caller, *str);
     }
     return 1;
   }
@@ -498,7 +498,7 @@ process_expression(char *buff, char **bp, char const **str,
     inum_limit = inum;
     made_info = 1;
     pe_info = (PE_Info *) mush_malloc(sizeof(PE_Info),
-				      "process_expression.pe_info");
+                                      "process_expression.pe_info");
     pe_info->fun_invocations = 0;
     pe_info->fun_depth = 0;
     pe_info->nest_depth = 0;
@@ -523,7 +523,7 @@ process_expression(char *buff, char **bp, char const **str,
       realbuff = buff;
       realbp = *bp;
       buff = (char *) mush_malloc(BUFFER_LEN,
-				  "process_expression.buffer_extension");
+                                  "process_expression.buffer_extension");
       *bp = buff;
       startpos = buff;
     }
@@ -548,29 +548,29 @@ process_expression(char *buff, char **bp, char const **str,
       Debug_Info *node;
 
       debugstr = (char *) mush_malloc(BUFFER_LEN,
-				      "process_expression.debug_source");
+                                      "process_expression.debug_source");
       debugp = debugstr;
       safe_dbref(executor, debugstr, &debugp);
       safe_chr('!', debugstr, &debugp);
       for (j = 0; j <= pe_info->nest_depth; j++)
-	safe_chr(' ', debugstr, &debugp);
+        safe_chr(' ', debugstr, &debugp);
       sourcestr = debugp;
       mark = *str;
       process_expression(debugstr, &debugp, str,
-			 executor, caller, enactor,
-			 PE_NOTHING, tflags, pe_info);
+                         executor, caller, enactor,
+                         PE_NOTHING, tflags, pe_info);
       *str = mark;
       if (eflags & PE_COMPRESS_SPACES)
-	while ((debugp > sourcestr) && (debugp[-1] == ' '))
-	  debugp--;
+        while ((debugp > sourcestr) && (debugp[-1] == ' '))
+          debugp--;
       *debugp = '\0';
       node = (Debug_Info *) mush_malloc(sizeof(Debug_Info),
-					"process_expression.debug_node");
+                                        "process_expression.debug_node");
       node->string = debugstr;
       node->prev = pe_info->debug_strings;
       node->next = NULL;
       if (node->prev)
-	node->prev->next = node;
+        node->prev->next = node;
       pe_info->debug_strings = node;
       pe_info->nest_depth++;
     }
@@ -582,9 +582,9 @@ process_expression(char *buff, char **bp, char const **str,
 
   for (;;) {
      if(iter_break > 0) {
-	while(*str && **str)
-	  (*str)++;
-	goto exit_sequence;
+        while(*str && **str)
+          (*str)++;
+        goto exit_sequence;
      }
     /* Find the first "interesting" character */
     {
@@ -593,16 +593,16 @@ process_expression(char *buff, char **bp, char const **str,
       /* Inlined strcspn() equivalent, to save on overhead and portability */
       pos = *str;
       while (!active_table[*(unsigned char const *) *str])
-	(*str)++;
+        (*str)++;
       /* Inlined safe_str(), since the source string
        * may not be null terminated */
       len = *str - pos;
       len2 = BUFFER_LEN - 1 - (*bp - buff);
       if (len > len2)
-	len = len2;
+        len = len2;
       if (len >= 0) {
-	memcpy(*bp, pos, len);
-	*bp += len;
+        memcpy(*bp, pos, len);
+        *bp += len;
       }
     }
 
@@ -610,31 +610,31 @@ process_expression(char *buff, char **bp, char const **str,
       /* Possible terminators */
     case '}':
       if (tflags & PT_BRACE)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case ']':
       if (tflags & PT_BRACKET)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case ')':
       if (tflags & PT_PAREN)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case ',':
       if (tflags & PT_COMMA)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case ';':
       if (tflags & PT_SEMI)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case '=':
       if (tflags & PT_EQUALS)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case ' ':
       if (tflags & PT_SPACE)
-	goto exit_sequence;
+        goto exit_sequence;
       break;
     case '\0':
       goto exit_sequence;
@@ -642,100 +642,100 @@ process_expression(char *buff, char **bp, char const **str,
 
 
     switch (**str) {
-    case 0x1B:			/* ANSI escapes. */
+    case 0x1B:                  /* ANSI escapes. */
       /* Skip over until the 'm' that matches the end. */
       for (; *str && **str && **str != 'm'; (*str)++)
-	safe_chr(**str, buff, bp);
+        safe_chr(**str, buff, bp);
       if (*str && **str) {
-	safe_chr(**str, buff, bp);
-	(*str)++;
+        safe_chr(**str, buff, bp);
+        (*str)++;
       }
       break;
-    case '$':			/* Dollar subs for regedit() */
+    case '$':                   /* Dollar subs for regedit() */
       if ((eflags & (PE_DOLLAR | PE_EVALUATE)) == (PE_DOLLAR | PE_EVALUATE) &&
-	  global_eval_context.re_subpatterns >= 0) {
-	char obuf[BUFFER_LEN];
-	int p = 0;
+          global_eval_context.re_subpatterns >= 0) {
+        char obuf[BUFFER_LEN];
+        int p = 0;
         char subspace[BUFFER_LEN];
         char *named_substring = NULL;
 
         obuf[0] = '\0';
-	(*str)++;
-	/* Check the first two characters after the $ for a number */
-	if (isdigit((unsigned char) **str)) {
-	  p = **str - '0';
-	  (*str)++;
-	  if (isdigit((unsigned char) **str)) {
-	    p *= 10;
-	    p += **str - '0';
-	    (*str)++;
-	    if (isdigit((unsigned char) **str)) {
-	      /* More than 100. Treat this as literal. */
-	      safe_chr('$', buff, bp);
-	      safe_number(p, buff, bp);
-	    }
-	  }
-	  /* Look for a named subexpression */
-	} else if (**str == '<') {
-	  char *nbuf = subspace;
-	  (*str)++;
-	  for (; *str && **str != '>'; (*str)++)
-	    safe_chr(**str, subspace, &nbuf);
-	  *nbuf = '\0';
-	  if (*str)
-	    (*str)++;
-	  if (is_strict_integer(subspace))
-	    p = abs(parse_integer(subspace));
-	  else
-	    named_substring = subspace;
-	} else {
-	  safe_chr('$', buff, bp);
-	  break;
-	}
+        (*str)++;
+        /* Check the first two characters after the $ for a number */
+        if (isdigit((unsigned char) **str)) {
+          p = **str - '0';
+          (*str)++;
+          if (isdigit((unsigned char) **str)) {
+            p *= 10;
+            p += **str - '0';
+            (*str)++;
+            if (isdigit((unsigned char) **str)) {
+              /* More than 100. Treat this as literal. */
+              safe_chr('$', buff, bp);
+              safe_number(p, buff, bp);
+            }
+          }
+          /* Look for a named subexpression */
+        } else if (**str == '<') {
+          char *nbuf = subspace;
+          (*str)++;
+          for (; *str && **str != '>'; (*str)++)
+            safe_chr(**str, subspace, &nbuf);
+          *nbuf = '\0';
+          if (*str)
+            (*str)++;
+          if (is_strict_integer(subspace))
+            p = abs(parse_integer(subspace));
+          else
+            named_substring = subspace;
+        } else {
+          safe_chr('$', buff, bp);
+          break;
+        }
 
-	if ((!named_substring && p >= global_eval_context.re_subpatterns) ||
-	    global_eval_context.re_offsets == NULL ||
-	    global_eval_context.re_from == NULL) {
-	  /* It's out of bounds, return */
-	  safe_chr('$', buff, bp);
-	  if (named_substring)
-	    safe_format(buff, bp, "<%s>", named_substring);
-	  else
-	    safe_integer(p, buff, bp);
-	  break;
-	}
+        if ((!named_substring && p >= global_eval_context.re_subpatterns) ||
+            global_eval_context.re_offsets == NULL ||
+            global_eval_context.re_from == NULL) {
+          /* It's out of bounds, return */
+          safe_chr('$', buff, bp);
+          if (named_substring)
+            safe_format(buff, bp, "<%s>", named_substring);
+          else
+            safe_integer(p, buff, bp);
+          break;
+        }
 
-	if (named_substring) {
-	  pcre_copy_named_substring(global_eval_context.re_code,
-				    global_eval_context.re_from,
-				    global_eval_context.re_offsets,
-				    global_eval_context.re_subpatterns,
-				    named_substring, obuf, BUFFER_LEN);
-	} else {
-	  pcre_copy_substring(global_eval_context.re_from,
-			      global_eval_context.re_offsets,
-			      global_eval_context.re_subpatterns,
-			      p, obuf, BUFFER_LEN);
-	}
-	safe_str(obuf, buff, bp);
+        if (named_substring) {
+          pcre_copy_named_substring(global_eval_context.re_code,
+                                    global_eval_context.re_from,
+                                    global_eval_context.re_offsets,
+                                    global_eval_context.re_subpatterns,
+                                    named_substring, obuf, BUFFER_LEN);
+        } else {
+          pcre_copy_substring(global_eval_context.re_from,
+                              global_eval_context.re_offsets,
+                              global_eval_context.re_subpatterns,
+                              p, obuf, BUFFER_LEN);
+        }
+        safe_str(obuf, buff, bp);
       } else {
-	safe_chr('$', buff, bp);
-	(*str)++;
+        safe_chr('$', buff, bp);
+        (*str)++;
       }
       break;
-    case '%':			/* Percent substitutions */
+    case '%':                   /* Percent substitutions */
       if (!(eflags & PE_EVALUATE) || (*bp - buff >= BUFFER_LEN - 1)) {
-	/* peak -- % escapes (at least) one character */
-	char savec;
+        /* peak -- % escapes (at least) one character */
+        char savec;
 
-	safe_chr('%', buff, bp);
-	(*str)++;
-	savec = **str;
-	if (!savec)
-	  goto exit_sequence;
-	safe_chr(savec, buff, bp);
-	(*str)++;
-	switch (savec) {
+        safe_chr('%', buff, bp);
+        (*str)++;
+        savec = **str;
+        if (!savec)
+          goto exit_sequence;
+        safe_chr(savec, buff, bp);
+        (*str)++;
+        switch (savec) {
         case '<':
           savec = **str;
           if (!savec)
@@ -749,8 +749,8 @@ process_expression(char *buff, char **bp, char const **str,
           safe_chr(savec, buff, bp);
           (*str)++;
           break;
-	case 'Q':
-	case 'q':
+        case 'Q':
+        case 'q':
           savec = **str;
           if (!savec)
             goto exit_sequence;
@@ -767,148 +767,148 @@ process_expression(char *buff, char **bp, char const **str,
             (*str)++;
           }
           break;
-	case 'V':
-	case 'v':
-	case 'W':
-	case 'w':
-	case 'X':
-	case 'x':
-	  /* These sequences escape two characters */
-	  savec = **str;
-	  if (!savec)
-	    goto exit_sequence;
-	  safe_chr(savec, buff, bp);
-	  (*str)++;
-	}
-	break;
+        case 'V':
+        case 'v':
+        case 'W':
+        case 'w':
+        case 'X':
+        case 'x':
+          /* These sequences escape two characters */
+          savec = **str;
+          if (!savec)
+            goto exit_sequence;
+          safe_chr(savec, buff, bp);
+          (*str)++;
+        }
+        break;
       } else {
-	char savec, nextc;
-	char *savepos;
-	ATTR *attrib;
+        char savec, nextc;
+        char *savepos;
+        ATTR *attrib;
 
-	(*str)++;
-	savec = **str;
-	if (!savec) {
-	  /* Line ended in %, so treat it as a literal */
-	  safe_chr('%', buff, bp);
-	  goto exit_sequence;
-	}
-	savepos = *bp;
-	(*str)++;
+        (*str)++;
+        savec = **str;
+        if (!savec) {
+          /* Line ended in %, so treat it as a literal */
+          safe_chr('%', buff, bp);
+          goto exit_sequence;
+        }
+        savepos = *bp;
+        (*str)++;
 
-	switch (savec) {
-	case '%':		/* %% - a real % */
-	  safe_chr('%', buff, bp);
-	  break;
-	case ' ':		/* "% " for more natural typing */
-	  safe_str("% ", buff, bp);
-	  break;
-	case '!':		/* executor dbref */
-	  safe_dbref(executor, buff, bp);
-	  break;
-	case '@':		/* caller dbref */
-	  safe_dbref(caller, buff, bp);
-	  break;
-	case '#':		/* enactor dbref */
-	  safe_dbref(enactor, buff, bp);
-	  break;
-	case ':':		/* enactor unique id */
-	  safe_dbref(enactor, buff, bp);
-	  safe_chr(':', buff, bp);
-	  safe_integer(CreTime(enactor), buff, bp);
-	  break;
-	case '?':		/* function limits */
-	  if (pe_info) {
-	    safe_integer(pe_info->fun_invocations, buff, bp);
-	    safe_chr(' ', buff, bp);
-	    safe_integer(pe_info->fun_depth, buff, bp);
-	  } else {
-	    safe_str("0 0", buff, bp);
-	  }
-	  break;
-	case '~':		/* enactor accented name */
-	  safe_str(accented_name(enactor), buff, bp);
-	  break;
-	case '+':		/* argument count */
-	  if (pe_info)
-	    safe_integer(pe_info->arg_count, buff, bp);
-	  else
-	    safe_integer(0, buff, bp);
-	  break;
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':		/* positional argument */
-	  if (global_eval_context.wenv[savec - '0'])
-	    safe_str(global_eval_context.wenv[savec - '0'], buff, bp);
-	  break;
-	case 'A':
-	case 'a':		/* enactor absolute possessive pronoun */
-	  if (gender < 0)
-	    gender = get_gender(enactor);
-	  safe_str(absp[gender], buff, bp);
-	  break;
-	case 'B':
-	case 'b':		/* blank space */
-	  safe_chr(' ', buff, bp);
-	  break;
-	case 'C':
-	case 'c':		/* command line */
-	  safe_str(global_eval_context.ccom, buff, bp);
-	  break;
-	case 'I':
-	case 'i':
-	  nextc = **str;
-	  if (!nextc)
-	    goto exit_sequence;
-	  (*str)++;
-	  if (!isdigit(nextc)) {
-	    safe_str(T(e_int), buff, bp);
-	    break;
-	  }
-	  inum_this = nextc - '0';
-	  if (inum_this < 0 || inum_this >= inum
-	      || (inum - inum_this) <= inum_limit) {
-	    safe_str(T("#-1 ARGUMENT OUT OF RANGE"), buff, bp);
-	  } else {
-	    safe_str(iter_rep[inum - inum_this], buff, bp);
-	  }
-	  break;
-	case 'U':
-	case 'u':
-	  safe_str(global_eval_context.ucom, buff, bp);
-	  break;
-	case 'L':
-	case 'l':		/* enactor location dbref */
-	  /* The security implications of this have
-	   * already been talked to death.  Deal. */
-	  safe_dbref(Location(enactor), buff, bp);
-	  break;
-	case 'N':
-	case 'n':		/* enactor name */
-	  safe_str(Name(enactor), buff, bp);
-	  break;
-	case 'O':
-	case 'o':		/* enactor objective pronoun */
-	  if (gender < 0)
-	    gender = get_gender(enactor);
-	  safe_str(obj[gender], buff, bp);
-	  break;
-	case 'P':
-	case 'p':		/* enactor possessive pronoun */
-	  if (gender < 0)
-	    gender = get_gender(enactor);
-	  safe_str(poss[gender], buff, bp);
-	  break;
+        switch (savec) {
+        case '%':               /* %% - a real % */
+          safe_chr('%', buff, bp);
+          break;
+        case ' ':               /* "% " for more natural typing */
+          safe_str("% ", buff, bp);
+          break;
+        case '!':               /* executor dbref */
+          safe_dbref(executor, buff, bp);
+          break;
+        case '@':               /* caller dbref */
+          safe_dbref(caller, buff, bp);
+          break;
+        case '#':               /* enactor dbref */
+          safe_dbref(enactor, buff, bp);
+          break;
+        case ':':               /* enactor unique id */
+          safe_dbref(enactor, buff, bp);
+          safe_chr(':', buff, bp);
+          safe_integer(CreTime(enactor), buff, bp);
+          break;
+        case '?':               /* function limits */
+          if (pe_info) {
+            safe_integer(pe_info->fun_invocations, buff, bp);
+            safe_chr(' ', buff, bp);
+            safe_integer(pe_info->fun_depth, buff, bp);
+          } else {
+            safe_str("0 0", buff, bp);
+          }
+          break;
+        case '~':               /* enactor accented name */
+          safe_str(accented_name(enactor), buff, bp);
+          break;
+        case '+':               /* argument count */
+          if (pe_info)
+            safe_integer(pe_info->arg_count, buff, bp);
+          else
+            safe_integer(0, buff, bp);
+          break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':               /* positional argument */
+          if (global_eval_context.wenv[savec - '0'])
+            safe_str(global_eval_context.wenv[savec - '0'], buff, bp);
+          break;
+        case 'A':
+        case 'a':               /* enactor absolute possessive pronoun */
+          if (gender < 0)
+            gender = get_gender(enactor);
+          safe_str(absp[gender], buff, bp);
+          break;
+        case 'B':
+        case 'b':               /* blank space */
+          safe_chr(' ', buff, bp);
+          break;
+        case 'C':
+        case 'c':               /* command line */
+          safe_str(global_eval_context.ccom, buff, bp);
+          break;
+        case 'I':
+        case 'i':
+          nextc = **str;
+          if (!nextc)
+            goto exit_sequence;
+          (*str)++;
+          if (!isdigit(nextc)) {
+            safe_str(T(e_int), buff, bp);
+            break;
+          }
+          inum_this = nextc - '0';
+          if (inum_this < 0 || inum_this >= inum
+              || (inum - inum_this) <= inum_limit) {
+            safe_str(T("#-1 ARGUMENT OUT OF RANGE"), buff, bp);
+          } else {
+            safe_str(iter_rep[inum - inum_this], buff, bp);
+          }
+          break;
+        case 'U':
+        case 'u':
+          safe_str(global_eval_context.ucom, buff, bp);
+          break;
+        case 'L':
+        case 'l':               /* enactor location dbref */
+          /* The security implications of this have
+           * already been talked to death.  Deal. */
+          safe_dbref(Location(enactor), buff, bp);
+          break;
+        case 'N':
+        case 'n':               /* enactor name */
+          safe_str(Name(enactor), buff, bp);
+          break;
+        case 'O':
+        case 'o':               /* enactor objective pronoun */
+          if (gender < 0)
+            gender = get_gender(enactor);
+          safe_str(obj[gender], buff, bp);
+          break;
+        case 'P':
+        case 'p':               /* enactor possessive pronoun */
+          if (gender < 0)
+            gender = get_gender(enactor);
+          safe_str(poss[gender], buff, bp);
+          break;
         case '<':
-	  if (!**str)
-	    goto exit_sequence;
+          if (!**str)
+            goto exit_sequence;
           {
             const char *tmp;
             char atrname[BUFFER_LEN];
@@ -929,12 +929,12 @@ process_expression(char *buff, char **bp, char const **str,
             *str = tmp + 1;
           }
           break;
-	case 'Q':
-	case 'q':		/* temporary storage */
-	  nextc = **str;
-	  if (!nextc)
-	    goto exit_sequence;
-	  (*str)++;
+        case 'Q':
+        case 'q':               /* temporary storage */
+          nextc = **str;
+          if (!nextc)
+            goto exit_sequence;
+          (*str)++;
           if (nextc == '<') {
             const char *tmp;
             char regname[BUFFER_LEN];
@@ -949,46 +949,46 @@ process_expression(char *buff, char **bp, char const **str,
             safe_str(get_namedreg(&global_eval_context.namedregs, regname), buff, bp);
             *str = tmp + 1;
           } else {
-	    if ((qindex = qreg_indexes[(unsigned char) nextc]) == -1)
-	      break;
-	    if (global_eval_context.renv[qindex])
-	      safe_str(global_eval_context.renv[qindex], buff, bp);
+            if ((qindex = qreg_indexes[(unsigned char) nextc]) == -1)
+              break;
+            if (global_eval_context.renv[qindex])
+              safe_str(global_eval_context.renv[qindex], buff, bp);
           }
-	  break;
-	case 'R':
-	case 'r':		/* newline */
-	  if (NEWLINE_ONE_CHAR)
-	    safe_chr('\n', buff, bp);
-	  else
-	    safe_str("\r\n", buff, bp);
-	  break;
-	case 'S':
-	case 's':		/* enactor subjective pronoun */
-	  if (gender < 0)
-	    gender = get_gender(enactor);
-	  safe_str(subj[gender], buff, bp);
-	  break;
-	case 'T':
-	case 't':		/* tab */
-	  safe_chr('\t', buff, bp);
-	  break;
-	case 'V':
-	case 'v':
-	case 'W':
-	case 'w':
-	case 'X':
-	case 'x':		/* attribute substitution */
-	  nextc = **str;
-	  if (!nextc)
-	    goto exit_sequence;
-	  (*str)++;
-	  temp[0] = UPCASE(savec);
-	  temp[1] = UPCASE(nextc);
-	  temp[2] = '\0';
-	  attrib = atr_get(executor, temp);
-	  if (attrib)
-	    safe_str(atr_value(attrib), buff, bp);
-	  break;
+          break;
+        case 'R':
+        case 'r':               /* newline */
+          if (NEWLINE_ONE_CHAR)
+            safe_chr('\n', buff, bp);
+          else
+            safe_str("\r\n", buff, bp);
+          break;
+        case 'S':
+        case 's':               /* enactor subjective pronoun */
+          if (gender < 0)
+            gender = get_gender(enactor);
+          safe_str(subj[gender], buff, bp);
+          break;
+        case 'T':
+        case 't':               /* tab */
+          safe_chr('\t', buff, bp);
+          break;
+        case 'V':
+        case 'v':
+        case 'W':
+        case 'w':
+        case 'X':
+        case 'x':               /* attribute substitution */
+          nextc = **str;
+          if (!nextc)
+            goto exit_sequence;
+          (*str)++;
+          temp[0] = UPCASE(savec);
+          temp[1] = UPCASE(nextc);
+          temp[2] = '\0';
+          attrib = atr_get(executor, temp);
+          if (attrib)
+            safe_str(atr_value(attrib), buff, bp);
+          break;
         case 'z':
         case 'Z':
           nextc = **str;
@@ -1063,359 +1063,359 @@ process_expression(char *buff, char **bp, char const **str,
             }
             break;
           }
-	default:		/* just copy */
-	  safe_chr(savec, buff, bp);
-	}
+        default:                /* just copy */
+          safe_chr(savec, buff, bp);
+        }
 
-	if (isupper((unsigned char) savec))
-	  *savepos = UPCASE(*savepos);
+        if (isupper((unsigned char) savec))
+          *savepos = UPCASE(*savepos);
       }
       break;
-    case '{':			/* "{}" parse group; recurse with no function check */
+    case '{':                   /* "{}" parse group; recurse with no function check */
       if (CALL_LIMIT && (pe_info->call_depth > CALL_LIMIT)) {
-	(*str)++;
-	break;
+        (*str)++;
+        break;
       }
       if (eflags & PE_LITERAL) {
-	safe_chr('{', buff, bp);
-	(*str)++;
-	break;
+        safe_chr('{', buff, bp);
+        (*str)++;
+        break;
       }
       if (!(eflags & (PE_STRIP_BRACES | PE_COMMAND_BRACES)))
-	safe_chr('{', buff, bp);
+        safe_chr('{', buff, bp);
       (*str)++;
       if (process_expression(buff, bp, str,
-			     executor, caller, enactor,
-			     eflags & PE_COMMAND_BRACES
-			     ? (eflags & ~PE_COMMAND_BRACES)
-			     : (eflags &
-				~(PE_STRIP_BRACES | PE_FUNCTION_CHECK)),
-			     PT_BRACE, pe_info)) {
-	retval = 1;
-	break;
+                             executor, caller, enactor,
+                             eflags & PE_COMMAND_BRACES
+                             ? (eflags & ~PE_COMMAND_BRACES)
+                             : (eflags &
+                                ~(PE_STRIP_BRACES | PE_FUNCTION_CHECK)),
+                             PT_BRACE, pe_info)) {
+        retval = 1;
+        break;
       }
 
       if (**str == '}') {
-	if (!(eflags & (PE_STRIP_BRACES | PE_COMMAND_BRACES)))
-	  safe_chr('}', buff, bp);
-	(*str)++;
+        if (!(eflags & (PE_STRIP_BRACES | PE_COMMAND_BRACES)))
+          safe_chr('}', buff, bp);
+        (*str)++;
       }
       /* Only strip one set of braces for commands */
       eflags &= ~PE_COMMAND_BRACES;
       break;
-    case '[':			/* "[]" parse group; recurse with mandatory function check */
+    case '[':                   /* "[]" parse group; recurse with mandatory function check */
       if (CALL_LIMIT && (pe_info->call_depth > CALL_LIMIT)) {
-	(*str)++;
-	break;
+        (*str)++;
+        break;
       }
       if (eflags & PE_LITERAL) {
-	safe_chr('[', buff, bp);
-	(*str)++;
-	break;
+        safe_chr('[', buff, bp);
+        (*str)++;
+        break;
       }
       if (!(eflags & PE_EVALUATE)) {
-	safe_chr('[', buff, bp);
-	temp_eflags = eflags & ~PE_STRIP_BRACES;
+        safe_chr('[', buff, bp);
+        temp_eflags = eflags & ~PE_STRIP_BRACES;
       } else
-	temp_eflags = eflags | PE_FUNCTION_CHECK | PE_FUNCTION_MANDATORY;
+        temp_eflags = eflags | PE_FUNCTION_CHECK | PE_FUNCTION_MANDATORY;
       (*str)++;
       if (process_expression(buff, bp, str,
-			     executor, caller, enactor,
-			     temp_eflags, PT_BRACKET, pe_info)) {
-	retval = 1;
-	break;
+                             executor, caller, enactor,
+                             temp_eflags, PT_BRACKET, pe_info)) {
+        retval = 1;
+        break;
       }
       if (**str == ']') {
-	if (!(eflags & PE_EVALUATE))
-	  safe_chr(']', buff, bp);
-	(*str)++;
+        if (!(eflags & PE_EVALUATE))
+          safe_chr(']', buff, bp);
+        (*str)++;
       }
       break;
-    case '(':			/* Function call */
+    case '(':                   /* Function call */
       if (CALL_LIMIT && (pe_info->call_depth > CALL_LIMIT)) {
-	(*str)++;
-	break;
+        (*str)++;
+        break;
       }
       (*str)++;
       if (!(eflags & PE_EVALUATE) || !(eflags & PE_FUNCTION_CHECK)) {
-	safe_chr('(', buff, bp);
-	if (**str == ' ') {
-	  safe_chr(**str, buff, bp);
-	  (*str)++;
-	}
-	if (process_expression(buff, bp, str,
-			       executor, caller, enactor,
-			       eflags & ~PE_STRIP_BRACES, PT_PAREN, pe_info))
-	  retval = 1;
-	if (**str == ')') {
-	  if (eflags & PE_COMPRESS_SPACES && (*str)[-1] == ' ')
-	    safe_chr(' ', buff, bp);
-	  safe_chr(')', buff, bp);
-	  (*str)++;
-	}
-	break;
+        safe_chr('(', buff, bp);
+        if (**str == ' ') {
+          safe_chr(**str, buff, bp);
+          (*str)++;
+        }
+        if (process_expression(buff, bp, str,
+                               executor, caller, enactor,
+                               eflags & ~PE_STRIP_BRACES, PT_PAREN, pe_info))
+          retval = 1;
+        if (**str == ')') {
+          if (eflags & PE_COMPRESS_SPACES && (*str)[-1] == ' ')
+            safe_chr(' ', buff, bp);
+          safe_chr(')', buff, bp);
+          (*str)++;
+        }
+        break;
       } else {
-	char *sargs[10];
-	char **fargs;
-	int sarglens[10];
-	int *arglens;
-	int args_alloced;
-	int nfargs;
-	int j;
-	static char name[BUFFER_LEN];
-	char *sp, *tp;
-	FUN *fp;
-	int temp_tflags;
-	int denied;
+        char *sargs[10];
+        char **fargs;
+        int sarglens[10];
+        int *arglens;
+        int args_alloced;
+        int nfargs;
+        int j;
+        static char name[BUFFER_LEN];
+        char *sp, *tp;
+        FUN *fp;
+        int temp_tflags;
+        int denied;
 
-	fargs = sargs;
-	arglens = sarglens;
-	for (j = 0; j < 10; j++) {
-	  fargs[j] = NULL;
-	  arglens[j] = 0;
-	}
-	args_alloced = 10;
-	eflags &= ~PE_FUNCTION_CHECK;
-	/* Get the function name */
-	for (sp = startpos, tp = name; sp < *bp; sp++)
-	  safe_chr(UPCASE(*sp), name, &tp);
-	*tp = '\0';
-	fp = func_hash_lookup(name);
-	if (!fp) {
-	  if (eflags & PE_FUNCTION_MANDATORY) {
-	    *bp = startpos;
-	    safe_str(T("#-1 FUNCTION ("), buff, bp);
-	    safe_str(name, buff, bp);
-	    safe_str(") NOT FOUND", buff, bp);
-	    if (process_expression(name, &tp, str,
-				   executor, caller, enactor,
-				   PE_NOTHING, PT_PAREN, pe_info))
-	      retval = 1;
-	    if (**str == ')')
-	      (*str)++;
-	    break;
-	  }
-	  safe_chr('(', buff, bp);
-	  if (**str == ' ') {
-	    safe_chr(**str, buff, bp);
-	    (*str)++;
-	  }
-	  if (process_expression(buff, bp, str, executor, caller, enactor,
-				 eflags, PT_PAREN, pe_info)) {
-	    retval = 1;
-	    break;
-	  }
-	  if (**str == ')') {
-	    if (eflags & PE_COMPRESS_SPACES && (*str)[-1] == ' ')
-	      safe_chr(' ', buff, bp);
-	    safe_chr(')', buff, bp);
-	    (*str)++;
-	  }
-	  break;
-	}
-	*bp = startpos;
+        fargs = sargs;
+        arglens = sarglens;
+        for (j = 0; j < 10; j++) {
+          fargs[j] = NULL;
+          arglens[j] = 0;
+        }
+        args_alloced = 10;
+        eflags &= ~PE_FUNCTION_CHECK;
+        /* Get the function name */
+        for (sp = startpos, tp = name; sp < *bp; sp++)
+          safe_chr(UPCASE(*sp), name, &tp);
+        *tp = '\0';
+        fp = func_hash_lookup(name);
+        if (!fp) {
+          if (eflags & PE_FUNCTION_MANDATORY) {
+            *bp = startpos;
+            safe_str(T("#-1 FUNCTION ("), buff, bp);
+            safe_str(name, buff, bp);
+            safe_str(") NOT FOUND", buff, bp);
+            if (process_expression(name, &tp, str,
+                                   executor, caller, enactor,
+                                   PE_NOTHING, PT_PAREN, pe_info))
+              retval = 1;
+            if (**str == ')')
+              (*str)++;
+            break;
+          }
+          safe_chr('(', buff, bp);
+          if (**str == ' ') {
+            safe_chr(**str, buff, bp);
+            (*str)++;
+          }
+          if (process_expression(buff, bp, str, executor, caller, enactor,
+                                 eflags, PT_PAREN, pe_info)) {
+            retval = 1;
+            break;
+          }
+          if (**str == ')') {
+            if (eflags & PE_COMPRESS_SPACES && (*str)[-1] == ' ')
+              safe_chr(' ', buff, bp);
+            safe_chr(')', buff, bp);
+            (*str)++;
+          }
+          break;
+        }
+        *bp = startpos;
 
-	/* Check for the invocation limit */
-	if ((pe_info->fun_invocations >= FUNCTION_LIMIT) ||
-	    (global_fun_invocations >= FUNCTION_LIMIT * 5)) {
-	  e_msg = T(e_invoke);
-	  e_len = strlen(e_msg);
-	  if ((buff + e_len > *bp) || strcmp(e_msg, *bp - e_len))
-	    safe_str(e_msg, buff, bp);
-	  if (process_expression(name, &tp, str,
-				 executor, caller, enactor,
-				 PE_NOTHING, PT_PAREN, pe_info))
-	    retval = 1;
-	  if (**str == ')')
-	    (*str)++;
-	  break;
-	}
-	/* Check for the recursion limit */
-	if ((pe_info->fun_depth + 1 >= RECURSION_LIMIT) ||
-	    (global_fun_recursions + 1 >= RECURSION_LIMIT * 5)) {
-	  safe_str(T("#-1 FUNCTION RECURSION LIMIT EXCEEDED"), buff, bp);
-	  if (process_expression(name, &tp, str,
-				 executor, caller, enactor,
-				 PE_NOTHING, PT_PAREN, pe_info))
-	    retval = 1;
-	  if (**str == ')')
-	    (*str)++;
-	  break;
-	}
-	/* Get the arguments */
-	temp_eflags = (eflags & ~PE_FUNCTION_MANDATORY)
-	  | PE_COMPRESS_SPACES | PE_EVALUATE | PE_FUNCTION_CHECK;
-	switch (fp->flags & FN_ARG_MASK) {
-	case FN_LITERAL:
-	  temp_eflags |= PE_LITERAL;
-	  /* FALL THROUGH */
-	case FN_NOPARSE:
-	  temp_eflags &= ~(PE_COMPRESS_SPACES | PE_EVALUATE |
-			   PE_FUNCTION_CHECK);
-	  break;
-	}
-	denied = !check_func(executor, fp);
-	if (denied)
-	  temp_eflags &=
-	    ~(PE_COMPRESS_SPACES | PE_EVALUATE | PE_FUNCTION_CHECK);
-	temp_tflags = PT_COMMA | PT_PAREN;
-	nfargs = 0;
-	do {
-	  char *argp;
-	  if ((fp->maxargs < 0) && ((nfargs + 1) >= -fp->maxargs))
-	    temp_tflags = PT_PAREN;
-	  if (nfargs >= args_alloced) {
-	    char **nargs;
-	    int *narglens;
-	    nargs = (char **) mush_malloc((nfargs + 10) * sizeof(char *),
-					  "process_expression.function_arglist");
-	    narglens = (int *) mush_malloc((nfargs + 10) * sizeof(int),
-					   "process_expression.function_arglens");
-	    for (j = 0; j < nfargs; j++) {
-	      nargs[j] = fargs[j];
-	      narglens[j] = arglens[j];
-	    }
-	    if (fargs != sargs)
-	      mush_free((Malloc_t) fargs,
-			"process_expression.function_arglist");
-	    if (arglens != sarglens)
-	      mush_free((Malloc_t) arglens,
-			"process_expression.function_arglens");
-	    fargs = nargs;
-	    arglens = narglens;
-	    args_alloced += 10;
-	  }
-	  fargs[nfargs] = (char *) mush_malloc(BUFFER_LEN,
-					       "process_expression.function_argument");
-	  argp = fargs[nfargs];
-	  if (process_expression(fargs[nfargs], &argp, str,
-				 executor, caller, enactor,
-				 temp_eflags, temp_tflags, pe_info)) {
-	    retval = 1;
-	    nfargs++;
-	    goto free_func_args;
-	  }
-	  *argp = '\0';
-	  arglens[nfargs] = argp - fargs[nfargs];
-	  (*str)++;
-	  nfargs++;
-	} while ((*str)[-1] == ',');
-	if ((*str)[-1] != ')')
-	  (*str)--;
-	/* See if this function is enabled */
-	/* Can't do this check earlier, because of possible side effects
-	 * from the functions.  Bah. */
-	if (denied) {
-	  if (fp->flags & FN_DISABLED)
-	    safe_str(T(e_disabled), buff, bp);
-	  else
-	    safe_str(T(e_perm), buff, bp);
-	  goto free_func_args;
-	} else {
-	  /* If we have the right number of args, eval the function.
-	   * Otherwise, return an error message.
-	   * Special case: zero args is recognized as one null arg.
-	   */
-	  if ((fp->minargs == 0 || (fp->minargs == 1 && (fp->flags & FN_ONEARG))) && (nfargs == 1) && (!*fargs[0] || arglens[0]== 0)) {
-	    mush_free((Malloc_t) fargs[0],
-		      "process_expression.function_argument");
-	    fargs[0] = NULL;
-	    arglens[0] = 0;
-	    nfargs = 0;
-	  }
-	  if ((nfargs < fp->minargs) || (nfargs > abs(fp->maxargs))) {
-	    safe_str(T("#-1 FUNCTION ("), buff, bp);
-	    safe_str(fp->name, buff, bp);
-	    safe_str(") EXPECTS ", buff, bp);
-	    if (fp->minargs == abs(fp->maxargs)) {
-	      safe_integer(fp->minargs, buff, bp);
-	    } else if ((fp->minargs + 1) == abs(fp->maxargs)) {
-	      safe_integer(fp->minargs, buff, bp);
-	      safe_str(" OR ", buff, bp);
-	      safe_integer(abs(fp->maxargs), buff, bp);
-	    } else if (fp->maxargs == INT_MAX) {
-	      safe_str("AT LEAST ", buff, bp);
-	      safe_integer(fp->minargs, buff, bp);
-	    } else {
-	      safe_str("BETWEEN ", buff, bp);
-	      safe_integer(fp->minargs, buff, bp);
-	      safe_str(" AND ", buff, bp);
-	      safe_integer(abs(fp->maxargs), buff, bp);
-	    }
-	    safe_str(" ARGUMENTS BUT GOT ", buff, bp);
-	    safe_integer(nfargs, buff, bp);
-	  } else {
-	    global_fun_recursions++;
-	    pe_info->fun_depth++;
-	    if (fp->flags & FN_BUILTIN) {
-	      global_fun_invocations++;
-	      pe_info->fun_invocations++;
-	      fp->where.fun(fp, buff, bp, nfargs, fargs, arglens, executor,
-			    caller, enactor, fp->name, pe_info);
-	      if (fp->flags & FN_LOGARGS) {
-		char logstr[BUFFER_LEN];
-		char *logp;
-		int logi;
-		logp = logstr;
-		safe_str(fp->name, logstr, &logp);
-		safe_chr('(', logstr, &logp);
-		for (logi = 0; logi < nfargs; logi++) {
-		  safe_str(fargs[logi], logstr, &logp);
-		  if (logi + 1 < nfargs)
-		    safe_chr(',', logstr, &logp);
-		}
-		safe_chr(')', logstr, &logp);
-		*logp = '\0';
-		do_log(LT_CMD, executor, caller, "%s", logstr);
-	      } else if (fp->flags & FN_LOGNAME)
-		do_log(LT_CMD, executor, caller, "%s()", fp->name);
-	    } else {
-	      dbref thing;
-	      ATTR *attrib;
-	      global_fun_invocations++;
-	      pe_info->fun_invocations++;
-	      thing = userfn_tab[fp->where.offset].thing;
-	      attrib = atr_get(thing, userfn_tab[fp->where.offset].name);
-	      if (!attrib) {
-		do_rawlog(LT_ERR,
-			  T("ERROR: @function (%s) without attribute (#%d/%s)"),
-			  fp->name, thing, userfn_tab[fp->where.offset].name);
-		safe_str("#-1 @FUNCTION (", buff, bp);
-		safe_str(fp->name, buff, bp);
-		safe_str(") MISSING ATTRIBUTE (", buff, bp);
-		safe_dbref(thing, buff, bp);
-		safe_chr('/', buff, bp);
-		safe_str(userfn_tab[fp->where.offset].name, buff, bp);
-		safe_chr(')', buff, bp);
-	      } else { 
-		char *preserve[NUMQ];
-		dbref local_ooref;
-		if (fp->flags & FN_LOCALIZE)
-		  save_global_regs("@function.save", preserve);
-		/* Temporarily change ooref */
-		local_ooref = ooref;
-		ooref = attrib->creator;
-		do_userfn(buff, bp, thing, attrib, nfargs, fargs,
-			  executor, caller, enactor, pe_info);
-		ooref = local_ooref;
-		if (fp->flags & FN_LOCALIZE)
-		  restore_global_regs("@function.save", preserve);
-	      }
-	    }
-	    pe_info->fun_depth--;
-	    global_fun_recursions--;
-	  }
-	}
-	/* Free up the space allocated for the args */
+        /* Check for the invocation limit */
+        if ((pe_info->fun_invocations >= FUNCTION_LIMIT) ||
+            (global_fun_invocations >= FUNCTION_LIMIT * 5)) {
+          e_msg = T(e_invoke);
+          e_len = strlen(e_msg);
+          if ((buff + e_len > *bp) || strcmp(e_msg, *bp - e_len))
+            safe_str(e_msg, buff, bp);
+          if (process_expression(name, &tp, str,
+                                 executor, caller, enactor,
+                                 PE_NOTHING, PT_PAREN, pe_info))
+            retval = 1;
+          if (**str == ')')
+            (*str)++;
+          break;
+        }
+        /* Check for the recursion limit */
+        if ((pe_info->fun_depth + 1 >= RECURSION_LIMIT) ||
+            (global_fun_recursions + 1 >= RECURSION_LIMIT * 5)) {
+          safe_str(T("#-1 FUNCTION RECURSION LIMIT EXCEEDED"), buff, bp);
+          if (process_expression(name, &tp, str,
+                                 executor, caller, enactor,
+                                 PE_NOTHING, PT_PAREN, pe_info))
+            retval = 1;
+          if (**str == ')')
+            (*str)++;
+          break;
+        }
+        /* Get the arguments */
+        temp_eflags = (eflags & ~PE_FUNCTION_MANDATORY)
+          | PE_COMPRESS_SPACES | PE_EVALUATE | PE_FUNCTION_CHECK;
+        switch (fp->flags & FN_ARG_MASK) {
+        case FN_LITERAL:
+          temp_eflags |= PE_LITERAL;
+          /* FALL THROUGH */
+        case FN_NOPARSE:
+          temp_eflags &= ~(PE_COMPRESS_SPACES | PE_EVALUATE |
+                           PE_FUNCTION_CHECK);
+          break;
+        }
+        denied = !check_func(executor, fp);
+        if (denied)
+          temp_eflags &=
+            ~(PE_COMPRESS_SPACES | PE_EVALUATE | PE_FUNCTION_CHECK);
+        temp_tflags = PT_COMMA | PT_PAREN;
+        nfargs = 0;
+        do {
+          char *argp;
+          if ((fp->maxargs < 0) && ((nfargs + 1) >= -fp->maxargs))
+            temp_tflags = PT_PAREN;
+          if (nfargs >= args_alloced) {
+            char **nargs;
+            int *narglens;
+            nargs = (char **) mush_malloc((nfargs + 10) * sizeof(char *),
+                                          "process_expression.function_arglist");
+            narglens = (int *) mush_malloc((nfargs + 10) * sizeof(int),
+                                           "process_expression.function_arglens");
+            for (j = 0; j < nfargs; j++) {
+              nargs[j] = fargs[j];
+              narglens[j] = arglens[j];
+            }
+            if (fargs != sargs)
+              mush_free((Malloc_t) fargs,
+                        "process_expression.function_arglist");
+            if (arglens != sarglens)
+              mush_free((Malloc_t) arglens,
+                        "process_expression.function_arglens");
+            fargs = nargs;
+            arglens = narglens;
+            args_alloced += 10;
+          }
+          fargs[nfargs] = (char *) mush_malloc(BUFFER_LEN,
+                                               "process_expression.function_argument");
+          argp = fargs[nfargs];
+          if (process_expression(fargs[nfargs], &argp, str,
+                                 executor, caller, enactor,
+                                 temp_eflags, temp_tflags, pe_info)) {
+            retval = 1;
+            nfargs++;
+            goto free_func_args;
+          }
+          *argp = '\0';
+          arglens[nfargs] = argp - fargs[nfargs];
+          (*str)++;
+          nfargs++;
+        } while ((*str)[-1] == ',');
+        if ((*str)[-1] != ')')
+          (*str)--;
+        /* See if this function is enabled */
+        /* Can't do this check earlier, because of possible side effects
+         * from the functions.  Bah. */
+        if (denied) {
+          if (fp->flags & FN_DISABLED)
+            safe_str(T(e_disabled), buff, bp);
+          else
+            safe_str(T(e_perm), buff, bp);
+          goto free_func_args;
+        } else {
+          /* If we have the right number of args, eval the function.
+           * Otherwise, return an error message.
+           * Special case: zero args is recognized as one null arg.
+           */
+          if ((fp->minargs == 0 || (fp->minargs == 1 && (fp->flags & FN_ONEARG))) && (nfargs == 1) && (!*fargs[0] || arglens[0]== 0)) {
+            mush_free((Malloc_t) fargs[0],
+                      "process_expression.function_argument");
+            fargs[0] = NULL;
+            arglens[0] = 0;
+            nfargs = 0;
+          }
+          if ((nfargs < fp->minargs) || (nfargs > abs(fp->maxargs))) {
+            safe_str(T("#-1 FUNCTION ("), buff, bp);
+            safe_str(fp->name, buff, bp);
+            safe_str(") EXPECTS ", buff, bp);
+            if (fp->minargs == abs(fp->maxargs)) {
+              safe_integer(fp->minargs, buff, bp);
+            } else if ((fp->minargs + 1) == abs(fp->maxargs)) {
+              safe_integer(fp->minargs, buff, bp);
+              safe_str(" OR ", buff, bp);
+              safe_integer(abs(fp->maxargs), buff, bp);
+            } else if (fp->maxargs == INT_MAX) {
+              safe_str("AT LEAST ", buff, bp);
+              safe_integer(fp->minargs, buff, bp);
+            } else {
+              safe_str("BETWEEN ", buff, bp);
+              safe_integer(fp->minargs, buff, bp);
+              safe_str(" AND ", buff, bp);
+              safe_integer(abs(fp->maxargs), buff, bp);
+            }
+            safe_str(" ARGUMENTS BUT GOT ", buff, bp);
+            safe_integer(nfargs, buff, bp);
+          } else {
+            global_fun_recursions++;
+            pe_info->fun_depth++;
+            if (fp->flags & FN_BUILTIN) {
+              global_fun_invocations++;
+              pe_info->fun_invocations++;
+              fp->where.fun(fp, buff, bp, nfargs, fargs, arglens, executor,
+                            caller, enactor, fp->name, pe_info);
+              if (fp->flags & FN_LOGARGS) {
+                char logstr[BUFFER_LEN];
+                char *logp;
+                int logi;
+                logp = logstr;
+                safe_str(fp->name, logstr, &logp);
+                safe_chr('(', logstr, &logp);
+                for (logi = 0; logi < nfargs; logi++) {
+                  safe_str(fargs[logi], logstr, &logp);
+                  if (logi + 1 < nfargs)
+                    safe_chr(',', logstr, &logp);
+                }
+                safe_chr(')', logstr, &logp);
+                *logp = '\0';
+                do_log(LT_CMD, executor, caller, "%s", logstr);
+              } else if (fp->flags & FN_LOGNAME)
+                do_log(LT_CMD, executor, caller, "%s()", fp->name);
+            } else {
+              dbref thing;
+              ATTR *attrib;
+              global_fun_invocations++;
+              pe_info->fun_invocations++;
+              thing = userfn_tab[fp->where.offset].thing;
+              attrib = atr_get(thing, userfn_tab[fp->where.offset].name);
+              if (!attrib) {
+                do_rawlog(LT_ERR,
+                          T("ERROR: @function (%s) without attribute (#%d/%s)"),
+                          fp->name, thing, userfn_tab[fp->where.offset].name);
+                safe_str("#-1 @FUNCTION (", buff, bp);
+                safe_str(fp->name, buff, bp);
+                safe_str(") MISSING ATTRIBUTE (", buff, bp);
+                safe_dbref(thing, buff, bp);
+                safe_chr('/', buff, bp);
+                safe_str(userfn_tab[fp->where.offset].name, buff, bp);
+                safe_chr(')', buff, bp);
+              } else { 
+                char *preserve[NUMQ];
+                dbref local_ooref;
+                if (fp->flags & FN_LOCALIZE)
+                  save_global_regs("@function.save", preserve);
+                /* Temporarily change ooref */
+                local_ooref = ooref;
+                ooref = attrib->creator;
+                do_userfn(buff, bp, thing, attrib, nfargs, fargs,
+                          executor, caller, enactor, pe_info);
+                ooref = local_ooref;
+                if (fp->flags & FN_LOCALIZE)
+                  restore_global_regs("@function.save", preserve);
+              }
+            }
+            pe_info->fun_depth--;
+            global_fun_recursions--;
+          }
+        }
+        /* Free up the space allocated for the args */
       free_func_args:
-	for (j = 0; j < nfargs; j++)
-	  if (fargs[j])
-	    mush_free((Malloc_t) fargs[j],
-		      "process_expression.function_argument");
-	if (fargs != sargs)
-	  mush_free((Malloc_t) fargs, "process_expression.function_arglist");
-	if (arglens != sarglens)
-	  mush_free((Malloc_t) arglens, "process_expression.function_arglens");
+        for (j = 0; j < nfargs; j++)
+          if (fargs[j])
+            mush_free((Malloc_t) fargs[j],
+                      "process_expression.function_argument");
+        if (fargs != sargs)
+          mush_free((Malloc_t) fargs, "process_expression.function_arglist");
+        if (arglens != sarglens)
+          mush_free((Malloc_t) arglens, "process_expression.function_arglens");
       }
       break;
       /* Space compression */
@@ -1424,21 +1424,21 @@ process_expression(char *buff, char **bp, char const **str,
       safe_chr(' ', buff, bp);
       (*str)++;
       if (eflags & PE_COMPRESS_SPACES) {
-	while (**str == ' ')
-	  (*str)++;
+        while (**str == ' ')
+          (*str)++;
       } else
-	while (**str == ' ') {
-	  safe_chr(' ', buff, bp);
-	  (*str)++;
-	}
+        while (**str == ' ') {
+          safe_chr(' ', buff, bp);
+          (*str)++;
+        }
       break;
       /* Escape charater */
     case '\\':
       if (!(eflags & PE_EVALUATE))
-	safe_chr('\\', buff, bp);
+        safe_chr('\\', buff, bp);
       (*str)++;
       if (!**str)
-	goto exit_sequence;
+        goto exit_sequence;
       /* FALL THROUGH */
       /* Basic character */
     default:
@@ -1451,51 +1451,51 @@ process_expression(char *buff, char **bp, char const **str,
 exit_sequence:
   if (eflags != PE_NOTHING) {
     if ((eflags & PE_COMPRESS_SPACES) && had_space &&
-	((*str)[-1] == ' ') && ((*bp)[-1] == ' '))
+        ((*str)[-1] == ' ') && ((*bp)[-1] == ' '))
       (*bp)--;
     if (debugging) {
       pe_info->nest_depth--;
       **bp = '\0';
       if (strcmp(sourcestr, startpos)) {
-	static char dbuf[BUFFER_LEN];
-	char *dbp;
-	if (pe_info->debug_strings) {
-	  while (pe_info->debug_strings->prev)
-	    pe_info->debug_strings = pe_info->debug_strings->prev;
-	  while (pe_info->debug_strings->next) {
-	    dbp = dbuf;
-	    dbuf[0] = '\0';
-	    safe_format(dbuf, &dbp, "%s :", pe_info->debug_strings->string);
-	    *dbp = '\0';
-	    if (Connected(Owner(executor)))
-	      raw_notify(Owner(executor), dbuf);
-	    notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
-			NA_NOLISTEN | NA_NOPREFIX);
-	    pe_info->debug_strings = pe_info->debug_strings->next;
-	    mush_free((Malloc_t) pe_info->debug_strings->prev,
-		      "process_expression.debug_node");
-	  }
-	  mush_free((Malloc_t) pe_info->debug_strings,
-		    "process_expression.debug_node");
-	  pe_info->debug_strings = NULL;
-	}
-	dbp = dbuf;
-	dbuf[0] = '\0';
-	safe_format(dbuf, &dbp, "%s => %s", debugstr, startpos);
-	*dbp = '\0';
-	if (Connected(Owner(executor)))
-	  raw_notify(Owner(executor), dbuf);
-	notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
-		    NA_NOLISTEN | NA_NOPREFIX);
+        static char dbuf[BUFFER_LEN];
+        char *dbp;
+        if (pe_info->debug_strings) {
+          while (pe_info->debug_strings->prev)
+            pe_info->debug_strings = pe_info->debug_strings->prev;
+          while (pe_info->debug_strings->next) {
+            dbp = dbuf;
+            dbuf[0] = '\0';
+            safe_format(dbuf, &dbp, "%s :", pe_info->debug_strings->string);
+            *dbp = '\0';
+            if (Connected(Owner(executor)))
+              raw_notify(Owner(executor), dbuf);
+            notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
+                        NA_NOLISTEN | NA_NOPREFIX);
+            pe_info->debug_strings = pe_info->debug_strings->next;
+            mush_free((Malloc_t) pe_info->debug_strings->prev,
+                      "process_expression.debug_node");
+          }
+          mush_free((Malloc_t) pe_info->debug_strings,
+                    "process_expression.debug_node");
+          pe_info->debug_strings = NULL;
+        }
+        dbp = dbuf;
+        dbuf[0] = '\0';
+        safe_format(dbuf, &dbp, "%s => %s", debugstr, startpos);
+        *dbp = '\0';
+        if (Connected(Owner(executor)))
+          raw_notify(Owner(executor), dbuf);
+        notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
+                    NA_NOLISTEN | NA_NOPREFIX);
       } else {
-	Debug_Info *node;
-	node = pe_info->debug_strings;
-	if (node) {
-	  pe_info->debug_strings = node->prev;
-	  if (node->prev)
-	    node->prev->next = NULL;
-	  mush_free((Malloc_t) node, "process_expression.debug_node");
-	}
+        Debug_Info *node;
+        node = pe_info->debug_strings;
+        if (node) {
+          pe_info->debug_strings = node->prev;
+          if (node->prev)
+            node->prev->next = NULL;
+          mush_free((Malloc_t) node, "process_expression.debug_node");
+        }
       }
       mush_free((Malloc_t) debugstr, "process_expression.debug_source");
     }
@@ -1518,5 +1518,5 @@ exit_sequence:
 }
 
 #ifdef WIN32
-#pragma warning( default : 4761)	/* NJG: enable warning re conversion */
+#pragma warning( default : 4761)        /* NJG: enable warning re conversion */
 #endif

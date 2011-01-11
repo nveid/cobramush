@@ -42,7 +42,7 @@ install_sig_handler(int signo, Sigfunc func)
   if (sigaction(signo, &act, &oact) < 0)
     return SIG_ERR;
   return oact.sa_handler;
-#else				/* No sigaction, drat. */
+#else                           /* No sigaction, drat. */
   return signal(signo, func);
 #endif
 }
@@ -53,7 +53,7 @@ install_sig_handler(int signo, Sigfunc func)
  */
 void
 reload_sig_handler(int signo __attribute__ ((__unused__)),
-		   Sigfunc func __attribute__ ((__unused__)))
+                   Sigfunc func __attribute__ ((__unused__)))
 {
 #if !(defined(HAS_SIGACTION) || defined(SIGNALS_KEPT))
   signal(signo, func);
@@ -72,7 +72,7 @@ ignore_signal(int signo)
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
   sigaction(signo, &act, NULL);
-#else				/* No sigaction, drat. */
+#else                           /* No sigaction, drat. */
   signal(signo, SIG_IGN);
 #endif
 }

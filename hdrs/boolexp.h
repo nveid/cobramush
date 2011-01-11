@@ -22,7 +22,7 @@ extern int sizeof_boolexp(boolexp b);
 extern int eval_boolexp(dbref player, boolexp b, dbref target, unsigned char *switches);
 extern boolexp parse_boolexp(dbref player, const char *buf, lock_type ltype);
 extern boolexp parse_boolexp_d(dbref player, const char *buf, lock_type ltype,
-			       int derefs);
+                               int derefs);
 extern void free_boolexp(boolexp b);
 boolexp getboolexp(FILE * f, const char *ltype);
 void putboolexp(FILE * f, boolexp b);
@@ -33,4 +33,4 @@ enum u_b_f {
               from unparse_boolexp.() For @decompile. */
 };
 extern char *unparse_boolexp(dbref player, boolexp b, enum u_b_f flag);
-#endif				/* BOOLEXP_H */
+#endif                          /* BOOLEXP_H */

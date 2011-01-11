@@ -194,7 +194,7 @@ reallocate_bufferq(BUFFERQ * bq, int lines)
  */
 char *
 iter_bufferq(BUFFERQ * bq, char **p, dbref *player, int *type,
-	     time_t * timestamp)
+             time_t * timestamp)
 {
   static char tbuf1[BUFFER_LEN];
   int size;
@@ -206,7 +206,7 @@ iter_bufferq(BUFFERQ * bq, char **p, dbref *player, int *type,
     return NULL;
 
   if (!*p)
-    *p = bq->buffer;		/* Reset to beginning */
+    *p = bq->buffer;            /* Reset to beginning */
 
   memcpy(&size, *p, sizeof(size));
   *p += sizeof(size);

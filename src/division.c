@@ -1,11 +1,11 @@
 /* division.c - RLB 3/11/02
- *		Part of the Division system for PennMUSH
- * 	   4/12/02 - RLB - Rewrite level set, much more readable now =)
- * 	   4/17/02 - RLB - Code StreamLining
- *	   1/18/04 - RLB - began work on power conversion code
- *	   1/23/04 - RLB - completed power conversion code
- *	   3/26/04 - RLB - Added translation wrappers to messages.
- *	   7/27/05 - RLB - DB Powers Completed
+ *              Part of the Division system for PennMUSH
+ *         4/12/02 - RLB - Rewrite level set, much more readable now =)
+ *         4/17/02 - RLB - Code StreamLining
+ *         1/18/04 - RLB - began work on power conversion code
+ *         1/23/04 - RLB - completed power conversion code
+ *         3/26/04 - RLB - Added translation wrappers to messages.
+ *         7/27/05 - RLB - DB Powers Completed
  */
 
 /* Required Includes {{{1 */
@@ -619,7 +619,7 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
         memset(tbuf, '\0', 128);
         strncpy(tbuf, object_header(executor, player), 127);
         notify_format(executor, "%s did not have powergroup %s.",
-	    tbuf, pgrp->name);
+            tbuf, pgrp->name);
         continue;
       }
       /* Remove */
@@ -631,13 +631,13 @@ powergroup_db_set(dbref executor, dbref player, const char *powergroup,
       memset(tbuf, '\0', 128);
       strncpy(tbuf, object_header(player, executor), 127);
       notify_format(player, "%s removed powergroup %s from you.",
-	  tbuf, pgrp->name);
+          tbuf, pgrp->name);
     } else {
       if (powergroup_has(player, pgrp)) {
         memset(tbuf, '\0', 128);
         strncpy(tbuf, object_header(executor, player), 127);
         notify_format(executor, "%s already has powergroup %s.",
-	    tbuf, pgrp->name);
+            tbuf, pgrp->name);
         continue;
       }
       /* Add */
@@ -1311,7 +1311,7 @@ COMMAND(cmd_power)
  * @powergroup/auto <powergroup>=<power> - Assign a power as an autoset for the powergroup
  * @powergroup/max <powergroup>=<power>  - Assign a power to the maxset for the powergroup
  * @powergroup/list                      - List all available powergroups
- * @powergroup/list <player>		 - List powergroups set on a object
+ * @powergroup/list <player>             - List powergroups set on a object
  * @powergroup/raw <user>=<powergroup>   - Assign a powergroup to a user without assigning auto powers
  *
  */
@@ -1829,8 +1829,8 @@ division_empower(dbref exec, dbref target, const char *arg2)
  * pow_lev-> powerscope level
  * Return Values: 1->Yes, 
  * No Vals:  0 -> Giver  doesn't have it
- * 	    -1 -> Giver power conflict in lowering pow_lev
- * 	    -2 -> Receiver can't receive it due to powergroup conflict
+ *          -1 -> Giver power conflict in lowering pow_lev
+ *          -2 -> Receiver can't receive it due to powergroup conflict
  */
 int
 can_give_power(dbref giver, dbref receiver, POWER * power, int pow_lev)

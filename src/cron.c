@@ -137,29 +137,29 @@ start_cron(void)
 
     while(fp_h && which < CS_TASK ) {
        if(fp_t && (fp_t = strchr(fp_h, ' '))) 
-	   *fp_t++ = '\0';
+           *fp_t++ = '\0';
       
        switch(which) {
-	   case CS_MINUTE:
-	     spec = parse_spec((const char *) fp_h, CRON_MINUTE_MAX, NULL, NULL, NULL, NULL);
-	     memcpy(&job->spec.minute, &spec, sizeof(job->spec.minute));
-	     break;
-	   case CS_HOUR:
-	     spec = parse_spec((const char *) fp_h, CRON_HOUR_MAX, NULL, NULL, NULL, NULL);
-	     memcpy(&job->spec.hour, &spec, sizeof(job->spec.hour));
-	     break;
-	   case CS_DAY:
-	     spec = parse_spec((const char *) fp_h, CRON_DAY_MAX, NULL, NULL, NULL, NULL);
-	     memcpy(&job->spec.day, &spec, sizeof job->spec.day);
-	     break;
-	   case CS_MONTH:
-	     spec = parse_spec((const char *) fp_h, CRON_MONTH_MAX, month_table, month_alias_table, NULL, NULL);
-	     memcpy(&job->spec.month, &spec, sizeof(job->spec.month));
-	     break;
-	   case CS_WDAY:
-	     spec = parse_spec((const char *) fp_h, CRON_DAY_MAX, wday_table, wday_alias_table, NULL, NULL);
-	     memcpy(&job->spec.wday, &spec, sizeof(job->spec.wday));
-	     break;
+           case CS_MINUTE:
+             spec = parse_spec((const char *) fp_h, CRON_MINUTE_MAX, NULL, NULL, NULL, NULL);
+             memcpy(&job->spec.minute, &spec, sizeof(job->spec.minute));
+             break;
+           case CS_HOUR:
+             spec = parse_spec((const char *) fp_h, CRON_HOUR_MAX, NULL, NULL, NULL, NULL);
+             memcpy(&job->spec.hour, &spec, sizeof(job->spec.hour));
+             break;
+           case CS_DAY:
+             spec = parse_spec((const char *) fp_h, CRON_DAY_MAX, NULL, NULL, NULL, NULL);
+             memcpy(&job->spec.day, &spec, sizeof job->spec.day);
+             break;
+           case CS_MONTH:
+             spec = parse_spec((const char *) fp_h, CRON_MONTH_MAX, month_table, month_alias_table, NULL, NULL);
+             memcpy(&job->spec.month, &spec, sizeof(job->spec.month));
+             break;
+           case CS_WDAY:
+             spec = parse_spec((const char *) fp_h, CRON_DAY_MAX, wday_table, wday_alias_table, NULL, NULL);
+             memcpy(&job->spec.wday, &spec, sizeof(job->spec.wday));
+             break;
        }
        which++;
        fp_h = fp_t;
@@ -273,32 +273,32 @@ run_cron(void)
         end = job->object;
       }
       do {
-	/* Job owner must control object to do it */
-	if(controls(job->owner,start)) {
+        /* Job owner must control object to do it */
+        if(controls(job->owner,start)) {
           if (CRON_Command(job)) {
-	    queue_attribute(start, job->attrib, job->owner);
+            queue_attribute(start, job->attrib, job->owner);
           } else if (CRON_Function(job)) {
-	    /* TODO: Review this section & possibly rewrite to make sure its secure. */
-	    bp = buff;
-	    a = (ATTR *) atr_get(start, job->attrib);
-	    if (!a) {
-	      start++;
-	      continue;
-	    }
-	    s = (char *) safe_atr_value(a);
-	    if (!s) {
-	      start++;
-	      continue;
-	    }
+            /* TODO: Review this section & possibly rewrite to make sure its secure. */
+            bp = buff;
+            a = (ATTR *) atr_get(start, job->attrib);
+            if (!a) {
+              start++;
+              continue;
+            }
+            s = (char *) safe_atr_value(a);
+            if (!s) {
+              start++;
+              continue;
+            }
             sp = s;
             process_expression(buff, &bp, &sp, start, start, start, PE_DEFAULT, PT_DEFAULT, NULL);
             *bp = '\0';
-	    free(s);
+            free(s);
           } else {
             stop = 1;
             continue;
           }
-	}
+        }
         start++;
       } while (start < end && !stop);
     }

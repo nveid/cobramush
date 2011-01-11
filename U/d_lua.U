@@ -15,7 +15,7 @@ if $test -f lua/src/lua.c -o -f ../lua/src/lua.c ; then
 	   ;;
     esac
 else
-  echo "Can not find LUA source directory.  Check your CobraMUSH installation.">&4
+  echo "Can not find LUA source directory.  Check your LUA installation.">&4
   exit 1
 fi
 

@@ -26,9 +26,9 @@ typedef struct mem_check MEM;
 
 /** A linked list for storing memory allocation counts */
 struct mem_check {
-  int ref_count;		/**< Number of allocations of this type. */
-  MEM *next;			/**< Pointer to next in linked list. */
-  char ref_name[BUFFER_LEN];	/**< Name of this allocation type. */
+  int ref_count;                /**< Number of allocations of this type. */
+  MEM *next;                    /**< Pointer to next in linked list. */
+  char ref_name[BUFFER_LEN];    /**< Name of this allocation type. */
 };
 
 static MEM *my_check = NULL;
@@ -88,11 +88,11 @@ del_check(const char *ref)
     if (cmp == 0) {
       loop->ref_count--;
       if (!loop->ref_count) {
-	if (!prev)
-	  my_check = loop->next;
-	else
-	  prev->next = loop->next;
-	free(loop);
+        if (!prev)
+          my_check = loop->next;
+        else
+          prev->next = loop->next;
+        free(loop);
       }
       return;
     } else if (cmp < 0)
@@ -100,8 +100,8 @@ del_check(const char *ref)
     prev = loop;
   }
   do_rawlog(LT_CHECK,
-	    T("ERROR: Tried deleting a check that was never added! :%s\n"),
-	    ref);
+            T("ERROR: Tried deleting a check that was never added! :%s\n"),
+            ref);
 }
 
 /** List allocations.

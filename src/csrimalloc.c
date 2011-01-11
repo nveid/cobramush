@@ -22,7 +22,7 @@
 #include "conf.h"
 #include "externs.h"
 #include "mymalloc.h"
-#include "csrimalloc.h"		/* Must be after mymalloc.h! */
+#include "csrimalloc.h"         /* Must be after mymalloc.h! */
 
 #ifdef CSRI_TRACE
 #undef malloc(x)
@@ -98,7 +98,7 @@ extern char *getenv proto((const char *));
  *  sprintf().
  */
 
-#if 0				/* can't win with this one */
+#if 0                           /* can't win with this one */
 extern int sprintf proto((char *, const char *, ...));
 #endif
 
@@ -133,19 +133,19 @@ extern int open proto((const char * /*path */ , int /*flags */ , ...));
 #define caddr_t char *
 extern caddr_t sbrk proto((int));
 
-#ifdef _SC_PAGESIZE		/* Solaris 2.x, SVR4? */
+#ifdef _SC_PAGESIZE             /* Solaris 2.x, SVR4? */
 #define getpagesize()           sysconf(_SC_PAGESIZE)
-#else				/* ! _SC_PAGESIZE */
-#ifdef _SC_PAGE_SIZE		/* HP, IBM */
+#else                           /* ! _SC_PAGESIZE */
+#ifdef _SC_PAGE_SIZE            /* HP, IBM */
 #define getpagesize()   sysconf(_SC_PAGE_SIZE)
-#else				/* ! _SC_PAGE_SIZE */
+#else                           /* ! _SC_PAGE_SIZE */
 #ifndef getpagesize
 extern int getpagesize proto((void));
-#endif				/* getpagesize */
-#endif				/* _SC_PAGE_SIZE */
-#endif				/* _SC_PAGESIZE */
+#endif                          /* getpagesize */
+#endif                          /* _SC_PAGE_SIZE */
+#endif                          /* _SC_PAGESIZE */
 
-#ifdef _AIX			/* IBM AIX doesn't declare sbrk, but is STDHEADERS. */
+#ifdef _AIX                     /* IBM AIX doesn't declare sbrk, but is STDHEADERS. */
 extern caddr_t sbrk proto((int));
 #endif
 
@@ -184,7 +184,7 @@ extern int madvise proto((caddr_t, size_t, int));
 extern caddr_t mmap proto((caddr_t, size_t, int, int, int, off_t));
 #endif
 
-#endif	/* EXTERNS_H__ */			/* Do not add anything after this line */
+#endif  /* EXTERNS_H__ */                       /* Do not add anything after this line */
 
 /* $Id: csrimalloc.c,v 1.2 2005-12-13 20:34:11 ari Exp $ */
 #ifndef __ASSERT_H__
@@ -204,7 +204,7 @@ proto((const char *, const char *, univptr_t, int, const char *, int));
 #define ASSERT_SP(p, s, s2, sp)
 #define ASSERT_EP(p, s, s2, ep)
 #endif
-#endif	/* __ASSERT_H__ */			/* Do not add anything after this line */
+#endif  /* __ASSERT_H__ */                      /* Do not add anything after this line */
 #ifndef EXIT_FAILURE
 #define EXIT_FAILURE    1
 #endif
@@ -299,19 +299,19 @@ static size_t _N = NALIGN;
   /* a number used normally for size of a shift */
 #if gcos
 #define BITSPERBYTE     9
-#else				/* ! gcos */
+#else                           /* ! gcos */
 #define BITSPERBYTE     8
-#endif				/* gcos */
-#endif				/* BITSPERBYTE */
+#endif                          /* gcos */
+#endif                          /* BITSPERBYTE */
 
 #ifndef BITS
 #define BITS(type)      (BITSPERBYTE * (int) sizeof(type))
-#endif				/* BITS */
+#endif                          /* BITS */
 
 /* size_t with only the high-order bit turned on */
 #define HIBITSZ (((size_t) 1) << (BITS(size_t) - 1))
 
-#endif	/* __ALIGN_H__ */			/* Do not add anything after this line */
+#endif  /* __ALIGN_H__ */                       /* Do not add anything after this line */
 
 /*
  * We assume that FREE is a 0 bit, and the tag for a free block, Or'ing the
@@ -327,18 +327,18 @@ static size_t _N = NALIGN;
 
 #define DEF_SBRKUNITS   1024
 
-union word {			/* basic unit of storage */
-  size_t size;			/* size of this block + 1 bit status */
-  union word *next;		/* next free block */
-  union word *prev;		/* prev free block */
-  univptr_t ptr;		/* stops lint complaining, keeps alignment */
+union word {                    /* basic unit of storage */
+  size_t size;                  /* size of this block + 1 bit status */
+  union word *next;             /* next free block */
+  union word *prev;             /* prev free block */
+  univptr_t ptr;                /* stops lint complaining, keeps alignment */
   char c;
   int i;
   char *cp;
   char **cpp;
   int *ip;
   int **ipp;
-   ALIGN;			/* alignment stuff - wild fun */
+   ALIGN;                       /* alignment stuff - wild fun */
 };
 
 typedef union word Word;
@@ -405,7 +405,7 @@ typedef union word Word;
 
 #ifdef CSRI_DEBUG
 #define REALSIZE(sp)            (((sp)+1)->size)
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 #define NEXT(ep)                (((ep)-1)->next)
 #define PREV(ep)                (((ep)-2)->prev)
@@ -415,16 +415,16 @@ typedef union word Word;
  *  free block header uses extra words in the block itself
  */
 #ifdef CSRI_DEBUG
-#define HEADERWORDS             2	/* Start boundary tag + real size in bytes */
-#else				/* ! CSRI_DEBUG */
-#define HEADERWORDS             1	/* Start boundary tag */
-#endif				/* CSRI_DEBUG */
+#define HEADERWORDS             2       /* Start boundary tag + real size in bytes */
+#else                           /* ! CSRI_DEBUG */
+#define HEADERWORDS             1       /* Start boundary tag */
+#endif                          /* CSRI_DEBUG */
 
 #define TRAILERWORDS            1
 
-#define FREEHEADERWORDS         1	/* Start boundary tag */
+#define FREEHEADERWORDS         1       /* Start boundary tag */
 
-#define FREETRAILERWORDS        3	/* next and prev, end boundary tag */
+#define FREETRAILERWORDS        3       /* next and prev, end boundary tag */
 
 #define ALLOC_OVERHEAD  (HEADERWORDS + TRAILERWORDS)
 #define FREE_OVERHEAD   (FREEHEADERWORDS + FREETRAILERWORDS)
@@ -442,7 +442,7 @@ typedef union word Word;
  *  tags that are permanantly marked allocated, so that no attempt is
  *  made to coalesce past them. See the code in dumpheap for more info.
  */
-#define ARENASTART              2	/* next ptr + fake start tag */
+#define ARENASTART              2       /* next ptr + fake start tag */
 
 #ifdef CSRI_DEBUG
   /* 
@@ -450,10 +450,10 @@ typedef union word Word;
    * REALSIZE word
    */
 #define FIXEDOVERHEAD           (1 + ALLOC_OVERHEAD)
-#else				/* ! CSRI_DEBUG */
+#else                           /* ! CSRI_DEBUG */
   /* 1 for prev link, 1 for next link, + header and trailer */
 #define FIXEDOVERHEAD           (2 + ALLOC_OVERHEAD)
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 /* 
  * Check that pointer is safe to dereference i.e. actually points
@@ -485,7 +485,7 @@ typedef union word Word;
    */
 #ifndef u_char
 #define u_char          unsigned char
-#endif				/* u_char */
+#endif                          /* u_char */
 
 #define MAGIC_BYTE              ((u_char) '\252')
 
@@ -532,11 +532,11 @@ typedef union word Word;
    */
 #define TOO_SMALL(sp) (SIZE(sp) < ALLOC_OVERHEAD)
 
-#else				/* ! CSRI_DEBUG */
+#else                           /* ! CSRI_DEBUG */
 #define SET_REALSIZE(sp, n)
 #define VALID_MAGIC(sp) (1)
 #define TOO_SMALL(sp)           (0)
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 /* 
  *  Check that a free list ptr points to a block with something pointing
@@ -571,7 +571,7 @@ typedef union word Word;
 #define fputs(s, f)             write(fileno(f), (s), strlen(s))
 #define setvbuf(f, s, n, l)     __nothing()
 #define fflush(f)               __nothing()
-#endif				/* USESTDIO */
+#endif                          /* USESTDIO */
 
 #ifdef CSRI_TRACE
   /* 
@@ -616,11 +616,11 @@ typedef union word Word;
   } else \
         _malloc_debugging += 0
 
-#else				/* !CSRI_DEBUG */
+#else                           /* !CSRI_DEBUG */
 #define CHECKHEAP()
 #define CHECKFREEPTR(ep, msg)
 #define CHECKALLOCPTR(sp, msg)
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 #define FREEMAGIC               '\125'
 
@@ -649,7 +649,7 @@ typedef union word Word;
  *  variable accessed in a way not obvious to the compiler", so should
  *  be called volatile. Amazing - a use for const volatile...
  */
-#ifndef RCSID			/* define RCSID(x) to nothing if don't want the rcs headers */
+#ifndef RCSID                   /* define RCSID(x) to nothing if don't want the rcs headers */
 #if defined(lint) || defined(__STRICT_ANSI__)
 #define RCSID(x)
 #else
@@ -657,7 +657,7 @@ typedef union word Word;
 #endif
 #endif
 
-#endif	/* __DEFS_H__ */			/* Do not add anything after this line */
+#endif  /* __DEFS_H__ */                        /* Do not add anything after this line */
 
 /*  Author: Mark Moraes <moraes@csri.toronto.edu> */
 
@@ -699,7 +699,7 @@ typedef union word Word;
 
 #ifdef CSRI_PROFILESIZES
 #define _malloc_scount          __MALC_scount
-#endif				/* CSRI_PROFILESIZES */
+#endif                          /* CSRI_PROFILESIZES */
 
 #ifdef CSRI_DEBUG
 /*
@@ -708,13 +708,13 @@ typedef union word Word;
  *  malloc/free/realloc/memalign. (the rest call these)
  */
 #define _malloc_debugging       __MALD_debugging
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 #define _malloc_version         __MALE_version
 
 #define _malloc_memfunc         __MALF_memfunc
 
-#endif	/* SHORTNAMES */			/* Do not add anything after this line */
-#endif	/* __GLOBALRENAME_H__ */			 /* Do not add anything after this line */
+#endif  /* SHORTNAMES */                        /* Do not add anything after this line */
+#endif  /* __GLOBALRENAME_H__ */                         /* Do not add anything after this line */
 const char *_malloc_version =
   "CSRI, University of Toronto Malloc Version 1.18alpha";
 
@@ -766,14 +766,14 @@ Word *_malloc_mem = NULL;
  *  you want to format something before printing. We don't want stdio
  *  calling malloc() if we can help it
  */
-int _malloc_tracing = 0;	/* No tracing */
+int _malloc_tracing = 0;        /* No tracing */
 char _malloc_statsbuf[128];
 
 int _malloc_leaktrace = 0;
 
 #ifdef CSRI_PROFILESIZES
 int _malloc_scount[MAXPROFILESIZE];
-#endif				/* CSRI_PROFILESIZES */
+#endif                          /* CSRI_PROFILESIZES */
 
 #ifdef CSRI_DEBUG
 /*
@@ -782,7 +782,7 @@ int _malloc_scount[MAXPROFILESIZE];
  *  malloc/free/realloc/memalign. (the rest call these)
  */
 int _malloc_debugging = 0;
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 univptr_t (*_malloc_memfunc) proto((size_t)) = _mal_sbrk;
 
@@ -812,7 +812,7 @@ size_t _malloc_sbrkunits;
 extern Word *_malloc_mem;
 
 extern int
- _malloc_tracing;		/* No tracing */
+ _malloc_tracing;               /* No tracing */
 extern char
  _malloc_statsbuf[];
 
@@ -822,7 +822,7 @@ extern int
 #ifdef CSRI_PROFILESIZES
 extern int
  _malloc_scount[];
-#endif				/* CSRI_PROFILESIZES */
+#endif                          /* CSRI_PROFILESIZES */
 
 #ifdef CSRI_DEBUG
 /*
@@ -832,7 +832,7 @@ extern int
  */
 extern int
  _malloc_debugging;
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 extern
 univptr_t (*_malloc_memfunc) proto((size_t));
@@ -840,7 +840,7 @@ univptr_t (*_malloc_memfunc) proto((size_t));
 extern int
 __m_prblock proto((univptr_t, int, FILE *));
 
-#endif	/* __GLOBALS_H__ */			/* Do not add anything after this line */
+#endif  /* __GLOBALS_H__ */                     /* Do not add anything after this line */
 
 /*
    ** sptree.h:  The following type declarations provide the binary tree
@@ -862,27 +862,27 @@ typedef struct _spblk {
   struct _spblk *uplink;
 
   univptr_t
-   key;				/* formerly time/timetyp */
+   key;                         /* formerly time/timetyp */
   univptr_t
-   data;			/* formerly aux/auxtype */
+   data;                        /* formerly aux/auxtype */
   univptr_t
    datb;
 } SPBLK;
 
 typedef struct {
-  SPBLK *root;			/* root node */
+  SPBLK *root;                  /* root node */
 
   /* Statistics, not strictly necessary, but handy for tuning  */
 
   int
-   lookups;			/* number of splookup()s */
+   lookups;                     /* number of splookup()s */
   int
-   lkpcmps;			/* number of lookup comparisons */
+   lkpcmps;                     /* number of lookup comparisons */
 
   int
-   enqs;			/* number of spenq()s */
+   enqs;                        /* number of spenq()s */
   int
-   enqcmps;			/* compares in spenq */
+   enqcmps;                     /* compares in spenq */
 
   int
    splays;
@@ -915,7 +915,7 @@ __spdelete __proto((SPBLK *, SPTREE *));
 
 #undef __proto
 
-#endif				/* SPTREE_H */
+#endif                          /* SPTREE_H */
 
 #ifndef __CSRI_TRACE_H__
 #define __CSRI_TRACE_H__
@@ -937,7 +937,7 @@ __m_delete_record proto((univptr_t));
         else \
                 _malloc_leaktrace += 0
 
-#endif	/* __CSRI_TRACE_H__ */			/* Do not add anything after this line */
+#endif  /* __CSRI_TRACE_H__ */                  /* Do not add anything after this line */
 
 #include "confmagic.h"
 
@@ -965,7 +965,7 @@ void
 trace__free _((univptr_t cp, const char *fname, int linenum));
 void
 trace__cfree _((univptr_t cp, const char *fname, int linenum));
-#else				/* CSRI_TRACE */
+#else                           /* CSRI_TRACE */
 univptr_t
 malloc _((size_t nbytes));
 univptr_t
@@ -984,7 +984,7 @@ univptr_t
 erealloc _((univptr_t ptr, size_t nbytes));
 Free_t free _((univptr_t cp));
 Free_t cfree _((univptr_t cp));
-#endif				/* CSRI_TRACE */
+#endif                          /* CSRI_TRACE */
 
 int
  __m_botch
@@ -1224,7 +1224,7 @@ trace__strsave(s, fname, linenum)
   RECORD_FILE_AND_LINE((univptr_t) cp, fname, linenum);
   return (cp);
 }
-#endif				/* CSRI_TRACE */
+#endif                          /* CSRI_TRACE */
 int
 __nothing()
 {
@@ -1243,7 +1243,7 @@ __m_botch(s1, s2, p, is_end_ptr, filename, linenumber)
     const char *filename;
     int linenumber, is_end_ptr;
 {
-  static char linebuf[32];	/* Enough for a BIG linenumber! */
+  static char linebuf[32];      /* Enough for a BIG linenumber! */
   static int notagain = 0;
 
   if (notagain == 0) {
@@ -1265,10 +1265,10 @@ __m_botch(s1, s2, p, is_end_ptr, filename, linenumber)
      * tried to unbuffer it
      */
     (void) fflush(stderr);
-    notagain++;			/* just in case abort() tries to cleanup */
+    notagain++;                 /* just in case abort() tries to cleanup */
     abort();
   }
-  return 0;			/* SHOULDNTHAPPEN */
+  return 0;                     /* SHOULDNTHAPPEN */
 }
 
 /*  Author: Mark Moraes <moraes@csri.toronto.edu> */
@@ -1287,7 +1287,7 @@ __m_prblock(p, is_end_ptr, fp)
   Word *blkend;
   ulong tag;
   ulong blksize;
-  char buf[512];		/* long enough for the sprintfs below */
+  char buf[512];                /* long enough for the sprintfs below */
 
   if (blk == NULL)
     return 0;
@@ -1306,8 +1306,8 @@ __m_prblock(p, is_end_ptr, fp)
     blkend = blk + blksize - 1;
   }
   (void) sprintf(buf, "  %s blk: 0x%lx to 0x%lx, %lu (0x%lx) words",
-		 tag == FREE ? "Free" : "Allocated", (ulong) blk,
-		 (ulong) blkend, blksize, blksize);
+                 tag == FREE ? "Free" : "Allocated", (ulong) blk,
+                 (ulong) blkend, blksize, blksize);
   (void) fputs(buf, fp);
   if (is_end_ptr && !PTR_IN_HEAP(blk)) {
     sprintf(buf, "  ** start pointer 0x%lx not in heap\n", (ulong) blk);
@@ -1327,7 +1327,7 @@ __m_prblock(p, is_end_ptr, fp)
     char *cp;
 
     (void) sprintf(buf, " next=0x%lx, prev=0x%lx\n",
-		   (ulong) NEXT(blkend), (ulong) PREV(blkend));
+                   (ulong) NEXT(blkend), (ulong) PREV(blkend));
     (void) fputs(buf, fp);
     /* Make sure free block is filled with FREEMAGIC */
     n = (blksize - FREE_OVERHEAD) * sizeof(Word);
@@ -1335,8 +1335,8 @@ __m_prblock(p, is_end_ptr, fp)
 #ifdef CSRI_DEBUG
     for (i = 0; i < n; i++, cp++) {
       if (*cp != FREEMAGIC) {
-	(void) fputs("  ** modified after free().\n", fp);
-	break;
+        (void) fputs("  ** modified after free().\n", fp);
+        break;
       }
     }
 #endif
@@ -1363,7 +1363,7 @@ __m_prblock(p, is_end_ptr, fp)
   }
   if (!VALID_START_SIZE_FIELD(blk)) {
     sprintf(buf, "  ** bad size field: tags = 0x%x, 0x%x\n",
-	    (unsigned int) SIZEFIELD(blk), (unsigned int) SIZEFIELD(blkend));
+            (unsigned int) SIZEFIELD(blk), (unsigned int) SIZEFIELD(blkend));
     (void) fputs(buf, fp);
     return 0;
   }
@@ -1384,9 +1384,9 @@ mal_heapdump(fp)
   REGISTER Word *blk;
   REGISTER Word *blkend;
   int i;
-  char buf[512];		/* long enough for the sprintfs below */
+  char buf[512];                /* long enough for the sprintfs below */
 
-  if (_malloc_loword == NULL) {	/* Nothing malloc'ed yet */
+  if (_malloc_loword == NULL) { /* Nothing malloc'ed yet */
     (void) fputs("Null heap - nothing malloc'ed yet\n", fp);
     return;
   }
@@ -1410,26 +1410,26 @@ mal_heapdump(fp)
   }
   if (_malloc_rovers[MAXBINS] != NULL) {
     (void) sprintf(buf, "  ** rover terminator is 0x%lx, fixing\n",
-		   (ulong) _malloc_rovers[MAXBINS]);
+                   (ulong) _malloc_rovers[MAXBINS]);
     (void) fputs(buf, fp);
     _malloc_rovers[MAXBINS] = NULL;
   }
   for (ptr = _malloc_mem; ptr != NULL; ptr = ptr->next) {
     /* print the arena */
     (void) sprintf(buf, "Arena from 0x%lx to 0x%lx, %lu (0x%lx) words\n",
-		   (ulong) ptr, (ulong) (ptr + SIZE(ptr + 1)),
-		   (ulong) SIZE(ptr + 1) + 1, (ulong) SIZE(ptr + 1) + 1);
+                   (ulong) ptr, (ulong) (ptr + SIZE(ptr + 1)),
+                   (ulong) SIZE(ptr + 1) + 1, (ulong) SIZE(ptr + 1) + 1);
     (void) fputs(buf, fp);
     (void) sprintf(buf, "Next arena is 0x%lx\n", (ulong) ptr->next);
     (void) fputs(buf, fp);
     (void) fflush(fp);
     ASSERT(SIZEFIELD(ptr + 1) == SIZEFIELD(ptr + SIZE(ptr + 1)),
-	   "mal_dumpheap: corrupt malloc arena");
+           "mal_dumpheap: corrupt malloc arena");
     blkend = ptr + SIZE(ptr + 1);
     for (blk = ptr + ARENASTART; blk < blkend; blk += SIZE(blk)) {
       if (!__m_prblock((univptr_t) blk, 0, fp)) {
-	__m_botch("mal_dumpheap: corrupt block", "",
-		  (univptr_t) 0, 0, __FILE__, __LINE__);
+        __m_botch("mal_dumpheap: corrupt block", "",
+                  (univptr_t) 0, 0, __FILE__, __LINE__);
       }
     }
   }
@@ -1523,7 +1523,7 @@ _mal_sbrk(nbytes)
    */
   if (nbytes > 0) {
     ASSERT(p > lastsbrk,
-	   "system call error? sbrk returned value lower than previous calls");
+           "system call error? sbrk returned value lower than previous calls");
     lastsbrk = p;
   }
   return p;
@@ -1589,7 +1589,7 @@ _mal_mmap(nbytes)
   }
   mmf.i_size = stbuf.st_size;
   mmf.i_data = mmap((caddr_t) 0, mmf.i_size, PROT_READ | PROT_WRITE,
-		    MAP_SHARED, mmf.i_fd, (off_t) 0);
+                    MAP_SHARED, mmf.i_fd, (off_t) 0);
   if (mmf.i_data == (caddr_t) - 1)
     return (univptr_t) -1;
   mmf.i_end = mmf.i_data + mmf.i_size;
@@ -1598,7 +1598,7 @@ _mal_mmap(nbytes)
   (void) madvise(mmf.i_data, mmf.i_size, MADV_RANDOM);
   return mmf.i_data;
 }
-#else				/* !HAVE_MMAP */
+#else                           /* !HAVE_MMAP */
 univptr_t
 _mal_mmap(nbytes)
     size_t nbytes __attribute__ ((__unused__));
@@ -1606,7 +1606,7 @@ _mal_mmap(nbytes)
   return (univptr_t) -1;
 }
 
-#endif				/* HAVE_MMAP */
+#endif                          /* HAVE_MMAP */
 
 void
 mal_mmap(fname)
@@ -1689,8 +1689,8 @@ __m_prnode(spblk)
   if ((unsigned long) spblk->datb < min_num)
     return;
   (void) sprintf(_malloc_statsbuf, "%s%8lu %8lu(0x%08lx)\n",
-		 (char *) spblk->data, (unsigned long) spblk->datb,
-		 (unsigned long) spblk->key, (unsigned long) spblk->key);
+                 (char *) spblk->data, (unsigned long) spblk->datb,
+                 (unsigned long) spblk->key, (unsigned long) spblk->key);
   (void) fputs(_malloc_statsbuf, dumpfp);
 }
 
@@ -1761,8 +1761,8 @@ mal_contents(fp)
   global_nbytes = 0;
   __spscan(__m_count, (SPBLK *) NULL, sp);
   (void) sprintf(_malloc_statsbuf,
-		 "%% %lu bytes %lu mallocs %p vm\n",
-		 global_nbytes, nmallocs, sbrk(0));
+                 "%% %lu bytes %lu mallocs %p vm\n",
+                 global_nbytes, nmallocs, sbrk(0));
   (void) fputs(_malloc_statsbuf, fp);
   (void) fflush(fp);
 }
@@ -1878,7 +1878,7 @@ grabhunk(nwords)
    */
 #define EXCESS 3
   sbrkwords = (size_t) (((nwords + EXCESS) / _malloc_sbrkunits + 1) *
-			_malloc_sbrkunits);
+                        _malloc_sbrkunits);
   morecore = sbrkwords * sizeof(Word) + SBRKEXTRA;
   if ((cp = (*_malloc_memfunc) (morecore)) == (univptr_t) -1)
     return (0);
@@ -1905,7 +1905,7 @@ grabhunk(nwords)
   spare = (char *) (ptr + sbrkwords);
   nspare = (morecore - sbrkwords * sizeof(Word));
   PRCSRI_TRACE(sprintf(_malloc_statsbuf, "sbrk %lu\n",
-		       (ulong) sbrkwords * sizeof(Word)));
+                       (ulong) sbrkwords * sizeof(Word)));
 
   /*
    * If the new chunk adjoins _malloc_hiword, then _malloc_hiword
@@ -1946,7 +1946,7 @@ grabhunk(nwords)
     SIZEFIELD(ptr) = ALLOCED | sbrkwords;
     _malloc_hiword += sbrkwords - 1;
     PRCSRI_TRACE(sprintf(_malloc_statsbuf, "heapend 0x%lx\n",
-			 (ulong) _malloc_hiword));
+                         (ulong) _malloc_hiword));
     SIZEFIELD(_malloc_hiword) = ALLOCED | sbrkwords;
 
     /* * Subtract 2 for the special arena end tags. */
@@ -1958,7 +1958,7 @@ grabhunk(nwords)
     LINK(ptr, sbrkwords, _malloc_lastbin)
       _malloc_rovers[_malloc_lastbin] = ptr;
     while (_malloc_rovers[_malloc_firstbin] == NULL &&
-	   _malloc_firstbin < MAXBINS - 1)
+           _malloc_firstbin < MAXBINS - 1)
       _malloc_firstbin++;
     return (1);
   }
@@ -1996,7 +1996,7 @@ malloc(nbytes)
     errno = EINVAL;
     return (NULL);
   }
-#endif				/* SVID_MALLOC_0 */
+#endif                          /* SVID_MALLOC_0 */
 
   required = ALLOC_OVERHEAD + (nbytes + sizeof(Word) - 1) / sizeof(Word);
   if (required < (size_t) _malloc_minchunk)
@@ -2021,9 +2021,9 @@ malloc(nbytes)
       CHECKFREEPTR(search, "while searching in malloc()");
       searchsize = FREESIZE(search);
       if (searchsize >= required) {
-	break;
+        break;
       } else {
-	search = NEXT(search);
+        search = NEXT(search);
       }
     } while (search != start);
   }
@@ -2048,9 +2048,9 @@ malloc(nbytes)
   p = search - searchsize + 1;
   SIZEFIELD(p) = SIZEFIELD(p + required - 1) = ALLOCMASK(required);
   PRCSRI_TRACE(sprintf
-	       (_malloc_statsbuf, "+ %lu %lu 0x%lx\n", (ulong) nbytes,
-		(ulong) (required - ALLOC_OVERHEAD) * sizeof(Word),
-		(ulong) (p + HEADERWORDS)));
+               (_malloc_statsbuf, "+ %lu %lu 0x%lx\n", (ulong) nbytes,
+                (ulong) (required - ALLOC_OVERHEAD) * sizeof(Word),
+                (ulong) (p + HEADERWORDS)));
   COUNTSIZE(required);
   SET_REALSIZE(p, nbytes);
   return ((univptr_t) (p + HEADERWORDS));
@@ -2107,8 +2107,8 @@ free(cp)
   sizep0 = SIZE(p0);
   DMEMSET(p0 + FREEHEADERWORDS, sizep0 - FREE_OVERHEAD);
   PRCSRI_TRACE(sprintf(_malloc_statsbuf, "- %lu 0x%lx\n",
-		       (ulong) (sizep0 - ALLOC_OVERHEAD) * sizeof(Word),
-		       (ulong) (p0 + HEADERWORDS)));
+                       (ulong) (sizep0 - ALLOC_OVERHEAD) * sizeof(Word),
+                       (ulong) (p0 + HEADERWORDS)));
 
   p1 = p0 - 1;
   /*
@@ -2141,7 +2141,7 @@ free(cp)
     SIZEFIELD(p2 - sizep0 + 1) = SIZEFIELD(p2) = FREEMASK(sizep0);
     /*  Smash p0's old end tag and p2's old start tag. */
     DMEMSET(p0 - FREETRAILERWORDS + 1, FREETRAILERWORDS + FREEHEADERWORDS);
-    p0 = p2;			/* p0 just vanished - became part of p2 */
+    p0 = p2;                    /* p0 just vanished - became part of p2 */
   }
   if (TAG(p1) == FREE) {
     /*
@@ -2281,9 +2281,9 @@ realloc(cp, nbytes)
   SIZEFIELD(p0) = SIZEFIELD(p0 + sizep0 - 1) = ALLOCMASK(sizep0);
   SET_REALSIZE(p0, nbytes);
   PRCSRI_TRACE(sprintf(_malloc_statsbuf, "++ %lu %lu 0x%lx\n",
-		       (ulong) nbytes,
-		       (ulong) (sizep0 - ALLOC_OVERHEAD) * sizeof(Word),
-		       (ulong) cp));
+                       (ulong) nbytes,
+                       (ulong) (sizep0 - ALLOC_OVERHEAD) * sizeof(Word),
+                       (ulong) cp));
   CHECKHEAP();
   return (cp);
 }
@@ -2356,14 +2356,14 @@ memalign(alignment, size)
   size_t blksize;
 #ifdef CSRI_DEBUG
   int tmp_debugging = _malloc_debugging;
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
   if (alignment < sizeof(int) || !is_power_of_2(alignment) || size == 0) {
     errno = EINVAL;
     return (NULL);
   }
   if (alignment < sizeof(Word))
-    return (malloc(size));	/* We guarantee this alignment anyway */
+    return (malloc(size));      /* We guarantee this alignment anyway */
   /*
    * Life starts to get complicated - need to get a block large
    * enough to hold a block 'size' long, starting on an 'alignment'
@@ -2423,7 +2423,7 @@ memalign(alignment, size)
   SET_REALSIZE(p1, size);
   if (after > 0) {
     /* We can now free the block after the memaligned block. */
-    p1 += blksize + ALLOC_OVERHEAD;	/* SIZE(p1) */
+    p1 += blksize + ALLOC_OVERHEAD;     /* SIZE(p1) */
     /*
      * p1 now points to the space after the memaligned block. we
      * fix the size, mark it alloced, and call free - the block
@@ -2440,7 +2440,7 @@ memalign(alignment, size)
      * call free().
      */
     _malloc_debugging = 0;
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
     free((univptr_t) (p1 + HEADERWORDS));
   }
   if (addr != cp) {
@@ -2473,7 +2473,7 @@ memalign(alignment, size)
   }
 #ifdef CSRI_DEBUG
   _malloc_debugging = tmp_debugging;
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
   return (addr);
 }
 
@@ -2514,7 +2514,7 @@ mal_debug(level)
   }
   _malloc_debugging = level;
 }
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 /*
  *  Allows you to control the number of system calls made, which might
@@ -2575,7 +2575,7 @@ mal_trace(value)
        * sure we print the heap start for xmem analysis.
        */
       PRCSRI_TRACE(sprintf(_malloc_statsbuf, "heapstart 0x%lx\n",
-			   (ulong) _malloc_loword));
+                           (ulong) _malloc_loword));
     }
   } else {
     /* For symmetry */
@@ -2603,21 +2603,21 @@ mal_statsdump(fp)
   for (i = 1; i < MAXPROFILESIZE; i++) {
     if (_malloc_scount[i] > 0) {
       (void) sprintf(buf, "%lu: %lu\n", (ulong) i * sizeof(Word),
-		     (ulong) _malloc_scount[i]);
+                     (ulong) _malloc_scount[i]);
       (void) fputs(buf, fp);
       _malloc_scount[i] = 0;
     }
   }
   if (_malloc_scount[0] > 0) {
     (void) sprintf(buf, ">= %lu: %lu\n",
-		   (ulong) MAXPROFILESIZE * sizeof(Word),
-		   (ulong) _malloc_scount[0]);
+                   (ulong) MAXPROFILESIZE * sizeof(Word),
+                   (ulong) _malloc_scount[0]);
     (void) fputs(buf, fp);
     _malloc_scount[0] = 0;
   }
   (void) fflush(fp);
 }
-#endif				/* CSRI_PROFILESIZES */
+#endif                          /* CSRI_PROFILESIZES */
 
 /*  Author: Mark Moraes <moraes@csri.toronto.edu> */
 
@@ -2666,7 +2666,7 @@ mal_verify(fullcheck)
   REGISTER Word *ptr, *p, *blk, *blkend;
   int i;
 
-  if (_malloc_loword == NULL)	/* Nothing malloc'ed yet */
+  if (_malloc_loword == NULL)   /* Nothing malloc'ed yet */
     return (0);
 
   for (i = 0; i < MAXBINS; i++) {
@@ -2683,35 +2683,35 @@ mal_verify(fullcheck)
      *  despite similar appearance of the test
      */
     ASSERT(SIZEFIELD(ptr + 1) == SIZEFIELD(ptr + SIZE(ptr + 1)),
-	   "corrupt malloc arena");
+           "corrupt malloc arena");
     blkend = ptr + SIZE(ptr + 1);
     for (blk = ptr + ARENASTART; blk < blkend; blk += SIZE(blk)) {
       ASSERT_SP(PTR_IN_HEAP(blk), "corrupt pointer", "", blk);
       ASSERT_SP(VALID_START_SIZE_FIELD(blk), "corrupt SIZE field", "", blk);
       if (TAG(blk) == FREE) {
-	p = blk + FREESIZE(blk) - 1;
-	ASSERT_EP(VALID_NEXT_PTR(p), "corrupt NEXT pointer", "", p);
-	ASSERT_EP(VALID_PREV_PTR(p), "corrupt PREV pointer", "", p);
-	if (fullcheck) {
-	  /* Make sure all free blocks are filled with FREEMAGIC */
-	  int n;
-	  char *cp;
+        p = blk + FREESIZE(blk) - 1;
+        ASSERT_EP(VALID_NEXT_PTR(p), "corrupt NEXT pointer", "", p);
+        ASSERT_EP(VALID_PREV_PTR(p), "corrupt PREV pointer", "", p);
+        if (fullcheck) {
+          /* Make sure all free blocks are filled with FREEMAGIC */
+          int n;
+          char *cp;
 
-	  n = (SIZE(blk) - FREE_OVERHEAD) * sizeof(Word);
-	  cp = (char *) (blk + FREEHEADERWORDS);
-	  for (i = 0; i < n; i++, cp++) {
-	    ASSERT_SP(*cp == FREEMAGIC,
-		      "free block modified after free()", "", blk);
-	  }
-	}
+          n = (SIZE(blk) - FREE_OVERHEAD) * sizeof(Word);
+          cp = (char *) (blk + FREEHEADERWORDS);
+          for (i = 0; i < n; i++, cp++) {
+            ASSERT_SP(*cp == FREEMAGIC,
+                      "free block modified after free()", "", blk);
+          }
+        }
       } else {
-	ASSERT_SP(VALID_MAGIC(blk), "overwritten end of block", "", blk);
+        ASSERT_SP(VALID_MAGIC(blk), "overwritten end of block", "", blk);
       }
     }
   }
   return (0);
 }
-#endif				/* CSRI_DEBUG */
+#endif                          /* CSRI_DEBUG */
 
 /*
  *  This file contains a few splay tree routines snarfed from David
@@ -2894,7 +2894,7 @@ spfhead(q)
 
   return (x);
 
-}				/* spfhead */
+}                               /* spfhead */
 
 
 
@@ -2946,23 +2946,23 @@ spfnext(n)
     while (x->leftlink != NULL)
       x = x->leftlink;
     next = x;
-  } else {			/* x == NULL */
+  } else {                      /* x == NULL */
     x = n->uplink;
     next = NULL;
     while (x != NULL) {
       if (x->leftlink == n) {
-	next = x;
-	x = NULL;
+        next = x;
+        x = NULL;
       } else {
-	n = x;
-	x = n->uplink;
+        n = x;
+        x = n->uplink;
       }
     }
   }
 
   return (next);
 
-}				/* spfnext */
+}                               /* spfnext */
 
 
 char *
@@ -2982,7 +2982,7 @@ __spstats(q)
   sloops = q->splays ? (float) q->splayloops / q->splays : 0;
 
   (void) sprintf(buf, "f(%d %4.2f) i(%d %4.2f) s(%d %4.2f)",
-		 q->lookups, llen, q->enqs, elen, q->splays, sloops);
+                 q->lookups, llen, q->enqs, elen, q->splays, sloops);
 
   return buf;
 }
@@ -3073,11 +3073,11 @@ __spdelete(n, q)
 
   splay(n, q);
   x = spdeq(&q->root->rightlink);
-  if (x == NULL) {		/* empty right subtree */
+  if (x == NULL) {              /* empty right subtree */
     q->root = q->root->leftlink;
     if (q->root)
       q->root->uplink = NULL;
-  } else {			/* non-empty right subtree */
+  } else {                      /* non-empty right subtree */
     x->uplink = NULL;
     x->leftlink = q->root->leftlink;
     x->rightlink = q->root->rightlink;
@@ -3088,7 +3088,7 @@ __spdelete(n, q)
     q->root = x;
   }
   spfree(n, q);
-}				/* spdelete */
+}                               /* spdelete */
 
 
 /*
@@ -3173,9 +3173,9 @@ spenq(n, q)
     REGISTER SPBLK *n;
     REGISTER SPTREE *q;
 {
-  REGISTER SPBLK *left;		/* the rightmost node in the left tree */
-  REGISTER SPBLK *right;	/* the leftmost node in the right tree */
-  REGISTER SPBLK *next;		/* the root of the unsplit part */
+  REGISTER SPBLK *left;         /* the rightmost node in the left tree */
+  REGISTER SPBLK *right;        /* the leftmost node in the right tree */
+  REGISTER SPBLK *next;         /* the root of the unsplit part */
   REGISTER SPBLK *temp;
 
   REGISTER univptr_t key;
@@ -3184,10 +3184,10 @@ spenq(n, q)
   n->uplink = NULL;
   next = q->root;
   q->root = n;
-  if (next == NULL) {		/* trivial enq */
+  if (next == NULL) {           /* trivial enq */
     n->leftlink = NULL;
     n->rightlink = NULL;
-  } else {			/* difficult enq */
+  } else {                      /* difficult enq */
     key = n->key;
     left = n;
     right = n;
@@ -3200,27 +3200,27 @@ spenq(n, q)
     if (COMPARE(next->key, key) > 0)
       goto two;
 
-  one:				/* assert next->key <= key */
+  one:                          /* assert next->key <= key */
 
-    do {			/* walk to the right in the left tree */
+    do {                        /* walk to the right in the left tree */
       temp = next->rightlink;
       if (temp == NULL) {
-	left->rightlink = next;
-	next->uplink = left;
-	right->leftlink = NULL;
-	goto done;		/* job done, entire tree split */
+        left->rightlink = next;
+        next->uplink = left;
+        right->leftlink = NULL;
+        goto done;              /* job done, entire tree split */
       }
       q->enqcmps++;
       if (COMPARE(temp->key, key) > 0) {
-	left->rightlink = next;
-	next->uplink = left;
-	left = next;
-	next = temp;
-	goto two;		/* change sides */
+        left->rightlink = next;
+        next->uplink = left;
+        left = next;
+        next = temp;
+        goto two;               /* change sides */
       }
       next->rightlink = temp->leftlink;
       if (temp->leftlink != NULL)
-	temp->leftlink->uplink = next;
+        temp->leftlink->uplink = next;
       left->rightlink = temp;
       temp->uplink = left;
       temp->leftlink = next;
@@ -3228,34 +3228,34 @@ spenq(n, q)
       left = temp;
       next = temp->rightlink;
       if (next == NULL) {
-	right->leftlink = NULL;
-	goto done;		/* job done, entire tree split */
+        right->leftlink = NULL;
+        goto done;              /* job done, entire tree split */
       }
       q->enqcmps++;
 
-    } while (COMPARE(next->key, key) <= 0);	/* change sides */
+    } while (COMPARE(next->key, key) <= 0);     /* change sides */
 
-  two:				/* assert next->key > key */
+  two:                          /* assert next->key > key */
 
-    do {			/* walk to the left in the right tree */
+    do {                        /* walk to the left in the right tree */
       temp = next->leftlink;
       if (temp == NULL) {
-	right->leftlink = next;
-	next->uplink = right;
-	left->rightlink = NULL;
-	goto done;		/* job done, entire tree split */
+        right->leftlink = next;
+        next->uplink = right;
+        left->rightlink = NULL;
+        goto done;              /* job done, entire tree split */
       }
       q->enqcmps++;
       if (COMPARE(temp->key, key) <= 0) {
-	right->leftlink = next;
-	next->uplink = right;
-	right = next;
-	next = temp;
-	goto one;		/* change sides */
+        right->leftlink = next;
+        next->uplink = right;
+        right = next;
+        next = temp;
+        goto one;               /* change sides */
       }
       next->leftlink = temp->rightlink;
       if (temp->rightlink != NULL)
-	temp->rightlink->uplink = next;
+        temp->rightlink->uplink = next;
       right->leftlink = temp;
       temp->uplink = right;
       temp->rightlink = next;
@@ -3263,16 +3263,16 @@ spenq(n, q)
       right = temp;
       next = temp->leftlink;
       if (next == NULL) {
-	left->rightlink = NULL;
-	goto done;		/* job done, entire tree split */
+        left->rightlink = NULL;
+        goto done;              /* job done, entire tree split */
       }
       q->enqcmps++;
 
-    } while (COMPARE(next->key, key) > 0);	/* change sides */
+    } while (COMPARE(next->key, key) > 0);      /* change sides */
 
     goto one;
 
-  done:			/* split is done, branches of n need reversal */
+  done:                 /* split is done, branches of n need reversal */
 
     temp = n->leftlink;
     n->leftlink = n->rightlink;
@@ -3281,7 +3281,7 @@ spenq(n, q)
 
   return (n);
 
-}				/* spenq */
+}                               /* spenq */
 
 
 /*----------------
@@ -3295,14 +3295,14 @@ spenq(n, q)
  */
 static SPBLK *
 spdeq(np)
-    SPBLK **np;			/* pointer to a node pointer */
+    SPBLK **np;                 /* pointer to a node pointer */
 
 {
-  REGISTER SPBLK *deq;		/* one to return */
-  REGISTER SPBLK *next;		/* the next thing to deal with */
-  REGISTER SPBLK *left;		/* the left child of next */
-  REGISTER SPBLK *farleft;	/* the left child of left */
-  REGISTER SPBLK *farfarleft;	/* the left child of farleft */
+  REGISTER SPBLK *deq;          /* one to return */
+  REGISTER SPBLK *next;         /* the next thing to deal with */
+  REGISTER SPBLK *left;         /* the left child of next */
+  REGISTER SPBLK *farleft;      /* the left child of left */
+  REGISTER SPBLK *farfarleft;   /* the left child of farleft */
 
   if (np == NULL || *np == NULL) {
     deq = NULL;
@@ -3314,44 +3314,44 @@ spdeq(np)
       *np = next->rightlink;
 
       if (*np != NULL)
-	(*np)->uplink = NULL;
+        (*np)->uplink = NULL;
 
     } else
-      for (;;) {		/* left is not null */
-	/* next is not it, left is not NULL, might be it */
-	farleft = left->leftlink;
-	if (farleft == NULL) {
-	  deq = left;
-	  next->leftlink = left->rightlink;
-	  if (left->rightlink != NULL)
-	    left->rightlink->uplink = next;
-	  break;
-	}
-	/* next, left are not it, farleft is not NULL, might be it */
-	farfarleft = farleft->leftlink;
-	if (farfarleft == NULL) {
-	  deq = farleft;
-	  left->leftlink = farleft->rightlink;
-	  if (farleft->rightlink != NULL)
-	    farleft->rightlink->uplink = left;
-	  break;
-	}
-	/* next, left, farleft are not it, rotate */
-	next->leftlink = farleft;
-	farleft->uplink = next;
-	left->leftlink = farleft->rightlink;
-	if (farleft->rightlink != NULL)
-	  farleft->rightlink->uplink = left;
-	farleft->rightlink = left;
-	left->uplink = farleft;
-	next = farleft;
-	left = farfarleft;
+      for (;;) {                /* left is not null */
+        /* next is not it, left is not NULL, might be it */
+        farleft = left->leftlink;
+        if (farleft == NULL) {
+          deq = left;
+          next->leftlink = left->rightlink;
+          if (left->rightlink != NULL)
+            left->rightlink->uplink = next;
+          break;
+        }
+        /* next, left are not it, farleft is not NULL, might be it */
+        farfarleft = farleft->leftlink;
+        if (farfarleft == NULL) {
+          deq = farleft;
+          left->leftlink = farleft->rightlink;
+          if (farleft->rightlink != NULL)
+            farleft->rightlink->uplink = left;
+          break;
+        }
+        /* next, left, farleft are not it, rotate */
+        next->leftlink = farleft;
+        farleft->uplink = next;
+        left->leftlink = farleft->rightlink;
+        if (farleft->rightlink != NULL)
+          farleft->rightlink->uplink = left;
+        farleft->rightlink = left;
+        left->uplink = farleft;
+        next = farleft;
+        left = farfarleft;
       }
   }
 
   return (deq);
 
-}				/* spdeq */
+}                               /* spdeq */
 
 
 /*----------------
@@ -3376,12 +3376,12 @@ splay(n, q)
     SPTREE *q;
 
 {
-  REGISTER SPBLK *up;		/* points to the node being dealt with */
-  REGISTER SPBLK *prev;		/* a descendent of up, already dealt with */
-  REGISTER SPBLK *upup;		/* the parent of up */
-  REGISTER SPBLK *upupup;	/* the grandparent of up */
-  REGISTER SPBLK *left;		/* the top of left subtree being built */
-  REGISTER SPBLK *right;	/* the top of right subtree being built */
+  REGISTER SPBLK *up;           /* points to the node being dealt with */
+  REGISTER SPBLK *prev;         /* a descendent of up, already dealt with */
+  REGISTER SPBLK *upup;         /* the parent of up */
+  REGISTER SPBLK *upupup;       /* the grandparent of up */
+  REGISTER SPBLK *left;         /* the top of left subtree being built */
+  REGISTER SPBLK *right;        /* the top of right subtree being built */
 
   left = n->leftlink;
   right = n->rightlink;
@@ -3397,48 +3397,48 @@ splay(n, q)
        n into the left subtree, all to right into the right subtree */
 
     upup = up->uplink;
-    if (up->leftlink == prev) {	/* up is to the right of n */
-      if (upup != NULL && upup->leftlink == up) {	/* rotate */
-	upupup = upup->uplink;
-	upup->leftlink = up->rightlink;
-	if (upup->leftlink != NULL)
-	  upup->leftlink->uplink = upup;
-	up->rightlink = upup;
-	upup->uplink = up;
-	if (upupup == NULL)
-	  q->root = up;
-	else if (upupup->leftlink == upup)
-	  upupup->leftlink = up;
-	else
-	  upupup->rightlink = up;
-	up->uplink = upupup;
-	upup = upupup;
+    if (up->leftlink == prev) { /* up is to the right of n */
+      if (upup != NULL && upup->leftlink == up) {       /* rotate */
+        upupup = upup->uplink;
+        upup->leftlink = up->rightlink;
+        if (upup->leftlink != NULL)
+          upup->leftlink->uplink = upup;
+        up->rightlink = upup;
+        upup->uplink = up;
+        if (upupup == NULL)
+          q->root = up;
+        else if (upupup->leftlink == upup)
+          upupup->leftlink = up;
+        else
+          upupup->rightlink = up;
+        up->uplink = upupup;
+        upup = upupup;
       }
       up->leftlink = right;
       if (right != NULL)
-	right->uplink = up;
+        right->uplink = up;
       right = up;
 
-    } else {			/* up is to the left of n */
-      if (upup != NULL && upup->rightlink == up) {	/* rotate */
-	upupup = upup->uplink;
-	upup->rightlink = up->leftlink;
-	if (upup->rightlink != NULL)
-	  upup->rightlink->uplink = upup;
-	up->leftlink = upup;
-	upup->uplink = up;
-	if (upupup == NULL)
-	  q->root = up;
-	else if (upupup->rightlink == upup)
-	  upupup->rightlink = up;
-	else
-	  upupup->leftlink = up;
-	up->uplink = upupup;
-	upup = upupup;
+    } else {                    /* up is to the left of n */
+      if (upup != NULL && upup->rightlink == up) {      /* rotate */
+        upupup = upup->uplink;
+        upup->rightlink = up->leftlink;
+        if (upup->rightlink != NULL)
+          upup->rightlink->uplink = upup;
+        up->leftlink = upup;
+        upup->uplink = up;
+        if (upupup == NULL)
+          q->root = up;
+        else if (upupup->rightlink == upup)
+          upupup->rightlink = up;
+        else
+          upupup->leftlink = up;
+        up->uplink = upupup;
+        upup = upupup;
       }
       up->rightlink = left;
       if (left != NULL)
-	left->uplink = up;
+        left->uplink = up;
       left = up;
     }
     prev = up;
@@ -3461,4 +3461,4 @@ splay(n, q)
   q->root = n;
   n->uplink = NULL;
 
-}				/* splay */
+}                               /* splay */

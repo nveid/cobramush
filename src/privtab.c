@@ -52,29 +52,29 @@ string_to_privs(PRIV *table, const char *str, long int origprivs)
     if (*p == '!') {
       not = 1;
       if (!*++p)
-	continue;
+        continue;
     }
     ltr = 0;
     if (strlen(p) == 1) {
       /* One-letter string is treated as a character if possible */
       ltr = letter_to_privs(table, p, 0);
       if (not)
-	no |= ltr;
+        no |= ltr;
       else
-	yes |= ltr;
+        yes |= ltr;
     }
     /* If we didn't handle a one-char string as a character,
      * or if the string is longer than one char, use prefix-matching
      */
     if (!ltr) {
       for (c = table; c->name; c++) {
-	if (string_prefix(c->name, p)) {
-	  if (not)
-	    no |= c->bits_to_set;
-	  else
-	    yes |= c->bits_to_set;
-	  break;
-	}
+        if (string_prefix(c->name, p)) {
+          if (not)
+            no |= c->bits_to_set;
+          else
+            yes |= c->bits_to_set;
+          break;
+        }
       }
     }
   }
@@ -116,15 +116,15 @@ list_to_privs(PRIV *table, const char *str, long int origprivs)
     if (*p == '!') {
       not = 1;
       if (!*++p)
-	continue;
+        continue;
     }
     for (c = table; c->name; c++) {
       if (!strcasecmp(c->name, p)) {
-	if (not)
-	  no |= c->bits_to_set;
-	else
-	  yes |= c->bits_to_set;
-	break;
+        if (not)
+          no |= c->bits_to_set;
+        else
+          yes |= c->bits_to_set;
+        break;
       }
     }
   }
@@ -174,22 +174,22 @@ string_to_privsets(PRIV *table, const char *str, int *setprivs, int *clrprivs)
       /* One-letter string is treated as a character if possible */
       ltr = letter_to_privs(table, p, 0);
       if (not)
-	*clrprivs |= ltr;
+        *clrprivs |= ltr;
       else
-	*setprivs |= ltr;
+        *setprivs |= ltr;
     }
     if (ltr) {
       found++;
     } else {
       for (c = table; c->name; c++) {
-	if (string_prefix(c->name, p)) {
-	  found++;
-	  if (not)
-	    *clrprivs |= c->bits_to_set;
-	  else
-	    *setprivs |= c->bits_to_set;
-	  break;
-	}
+        if (string_prefix(c->name, p)) {
+          found++;
+          if (not)
+            *clrprivs |= c->bits_to_set;
+          else
+            *setprivs |= c->bits_to_set;
+          break;
+        }
       }
     }
   }
@@ -223,15 +223,15 @@ letter_to_privs(PRIV *table, const char *str, long int origprivs)
     if (*p == '!') {
       not = 1;
       if (!*++p)
-	break;
+        break;
     }
     for (c = table; c->name; c++) {
       if (c->letter == *p) {
-	if (not)
-	  no |= c->bits_to_set;
-	else
-	  yes |= c->bits_to_set;
-	break;
+        if (not)
+          no |= c->bits_to_set;
+        else
+          yes |= c->bits_to_set;
+        break;
       }
     }
   }
@@ -254,7 +254,7 @@ privs_to_string(PRIV *table, int privs)
   for (c = table; c->name; c++) {
     if (privs & c->bits_to_show) {
       if (bp != buf)
-	safe_chr(' ', buf, &bp);
+        safe_chr(' ', buf, &bp);
       safe_str(c->name, buf, &bp);
       privs &= ~c->bits_to_set;
     }

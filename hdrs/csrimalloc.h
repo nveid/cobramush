@@ -55,7 +55,7 @@ extern void trace__cfree _((univptr_t cp, const char *fname, int linenum));
 #define cfree(p)                trace__free((p), __FILE__, __LINE__)
 #define free(p)                 trace__free((p), __FILE__, __LINE__)
 
-#else				/* CSRI_TRACE */
+#else                           /* CSRI_TRACE */
 
 extern univptr_t malloc _((size_t nbytes));
 extern univptr_t calloc _((size_t nelem, size_t elsize));
@@ -70,7 +70,7 @@ extern char *strsave _((const char *s));
 extern Free_t free _((univptr_t cp));
 extern Free_t cfree _((univptr_t cp));
 
-#endif				/* CSRI_TRACE */
+#endif                          /* CSRI_TRACE */
 
 extern void mal_debug _((int level));
 extern void mal_dumpleaktrace _((FILE * fp));
@@ -93,10 +93,10 @@ extern void mal_mmap _((char *fname));
 #ifndef alloca
 #define alloca(n) __builtin_alloca(n)
 #endif
-#endif				/* __GNUC__ */
+#endif                          /* __GNUC__ */
 #ifdef sparc
 #define alloca(n) __builtin_alloca(n)
-#endif				/* sparc */
+#endif                          /* sparc */
 
 
-#endif	/* __CSRIMALLOC_H__ */			/* Do not add anything after this line */
+#endif  /* __CSRIMALLOC_H__ */                  /* Do not add anything after this line */

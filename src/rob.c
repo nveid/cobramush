@@ -54,8 +54,8 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
 
   /* check recipient */
   switch (who =
-	  match_result(player, recipient, TYPE_PLAYER,
-		       MAT_NEAR_THINGS | MAT_ENGLISH)) {
+          match_result(player, recipient, TYPE_PLAYER,
+                       MAT_NEAR_THINGS | MAT_ENGLISH)) {
   case NOTHING:
     notify(player, T("Give to whom?"));
     return;
@@ -73,10 +73,10 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
   if (!is_strict_integer(amnt)) {
     dbref thing;
     switch (thing =
-	    match_result(player, amnt, TYPE_THING,
-			  MAT_POSSESSION | MAT_ENGLISH)) {
+            match_result(player, amnt, TYPE_THING,
+                          MAT_POSSESSION | MAT_ENGLISH)) {
     case NOTHING:
-	notify(player, T("You don't have that!"));
+        notify(player, T("You don't have that!"));
       return;
     case AMBIGUOUS:
       notify(player, T("I don't know which you mean!"));
@@ -87,43 +87,43 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
        * do this.
        */
       if (thing == player) {
-	notify(player, T("You can't give yourself away!"));
-	return;
+        notify(player, T("You can't give yourself away!"));
+        return;
       }
       /* Don't give things to themselves. */
       if (thing == who) {
-	notify(player, T("You can't give an object to itself!"));
-	return;
+        notify(player, T("You can't give an object to itself!"));
+        return;
       }
       if (!eval_lock(player, thing, Give_Lock)) {
-	notify(player, T("You can't give that away."));
-	return;
+        notify(player, T("You can't give that away."));
+        return;
       }
       if (Mobile(thing) && (EnterOk(who) || controls(player, who))) {
-	moveto(thing, who);
+        moveto(thing, who);
 
-	/* Notify the giver with their GIVE message */
-	bp = tbuf1;
-	safe_format(tbuf1, &bp, T("You gave %s to %s."), Name(thing),
-		    Name(who));
-	*bp = '\0';
-	did_it_with(player, player, "GIVE", tbuf1, "OGIVE", NULL,
-	    	    "AGIVE", NOTHING, thing, who, NA_INTER_SEE);
+        /* Notify the giver with their GIVE message */
+        bp = tbuf1;
+        safe_format(tbuf1, &bp, T("You gave %s to %s."), Name(thing),
+                    Name(who));
+        *bp = '\0';
+        did_it_with(player, player, "GIVE", tbuf1, "OGIVE", NULL,
+                    "AGIVE", NOTHING, thing, who, NA_INTER_SEE);
 
-	/* Notify the object that it's been given */
-	notify_format(thing, T("%s gave you to %s."), Name(player), Name(who));
+        /* Notify the object that it's been given */
+        notify_format(thing, T("%s gave you to %s."), Name(player), Name(who));
 
-	/* Recipient gets success message on thing and receive on self */
-	did_it(who, thing, "SUCCESS", NULL, "OSUCCESS", NULL, "ASUCCESS",
-	       NOTHING);
-	bp = tbuf1;
-	safe_format(tbuf1, &bp, T("%s gave you %s."), Name(player),
-		    Name(thing));
-	*bp = '\0';
-	did_it_with(who, who, "RECEIVE", tbuf1, "ORECEIVE", NULL,
-	    	    "ARECEIVE", NOTHING, thing, player, NA_INTER_SEE);
+        /* Recipient gets success message on thing and receive on self */
+        did_it(who, thing, "SUCCESS", NULL, "OSUCCESS", NULL, "ASUCCESS",
+               NOTHING);
+        bp = tbuf1;
+        safe_format(tbuf1, &bp, T("%s gave you %s."), Name(player),
+                    Name(thing));
+        *bp = '\0';
+        did_it_with(who, who, "RECEIVE", tbuf1, "ORECEIVE", NULL,
+                    "ARECEIVE", NOTHING, thing, player, NA_INTER_SEE);
       } else
-	notify(player, T("Permission denied."));
+        notify(player, T("Permission denied."));
     }
     return;
   }
@@ -136,7 +136,7 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
     return;
   } else if (amount == 0) {
     notify_format(player,
-		  T("You must specify a positive number of %s."), MONIES);
+                  T("You must specify a positive number of %s."), MONIES);
     return;
   }
   if (MoneyAdmin(player) && (amount < 0) && (Pennies(who) + amount < 0))
@@ -163,10 +163,10 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
 
       a = atr_get(who, "COST");
       if (!a) {
-	/* No cost attribute */
-	notify_format(player, T("%s refuses your money."), Name(who));
-	giveto(player, amount);
-	return;
+        /* No cost attribute */
+        notify_format(player, T("%s refuses your money."), Name(who));
+        giveto(player, amount);
+        return;
       }
       save_global_regs("give_save", preserveq);
       save_global_env("give_save", preserves);
@@ -177,23 +177,23 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
       *pb = '\0';
       global_eval_context.wenv[0] = paid;
       process_expression(fbuff, &fbp, &ap, who, player, player,
-			 PE_DEFAULT, PT_DEFAULT, NULL);
+                         PE_DEFAULT, PT_DEFAULT, NULL);
       *fbp = '\0';
       free((Malloc_t) asave);
       restore_global_regs("give_save", preserveq);
       restore_global_env("give_save", preserves);
       if (amount < (cost = atoi(fbuff))) {
-	notify(player, T("Feeling poor today?"));
-	giveto(player, amount);
-	return;
+        notify(player, T("Feeling poor today?"));
+        giveto(player, amount);
+        return;
       }
       if (cost < 0)
-	return;
+        return;
       if ((amount - cost) > 0) {
-	notify_format(player, T("You get %d in change."), amount - cost);
+        notify_format(player, T("You get %d in change."), amount - cost);
       } else {
-	notify_format(player, T("You paid %d %s."), amount,
-		      ((amount == 1) ? MONEY : MONIES));
+        notify_format(player, T("You paid %d %s."), amount,
+                      ((amount == 1) ? MONEY : MONIES));
       }
       giveto(player, amount - cost);
       giveto(who, cost);
@@ -201,32 +201,32 @@ do_give(dbref player, char *recipient, char *amnt, int silent)
       safe_integer_sbuf(cost, paid, &pb);
       *pb = '\0';
       real_did_it(player, who, "PAYMENT", NULL, "OPAYMENT", NULL, "APAYMENT",
-		  NOTHING, pay_env, NA_INTER_SEE);
+                  NOTHING, pay_env, NA_INTER_SEE);
       return;
     } else {
       /* give pennies to a player */
       if (amount > 0) {
-	notify_format(player,
-		      T("You give %d %s to %s."), amount,
-		      ((amount == 1) ? MONEY : MONIES), Name(who));
+        notify_format(player,
+                      T("You give %d %s to %s."), amount,
+                      ((amount == 1) ? MONEY : MONIES), Name(who));
       } else {
-	notify_format(player, T("You took %d %s from %s!"), abs(amount),
-		      ((abs(amount) == 1) ? MONEY : MONIES), Name(who));
+        notify_format(player, T("You took %d %s from %s!"), abs(amount),
+                      ((abs(amount) == 1) ? MONEY : MONIES), Name(who));
       }
       if (IsPlayer(who) && !silent) {
-	if (amount > 0) {
-	  notify_format(who, T("%s gives you %d %s."), Name(player),
-			amount, ((amount == 1) ? MONEY : MONIES));
-	} else {
-	  notify_format(who, T("%s took %d %s from you!"), Name(player),
-			abs(amount), ((abs(amount) == 1) ? MONEY : MONIES));
-	}
+        if (amount > 0) {
+          notify_format(who, T("%s gives you %d %s."), Name(player),
+                        amount, ((amount == 1) ? MONEY : MONIES));
+        } else {
+          notify_format(who, T("%s took %d %s from you!"), Name(player),
+                        abs(amount), ((abs(amount) == 1) ? MONEY : MONIES));
+        }
       }
       giveto(who, amount);
       safe_integer_sbuf(amount, paid, &pb);
       *pb = '\0';
       real_did_it(player, who, "PAYMENT", NULL, "OPAYMENT", NULL, "APAYMENT",
-		  NOTHING, pay_env, NA_INTER_SEE);
+                  NOTHING, pay_env, NA_INTER_SEE);
     }
   }
 }
@@ -256,7 +256,7 @@ do_buy(dbref player, char *item, char *from, int price)
   int affordable;
   int costcount, ci;
   int count, i;
-  int low, high;		/* lower bound, upper bound of cost */
+  int low, high;                /* lower bound, upper bound of cost */
   ATTR *a;
 
   if (!GoodObject(Location(player)))
@@ -268,8 +268,8 @@ do_buy(dbref player, char *item, char *from, int price)
 
   if (from != NULL && *from) {
     switch (vendor =
-	    match_result(player, from, TYPE_PLAYER,
-			 MAT_NEAR_THINGS | MAT_ENGLISH)) {
+            match_result(player, from, TYPE_PLAYER,
+                         MAT_NEAR_THINGS | MAT_ENGLISH)) {
     case NOTHING:
       notify(player, T("Buy from whom?"));
       return;
@@ -317,77 +317,77 @@ do_buy(dbref player, char *item, char *from, int price)
       continue;
     for (i = 0; i < count; i++) {
       if (!strncasecmp(finditem, r[i], len)) {
-	/* Check cost */
-	cost = r[i] + len;
-	if (!*cost)
-	  continue;
-	costcount = list2arr(c, BUFFER_LEN / 2, cost, ',');
-	for (ci = 0; ci < costcount; ci++) {
-	  cost = c[ci];
-	  /* Formats:
-	   * 10,2000+,10-100
-	   */
-	  if ((plus = strchr(cost, '-'))) {
-	    *(plus++) = '\0';
-	    if (!is_strict_integer(cost))
-	      continue;
-	    if (!is_strict_integer(plus))
-	      continue;
-	    low = parse_integer(cost);
-	    high = parse_integer(plus);
-	    if (price < 0) {
-	      boughtit = low;
-	    } else if (price >= low && price <= high) {
-	      boughtit = price;
-	    }
-	  } else if ((plus = strchr(cost, '+'))) {
-	    *(plus++) = '\0';
-	    if (!is_strict_integer(cost))
-	      continue;
-	    low = parse_integer(cost);
-	    if (price < 0) {
-	      boughtit = low;
-	    } else if (price > low) {
-	      boughtit = price;
-	    }
-	  } else if (is_strict_integer(cost)) {
-	    low = parse_integer(cost);
-	    if (price < 0) {
-	      boughtit = low;
-	    } else if (low == price) {
-	      boughtit = price;
-	    }
-	  } else {
-	    continue;
-	  }
-	  if (boughtit >= 0) {
-	    if (!payfor(player, boughtit)) {
-	      affordable = 0;
-	      boughtit = 0;
-	      continue;
-	    }
-	    bp = strchr(finditem, ':');
-	    if (bp)
-	      *bp = '\0';
-	    for (bp = finditem; *bp; bp++)
-	      *bp = DOWNCASE(*bp);
-	    bp = buff;
-	    safe_format(buff, &bp, "You buy a %s from %s.",
-			finditem, Name(vendor));
-	    *bp = '\0';
-	    bp = obuff;
-	    safe_format(obuff, &bp, "buys a %s from %s.",
-			finditem, Name(vendor));
-	    buy_env[0] = finditem;
-	    buy_env[1] = buycost;
-	    bp = buycost;
-	    safe_integer(boughtit, buycost, &bp);
-	    *bp = '\0';
-	    real_did_it(player, vendor, "BUY", buff, "OBUY", obuff, "ABUY",
-			NOTHING, buy_env, NA_INTER_SEE);
-	    return;
-	  }
-	}
+        /* Check cost */
+        cost = r[i] + len;
+        if (!*cost)
+          continue;
+        costcount = list2arr(c, BUFFER_LEN / 2, cost, ',');
+        for (ci = 0; ci < costcount; ci++) {
+          cost = c[ci];
+          /* Formats:
+           * 10,2000+,10-100
+           */
+          if ((plus = strchr(cost, '-'))) {
+            *(plus++) = '\0';
+            if (!is_strict_integer(cost))
+              continue;
+            if (!is_strict_integer(plus))
+              continue;
+            low = parse_integer(cost);
+            high = parse_integer(plus);
+            if (price < 0) {
+              boughtit = low;
+            } else if (price >= low && price <= high) {
+              boughtit = price;
+            }
+          } else if ((plus = strchr(cost, '+'))) {
+            *(plus++) = '\0';
+            if (!is_strict_integer(cost))
+              continue;
+            low = parse_integer(cost);
+            if (price < 0) {
+              boughtit = low;
+            } else if (price > low) {
+              boughtit = price;
+            }
+          } else if (is_strict_integer(cost)) {
+            low = parse_integer(cost);
+            if (price < 0) {
+              boughtit = low;
+            } else if (low == price) {
+              boughtit = price;
+            }
+          } else {
+            continue;
+          }
+          if (boughtit >= 0) {
+            if (!payfor(player, boughtit)) {
+              affordable = 0;
+              boughtit = 0;
+              continue;
+            }
+            bp = strchr(finditem, ':');
+            if (bp)
+              *bp = '\0';
+            for (bp = finditem; *bp; bp++)
+              *bp = DOWNCASE(*bp);
+            bp = buff;
+            safe_format(buff, &bp, "You buy a %s from %s.",
+                        finditem, Name(vendor));
+            *bp = '\0';
+            bp = obuff;
+            safe_format(obuff, &bp, "buys a %s from %s.",
+                        finditem, Name(vendor));
+            buy_env[0] = finditem;
+            buy_env[1] = buycost;
+            bp = buycost;
+            safe_integer(boughtit, buycost, &bp);
+            *bp = '\0';
+            real_did_it(player, vendor, "BUY", buff, "OBUY", obuff, "ABUY",
+                        NOTHING, buy_env, NA_INTER_SEE);
+            return;
+          }
+        }
       }
     }
   } while (!from && ((vendor = Next(vendor)) != NOTHING));
@@ -397,7 +397,7 @@ do_buy(dbref player, char *item, char *from, int price)
       notify(player, T("I can't find that item with that price here."));
     } else {
       notify_format(player, T("%s isn't selling that item for that price"),
-		    Name(vendor));
+                    Name(vendor));
     }
   } else if (affordable) {
     if (!from) {
@@ -412,11 +412,11 @@ do_buy(dbref player, char *item, char *from, int price)
 
 
 void s_Pennies(dbref thing, int amnt) {
-	if(amnt > HUGE_INT)
-		Pennies(thing) = (int) HUGE_INT;
-	else if(amnt < 0)
-		Pennies(thing) = 0;
-	else Pennies(thing) = amnt;
+        if(amnt > HUGE_INT)
+                Pennies(thing) = (int) HUGE_INT;
+        else if(amnt < 0)
+                Pennies(thing) = 0;
+        else Pennies(thing) = amnt;
 }
 
 

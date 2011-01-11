@@ -37,12 +37,12 @@
 void do_poor(dbref player, char *arg1);
 void do_list_memstats(dbref player);
 
-#define DOL_MAP 1		/**< dolist/map bitflag */
-#define DOL_NOTIFY 2		/**< dolist/notify bitflag */
-#define DOL_DELIM 4		/**< dolist/delim bitflag */
+#define DOL_MAP 1               /**< dolist/map bitflag */
+#define DOL_NOTIFY 2            /**< dolist/notify bitflag */
+#define DOL_DELIM 4             /**< dolist/delim bitflag */
 
 void do_dolist(dbref player, char *list, char *command,
-	       dbref cause, unsigned int flags);
+               dbref cause, unsigned int flags);
 void do_list(dbref player, char *arg, int lc);
 void do_writelog(dbref player, char *str, int ltype);
 void do_readcache(dbref player);
@@ -79,8 +79,8 @@ COMMAND (cmd_atrlock) {
 
 COMMAND (cmd_attribute) {
   if (SW_ISSET(sw, SWITCH_ACCESS))
-    do_attribute_access(player, arg_left, arg_right, 		
-	SW_ISSET(sw, SWITCH_RETROACTIVE));
+    do_attribute_access(player, arg_left, arg_right,            
+        SW_ISSET(sw, SWITCH_RETROACTIVE));
   else if(SW_ISSET(sw, SWITCH_LOCK)) {
     if(SW_ISSET(sw, SWITCH_DEFAULTS)) 
       do_attribute_lock(player, NULL, arg_left, sw);
@@ -186,7 +186,7 @@ COMMAND (cmd_config) {
       return;
     }
     if (!config_set(arg_left, arg_right, 1, 0)
-	&& !config_set(arg_left, arg_right, 1, 1))
+        && !config_set(arg_left, arg_right, 1, 1))
       notify(player, T("Couldn't set that option"));
     else
       notify(player, T("Option set."));
@@ -221,7 +221,7 @@ COMMAND (cmd_decompile) {
     /* @dec/tf overrides @dec/prefix */
     ATTR *a;
     if (((a = atr_get_noparent(player, "TFPREFIX")) != NULL) &&
-	AL_STR(a) && *AL_STR(a)) {
+        AL_STR(a) && *AL_STR(a)) {
       strcpy(prefix, atr_value(a));
     } else {
       strcpy(prefix, "FugueEdit > ");
@@ -326,8 +326,8 @@ COMMAND (cmd_dump) {
 
 COMMAND (cmd_edit) {
   do_gedit(player, arg_left, args_right,
-	   SW_ISSET(sw, SWITCH_FIRST) ? EDIT_FIRST : EDIT_ALL,
-	   SW_ISSET(sw, SWITCH_CHECK) ? 0 : 1);
+           SW_ISSET(sw, SWITCH_FIRST) ? EDIT_FIRST : EDIT_ALL,
+           SW_ISSET(sw, SWITCH_CHECK) ? 0 : 1);
 }
 
 COMMAND (cmd_elock) {
@@ -340,10 +340,10 @@ COMMAND (cmd_emit) {
 
   if (SW_ISSET(sw, SWITCH_ROOM)) {
     do_lemit(player, arg_left,
-	     (SW_ISSET(sw, SWITCH_SILENT) * PEMIT_SILENT) | spflags);
+             (SW_ISSET(sw, SWITCH_SILENT) * PEMIT_SILENT) | spflags);
   } else {
     if(Admin(player) || !RPMODE(player) || Can_RPEMIT(player))
-	    do_emit(player, arg_left, spflags);
+            do_emit(player, arg_left, spflags);
     else notify(player, "You can't do that in RPMODE.");
   }
 }
@@ -424,8 +424,8 @@ COMMAND (cmd_function) {
       split = 1;
       saved = args_right[2];
       if ((args_right[2] = strchr(args_right[1], '/')) == NULL) {
-	notify(player, T("#-1 INVALID SECOND ARGUMENT"));
-	return;
+        notify(player, T("#-1 INVALID SECOND ARGUMENT"));
+        return;
       }
       *args_right[2]++ = '\0';
     }
@@ -437,7 +437,7 @@ COMMAND (cmd_function) {
       do_function(player, NULL, NULL, 0);
     if (split) {
       if (args_right[2])
-	*--args_right[2] = '/';
+        *--args_right[2] = '/';
       args_right[2] = saved;
     }
   }
@@ -445,9 +445,9 @@ COMMAND (cmd_function) {
 
 COMMAND (cmd_grep) {
   do_grep(player, arg_left, arg_right, ((SW_ISSET(sw, SWITCH_IPRINT))
-					|| (SW_ISSET(sw, SWITCH_PRINT))),
-	  ((SW_ISSET(sw, SWITCH_IPRINT))
-	   || (SW_ISSET(sw, SWITCH_ILIST))));
+                                        || (SW_ISSET(sw, SWITCH_PRINT))),
+          ((SW_ISSET(sw, SWITCH_IPRINT))
+           || (SW_ISSET(sw, SWITCH_ILIST))));
 }
 
 COMMAND (cmd_halt) {
@@ -500,7 +500,7 @@ COMMAND (cmd_lemit) {
   int spflags = !strcmp(cmd->name, "@NSLEMIT") ? PEMIT_SPOOF : 0;
   SPOOF(player, cause, sw);
   do_lemit(player, arg_left,
-	   (SW_ISSET(sw, SWITCH_SILENT) * PEMIT_SILENT) | spflags);
+           (SW_ISSET(sw, SWITCH_SILENT) * PEMIT_SILENT) | spflags);
 }
 
 COMMAND (cmd_link) {
@@ -613,7 +613,7 @@ COMMAND (cmd_mail) {
   else if (SW_ISSET(sw, SWITCH_UNTAG))
     do_mail_untag(player, arg_left);
   else if (SW_ISSET(sw, SWITCH_FWD) || SW_ISSET(sw, SWITCH_FORWARD)
-	   || SW_ISSET(sw, SWITCH_SEND) || silent || urgent || nosig) {
+           || SW_ISSET(sw, SWITCH_SEND) || silent || urgent || nosig) {
     /* These commands are not allowed to gagged players */
     if (Gagged(player)) {
       notify(player, T("You cannot do that while gagged."));
@@ -625,9 +625,9 @@ COMMAND (cmd_mail) {
       do_mail_fwd(player, arg_left, arg_right);
     else if (SW_ISSET(sw, SWITCH_SEND) || silent || urgent || nosig)
       do_mail_send(player, arg_left, arg_right,
-		   urgent ? M_URGENT : 0, silent, nosig);
+                   urgent ? M_URGENT : 0, silent, nosig);
   } else
-    do_mail(player, arg_left, arg_right);	/* Does its own gagged check */
+    do_mail(player, arg_left, arg_right);       /* Does its own gagged check */
 }
 
 
@@ -820,7 +820,7 @@ COMMAND (cmd_scan) {
     do_scan(player, arg_left, CHECK_GLOBAL);
   else
     do_scan(player, arg_left, CHECK_INVENTORY | CHECK_NEIGHBORS |
-	    CHECK_SELF | CHECK_HERE | CHECK_ZONE | CHECK_GLOBAL);
+            CHECK_SELF | CHECK_HERE | CHECK_ZONE | CHECK_GLOBAL);
 }
 
 COMMAND (cmd_search) {
@@ -829,7 +829,7 @@ COMMAND (cmd_search) {
 
 COMMAND (cmd_select) {
   do_switch(player, arg_left, args_right, cause, 1,
-	    SW_ISSET(sw, SWITCH_NOTIFY), SW_ISSET(sw, SWITCH_REGEXP));
+            SW_ISSET(sw, SWITCH_NOTIFY), SW_ISSET(sw, SWITCH_REGEXP));
 }
 
 COMMAND (cmd_set) {
@@ -897,7 +897,7 @@ COMMAND (cmd_sweep) {
 
 COMMAND (cmd_switch) {
   do_switch(player, arg_left, args_right, cause, SW_ISSET(sw, SWITCH_FIRST),
-	    SW_ISSET(sw, SWITCH_NOTIFY), SW_ISSET(sw, SWITCH_REGEXP));
+            SW_ISSET(sw, SWITCH_NOTIFY), SW_ISSET(sw, SWITCH_REGEXP));
 }
 
 COMMAND (cmd_squota) {
@@ -910,7 +910,7 @@ COMMAND (cmd_teleport) {
     notify(player, T("You can't teleport to nothing!"));
   else
     do_teleport(player, arg_left, arg_right, (SW_ISSET(sw, SWITCH_SILENT)),
-		(SW_ISSET(sw, SWITCH_INSIDE)));
+                (SW_ISSET(sw, SWITCH_INSIDE)));
 }
 
 COMMAND (cmd_trigger) {
@@ -1098,9 +1098,9 @@ COMMAND (cmd_page) {
     do_page_port(player, arg_left, arg_right);
   else
     do_page(player, arg_left, arg_right, cause, SW_ISSET(sw, SWITCH_NOEVAL),
-	    !(SW_ISSET(sw, SWITCH_BLIND) ||
-	      (!(SW_ISSET(sw, SWITCH_LIST)) && (BLIND_PAGE))),
-	    SW_ISSET(sw, SWITCH_OVERRIDE), has_eq);
+            !(SW_ISSET(sw, SWITCH_BLIND) ||
+              (!(SW_ISSET(sw, SWITCH_LIST)) && (BLIND_PAGE))),
+            SW_ISSET(sw, SWITCH_OVERRIDE), has_eq);
 }
 
 COMMAND (cmd_pose) {
@@ -1129,8 +1129,8 @@ COMMAND (cmd_think) {
 
 COMMAND (cmd_whisper) {
   do_whisper(player, arg_left, arg_right,
-	     (SW_ISSET(sw, SWITCH_NOISY) ||
-	      (!SW_ISSET(sw, SWITCH_SILENT) && NOISY_WHISPER)));
+             (SW_ISSET(sw, SWITCH_NOISY) ||
+              (!SW_ISSET(sw, SWITCH_SILENT) && NOISY_WHISPER)));
 }
 
 COMMAND (cmd_use) {
@@ -1146,7 +1146,7 @@ COMMAND (command_atrset) {
   /* If it's &attr obj, we must pass a NULL. If &attr obj=, pass "" */
   if (rhs_present) {
     do_set_atr(thing, switches, arg_right, player,
-	       0x1 | (SW_ISSET(sw, SWITCH_NOEVAL) ? 0 : 0x02));
+               0x1 | (SW_ISSET(sw, SWITCH_NOEVAL) ? 0 : 0x02));
   } else {
     do_set_atr(thing, switches, NULL, player, 1);
   }
@@ -1158,8 +1158,8 @@ COMMAND (cmd_null) {
 
 COMMAND (cmd_warn_on_missing) {
   notify_format(Owner(player),
-		T
-		("No command found in code by %s - don't start code with functions."),
-		unparse_dbref(player));
+                T
+                ("No command found in code by %s - don't start code with functions."),
+                unparse_dbref(player));
   return;
 }

@@ -27,7 +27,7 @@
 static dbref parse_linkable_room(dbref player, const char *room_name);
 static dbref check_var_link(const char *dest_name);
 static dbref clone_object(dbref player, dbref thing, const char *newname,
-			  int preserve);
+                          int preserve);
 
 struct db_stat_info current_state; /**< Current stats for database */
 
@@ -46,7 +46,7 @@ parse_linkable_room(dbref player, const char *room_name)
   if (!strcasecmp(room_name, "here")) {
     room = IsExit(player) ? Source(player) : Location(player);
   } else if (!strcasecmp(room_name, "home")) {
-    return HOME;		/* HOME is always linkable */
+    return HOME;                /* HOME is always linkable */
   } else {
     room = parse_dbref(room_name);
   }
@@ -90,7 +90,7 @@ check_var_link(const char *dest_name)
  */
 dbref
 do_real_open(dbref player, const char *direction, const char *linkto,
-	     dbref pseudo)
+             dbref pseudo)
 {
   dbref loc =
     (pseudo !=
@@ -142,15 +142,15 @@ do_real_open(dbref player, const char *direction, const char *linkto,
     if (linkto && *linkto != '\0') {
       notify(player, T("Trying to link..."));
       if ((loc = check_var_link(linkto)) == NOTHING)
-	loc = parse_linkable_room(player, linkto);
+        loc = parse_linkable_room(player, linkto);
       if (loc != NOTHING) {
-	if (!payfor(player, LINK_COST)) {
-	  notify_format(player, T("You don't have enough %s to link."), MONIES);
-	} else {
-	  /* it's ok, link it */
-	  Location(new_exit) = loc;
-	  notify_format(player, T("Linked exit #%d to #%d"), new_exit, loc);
-	}
+        if (!payfor(player, LINK_COST)) {
+          notify_format(player, T("You don't have enough %s to link."), MONIES);
+        } else {
+          /* it's ok, link it */
+          Location(new_exit) = loc;
+          notify_format(player, T("Linked exit #%d to #%d"), new_exit, loc);
+        }
       }
     }
     current_state.exits++;
@@ -209,18 +209,18 @@ do_unlink(dbref player, const char *name)
     } else {
       switch (Typeof(exit_l)) {
       case TYPE_EXIT:
-	old_loc = Location(exit_l);
-	Location(exit_l) = NOTHING;
-	notify_format(player, T("Unlinked exit #%d (Used to lead to %s)."),
-		      exit_l, unparse_object(player, old_loc));
-	break;
+        old_loc = Location(exit_l);
+        Location(exit_l) = NOTHING;
+        notify_format(player, T("Unlinked exit #%d (Used to lead to %s)."),
+                      exit_l, unparse_object(player, old_loc));
+        break;
       case TYPE_ROOM:
-	Location(exit_l) = NOTHING;
-	notify(player, T("Dropto removed."));
-	break;
+        Location(exit_l) = NOTHING;
+        notify(player, T("Dropto removed."));
+        break;
       default:
-	notify(player, T("You can't unlink that!"));
-	break;
+        notify(player, T("You can't unlink that!"));
+        break;
       }
     }
   }
@@ -266,50 +266,50 @@ do_link(dbref player, const char *name, const char *room_name, int preserve)
     switch (Typeof(thing)) {
     case TYPE_EXIT:
       if ((room = check_var_link(room_name)) == NOTHING)
-	room = parse_linkable_room(player, room_name);
+        room = parse_linkable_room(player, room_name);
       if (room == NOTHING)
-	return;
+        return;
       if (GoodObject(room) && !can_link_to(player, room)) {
-	notify(player, T("Permission denied."));
-	break;
+        notify(player, T("Permission denied."));
+        break;
       }
       /* We may link an exit if it's unlinked and we pass the link-lock
        * or if we control it.
        */
       if (!(controls(player, thing)
-	    || ((Location(thing) == NOTHING)
-		&& eval_lock(player, thing, Link_Lock)))) {
-	notify(player, T("Permission denied."));
-	return;
+            || ((Location(thing) == NOTHING)
+                && eval_lock(player, thing, Link_Lock)))) {
+        notify(player, T("Permission denied."));
+        return;
       }
       if (preserve && !OOREF(player,div_powover(player, player,  "Link"), div_powover(ooref,ooref, "Link"))) {
-	notify(player, T("Permission denied."));
-	return;
+        notify(player, T("Permission denied."));
+        return;
       }
       /* handle costs */
       if (Owner(thing) == Owner(player)) {
-	if (!payfor(player, LINK_COST)) {
-	  notify_format(player, T("It costs %d %s to link this exit."),
-			LINK_COST, ((LINK_COST == 1) ? MONEY : MONIES));
-	  return;
-	}
+        if (!payfor(player, LINK_COST)) {
+          notify_format(player, T("It costs %d %s to link this exit."),
+                        LINK_COST, ((LINK_COST == 1) ? MONEY : MONIES));
+          return;
+        }
       } else {
-	if (!payfor(player, LINK_COST + EXIT_COST)) {
-	  int a = LINK_COST + EXIT_COST;
-	  notify_format(player, T("It costs %d %s to link this exit."), a,
-			((a == 1) ? MONEY : MONIES));
-	  return;
-	} else if (!preserve) {
-	  /* pay the owner for his loss */
-	  giveto(Owner(thing), EXIT_COST);
-	  chown_object(player, thing, player, 0);
-	}
+        if (!payfor(player, LINK_COST + EXIT_COST)) {
+          int a = LINK_COST + EXIT_COST;
+          notify_format(player, T("It costs %d %s to link this exit."), a,
+                        ((a == 1) ? MONEY : MONIES));
+          return;
+        } else if (!preserve) {
+          /* pay the owner for his loss */
+          giveto(Owner(thing), EXIT_COST);
+          chown_object(player, thing, player, 0);
+        }
       }
 
       /* link has been validated and paid for; do it */
       if (!preserve) {
-	Owner(thing) = Owner(player);
-	Zone(thing) = Zone(player);
+        Owner(thing) = Owner(player);
+        Zone(thing) = Zone(player);
         SDIV(thing).object = SDIV(player).object;
         SLEVEL(thing) = LEVEL(player);
       }
@@ -317,59 +317,59 @@ do_link(dbref player, const char *name, const char *room_name, int preserve)
 
       /* notify the player */
       notify_format(player, T("Linked exit #%d to %s"), thing,
-		    unparse_object(player, room));
+                    unparse_object(player, room));
       break;
     case TYPE_DIVISION:
     case TYPE_PLAYER:
     case TYPE_THING:
       if ((room =
-	   noisy_match_result(player, room_name, NOTYPE, MAT_EVERYTHING)) < 0) {
-	notify(player, T("No match."));
-	return;
+           noisy_match_result(player, room_name, NOTYPE, MAT_EVERYTHING)) < 0) {
+        notify(player, T("No match."));
+        return;
       }
       if (IsExit(room)) {
-	notify(player, T("That is an exit."));
-	return;
+        notify(player, T("That is an exit."));
+        return;
       }
       if (thing == room) {
-	notify(player, T("You may not link something to itself."));
-	return;
+        notify(player, T("You may not link something to itself."));
+        return;
       }
       /* abode */
       if (!controls(player, room) && !Abode(room)) {
-	notify(player, T("Permission denied."));
-	break;
+        notify(player, T("Permission denied."));
+        break;
       }
       if (!controls(player, thing)) {
-	notify(player, T("Permission denied."));
+        notify(player, T("Permission denied."));
       } else if (room == HOME) {
-	notify(player, T("Can't set home to home."));
+        notify(player, T("Can't set home to home."));
       } else {
-	/* do the link */
-	Home(thing) = room;	/* home */
-	if (!Quiet(player) && !(Quiet(thing) && (Owner(thing) == player)))
-	  notify(player, T("Home set."));
+        /* do the link */
+        Home(thing) = room;     /* home */
+        if (!Quiet(player) && !(Quiet(thing) && (Owner(thing) == player)))
+          notify(player, T("Home set."));
       }
       break;
     case TYPE_ROOM:
       if ((room = parse_linkable_room(player, room_name)) == NOTHING)
-	return;
+        return;
       if ((room != HOME) && (!IsRoom(room))) {
-	notify(player, T("That is not a room!"));
-	return;
+        notify(player, T("That is not a room!"));
+        return;
       }
       if (!controls(player, thing)) {
-	notify(player, T("Permission denied."));
+        notify(player, T("Permission denied."));
       } else {
-	/* do the link, in location */
-	Location(thing) = room;	/* dropto */
-	notify(player, T("Dropto set."));
+        /* do the link, in location */
+        Location(thing) = room; /* dropto */
+        notify(player, T("Dropto set."));
       }
       break;
     default:
       notify(player, "Internal error: weird object type.");
       do_log(LT_ERR, NOTHING, NOTHING,
-	     T("Weird object! Type of #%d is %d"), thing, Typeof(thing));
+             T("Weird object! Type of #%d is %d"), thing, Typeof(thing));
       break;
     }
   }
@@ -424,7 +424,7 @@ do_dig(dbref player, const char *name, char **argv, int tport)
        * and Z_TEL checking */
       char roomstr[MAX_COMMAND_LEN];
       sprintf(roomstr, "#%d", room);
-      do_teleport(player, "me", roomstr, 0, 0);	/* if flag, move the player */
+      do_teleport(player, "me", roomstr, 0, 0); /* if flag, move the player */
     }
     return room;
   }
@@ -461,7 +461,7 @@ do_create(dbref player, char *name, int cost)
 
     /* initialize everything */
     set_name(thing, name);
-    if (!IsExit(player))	/* Exits shouldn't have contents! */
+    if (!IsExit(player))        /* Exits shouldn't have contents! */
       Location(thing) = player;
     else
       Location(thing) = Source(player);
@@ -476,10 +476,10 @@ do_create(dbref player, char *name, int cost)
 
     /* home is here (if we can link to it) or player's home */
     if ((loc = Location(player)) != NOTHING &&
-	(controls(player, loc) || Abode(loc))) {
-      Home(thing) = loc;	/* home */
+        (controls(player, loc) || Abode(loc))) {
+      Home(thing) = loc;        /* home */
     } else {
-      Home(thing) = Home(player);	/* home */
+      Home(thing) = Home(player);       /* home */
     }
 
     /* link it in */
@@ -528,7 +528,7 @@ clone_object(dbref player, dbref thing, const char *newname, int preserve)
 #endif
   DPBITS(clone) = NULL;
   if (!preserve) {
-    Warnings(clone) = 0;	/* zap warnings */
+    Warnings(clone) = 0;        /* zap warnings */
   } else if (Warnings(clone) || DPBITS(clone)) {
     notify(player, T("Warning: @CLONE/PRESERVE on an object with powers or warnings."));
   }
@@ -581,7 +581,7 @@ do_clone(dbref player, char *name, char *newname, int preserve)
   }
   if (preserve && !Director(player)) {
     notify(player,
-	   T("You cannot @CLONE/PRESERVE.  Use normal @CLONE instead."));
+           T("You cannot @CLONE/PRESERVE.  Use normal @CLONE instead."));
     return NOTHING;
   }
   /* make sure owner can afford it */
@@ -591,13 +591,13 @@ do_clone(dbref player, char *name, char *newname, int preserve)
       clone = clone_object(player, thing, newname, preserve);
       notify_format(player, T("Cloned: Object %s."), unparse_dbref(clone));
       if (IsRoom(player))
-	moveto(clone, player);
+        moveto(clone, player);
       else
-	moveto(clone, Location(player));
+        moveto(clone, Location(player));
       current_state.things++;
       local_data_clone(clone, thing);
       real_did_it(player, clone, NULL, NULL, NULL, NULL, "ACLONE", NOTHING,
-		  global_eval_context.wenv, 0);
+                  global_eval_context.wenv, 0);
       return clone;
     }
     return NOTHING;
@@ -610,7 +610,7 @@ do_clone(dbref player, char *name, char *newname, int preserve)
       current_state.rooms++;
       local_data_clone(clone, thing);
       real_did_it(player, clone, NULL, NULL, NULL, NULL, "ACLONE", NOTHING,
-		  global_eval_context.wenv, 0);
+                  global_eval_context.wenv, 0);
       return clone;
     }
     return NOTHING;
@@ -653,9 +653,9 @@ do_clone(dbref player, char *name, char *newname, int preserve)
       db[clone].rplog.status = 0;
 #endif /* RPMODE_SYS */
       if (!preserve) {
-	Warnings(clone) = 0;	/* zap warnings */
+        Warnings(clone) = 0;    /* zap warnings */
       } else {
-	Warnings(clone) = Warnings(thing);
+        Warnings(clone) = Warnings(thing);
       }
       if (Warnings(clone) || DPBITS(clone))
         notify(player, T("Warning: @CLONE/PRESERVE on an exit with powers or warnings."));
@@ -703,7 +703,7 @@ void copy_zone(dbref executor, dbref zmo) {
     if(IsRoom(cur) && Zone(cur) == zmo) {
       num_rooms++;
       for(i = Exits(cur); i != NOTHING; i = Next(i))
-	num_exits++;
+        num_exits++;
     }
 
   oldrooms = (dbref *) mush_malloc(sizeof(dbref) * num_rooms, "copy_zone");
@@ -739,20 +739,20 @@ void copy_zone(dbref executor, dbref zmo) {
     bp = buf;
     for(cur = 0; cur < da_sz; cur++) {
       for(i = 0; i < num_rooms; i++)
-	if(da_vals[cur] == oldrooms[i]) {
-	  safe_str(unparse_dbref(newrooms[i]), buf, &bp);
-	  if((cur+1) < da_sz) safe_chr(' ', buf, &bp);
-	  break;
-	}
+        if(da_vals[cur] == oldrooms[i]) {
+          safe_str(unparse_dbref(newrooms[i]), buf, &bp);
+          if((cur+1) < da_sz) safe_chr(' ', buf, &bp);
+          break;
+        }
       if(i == num_rooms) {
-	for(i = 0; i < num_exits; i++)
-	  if(da_vals[cur] == oldexits[i]) {
-	    safe_str(unparse_dbref(newexits[i]), buf, &bp);
-	    if((cur+1) < da_sz) safe_chr(' ', buf, &bp);
-	    break;
-	  }
-	if(i == num_exits)
-	  safe_str("#-1 ", buf, &bp);
+        for(i = 0; i < num_exits; i++)
+          if(da_vals[cur] == oldexits[i]) {
+            safe_str(unparse_dbref(newexits[i]), buf, &bp);
+            if((cur+1) < da_sz) safe_chr(' ', buf, &bp);
+            break;
+          }
+        if(i == num_exits)
+          safe_str("#-1 ", buf, &bp);
       }
     }
     *bp = '\0';

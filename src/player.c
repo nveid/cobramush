@@ -92,15 +92,15 @@ password_check(dbref player, const char *password)
     /* shs encryption didn't match. Try crypt(3) */
     if (strcmp(crypt(password, "XX"), saved) != 0)
       /* Nope */
-#endif				/* HAS_CRYPT */
+#endif                          /* HAS_CRYPT */
       /* crypt() didn't work. Try plaintext, being sure to not 
        * allow unencrypted entry of encrypted password */
       if ((strcmp(saved, password) != 0)
-	  || (strlen(password) < 4)
-	  || ((password[0] == 'X') && (password[1] == 'X'))) {
-	/* Nothing worked. You lose. */
-	free(saved);
-	return 0;
+          || (strlen(password) < 4)
+          || ((password[0] == 'X') && (password[1] == 'X'))) {
+        /* Nothing worked. You lose. */
+        free(saved);
+        return 0;
       }
     /* Something worked. Change password to SHS-encrypted */
     (void) atr_add(player, pword_attr, passwd, GOD, NOTHING);
@@ -120,14 +120,14 @@ password_check(dbref player, const char *password)
  */
 dbref
 connect_player(const char *name, const char *password, const char *host,
-	       const char *ip, char *errbuf)
+               const char *ip, char *errbuf)
 {
   dbref player;
   char isgst = 0;
 
   /* Default error */
   strcpy(errbuf,
-	 T("Either that player does not exist, or has a different password."));
+         T("Either that player does not exist, or has a different password."));
 
   if (!name || !*name)
     return NOTHING;
@@ -142,15 +142,15 @@ connect_player(const char *name, const char *password, const char *host,
   /* See if player is allowed to connect like this */
   if (!isgst && ( Going(player) || Going_Twice(player) )) {
     do_log(LT_CONN, 0, 0,
-	   T("Connection to GOING player %s not allowed from %s (%s)"), name,
-	   host, ip);
+           T("Connection to GOING player %s not allowed from %s (%s)"), name,
+           host, ip);
     return NOTHING;
   }
   if (!Site_Can_Connect(host, player) || !Site_Can_Connect(ip, player)) {
     if (!Deny_Silent_Site(host, player) && !Deny_Silent_Site(ip, player)) {
       do_log(LT_CONN, 0, 0,
-	     T("Connection to %s not allowed from %s (%s)"), name,
-	     host, ip);
+             T("Connection to %s not allowed from %s (%s)"), name,
+             host, ip);
       strcpy(errbuf, T("Player connections not allowed."));
     }
     return NOTHING;
@@ -175,8 +175,8 @@ connect_player(const char *name, const char *password, const char *host,
   }
   if (Suspect_Site(host, player) || Suspect_Site(ip, player)) {
     do_log(LT_CONN, 0, 0,
-	   T("Connection from Suspect site. Setting %s(#%d) suspect."),
-	   Name(player), player);
+           T("Connection from Suspect site. Setting %s(#%d) suspect."),
+           Name(player), player);
     set_flag_internal(player, "SUSPECT");
   }
   return player;
@@ -187,52 +187,52 @@ connect_player(const char *name, const char *password, const char *host,
  */
 
 dbref create_guest(const char *host, const char *ip) {
-	int i , mg;
-	char *guest_name;
-	dbref gst_id;
+        int i , mg;
+        char *guest_name;
+        dbref gst_id;
 
-	mg = MAX_GUESTS == 0 ? 100 : MAX_GUESTS;
-	guest_name = (char *) mush_malloc(BUFFER_LEN, "gst_buf");
-	gst_id = NOTHING;
+        mg = MAX_GUESTS == 0 ? 100 : MAX_GUESTS;
+        guest_name = (char *) mush_malloc(BUFFER_LEN, "gst_buf");
+        gst_id = NOTHING;
 
-	for( i = 0 ; i  < mg ; i++)  {
-	        /* reset vars */
-		memset(guest_name, '\0', BUFFER_LEN);
-		gst_id = NOTHING;  
-		strncpy(guest_name, T(GUEST_PREFIX), BUFFER_LEN-1);
-		strcat(guest_name, GUEST_NUMBER(i+1));
-		if(ok_player_name(guest_name, NOTHING, NOTHING))
-		  break;	
-		else if((gst_id = lookup_player(guest_name)) != NOTHING && !Connected(gst_id))
-			break;
-		else continue;
-	}
-	if(gst_id == NOTHING) {
-	  if(i >= mg)  {
-		mush_free((Malloc_t) guest_name, "gst_buf");
-		return NOTHING;
-	  } else if(DBTOP_MAX && (db_top >= DBTOP_MAX + 1) && (first_free == NOTHING)) {
-		mush_free((Malloc_t) guest_name, "gst_buf");
-		do_log(LT_CONN, 0, 0, T("Failed creation (no db space) from %s"), host);
-		return NOTHING;
-	  }
-	  gst_id = make_player(guest_name, "", host, ip);
-	} else  { /* Reset Guest */
-		object_flag_type flags;
-		flags = string_to_bits("FLAG", options.player_flags);
-		copy_flag_bitmask("FLAG", Flags(gst_id), flags);
-	}
-	mush_free((Malloc_t) guest_name, "gst_buf");
-	atr_add(gst_id, "DESCRIBE", GUEST_DESCRIBE, gst_id, NOTHING);
+        for( i = 0 ; i  < mg ; i++)  {
+                /* reset vars */
+                memset(guest_name, '\0', BUFFER_LEN);
+                gst_id = NOTHING;  
+                strncpy(guest_name, T(GUEST_PREFIX), BUFFER_LEN-1);
+                strcat(guest_name, GUEST_NUMBER(i+1));
+                if(ok_player_name(guest_name, NOTHING, NOTHING))
+                  break;        
+                else if((gst_id = lookup_player(guest_name)) != NOTHING && !Connected(gst_id))
+                        break;
+                else continue;
+        }
+        if(gst_id == NOTHING) {
+          if(i >= mg)  {
+                mush_free((Malloc_t) guest_name, "gst_buf");
+                return NOTHING;
+          } else if(DBTOP_MAX && (db_top >= DBTOP_MAX + 1) && (first_free == NOTHING)) {
+                mush_free((Malloc_t) guest_name, "gst_buf");
+                do_log(LT_CONN, 0, 0, T("Failed creation (no db space) from %s"), host);
+                return NOTHING;
+          }
+          gst_id = make_player(guest_name, "", host, ip);
+        } else  { /* Reset Guest */
+                object_flag_type flags;
+                flags = string_to_bits("FLAG", options.player_flags);
+                copy_flag_bitmask("FLAG", Flags(gst_id), flags);
+        }
+        mush_free((Malloc_t) guest_name, "gst_buf");
+        atr_add(gst_id, "DESCRIBE", GUEST_DESCRIBE, gst_id, NOTHING);
 
-	SLEVEL(gst_id) = LEVEL_GUEST;
-	Home(gst_id) = options.guest_start;
-	if(GoodObject(options.guest_start) && IsRoom(options.guest_start)) {
-	  Contents(Location(gst_id)) = remove_first(Contents(Location(gst_id)), gst_id);
-	  Location(gst_id) = GUEST_START;
-	  PUSH(gst_id, Contents(options.guest_start));
-	}
-	return gst_id;
+        SLEVEL(gst_id) = LEVEL_GUEST;
+        Home(gst_id) = options.guest_start;
+        if(GoodObject(options.guest_start) && IsRoom(options.guest_start)) {
+          Contents(Location(gst_id)) = remove_first(Contents(Location(gst_id)), gst_id);
+          Location(gst_id) = GUEST_START;
+          PUSH(gst_id, Contents(options.guest_start));
+        }
+        return gst_id;
 }
 /** Attempt to create a new player object.
  * \param name name of player to create.
@@ -244,7 +244,7 @@ dbref create_guest(const char *host, const char *ip) {
  */
 dbref
 create_player(const char *name, const char *password, const char *host,
-	      const char *ip)
+              const char *ip)
 {
   dbref player;
   if (!ok_player_name(name, NOTHING, NOTHING)) {
@@ -291,7 +291,7 @@ create_player(const char *name, const char *password, const char *host,
  */
 dbref
 email_register_player(const char *name, const char *email, const char *host,
-		      const char *ip)
+                      const char *ip)
 {
   char *p;
   char passwd[BUFFER_LEN];
@@ -318,9 +318,9 @@ email_register_player(const char *name, const char *email, const char *host,
     p++;
     if (!Site_Can_Register(p)) {
       if (!Deny_Silent_Site(p, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0,
-	       T("Failed registration (bad site in email: %s) from %s"),
-	       email, host);
+        do_log(LT_CONN, 0, 0,
+               T("Failed registration (bad site in email: %s) from %s"),
+               email, host);
       }
       return NOTHING;
     }
@@ -329,9 +329,9 @@ email_register_player(const char *name, const char *email, const char *host,
     if (!Site_Can_Register(email)) {
       *p = '!';
       if (!Deny_Silent_Site(email, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0,
-	       T("Failed registration (bad site in email: %s) from %s"),
-	       email, host);
+        do_log(LT_CONN, 0, 0,
+               T("Failed registration (bad site in email: %s) from %s"),
+               email, host);
       }
       return NOTHING;
     } else
@@ -339,7 +339,7 @@ email_register_player(const char *name, const char *email, const char *host,
   } else {
     if (!Deny_Silent_Site(host, AMBIGUOUS)) {
       do_log(LT_CONN, 0, 0, T("Failed registration (bad email: %s) from %s"),
-	     email, host);
+             email, host);
     }
     return NOTHING;
   }
@@ -369,8 +369,8 @@ email_register_player(const char *name, const char *email, const char *host,
 #endif
        popen(tprintf("%s -t", SENDMAIL), "w")) == NULL) {
     do_log(LT_CONN, 0, 0,
-	   T("Failed registration of %s by %s: unable to open sendmail"),
-	   name, email);
+           T("Failed registration of %s by %s: unable to open sendmail"),
+           name, email);
     reserve_fd();
     return NOTHING;
   }
@@ -384,7 +384,7 @@ email_register_player(const char *name, const char *email, const char *host,
   fprintf(fp, T("The password is %s\n"), passwd);
   fprintf(fp, "\n");
   fprintf(fp, T("To access this character, connect to %s and type:\n"),
-	  MUDNAME);
+          MUDNAME);
   fprintf(fp, "\tconnect \"%s\" %s\n", name, passwd);
   fprintf(fp, "\n");
   pclose(fp);
@@ -399,7 +399,7 @@ email_register_player(const char *name, const char *email, const char *host,
 #else
 dbref
 email_register_player(const char *name, const char *email, const char *host,
-		      const char *ip)
+                      const char *ip)
 {
   do_log(LT_CONN, 0, 0, T("Failed registration (no sendmail) from %s"), host);
   return NOTHING;
@@ -408,7 +408,7 @@ email_register_player(const char *name, const char *email, const char *host,
 
 static dbref
 make_player(const char *name, const char *password, const char *host,
-	    const char *ip)
+            const char *ip)
 {
 
   dbref player;
@@ -433,7 +433,7 @@ make_player(const char *name, const char *password, const char *host,
   /* Modtime tracks login failures */
   ModTime(player) = (time_t) 0;
   (void) atr_add(player, "XYXXY", mush_crypt(password), GOD, NOTHING);
-  giveto(player, START_BONUS);	/* starting bonus */
+  giveto(player, START_BONUS);  /* starting bonus */
   (void) atr_add(player, "LAST", show_time(mudtime, 0), GOD, NOTHING);
   (void) atr_add(player, "LASTSITE", host, GOD, NOTHING);
   (void) atr_add(player, "LASTIP", ip, GOD, NOTHING);
@@ -441,10 +441,10 @@ make_player(const char *name, const char *password, const char *host,
   sprintf(temp, "%d", START_QUOTA);
   (void) atr_add(player, "RQUOTA", temp, GOD, NOTHING);
   (void) atr_add(player, "ICLOC", EMPTY_ATTRS ? "" : " ", GOD,
-		 AF_MDARK | AF_PRIVATE | AF_NOCOPY);
+                 AF_MDARK | AF_PRIVATE | AF_NOCOPY);
 #ifdef USE_MAILER
   (void) atr_add(player, "MAILCURF", "0", GOD,
-		 AF_LOCKED | AF_NOPROG);
+                 AF_LOCKED | AF_NOPROG);
   add_folder_name(player, 0, "inbox");
 #endif
   /* link him to PLAYER_START */
@@ -452,9 +452,9 @@ make_player(const char *name, const char *password, const char *host,
 
   add_player(player);
   add_lock(GOD, player, Basic_Lock, parse_boolexp(player, "=me", Basic_Lock),
-	   -1);
+           -1);
   add_lock(GOD, player, Enter_Lock, parse_boolexp(player, "=me", Basic_Lock),
-	   -1);
+           -1);
   add_lock(GOD, player, Use_Lock, parse_boolexp(player, "=me", Basic_Lock), -1);
 
   current_state.players++;
@@ -486,14 +486,14 @@ do_password(dbref player, dbref cause, const char *old, const char *newobj)
     sp = old;
     bp = old_eval;
     process_expression(old_eval, &bp, &sp, player, player, cause,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     old = old_eval;
 
     sp = newobj;
     bp = new_eval;
     process_expression(new_eval, &bp, &sp, player, player, cause,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     newobj = new_eval;
   }

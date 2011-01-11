@@ -17,7 +17,7 @@ typedef unsigned char switch_mask[NUM_SWITCH_BYTES];
 #define CMD_T_PLAYER    0x10000000
 #define CMD_T_ANY       0xF4000000
 #define CMD_T_GOD       0x08000000
-#define CMD_T_DIVISION	0x04000000
+#define CMD_T_DIVISION  0x04000000
 
 /* Any unknown or undefined switches will be passed in switches, instead of causing error */
 #define CMD_T_SWITCHES  0x02000000
@@ -35,7 +35,7 @@ typedef unsigned char switch_mask[NUM_SWITCH_BYTES];
 /* Command will fail if object is fixed */
 #define CMD_T_NOFIXED   0x00200000
 
-#define CMD_T_NORPMODE	0x00002000
+#define CMD_T_NORPMODE  0x00002000
 
 /* INTERNAL : Command is listed in @list commands */
 #define CMD_T_LISTED    0x00080000
@@ -105,7 +105,7 @@ void command_name(COMMAND_INFO *cmd __attribute__ ((__unused__)), \
                   char *args_left[MAX_ARG] __attribute__ ((__unused__)), \
                   char *arg_right __attribute__ ((__unused__)), \
                   char *args_right[MAX_ARG] __attribute__ ((__unused__)), \
-    		  int fromport)
+                  int fromport)
 
 /** Common command prototype macro */
 #define COMMAND_PROTO(command_name) \
@@ -115,33 +115,33 @@ void command_name (COMMAND_INFO *cmd, dbref player, dbref cause, switch_mask sw,
 
 typedef struct command_info COMMAND_INFO;
 typedef void (*command_func) (COMMAND_INFO *, dbref, dbref, switch_mask, char *,
-			      char *, char *, char *, char *[MAX_ARG], char *,
-			      char *[MAX_ARG], int fromport);
+                              char *, char *, char *, char *[MAX_ARG], char *,
+                              char *[MAX_ARG], int fromport);
 
 /** A hook specification.
  */
 struct hook_data {
-  dbref obj;		/**< Object where the hook attribute is stored. */
-  char *attrname;	/**< Attribute name of the hook attribute */
+  dbref obj;            /**< Object where the hook attribute is stored. */
+  char *attrname;       /**< Attribute name of the hook attribute */
 };
 
 /** A command.
  * This structure represents a command in the table of available commands.
  */
 struct command_info {
-  const char *name;	/**< Canonical name of the command */
-  const char *restrict_message;	/**< Message sent when command is restricted */
-  command_func func;	/**< Function to call when command is run */
-  unsigned int type;	/**< Types of objects that can use the command */
-  switch_mask sw;	/**< Bitflags of switches this command can take */
+  const char *name;     /**< Canonical name of the command */
+  const char *restrict_message; /**< Message sent when command is restricted */
+  command_func func;    /**< Function to call when command is run */
+  unsigned int type;    /**< Types of objects that can use the command */
+  switch_mask sw;       /**< Bitflags of switches this command can take */
   boolexp lock;
   /** Hooks on this command.
    */
   struct {
-    struct hook_data before;	/**< Hook to evaluate before command */
-    struct hook_data after;	/**< Hook to evaluate after command */
-    struct hook_data ignore;	/**< Hook to evaluate to decide if we should ignore hardcoded command */
-    struct hook_data override;	/**< Hook to override command with $command */
+    struct hook_data before;    /**< Hook to evaluate before command */
+    struct hook_data after;     /**< Hook to evaluate after command */
+    struct hook_data ignore;    /**< Hook to evaluate to decide if we should ignore hardcoded command */
+    struct hook_data override;  /**< Hook to override command with $command */
   } hooks;
 };
 
@@ -152,10 +152,10 @@ typedef struct command_list COMLIST;
  * added dynamically, outside of this array.
  */
 struct command_list {
-  const char *name;	/**< Command name */
-  const char *switches;	/**< Space-separated list of switch names */
-  command_func func;	/**< Function to call when command is run */
-  unsigned int type;	/**< Types of objects that can use the command */
+  const char *name;     /**< Command name */
+  const char *switches; /**< Space-separated list of switch names */
+  command_func func;    /**< Function to call when command is run */
+  unsigned int type;    /**< Types of objects that can use the command */
   const char *command_lock; /**< Command Lock Boolexp */
 };
 
@@ -166,8 +166,8 @@ typedef struct switch_value SWITCH_VALUE;
  * associates switch names with switch numbers
  */
 struct switch_value {
-  const char *name;	/**< Name of the switch */
-  int value;		/**< Number of the switch */
+  const char *name;     /**< Name of the switch */
+  int value;            /**< Number of the switch */
 };
 
 typedef struct com_sort_struc COMSORTSTRUC;
@@ -177,8 +177,8 @@ typedef struct com_sort_struc COMSORTSTRUC;
  * to command data.
  */
 struct com_sort_struc {
-  struct com_sort_struc *next;	/**< Pointer to next in list */
-  COMMAND_INFO *cmd;		/**< Command data */
+  struct com_sort_struc *next;  /**< Pointer to next in list */
+  COMMAND_INFO *cmd;            /**< Command data */
 };
 
 /** Permissions for commands.
@@ -186,8 +186,8 @@ struct com_sort_struc {
  * (e.g. "player") with the appropriate bitmask
  */
 struct command_perms_t {
-  const char *name;	/**< Permission name */
-  unsigned int type;	/**< Bitmask for this permission */
+  const char *name;     /**< Permission name */
+  unsigned int type;    /**< Bitmask for this permission */
 };
 
 #define SWITCH_NONE 0
@@ -226,4 +226,4 @@ extern void do_command_delete(dbref player, char *name);
 extern void generic_command_failure(dbref player, dbref cause, char *string, int fromport);
 extern int command_lock(const char *command, const char *lock);
 
-#endif				/* __COMMAND_H */
+#endif                          /* __COMMAND_H */

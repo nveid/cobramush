@@ -23,18 +23,18 @@
 #define HUGE_NVAL       HUGE_DOUBLE
 
 /* These are some common error messages. */
-extern char e_int[];		/* #-1 ARGUMENT MUST BE INTEGER */
-extern char e_ints[];		/* #-1 ARGUMENTS MUST BE INTEGERS */
-extern char e_uint[];		/* #-1 ARGUMENT MUST BE POSITIVE INTEGER */
-extern char e_uints[];		/* #-1 ARGUMENTS MUST BE POSITIVE INTEGERS */
-extern char e_num[];		/* #-1 ARGUMENT MUST BE NUMBER */
-extern char e_nums[];		/* #-1 ARGUMENTS MUST BE NUMBERS */
-extern char e_perm[];		/* #-1 PERMISSION DENIED */
-extern char e_atrperm[];	/* #-1 NO PERMISSION TO GET ATTRIBUTE */
-extern char e_match[];		/* #-1 NO MATCH */
-extern char e_notvis[];		/* #-1 NO SUCH OBJECT VISIBLE */
-extern char e_disabled[];	/* #-1 FUNCTION DISABLED */
-extern char e_range[];		/* #-1 OUT OF RANGE */
+extern char e_int[];            /* #-1 ARGUMENT MUST BE INTEGER */
+extern char e_ints[];           /* #-1 ARGUMENTS MUST BE INTEGERS */
+extern char e_uint[];           /* #-1 ARGUMENT MUST BE POSITIVE INTEGER */
+extern char e_uints[];          /* #-1 ARGUMENTS MUST BE POSITIVE INTEGERS */
+extern char e_num[];            /* #-1 ARGUMENT MUST BE NUMBER */
+extern char e_nums[];           /* #-1 ARGUMENTS MUST BE NUMBERS */
+extern char e_perm[];           /* #-1 PERMISSION DENIED */
+extern char e_atrperm[];        /* #-1 NO PERMISSION TO GET ATTRIBUTE */
+extern char e_match[];          /* #-1 NO MATCH */
+extern char e_notvis[];         /* #-1 NO SUCH OBJECT VISIBLE */
+extern char e_disabled[];       /* #-1 FUNCTION DISABLED */
+extern char e_range[];          /* #-1 OUT OF RANGE */
 
 /* The following routines all take strings as arguments, and return
  * data of the appropriate types.  
@@ -148,8 +148,8 @@ typedef struct fun FUN;
 /* process_expression() evaluates expressions.  What a concept. */
 
 int process_expression(char *buff, char **bp, char const **str,
-		       dbref executor, dbref caller, dbref enactor,
-		       int eflags, int tflags, PE_Info * pe_info);
+                       dbref executor, dbref caller, dbref enactor,
+                       int eflags, int tflags, PE_Info * pe_info);
 
 /* buff is a pointer to a BUFFER_LEN string to contain the expression
  * result.  *bp is the point in buff at which the result should be written.
@@ -185,7 +185,7 @@ int process_expression(char *buff, char **bp, char const **str,
 #define PE_DEFAULT (PE_COMPRESS_SPACES | PE_STRIP_BRACES | \
                     PE_DOLLAR | PE_EVALUATE | PE_FUNCTION_CHECK)
 #define PE_UDEFAULT (PE_COMPRESS_SPACES | PE_STRIP_BRACES | \
-		     PE_EVALUATE | PE_FUNCTION_CHECK)
+                     PE_EVALUATE | PE_FUNCTION_CHECK)
 
 /* PE_COMPRESS_SPACES strips leading and trailing spaces, and reduces sets
  * of internal spaces to one space.
@@ -248,4 +248,4 @@ int process_expression(char *buff, char **bp, char const **str,
 extern void start_cpu_timer(void);
 extern void reset_cpu_timer(void);
 
-#endif				/* !_PARSE_H_ */
+#endif                          /* !_PARSE_H_ */

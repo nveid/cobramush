@@ -27,7 +27,7 @@
 
 int do_convtime(const char *str, struct tm *ttm);
 void do_timestring(char *buff, char **bp, const char *format,
-		   unsigned long secs);
+                   unsigned long secs);
 
 extern char valid_timefmt_codes[256];
 
@@ -39,7 +39,7 @@ FUNCTION(fun_timefmt)
   int len, n;
 
   if (!args[0] || !*args[0])
-    return;			/* No field? Bad user. */
+    return;                     /* No field? Bad user. */
 
   if (nargs == 2) {
     /* This is silly, but time_t is signed on several platforms,
@@ -70,11 +70,11 @@ FUNCTION(fun_timefmt)
       args[0][n] = '%';
       n++;
       if (args[0][n] == '$')
-	args[0][n] = '%';
+        args[0][n] = '%';
       else if (!valid_timefmt_codes[(unsigned char) args[0][n]]) {
-	safe_format(buff, bp, T("#-1 INVALID ESCAPE CODE '$%c'"),
-		    args[0][n] ? args[0][n] : ' ');
-	return;
+        safe_format(buff, bp, T("#-1 INVALID ESCAPE CODE '$%c'"),
+                    args[0][n] ? args[0][n] : ' ');
+        return;
       }
     }
   }
@@ -114,30 +114,30 @@ FUNCTION(fun_time)
       char *ptr;
       thing = match_result(executor, args[0], NOTYPE, MAT_EVERYTHING);
       if (!GoodObject(thing)) {
-	/* Assume this is a manul timezone set */
-	if(is_strict_number(args[0])) {
-	  utc = 1;
-	  tz = strtod(args[0], NULL);
-	  if (tz < -24.0 || tz > 24.0) {
-	    safe_str("#-1 INVALID TIME ZONE", buff, bp);
-	    return;
-	  }
-	  mytime += (int) (tz * 3600);
-	} else setenv("TZ", args[0], 1);
+        /* Assume this is a manul timezone set */
+        if(is_strict_number(args[0])) {
+          utc = 1;
+          tz = strtod(args[0], NULL);
+          if (tz < -24.0 || tz > 24.0) {
+            safe_str("#-1 INVALID TIME ZONE", buff, bp);
+            return;
+          }
+          mytime += (int) (tz * 3600);
+        } else setenv("TZ", args[0], 1);
       } else {
       /* Always make time(player) return a time,
        * even if player's TZ is unset or wonky */
-	a = atr_get(thing, "TZ");
-	if (a) { 
-	  ptr = atr_value(a);
-	  if(is_strict_number(ptr)) {
-	    utc = 1;
-	    tz = strtod(ptr, NULL);
-	    if (tz >= -24.0 || tz <= 24.0) {
-	      mytime += (int) (tz * 3600);
-	    }
-	  } else setenv("TZ", ptr, 1);
-	} 
+        a = atr_get(thing, "TZ");
+        if (a) { 
+          ptr = atr_value(a);
+          if(is_strict_number(ptr)) {
+            utc = 1;
+            tz = strtod(ptr, NULL);
+            if (tz >= -24.0 || tz <= 24.0) {
+              mytime += (int) (tz * 3600);
+            }
+          } else setenv("TZ", ptr, 1);
+        } 
       }
     }
   } else if (!strcmp("UTCTIME", called_as)) {
@@ -239,35 +239,35 @@ etime_to_secs(char *str1, int *secs)
       i++;
     }
     if (i == 0) {
-      return 0;			/* No numbers given */
+      return 0;                 /* No numbers given */
     }
     str2[i] = '\0';
     if (!*str1) {
-      *secs += parse_integer(str2);	/* no more chars, just add seconds and stop */
+      *secs += parse_integer(str2);     /* no more chars, just add seconds and stop */
       break;
     }
     switch (*str1) {
     case 'd':
     case 'D':
-      *secs += (parse_integer(str2) * 86400);	/* days */
+      *secs += (parse_integer(str2) * 86400);   /* days */
       break;
     case 'h':
     case 'H':
-      *secs += (parse_integer(str2) * 3600);	/* hours */
+      *secs += (parse_integer(str2) * 3600);    /* hours */
       break;
     case 'm':
     case 'M':
-      *secs += (parse_integer(str2) * 60);	/* minutes */
+      *secs += (parse_integer(str2) * 60);      /* minutes */
       break;
     case 's':
     case 'S':
     case ' ':
-      *secs += parse_integer(str2);	/* seconds */
+      *secs += parse_integer(str2);     /* seconds */
       break;
     default:
       return 0;
     }
-    str1++;			/* move past the time char */
+    str1++;                     /* move past the time char */
   }
   return 1;
 }
@@ -343,7 +343,7 @@ do_convtime_gd(const char *str, struct tm *ttm)
 #ifdef NEVER
     if (getdate_err <= 7)
       do_rawlog(LT_ERR, "getdate returned error code %d for %s", getdate_err,
-		str);
+                str);
 #endif
     return 0;
   }
@@ -410,14 +410,14 @@ do_convtime(const char *mystr, struct tm *ttm)
   if (strlen(p) != 3)
     return 0;
   for (i = 0; (i < 12) && strcmp(month_table[i], p); i++) ;
-  if (i == 12)			/* not found */
+  if (i == 12)                  /* not found */
     return 0;
   else
     ttm->tm_mon = i;
 
   /* get the day of month */
   p = q;
-  while (isspace((unsigned char) *p))	/* skip leading space */
+  while (isspace((unsigned char) *p))   /* skip leading space */
     p++;
   if (!(q = strchr(p, ' ')))
     return 0;
@@ -466,14 +466,14 @@ FUNCTION(fun_convtime)
     safe_uinteger(timelocal(&ttm), buff, bp);
 #else
     safe_uinteger(mktime(&ttm), buff, bp);
-#endif				/* SUN_OS */
+#endif                          /* SUN_OS */
   } else {
     safe_str("-1", buff, bp);
   }
 }
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4761)        /* NJG: disable warning re conversion */
 #endif
 /* ARGSUSED */
 FUNCTION(fun_isdaylight)
@@ -521,137 +521,137 @@ do_timestring(char *buff, char **bp, const char *format, unsigned long secs)
       c++;
       width = strtol(c, &w, 10);
       if (c == w)
-	pad = 0;
+        pad = 0;
       else
-	pad = 1;
+        pad = 1;
       if (width < 0)
-	width = 0;
+        width = 0;
       else if (width >= BUFFER_LEN)
-	width = BUFFER_LEN - 1;
+        width = BUFFER_LEN - 1;
       even_if_0 = in_format_flags = 1;
       include_suffix = 0;
       while (in_format_flags) {
-	switch (*w) {
-	case 'x':
-	case 'X':
-	  include_suffix = 1;
-	  w++;
-	  break;
-	case 'z':
-	case 'Z':
-	  even_if_0 = 0;
-	  w++;
-	  break;
-	case '$':
-	  in_format_flags = 0;
-	  if (pad)
-	    safe_format(buff, bp, "%*c", width, '$');
-	  else
-	    safe_chr('$', buff, bp);
-	  break;
-	case 's':
-	  in_format_flags = 0;
-	  if (secs || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%*lu", width, secs);
-	    else
-	      safe_uinteger(secs, buff, bp);
-	    if (include_suffix)
-	      safe_chr('s', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'S':
-	  in_format_flags = 0;
-	  if (secs || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%0*lu", width, secs);
-	    else
-	      safe_format(buff, bp, "%0lu", secs);
-	    if (include_suffix)
-	      safe_chr('s', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'm':
-	  in_format_flags = 0;
-	  if (mins || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%*d", width, mins);
-	    else
-	      safe_integer(mins, buff, bp);
-	    if (include_suffix)
-	      safe_chr('m', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'M':
-	  in_format_flags = 0;
-	  if (mins || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%0*d", width, mins);
-	    else
-	      safe_format(buff, bp, "%0d", mins);
-	    if (include_suffix)
-	      safe_chr('m', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'h':
-	  in_format_flags = 0;
-	  if (hours || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%*d", width, hours);
-	    else
-	      safe_integer(hours, buff, bp);
-	    if (include_suffix)
-	      safe_chr('h', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'H':
-	  in_format_flags = 0;
-	  if (hours || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%0*d", width, hours);
-	    else
-	      safe_format(buff, bp, "%0d", hours);
-	    if (include_suffix)
-	      safe_chr('h', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'd':
-	  in_format_flags = 0;
-	  if (days || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%*d", width, days);
-	    else
-	      safe_integer(days, buff, bp);
-	    if (include_suffix)
-	      safe_chr('d', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	case 'D':
-	  in_format_flags = 0;
-	  if (days || even_if_0) {
-	    if (pad)
-	      safe_format(buff, bp, "%0*d", width, days);
-	    else
-	      safe_format(buff, bp, "%0d", days);
-	    if (include_suffix)
-	      safe_chr('d', buff, bp);
-	  } else if (pad)
-	    safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
-	  break;
-	default:
-	  in_format_flags = 0;
-	  safe_chr('$', buff, bp);
-	  for (; c != w; c++)
-	    safe_chr(*c, buff, bp);
-	  safe_chr(*c, buff, bp);
-	}
+        switch (*w) {
+        case 'x':
+        case 'X':
+          include_suffix = 1;
+          w++;
+          break;
+        case 'z':
+        case 'Z':
+          even_if_0 = 0;
+          w++;
+          break;
+        case '$':
+          in_format_flags = 0;
+          if (pad)
+            safe_format(buff, bp, "%*c", width, '$');
+          else
+            safe_chr('$', buff, bp);
+          break;
+        case 's':
+          in_format_flags = 0;
+          if (secs || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%*lu", width, secs);
+            else
+              safe_uinteger(secs, buff, bp);
+            if (include_suffix)
+              safe_chr('s', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'S':
+          in_format_flags = 0;
+          if (secs || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%0*lu", width, secs);
+            else
+              safe_format(buff, bp, "%0lu", secs);
+            if (include_suffix)
+              safe_chr('s', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'm':
+          in_format_flags = 0;
+          if (mins || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%*d", width, mins);
+            else
+              safe_integer(mins, buff, bp);
+            if (include_suffix)
+              safe_chr('m', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'M':
+          in_format_flags = 0;
+          if (mins || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%0*d", width, mins);
+            else
+              safe_format(buff, bp, "%0d", mins);
+            if (include_suffix)
+              safe_chr('m', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'h':
+          in_format_flags = 0;
+          if (hours || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%*d", width, hours);
+            else
+              safe_integer(hours, buff, bp);
+            if (include_suffix)
+              safe_chr('h', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'H':
+          in_format_flags = 0;
+          if (hours || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%0*d", width, hours);
+            else
+              safe_format(buff, bp, "%0d", hours);
+            if (include_suffix)
+              safe_chr('h', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'd':
+          in_format_flags = 0;
+          if (days || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%*d", width, days);
+            else
+              safe_integer(days, buff, bp);
+            if (include_suffix)
+              safe_chr('d', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        case 'D':
+          in_format_flags = 0;
+          if (days || even_if_0) {
+            if (pad)
+              safe_format(buff, bp, "%0*d", width, days);
+            else
+              safe_format(buff, bp, "%0d", days);
+            if (include_suffix)
+              safe_chr('d', buff, bp);
+          } else if (pad)
+            safe_fill(' ', width + (include_suffix ? 1 : 0), buff, bp);
+          break;
+        default:
+          in_format_flags = 0;
+          safe_chr('$', buff, bp);
+          for (; c != w; c++)
+            safe_chr(*c, buff, bp);
+          safe_chr(*c, buff, bp);
+        }
       }
       c = w;
     } else
@@ -660,5 +660,5 @@ do_timestring(char *buff, char **bp, const char *format, unsigned long secs)
 }
 
 #ifdef WIN32
-#pragma warning( default : 4761)	/* NJG: enable warning re conversion */
+#pragma warning( default : 4761)        /* NJG: enable warning re conversion */
 #endif

@@ -33,7 +33,7 @@ extern void local_functions(void);
 static int apply_restrictions(unsigned int result, const char *restriction);
 
 USERFN_ENTRY *userfn_tab;   /**< Table of user-defined functions */
-HASHTAB htab_function;	    /**< Function hash table */
+HASHTAB htab_function;      /**< Function hash table */
 HASHTAB htab_user_function; /**< User-defined function hash table */
 
 /* -------------------------------------------------------------------------*
@@ -126,7 +126,7 @@ load_global_regs(char *preserve[])
  */
 void
 save_global_env(const char *funcname __attribute__ ((__unused__)),
-		char *preserve[])
+                char *preserve[])
 {
   int i;
   for (i = 0; i < 10; i++)
@@ -139,7 +139,7 @@ save_global_env(const char *funcname __attribute__ ((__unused__)),
  */
 void
 restore_global_env(const char *funcname __attribute__ ((__unused__)),
-		   char *preserve[])
+                   char *preserve[])
 {
   int i;
   for (i = 0; i < 10; i++)
@@ -158,7 +158,7 @@ restore_global_env(const char *funcname __attribute__ ((__unused__)),
  */
 void
 save_global_nxt(const char *funcname, char *preservew[], char *preserver[],
-		char *valw[], char *valr[])
+                char *valw[], char *valr[])
 {
   int i;
   for (i = 0; i < NUMQ; i++) {
@@ -229,7 +229,7 @@ restore_global_nxt(const char *funcname, char *preservew[], char *preserver[],
  */
 int
 delim_check(char *buff, char **bp, int nfargs, char *fargs[], int sep_arg,
-	    char *sep)
+            char *sep)
 {
   /* Find a delimiter. */
 
@@ -255,11 +255,11 @@ delim_check(char *buff, char **bp, int nfargs, char *fargs[], int sep_arg,
  * This structure represents a function's entry in the function table.
  */
 typedef struct fun_tab {
-  const char *name;	/**< Name of the function, uppercase. */
-  function_func fun;	/**< Pointer to code to call for this function. */
-  int minargs;	/**< Minimum args required. */
-  int maxargs;	/**< Maximum args, or INT_MAX. If <0, last arg may have commas */
-  int flags;	/**< Flags to control how the function is parsed. */
+  const char *name;     /**< Name of the function, uppercase. */
+  function_func fun;    /**< Pointer to code to call for this function. */
+  int minargs;  /**< Minimum args required. */
+  int maxargs;  /**< Maximum args, or INT_MAX. If <0, last arg may have commas */
+  int flags;    /**< Flags to control how the function is parsed. */
 } FUNTAB;
 
 
@@ -865,7 +865,7 @@ function_init_postconfig(void)
 {
   userfn_tab =
     (USERFN_ENTRY *) mush_malloc(MAX_GLOBAL_FNS * sizeof(USERFN_ENTRY),
-				 "userfn_tab");
+                                 "userfn_tab");
 }
 
 /** Check permissions to run a function.
@@ -926,7 +926,7 @@ alias_function(const char *function, const char *alias)
     return 0;
 
   function_add(strdup(strupper(alias)), fp->where.fun,
-	       fp->minargs, fp->maxargs, fp->flags);
+               fp->minargs, fp->maxargs, fp->flags);
   return 1;
 }
 
@@ -939,7 +939,7 @@ alias_function(const char *function, const char *alias)
  */
 void
 function_add(const char *name, function_func fun, int minargs, int maxargs,
-	     int ftype)
+             int ftype)
 {
   FUN *fp;
   fp = (FUN *) mush_malloc(sizeof(FUN), "function");
@@ -972,7 +972,7 @@ strip_braces(const char *str)
   buff = (char *) mush_malloc(BUFFER_LEN, "strip_braces.buff");
   bufc = buff;
 
-  while (isspace((unsigned char) *str))	/* eat spaces at the beginning */
+  while (isspace((unsigned char) *str)) /* eat spaces at the beginning */
     str++;
 
   switch (*str) {
@@ -981,7 +981,7 @@ strip_braces(const char *str)
     process_expression(buff, &bufc, &str, 0, 0, 0, PE_NOTHING, PT_BRACE, NULL);
     *bufc = '\0';
     return buff;
-    break;			/* NOT REACHED */
+    break;                      /* NOT REACHED */
   default:
     strcpy(buff, str);
     return buff;
@@ -1015,7 +1015,7 @@ apply_restrictions(unsigned int result, const char *restriction)
     } else if (string_prefix(restriction, "nofix")) {
       flag = FN_NOFIXED;
     } else if (string_prefix(restriction, "norp")) {
-	    flag = FN_NORP;
+            flag = FN_NORP;
     } else if (!strcasecmp(restriction, "noguest")) {
       flag = FN_NOGUEST;
     } else if (!strcasecmp(restriction, "admin")) {
@@ -1160,19 +1160,19 @@ do_function(dbref player, char *name, char *argv[], int preserve)
        */
       notify(player, T("Function Name                   Dbref #    Attrib"));
       for (fp = (FUN *) hash_firstentry(&htab_user_function);
-	   fp; fp = (FUN *) hash_nextentry(&htab_user_function)) {
-	notify_format(player,
-		      "%-32s %6d    %s", fp->name,
-		      userfn_tab[fp->where.offset].thing,
-		      userfn_tab[fp->where.offset].name);
+           fp; fp = (FUN *) hash_nextentry(&htab_user_function)) {
+        notify_format(player,
+                      "%-32s %6d    %s", fp->name,
+                      userfn_tab[fp->where.offset].thing,
+                      userfn_tab[fp->where.offset].name);
       }
     } else {
       /* just print out the list of available functions */
       safe_str(T("User functions:"), tbuf1, &bp);
       for (fp = (FUN *) hash_firstentry(&htab_user_function);
-	   fp; fp = (FUN *) hash_nextentry(&htab_user_function)) {
-	safe_chr(' ', tbuf1, &bp);
-	safe_str(fp->name, tbuf1, &bp);
+           fp; fp = (FUN *) hash_nextentry(&htab_user_function)) {
+        safe_chr(' ', tbuf1, &bp);
+        safe_str(fp->name, tbuf1, &bp);
       }
       *bp = '\0';
       notify(player, tbuf1);
@@ -1233,18 +1233,18 @@ do_function(dbref player, char *name, char *argv[], int preserve)
     if (argv[3] && *argv[3]) {
       fp->minargs = parse_integer(argv[3]);
       if (fp->minargs < 0)
-	fp->minargs = 0;
+        fp->minargs = 0;
       else if (fp->minargs > 10)
-	fp->minargs = 10;
+        fp->minargs = 10;
     } else
       fp->minargs = 0;
 
     if (argv[4] && *argv[4]) {
       fp->maxargs = parse_integer(argv[4]);
       if (fp->maxargs < -10)
-	fp->maxargs = -10;
+        fp->maxargs = -10;
       else if (fp->maxargs > 10)
-	fp->maxargs = 10;
+        fp->maxargs = 10;
     } else
       fp->maxargs = 10;
     if (argv[5] && *argv[5])
@@ -1271,10 +1271,10 @@ do_function(dbref player, char *name, char *argv[], int preserve)
       notify(player, T("You cannot change that built-in function."));
       return;
     }
-    if (fp->flags & FN_BUILTIN) {	/* Overriding a built in function */
+    if (fp->flags & FN_BUILTIN) {       /* Overriding a built in function */
       if (userfn_count >= (Size_t) MAX_GLOBAL_FNS) {
-	notify(player, T("Function table full."));
-	return;
+        notify(player, T("Function table full."));
+        return;
       }
       fp = (FUN *) mush_malloc(sizeof(FUN), "func_hash.FUN");
       fp->name = mush_strdup(name, "func_hash.name");
@@ -1286,24 +1286,24 @@ do_function(dbref player, char *name, char *argv[], int preserve)
     userfn_tab[fp->where.offset].thing = thing;
     if (userfn_tab[fp->where.offset].name)
       mush_free((Malloc_t) userfn_tab[fp->where.offset].name,
-		"userfn_tab.name");
+                "userfn_tab.name");
     userfn_tab[fp->where.offset].name =
       mush_strdup(upcasestr(argv[2]), "userfn_tab.name");
     if (argv[3] && *argv[3]) {
       fp->minargs = parse_integer(argv[3]);
       if (fp->minargs < 0)
-	fp->minargs = 0;
+        fp->minargs = 0;
       else if (fp->minargs > 10)
-	fp->minargs = 10;
+        fp->minargs = 10;
     } else
       fp->minargs = 0;
 
     if (argv[4] && *argv[4]) {
       fp->maxargs = parse_integer(argv[4]);
       if (fp->maxargs < -10)
-	fp->maxargs = -10;
+        fp->maxargs = -10;
       else if (fp->maxargs > 10)
-	fp->maxargs = 10;
+        fp->maxargs = 10;
     } else
       fp->maxargs = 10;
 
@@ -1586,10 +1586,10 @@ do_function_report(dbref player, char *name)
   }
 
   if(fp->flags & FN_NORP) {
-	  if(first == 0)
-		  safe_strl(", ", 2, tbuf, &tp);
-  	  safe_str("NoRPMODE", tbuf, &tp);
-	  first =0;
+          if(first == 0)
+                  safe_strl(", ", 2, tbuf, &tp);
+          safe_str("NoRPMODE", tbuf, &tp);
+          first =0;
   }
 
   if (fp->flags & FN_DIRECTOR) {
@@ -1618,8 +1618,8 @@ do_function_report(dbref player, char *name)
 
   if (!(fp->flags & FN_BUILTIN) && Global_Funcs(player)) {
     notify_format(player, T("Location  : #%d/%s"),
-		  userfn_tab[fp->where.offset].thing,
-		  userfn_tab[fp->where.offset].name);
+                  userfn_tab[fp->where.offset].thing,
+                  userfn_tab[fp->where.offset].name);
   }
 
   maxargs = abs(fp->maxargs);
@@ -1638,5 +1638,5 @@ do_function_report(dbref player, char *name)
     notify_format(player, T("Arguments : At least %d %s"), fp->minargs, tbuf);
   else
     notify_format(player,
-		  T("Arguments : %d to %d %s"), fp->minargs, maxargs, tbuf);
+                  T("Arguments : %d to %d %s"), fp->minargs, maxargs, tbuf);
 }

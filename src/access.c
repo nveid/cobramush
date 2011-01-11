@@ -91,9 +91,9 @@ typedef struct a_acsflag acsflag;
  * This structure is used to build a table of access control flags.
  */
 struct a_acsflag {
-  const char *name;		/**< Name of the access flag */
-  int toggle;			/**< Is this a negatable flag? */
-  int flag;			/**< Bitmask of the flag */
+  const char *name;             /**< Name of the access flag */
+  int toggle;                   /**< Is this a negatable flag? */
+  int flag;                     /**< Bitmask of the flag */
 };
 static acsflag acslist[] = {
   {"connect", 1, ACS_CONNECT},
@@ -118,7 +118,7 @@ static void free_access_list(void);
 
 static int
 add_access_node(const char *host, const dbref who, const int can,
-		const int cant, const char *comment)
+                const int cant, const char *comment)
 {
   struct access *end;
   struct access *tmp;
@@ -183,37 +183,37 @@ read_access_file(void)
     while (fgets(buf, BUFFER_LEN, fp)) {
       /* Strip end of line if it's \r\n or \n */
       if ((p = strchr(buf, '\r')))
-	*p = '\0';
+        *p = '\0';
       else if ((p = strchr(buf, '\n')))
-	*p = '\0';
+        *p = '\0';
       /* Find beginning of line; ignore blank lines */
       p = buf;
       if (*p && isspace((unsigned char) *p))
-	p++;
+        p++;
       if (*p && *p != '#') {
-	can = cant = 0;
-	comment = NULL;
-	/* Is this the @sitelock entry? */
-	if (!strncasecmp(p, "@sitelock", 9)) {
-	  if (!add_access_node("@sitelock", AMBIGUOUS, ACS_SITELOCK, 0, ""))
-	    do_log(LT_ERR, GOD, GOD, T("Failed to add sitelock node!"));
-	} else {
-	  if ((comment = strchr(p, '#'))) {
-	    *comment++ = '\0';
-	    while (*comment && isspace((unsigned char) *comment))
-	      comment++;
-	  }
-	  /* Move past the host name */
-	  while (*p && !isspace((unsigned char) *p))
-	    p++;
-	  if (*p)
-	    *p++ = '\0';
-	  if (!parse_access_options(p, &who, &can, &cant, NOTHING))
-	    /* Nothing listed, so assume we can't do anything! */
-	    cant = ACS_DEFAULT;
-	  if (!add_access_node(buf, who, can, cant, comment))
-	    do_log(LT_ERR, GOD, GOD, T("Failed to add access node!"));
-	}
+        can = cant = 0;
+        comment = NULL;
+        /* Is this the @sitelock entry? */
+        if (!strncasecmp(p, "@sitelock", 9)) {
+          if (!add_access_node("@sitelock", AMBIGUOUS, ACS_SITELOCK, 0, ""))
+            do_log(LT_ERR, GOD, GOD, T("Failed to add sitelock node!"));
+        } else {
+          if ((comment = strchr(p, '#'))) {
+            *comment++ = '\0';
+            while (*comment && isspace((unsigned char) *comment))
+              comment++;
+          }
+          /* Move past the host name */
+          while (*p && !isspace((unsigned char) *p))
+            p++;
+          if (*p)
+            *p++ = '\0';
+          if (!parse_access_options(p, &who, &can, &cant, NOTHING))
+            /* Nothing listed, so assume we can't do anything! */
+            cant = ACS_DEFAULT;
+          if (!add_access_node(buf, who, can, cant, comment))
+            do_log(LT_ERR, GOD, GOD, T("Failed to add access node!"));
+        }
       }
     }
     retval = 1;
@@ -243,36 +243,36 @@ write_access_file(void)
   } else {
     for (ap = access_top; ap; ap = ap->next) {
       if (strcmp(ap->host, "@sitelock") == 0) {
-	fprintf(fp, "@sitelock\n");
-	continue;
+        fprintf(fp, "@sitelock\n");
+        continue;
       }
       fprintf(fp, "%s %d ", ap->host, ap->who);
       switch (ap->can) {
       case ACS_SITELOCK:
-	break;
+        break;
       case ACS_DEFAULT:
-	fprintf(fp, "DEFAULT ");
-	break;
+        fprintf(fp, "DEFAULT ");
+        break;
       default:
-	for (c = acslist; c->name; c++)
-	  if (ap->can & c->flag)
-	    fprintf(fp, "%s ", c->name);
-	break;
+        for (c = acslist; c->name; c++)
+          if (ap->can & c->flag)
+            fprintf(fp, "%s ", c->name);
+        break;
       }
       switch (ap->cant) {
       case ACS_DEFAULT:
-	fprintf(fp, "NONE ");
-	break;
+        fprintf(fp, "NONE ");
+        break;
       default:
-	for (c = acslist; c->name; c++)
-	  if (c->toggle && (ap->cant & c->flag))
-	    fprintf(fp, "!%s ", c->name);
-	break;
+        for (c = acslist; c->name; c++)
+          if (c->toggle && (ap->cant & c->flag))
+            fprintf(fp, "!%s ", c->name);
+        break;
       }
       if (ap->comment && *ap->comment)
-	fprintf(fp, "# %s\n", ap->comment);
+        fprintf(fp, "# %s\n", ap->comment);
       else
-	fprintf(fp, "\n");
+        fprintf(fp, "\n");
     }
     fclose(fp);
 #ifdef WIN32
@@ -331,37 +331,37 @@ site_can_access(const char *hname, int flag, dbref who)
 
   for (ap = access_top; ap; ap = ap->next) {
     if (!(ap->can & ACS_SITELOCK)
-	&& ((ap->can & ACS_REGEXP)
-	    ? (regexp_match_case(ap->host, hname, 0)
-	       || (p && regexp_match_case(ap->host, p, 0))
+        && ((ap->can & ACS_REGEXP)
+            ? (regexp_match_case(ap->host, hname, 0)
+               || (p && regexp_match_case(ap->host, p, 0))
 #ifdef FORCE_IPV4
-	       || regexp_match_case(ip4_to_ip6(ap->host), hname, 0)
-	       || (p && regexp_match_case(ip4_to_ip6(ap->host), p, 0))
+               || regexp_match_case(ip4_to_ip6(ap->host), hname, 0)
+               || (p && regexp_match_case(ip4_to_ip6(ap->host), p, 0))
 #endif
-	    )
-	    : (quick_wild(ap->host, hname)
-	       || (p && quick_wild(ap->host, p))
+            )
+            : (quick_wild(ap->host, hname)
+               || (p && quick_wild(ap->host, p))
 #ifdef FORCE_IPV4
-	       || quick_wild(ip4_to_ip6(ap->host), hname)
-	       || (p && quick_wild(ip4_to_ip6(ap->host), p))
+               || quick_wild(ip4_to_ip6(ap->host), hname)
+               || (p && quick_wild(ip4_to_ip6(ap->host), p))
 #endif
-	    ))
-	&& (ap->who == AMBIGUOUS || ap->who == who)) {
+            ))
+        && (ap->who == AMBIGUOUS || ap->who == who)) {
       /* Got one */
       if (flag & ACS_CONNECT) {
-	if ((ap->cant & ACS_GOD) && God(who))	/* God can't connect from here */
-	  return 0;
-	else if ((ap->cant & ACS_DIRECTOR) && Director(who))
-	  /* Directors can't connect from here */
-	  return 0;
-	else if ((ap->cant & ACS_ADMIN) && Admin(who))
-	  /* Admins can't connect from here */
-	  return 0;
+        if ((ap->cant & ACS_GOD) && God(who))   /* God can't connect from here */
+          return 0;
+        else if ((ap->cant & ACS_DIRECTOR) && Director(who))
+          /* Directors can't connect from here */
+          return 0;
+        else if ((ap->cant & ACS_ADMIN) && Admin(who))
+          /* Admins can't connect from here */
+          return 0;
       }
       if (ap->cant && ((ap->cant & flag) == flag))
-	return 0;
+        return 0;
       if (ap->can && (ap->can & flag))
-	return 1;
+        return 1;
 
       /* Hmm. We don't know if we can or not, so continue */
       break;
@@ -401,22 +401,22 @@ site_check_access(const char *hname, dbref who, int *rulenum)
   for (ap = access_top; ap; ap = ap->next) {
     (*rulenum)++;
     if (!(ap->can & ACS_SITELOCK)
-	&& ((ap->can & ACS_REGEXP)
-	    ? (regexp_match_case(ap->host, hname, 0)
-	       || (p && regexp_match_case(ap->host, p, 0))
+        && ((ap->can & ACS_REGEXP)
+            ? (regexp_match_case(ap->host, hname, 0)
+               || (p && regexp_match_case(ap->host, p, 0))
 #ifdef FORCE_IPV4
-	       || regexp_match_case(ip4_to_ip6(ap->host), hname, 0)
-	       || (p && regexp_match_case(ip4_to_ip6(ap->host), p, 0))
+               || regexp_match_case(ip4_to_ip6(ap->host), hname, 0)
+               || (p && regexp_match_case(ip4_to_ip6(ap->host), p, 0))
 #endif
-	    )
-	    : (quick_wild(ap->host, hname)
-	       || (p && quick_wild(ap->host, p))
+            )
+            : (quick_wild(ap->host, hname)
+               || (p && quick_wild(ap->host, p))
 #ifdef FORCE_IPV4
-	       || quick_wild(ip4_to_ip6(ap->host), hname)
-	       || (p && quick_wild(ip4_to_ip6(ap->host), p))
+               || quick_wild(ip4_to_ip6(ap->host), hname)
+               || (p && quick_wild(ip4_to_ip6(ap->host), p))
 #endif
-	    ))
-	&& (ap->who == AMBIGUOUS || ap->who == who)) {
+            ))
+        && (ap->who == AMBIGUOUS || ap->who == who)) {
       /* Got one */
       return ap;
     }
@@ -435,11 +435,11 @@ site_check_access(const char *hname, dbref who, int *rulenum)
  */
 int
 format_access(struct access *ap, int rulenum,
-	      dbref who __attribute__ ((__unused__)), char *buff, char **bp)
+              dbref who __attribute__ ((__unused__)), char *buff, char **bp)
 {
   if (ap) {
     safe_format(buff, bp, T("Matched line %d: %s %s"), rulenum, ap->host,
-		(ap->can & ACS_REGEXP) ? "(regexp)" : "");
+                (ap->can & ACS_REGEXP) ? "(regexp)" : "");
     safe_chr('\n', buff, bp);
     safe_format(buff, bp, T("Comment: %s"), ap->comment);
     safe_chr('\n', buff, bp);
@@ -495,7 +495,7 @@ format_access(struct access *ap, int rulenum,
  */
 int
 add_access_sitelock(dbref player, const char *host, dbref who, int can,
-		    int cant)
+                    int cant)
 {
   struct access *end;
   struct access *tmp;
@@ -509,7 +509,7 @@ add_access_sitelock(dbref player, const char *host, dbref who, int can,
   tmp->cant = cant;
   strcpy(tmp->host, host);
   sprintf(tmp->comment, "By %s(#%d) on %s", Name(player), player,
-	  show_time(mudtime, 0));
+          show_time(mudtime, 0));
   tmp->next = NULL;
 
   if (!access_top) {
@@ -525,7 +525,7 @@ add_access_sitelock(dbref player, const char *host, dbref who, int can,
     if (end->can != ACS_SITELOCK) {
       /* We're at the end and there's no sitelock marker. Add one */
       if (!add_access_node("@sitelock", AMBIGUOUS, ACS_SITELOCK, 0, ""))
-	return 0;
+        return 0;
       end = end->next;
     } else {
       /* We're in the middle, so be sure we keep the list linked */
@@ -565,9 +565,9 @@ remove_access_sitelock(const char *pattern)
       n++;
       mush_free(ap, "struct_access");
       if (prev)
-	prev->next = next;
+        prev->next = next;
       else
-	access_top = next;
+        access_top = next;
     } else {
       prev = ap;
     }
@@ -610,27 +610,27 @@ do_list_access(dbref player)
     if (ap->can != ACS_SITELOCK) {
       bp = flaglist;
       for (c = acslist; c->name; c++) {
-	if (c->flag == ACS_DEFAULT)
-	  continue;
-	if (ap->can & c->flag) {
-	  safe_chr(' ', flaglist, &bp);
-	  safe_str(c->name, flaglist, &bp);
-	}
-	if (c->toggle && (ap->cant & c->flag)) {
-	  safe_chr(' ', flaglist, &bp);
-	  safe_chr('!', flaglist, &bp);
-	  safe_str(c->name, flaglist, &bp);
-	}
+        if (c->flag == ACS_DEFAULT)
+          continue;
+        if (ap->can & c->flag) {
+          safe_chr(' ', flaglist, &bp);
+          safe_str(c->name, flaglist, &bp);
+        }
+        if (c->toggle && (ap->cant & c->flag)) {
+          safe_chr(' ', flaglist, &bp);
+          safe_chr('!', flaglist, &bp);
+          safe_str(c->name, flaglist, &bp);
+        }
       }
       *bp = '\0';
       notify_format(player,
-		    "%3d SITE: %-20s  DBREF: %-6s FLAGS:%s", rulenum,
-		    ap->host, unparse_dbref(ap->who), flaglist);
+                    "%3d SITE: %-20s  DBREF: %-6s FLAGS:%s", rulenum,
+                    ap->host, unparse_dbref(ap->who), flaglist);
       notify_format(player, " COMMENT: %s", ap->comment);
     } else {
       notify(player,
-	     T
-	     ("---- @sitelock will add sites immediately below this line ----"));
+             T
+             ("---- @sitelock will add sites immediately below this line ----"));
     }
 
   }
@@ -649,7 +649,7 @@ do_list_access(dbref player)
  */
 int
 parse_access_options(const char *opts, dbref *who, int *can, int *cant,
-		     dbref player)
+                     dbref player)
 {
   char myopts[BUFFER_LEN];
   char *p;
@@ -668,13 +668,13 @@ parse_access_options(const char *opts, dbref *who, int *can, int *cant,
   while ((w = split_token(&p, ' '))) {
     found = 0;
 
-    if (first && who) {		/* Check for a character */
+    if (first && who) {         /* Check for a character */
       first = 0;
-      if (is_integer(w)) {	/* We have a dbref */
-	*who = parse_integer(w);
-	if (*who != AMBIGUOUS && !GoodObject(*who))
-	  *who = AMBIGUOUS;
-	continue;
+      if (is_integer(w)) {      /* We have a dbref */
+        *who = parse_integer(w);
+        if (*who != AMBIGUOUS && !GoodObject(*who))
+          *who = AMBIGUOUS;
+        continue;
       }
     }
 
@@ -682,31 +682,31 @@ parse_access_options(const char *opts, dbref *who, int *can, int *cant,
       /* Found a negated warning */
       w++;
       for (c = acslist; c->name; c++) {
-	if (c->toggle && !strncasecmp(w, c->name, strlen(c->name))) {
-	  *cant |= c->flag;
-	  found++;
-	}
+        if (c->toggle && !strncasecmp(w, c->name, strlen(c->name))) {
+          *cant |= c->flag;
+          found++;
+        }
       }
     } else {
       /* None is special */
       if (!strncasecmp(w, "NONE", 4)) {
-	*cant = ACS_DEFAULT;
-	found++;
+        *cant = ACS_DEFAULT;
+        found++;
       } else {
-	for (c = acslist; c->name; c++) {
-	  if (!strncasecmp(w, c->name, strlen(c->name))) {
-	    *can |= c->flag;
-	    found++;
-	  }
-	}
+        for (c = acslist; c->name; c++) {
+          if (!strncasecmp(w, c->name, strlen(c->name))) {
+            *can |= c->flag;
+            found++;
+          }
+        }
       }
     }
     /* At this point, we haven't matched any warnings. */
     if (!found) {
       if (GoodObject(player))
-	notify_format(player, T("Unknown access option: %s"), w);
+        notify_format(player, T("Unknown access option: %s"), w);
       else
-	do_log(LT_ERR, GOD, GOD, T("Unknown access flag: %s"), w);
+        do_log(LT_ERR, GOD, GOD, T("Unknown access flag: %s"), w);
     } else {
       totalfound += found;
     }

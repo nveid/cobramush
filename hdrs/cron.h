@@ -5,53 +5,53 @@
 #include "externs.h"
 #include "command.h"
 
-#define CRON_SPEC_SEP		' '
-#define CRON_NUM_SEP		','
-#define CRON_SKIP_SEP		'/'
-#define CRON_RANGE_SEP		'-'
-#define CRON_WILDCARD		'*'
+#define CRON_SPEC_SEP           ' '
+#define CRON_NUM_SEP            ','
+#define CRON_SKIP_SEP           '/'
+#define CRON_RANGE_SEP          '-'
+#define CRON_WILDCARD           '*'
 
-#define CRON_MINUTE_MAX		59
-#define CRON_HOUR_MAX		23
-#define CRON_DAY_MAX		30
-#define CRON_MONTH_MAX		11
-#define CRON_WDAY_MAX		6
+#define CRON_MINUTE_MAX         59
+#define CRON_HOUR_MAX           23
+#define CRON_DAY_MAX            30
+#define CRON_MONTH_MAX          11
+#define CRON_WDAY_MAX           6
 
-#define CRON_GLOBAL		-1
+#define CRON_GLOBAL             -1
 
-#define CRON_NAME_LEN		32
-#define CRON_FORMAT_LEN		128
+#define CRON_NAME_LEN           32
+#define CRON_FORMAT_LEN         128
 
-#define CF_COMMAND		0x1
-#define CF_FUNCTION		0x2
-#define CF_HALT			0x4
+#define CF_COMMAND              0x1
+#define CF_FUNCTION             0x2
+#define CF_HALT                 0x4
 
-#define CRON_Command(job)	((job)->type & CF_COMMAND)
-#define CRON_Function(job)	((job)->type & CF_FUNCTION)
-#define CRON_Halt(job)		((job)->type & CF_HALT)
+#define CRON_Command(job)       ((job)->type & CF_COMMAND)
+#define CRON_Function(job)      ((job)->type & CF_FUNCTION)
+#define CRON_Halt(job)          ((job)->type & CF_HALT)
 
-#define CF_DEFAULT		(0)
+#define CF_DEFAULT              (0)
 
-#define CM_JANUARY		0
-#define CM_FEBRUARY		1
-#define CM_MARCH		2
-#define CM_APRIL		3
-#define CM_MAY			4
-#define CM_JUNE			5
-#define CM_JULY			6
-#define CM_AUGUST		7
-#define CM_SEPTEMBER		8
-#define CM_OCTOBER		9
-#define CM_NOVEMBER		10
-#define CM_DECEMBER		11
+#define CM_JANUARY              0
+#define CM_FEBRUARY             1
+#define CM_MARCH                2
+#define CM_APRIL                3
+#define CM_MAY                  4
+#define CM_JUNE                 5
+#define CM_JULY                 6
+#define CM_AUGUST               7
+#define CM_SEPTEMBER            8
+#define CM_OCTOBER              9
+#define CM_NOVEMBER             10
+#define CM_DECEMBER             11
 
-#define CD_SUNDAY		0
-#define CD_MONDAY		1
-#define CD_TUESDAY		2
-#define CD_WEDNESDAY		3
-#define CD_THURSDAY		4
-#define CD_FRIDAY		5
-#define CD_SATURDAY		6
+#define CD_SUNDAY               0
+#define CD_MONDAY               1
+#define CD_TUESDAY              2
+#define CD_WEDNESDAY            3
+#define CD_THURSDAY             4
+#define CD_FRIDAY               5
+#define CD_SATURDAY             6
 
 typedef struct named_value NVALUE;
 typedef struct named_value_alias NVALUE_ALIAS;

@@ -14,10 +14,10 @@
 #define M_FORWARD       0x0080
 /* 0x0100 - 0x0F00 reserved for folder numbers */
 #define M_FMASK         0xF0FF
-#define M_ALL           0x1000	/* In mail_selector, all msgs in all folders */
-#define M_MSUNREAD      0x2000	/* Mail selectors */
+#define M_ALL           0x1000  /* In mail_selector, all msgs in all folders */
+#define M_MSUNREAD      0x2000  /* Mail selectors */
 #define M_REPLY         0x4000
-#define M_FOLDER        0x8000	/* In mail selector, all msgs in cur folder */
+#define M_FOLDER        0x8000  /* In mail selector, all msgs in cur folder */
 /* 0x4000 - 0x8000 available */
 
 #define MAX_FOLDERS     15
@@ -45,12 +45,12 @@ typedef unsigned int mail_flag;
  * messages. Messages can be selected in several ways.
  */
 struct mail_selector {
-  int low;		/**< Minimum message number */
-  int high;		/**< Maximum message number */
-  mail_flag flags;	/**< Message flags */
-  dbref player;		/**< Message sender's dbref */
-  int days;		/**< Target message age in days */
-  int day_comp;		/**< Direction of comparison to target age */
+  int low;              /**< Minimum message number */
+  int high;             /**< Maximum message number */
+  mail_flag flags;      /**< Message flags */
+  dbref player;         /**< Message sender's dbref */
+  int days;             /**< Target message age in days */
+  int day_comp;         /**< Direction of comparison to target age */
 };
 
 typedef int folder_array[MAX_FOLDERS + 1];
@@ -105,4 +105,4 @@ extern struct mail *desc_mail(dbref player);
 extern void desc_mail_set(dbref player, struct mail *mp);
 extern void desc_mail_clear(void);
 
-#endif				/* _EXTMAIL_H */
+#endif                          /* _EXTMAIL_H */

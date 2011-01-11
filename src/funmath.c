@@ -55,7 +55,7 @@ static MATH *math_hash_lookup(char *);
 static NVAL angle_to_rad(NVAL angle, const char *from);
 static NVAL rad_to_angle(NVAL angle, const char *to);
 static double frac(double v, double *RESTRICT n, double *RESTRICT d,
-		   double error);
+                   double error);
 void init_math_hashtab(void);
 
 extern int format_long(long n, char *buff, char **bp, int maxlen,
@@ -1444,7 +1444,7 @@ do_ordinalize(char **buff, char ***bp)
     if ((p >= *buff) && !strncasecmp(p, singles[i], len)) {
       **bp = p;
       safe_str(singleths[i], *buff, *bp);
-      return;		/* done */
+      return;           /* done */
     }
   }
   /* The string didn't end with a single. How about a y? */
@@ -1513,9 +1513,9 @@ FUNCTION(fun_spellnum)
 
     if (*pnumber == '.') {
       if (ordinal_mode) {
-	/* Only integers may be ordinalized */
-	safe_str(T(e_int), buff, bp);
-	return;
+        /* Only integers may be ordinalized */
+        safe_str(T(e_int), buff, bp);
+        return;
       }
       if (dot) {
         safe_str(T(e_num), buff, bp);

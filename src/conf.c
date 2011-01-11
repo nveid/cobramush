@@ -37,14 +37,14 @@
 #include "function.h"
 #include "confmagic.h"
 
-time_t mudtime;			/**< game time, in seconds */
+time_t mudtime;                 /**< game time, in seconds */
 
 static void show_compile_options(dbref player);
 static char *config_list_helper(dbref player, COBRA_CONF *cp, int lc);
 static char *config_list_helper2(dbref player, COBRA_CONF *cp, int lc);
 
-OPTTAB options;		/**< The table of configuration options */
-HASHTAB local_options;	/**< Hash table for local config options */
+OPTTAB options;         /**< The table of configuration options */
+HASHTAB local_options;  /**< Hash table for local config options */
 
 int config_set(const char *opt, char *val, int source, int restrictions);
 void conf_default_set(void);
@@ -516,9 +516,9 @@ COBRA_CONF conftable[] = {
  * the display of configuration options.
  */
 typedef struct confgroupparm {
-  const char *name;		/**< name of group */
-  const char *desc;		/**< description of group */
-  int viewperms;		/**< who can view this group */
+  const char *name;             /**< name of group */
+  const char *desc;             /**< description of group */
+  int viewperms;                /**< who can view this group */
 } COBRA_CONFGROUP;
 
 /** The table of all configuration groups. */
@@ -566,7 +566,7 @@ new_config(void)
  */
 COBRA_CONF *
 add_config(const char *name, config_func handler, void *loc, int max,
-	   const char *group)
+           const char *group)
 {
   COBRA_CONF *cnf;
   if ((cnf = get_config(name)))
@@ -607,7 +607,7 @@ get_config(const char *name)
  */
 int
 cf_bool(const char *opt, const char *val, void *loc,
-	int maxval __attribute__ ((__unused__)), int source)
+        int maxval __attribute__ ((__unused__)), int source)
 {
   /* enter boolean parameter */
 
@@ -615,7 +615,7 @@ cf_bool(const char *opt, const char *val, void *loc,
       !strcasecmp(val, "1"))
     *((int *) loc) = 1;
   else if (!strcasecmp(val, "no") || !strcasecmp(val, "false") ||
-	   !strcasecmp(val, "0"))
+           !strcasecmp(val, "0"))
     *((int *) loc) = 0;
   else {
     if (source == 0) {
@@ -681,13 +681,13 @@ cf_dbref(const char *opt, const char *val, void *loc, int maxval, int source)
     n = maxval;
     if (source == 0) {
       do_rawlog(LT_ERR, T("CONFIG: option %s value limited to #%d\n"), opt,
-		maxval);
+                maxval);
     }
   }
   if (source && (!GoodObject(n) || IsGarbage(n))) {
     do_rawlog(LT_ERR,
-	      T("CONFIG: attempt to set option %s to a bad dbref (#%d)"),
-	      opt, n);
+              T("CONFIG: attempt to set option %s to a bad dbref (#%d)"),
+              opt, n);
     return 0;
   }
   *((dbref *) loc) = n;
@@ -720,7 +720,7 @@ cf_int(const char *opt, const char *val, void *loc, int maxval, int source)
     n = maxval;
     if (source == 0) {
       do_rawlog(LT_ERR, T("CONFIG: option %s value limited to %d\n"), opt,
-		maxval);
+                maxval);
     }
   }
   *((int *) loc) = n;
@@ -755,10 +755,10 @@ cf_time(const char *opt, const char *val, void *loc, int maxval, int source)
     switch (*end) {
     case '\0':
       if (in_minutes)
-	secs += n * 60;
+        secs += n * 60;
       else
-	secs += n;
-      goto done;		/* Sigh. What I wouldn't give for named loops in C */
+        secs += n;
+      goto done;                /* Sigh. What I wouldn't give for named loops in C */
     case 's':
     case 'S':
       secs += n;
@@ -773,7 +773,7 @@ cf_time(const char *opt, const char *val, void *loc, int maxval, int source)
       break;
     default:
       if (source == 0)
-	do_rawlog(LT_ERR, T("CONFIG: Unknown time interval in option %s"), opt);
+        do_rawlog(LT_ERR, T("CONFIG: Unknown time interval in option %s"), opt);
       return 0;
     }
     val = end + 1;
@@ -784,7 +784,7 @@ done:
     secs = maxval;
     if (source == 0) {
       do_rawlog(LT_ERR, T("CONFIG: option %s value limited to %d\n"), opt,
-		maxval);
+                maxval);
     }
   }
   *((int *) loc) = secs;
@@ -813,7 +813,7 @@ cf_flag(const char *opt, const char *val, void *loc, int maxval, int source)
     len = maxval - total - 1;
     if (len <= 0) {
       if (source == 0)
-	do_rawlog(LT_ERR, T("CONFIG: option %s value overflow\n"), opt);
+        do_rawlog(LT_ERR, T("CONFIG: option %s value overflow\n"), opt);
       return 0;
     }
     if (source == 0)
@@ -842,7 +842,7 @@ config_set(const char *opt, char *val, int source, int restrictions)
   char *p;
 
   if (!val)
-    return 0;			/* NULL val is no good, but "" is ok */
+    return 0;                   /* NULL val is no good, but "" is ok */
 
   /* Was this "restrict_command <command> <restriction>"? If so, do it */
   if(!strcasecmp(opt, "lock_command")) {
@@ -853,14 +853,14 @@ config_set(const char *opt, char *val, int source, int restrictions)
     if(*p) {
       *p++ = '\0';
       if(!command_lock(val, p)) {
-	if(source == 0)
-	  do_rawlog(LT_ERR, T("CONFIG: Invalid command or lock bool expression for %s.\n"), val);
-	return 0;
+        if(source == 0)
+          do_rawlog(LT_ERR, T("CONFIG: Invalid command or lock bool expression for %s.\n"), val);
+        return 0;
       }
     } else {
       if(source == 0)
-	do_rawlog(LT_ERR, T("CONFIG: lock_command %s requires a lock boolexp.\n"), val);
-	return 0;
+        do_rawlog(LT_ERR, T("CONFIG: lock_command %s requires a lock boolexp.\n"), val);
+        return 0;
     }
     return 1;
   } else if (!strcasecmp(opt, "restrict_command")) {
@@ -870,18 +870,18 @@ config_set(const char *opt, char *val, int source, int restrictions)
     if (*p) {
       *p++ = '\0';
       if (!restrict_command(val, p)) {
-	if (source == 0) {
-	  do_rawlog(LT_ERR,
-		    T("CONFIG: Invalid command or restriction for %s.\n"), val);
-	}
-	return 0;
+        if (source == 0) {
+          do_rawlog(LT_ERR,
+                    T("CONFIG: Invalid command or restriction for %s.\n"), val);
+        }
+        return 0;
       }
     } else {
       if (source == 0) {
-	do_rawlog(LT_ERR,
-		  T
-		  ("CONFIG: restrict_command %s requires a restriction value.\n"),
-		  val);
+        do_rawlog(LT_ERR,
+                  T
+                  ("CONFIG: restrict_command %s requires a restriction value.\n"),
+                  val);
       }
       return 0;
     }
@@ -893,19 +893,19 @@ config_set(const char *opt, char *val, int source, int restrictions)
     if (*p) {
       *p++ = '\0';
       if (!restrict_function(val, p)) {
-	if (source == 0) {
-	  do_rawlog(LT_ERR,
-		    T("CONFIG: Invalid function or restriction for %s.\n"),
-		    val);
-	}
-	return 0;
+        if (source == 0) {
+          do_rawlog(LT_ERR,
+                    T("CONFIG: Invalid function or restriction for %s.\n"),
+                    val);
+        }
+        return 0;
       }
     } else {
       if (source == 0) {
-	do_rawlog(LT_ERR,
-		  T
-		  ("CONFIG: restrict_function %s requires a restriction value.\n"),
-		  val);
+        do_rawlog(LT_ERR,
+                  T
+                  ("CONFIG: restrict_function %s requires a restriction value.\n"),
+                  val);
       }
       return 0;
     }
@@ -922,15 +922,15 @@ config_set(const char *opt, char *val, int source, int restrictions)
     if (*p) {
       *p++ = '\0';
       if (!alias_command(val, p)) {
-	if (source == 0) {
-	  do_rawlog(LT_ERR, T("CONFIG: Couldn't alias %s to %s.\n"), p, val);
-	}
-	return 0;
+        if (source == 0) {
+          do_rawlog(LT_ERR, T("CONFIG: Couldn't alias %s to %s.\n"), p, val);
+        }
+        return 0;
       }
     } else {
       if (source == 0) {
-	do_rawlog(LT_ERR,
-		  T("CONFIG: command_alias %s requires an alias.\n"), val);
+        do_rawlog(LT_ERR,
+                  T("CONFIG: command_alias %s requires an alias.\n"), val);
       }
       return 0;
     }
@@ -942,15 +942,15 @@ config_set(const char *opt, char *val, int source, int restrictions)
     if (*p) {
       *p++ = '\0';
       if (!alias_attribute(val, p)) {
-	if (source == 0) {
-	  do_rawlog(LT_ERR, T("CONFIG: Couldn't alias %s to %s.\n"), p, val);
-	}
-	return 0;
+        if (source == 0) {
+          do_rawlog(LT_ERR, T("CONFIG: Couldn't alias %s to %s.\n"), p, val);
+        }
+        return 0;
       }
     } else {
       if (source == 0) {
-	do_rawlog(LT_ERR,
-		  T("CONFIG: attribute_alias %s requires an alias.\n"), val);
+        do_rawlog(LT_ERR,
+                  T("CONFIG: attribute_alias %s requires an alias.\n"), val);
       }
       return 0;
     }
@@ -962,21 +962,21 @@ config_set(const char *opt, char *val, int source, int restrictions)
     if (*p) {
       *p++ = '\0';
       if (!alias_function(val, p)) {
-	if (source == 0) {
-	  do_rawlog(LT_ERR, T("CONFIG: Couldn't alias %s to %s.\n"), p, val);
-	}
-	return 0;
+        if (source == 0) {
+          do_rawlog(LT_ERR, T("CONFIG: Couldn't alias %s to %s.\n"), p, val);
+        }
+        return 0;
       }
     } else {
       if (source == 0) {
-	do_rawlog(LT_ERR,
-		  T("CONFIG: function_alias %s requires an alias.\n"), val);
+        do_rawlog(LT_ERR,
+                  T("CONFIG: function_alias %s requires an alias.\n"), val);
       }
       return 0;
     }
     return 1;
   } else if (!strcasecmp(opt, "help_command")
-	     || !strcasecmp(opt, "ahelp_command")) {
+             || !strcasecmp(opt, "ahelp_command")) {
     char *comm, *file;
     int admin = !strcasecmp(opt, "ahelp_command");
     if (!restrictions)
@@ -986,8 +986,8 @@ config_set(const char *opt, char *val, int source, int restrictions)
       return 0;
     if (!val || !*val) {
       do_rawlog(LT_ERR,
-		T
-		("CONFIG: help_command requires a command name and file name.\n"));
+                T
+                ("CONFIG: help_command requires a command name and file name.\n"));
       return 0;
     }
     comm = val;
@@ -998,8 +998,8 @@ config_set(const char *opt, char *val, int source, int restrictions)
       return 1;
     } else {
       do_rawlog(LT_ERR,
-		T
-		("CONFIG: help_command requires a command name and file name.\n"));
+                T
+                ("CONFIG: help_command requires a command name and file name.\n"));
       return 0;
     }
   } else if (restrictions) {
@@ -1012,11 +1012,11 @@ config_set(const char *opt, char *val, int source, int restrictions)
   for (cp = conftable; cp->name; cp++) {
     int i = 0;
     if ((!source || (cp->group && strcmp(cp->group, "files") != 0
-		     && strcmp(cp->group, "messages") != 0))
-	&& !strcasecmp(cp->name, opt)) {
+                     && strcmp(cp->group, "messages") != 0))
+        && !strcasecmp(cp->name, opt)) {
       i = cp->handler(opt, val, cp->loc, cp->max, source);
       if (i)
-	cp->overridden = 1;
+        cp->overridden = 1;
       return i;
     }
   }
@@ -1024,11 +1024,11 @@ config_set(const char *opt, char *val, int source, int restrictions)
        cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
     int i = 0;
     if ((!source || (cp->group && strcmp(cp->group, "files") != 0
-		     && strcmp(cp->group, "messages") != 0))
-	&& !strcasecmp(cp->name, opt)) {
+                     && strcmp(cp->group, "messages") != 0))
+        && !strcasecmp(cp->name, opt)) {
       i = cp->handler(opt, val, cp->loc, cp->max, source);
       if (i)
-	cp->overridden = 1;
+        cp->overridden = 1;
       return i;
     }
   }
@@ -1068,14 +1068,14 @@ conf_default_set(void)
   options.ancestor_exit = -1;
   options.ancestor_thing = -1;
   options.ancestor_player = -1;
-  options.powerless	= 1; /* This is bad, they should change this ASAP when they start a game */
+  options.powerless     = 1; /* This is bad, they should change this ASAP when they start a game */
   options.idle_timeout = 0;
   options.idle_time = 0;
   options.unconnected_idle_timeout = 300;
   options.keepalive_timeout = 300;
   options.dump_interval = 3601;
   strcpy(options.dump_message,
-	 T("GAME: Dumping database. Game may freeze for a minute"));
+         T("GAME: Dumping database. Game may freeze for a minute"));
   strcpy(options.dump_complete, T("GAME: Dump complete. Time in."));
   options.ident_timeout = 5;
   options.max_logins = 128;
@@ -1107,7 +1107,7 @@ conf_default_set(void)
   strcpy(options.compressprog, "compress");
   strcpy(options.uncompressprog, "uncompress");
   strcpy(options.compresssuff, ".Z");
-#endif				/* WIN32 */
+#endif                          /* WIN32 */
   strcpy(options.connect_file[0], "txt/connect.txt");
   strcpy(options.motd_file[0], "txt/motd.txt");
   strcpy(options.newuser_file[0], "txt/newuser.txt");
@@ -1136,9 +1136,9 @@ conf_default_set(void)
   options.warn_interval = 3600;
   options.use_dns = 1;
   strcpy(options.dump_warning_1min,
-	 T("GAME: Database will be dumped in 1 minute."));
+         T("GAME: Database will be dumped in 1 minute."));
   strcpy(options.dump_warning_5min,
-	 T("GAME: Database will be dumped in 5 minutes."));
+         T("GAME: Database will be dumped in 5 minutes."));
   options.noisy_whisper = 0;
   options.possessive_get = 1;
   options.possessive_get_d = 1;
@@ -1260,7 +1260,7 @@ config_file_startup(const char *conf, int restrictions)
   char tbuf1[BUFFER_LEN];
   char *p, *q, *s;
 
-  static char cfile[BUFFER_LEN];	/* Remember the last one */
+  static char cfile[BUFFER_LEN];        /* Remember the last one */
   if (conf_recursion == 0) {
     if (conf && *conf)
       strcpy(cfile, conf);
@@ -1275,7 +1275,7 @@ config_file_startup(const char *conf, int restrictions)
       fp = fopen(conf, FOPEN_READ);
     if (fp == NULL) {
       do_rawlog(LT_ERR, T("ERROR: Cannot open configuration file %s."),
-		(conf && *conf) ? conf : "Unknown");
+                (conf && *conf) ? conf : "Unknown");
       return 0;
     }
     do_rawlog(LT_ERR, "Reading %s", conf);
@@ -1299,43 +1299,43 @@ config_file_startup(const char *conf, int restrictions)
      */
 
     for (p = tbuf1; *p && (*p != '\n') && (*p != '\r'); p++) ;
-    *p = '\0';			/* strip the end of line char(s) */
-    for (p = tbuf1; *p && isspace((unsigned char) *p); p++)	/* strip spaces */
+    *p = '\0';                  /* strip the end of line char(s) */
+    for (p = tbuf1; *p && isspace((unsigned char) *p); p++)     /* strip spaces */
       ;
-    for (q = p; *q && !isspace((unsigned char) *q); q++)	/* move over command */
+    for (q = p; *q && !isspace((unsigned char) *q); q++)        /* move over command */
       ;
     if (*q)
-      *q++ = '\0';		/* split off command */
-    for (; *q && isspace((unsigned char) *q); q++)	/* skip spaces */
+      *q++ = '\0';              /* split off command */
+    for (; *q && isspace((unsigned char) *q); q++)      /* skip spaces */
       ;
     /* If the first character of the value is a #, and that is
        followed by a number, treat it as a dbref instead of a
        comment. */
     if (*q == '#' && isdigit((unsigned char) *(q + 1))) {
-      for (s = q + 1; *s && (*s != '#'); s++)	/* look for a real comment */
-	;
+      for (s = q + 1; *s && (*s != '#'); s++)   /* look for a real comment */
+        ;
     } else {
-      for (s = q; *s && (*s != '#'); s++)	/* look for comment */
-	;
+      for (s = q; *s && (*s != '#'); s++)       /* look for comment */
+        ;
     }
-    if (*s)			/* if found nuke it */
+    if (*s)                     /* if found nuke it */
       *s = '\0';
-    for (s = s - 1; (s >= q) && isspace((unsigned char) *s); s--)	/* smash trailing stuff */
+    for (s = s - 1; (s >= q) && isspace((unsigned char) *s); s--)       /* smash trailing stuff */
       *s = '\0';
 
-    if (strlen(p) != 0) {	/* skip blank lines */
+    if (strlen(p) != 0) {       /* skip blank lines */
       /* Handle include filename directives separetly */
       if (strcasecmp(p, "include") == 0) {
-	conf_recursion++;
-	if (conf_recursion > 10) {
-	  do_rawlog(LT_ERR, T("CONFIG: include depth too deep in file %s"),
-		    conf);
-	} else {
-	  config_file_startup(q, restrictions);
-	}
-	conf_recursion--;
+        conf_recursion++;
+        if (conf_recursion > 10) {
+          do_rawlog(LT_ERR, T("CONFIG: include depth too deep in file %s"),
+                    conf);
+        } else {
+          config_file_startup(q, restrictions);
+        }
+        conf_recursion--;
       } else
-	config_set(p, q, 0, restrictions);
+        config_set(p, q, 0, restrictions);
     }
     fgets(tbuf1, BUFFER_LEN, fp);
   }
@@ -1346,19 +1346,19 @@ config_file_startup(const char *conf, int restrictions)
   if (conf_recursion == 0) {
     for (cp = conftable; cp->name; cp++) {
       if (!cp->overridden) {
-	do_rawlog(LT_ERR,
-		  T
-		  ("CONFIG: directive '%s' missing from cnf file, using default value."),
-		  cp->name);
+        do_rawlog(LT_ERR,
+                  T
+                  ("CONFIG: directive '%s' missing from cnf file, using default value."),
+                  cp->name);
       }
     }
     for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
-	 cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
+         cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
       if (!cp->overridden) {
-	do_rawlog(LT_ERR,
-		  T
-		  ("CONFIG: local directive '%s' missing from cnf file. using default value."),
-		  cp->name);
+        do_rawlog(LT_ERR,
+                  T
+                  ("CONFIG: local directive '%s' missing from cnf file. using default value."),
+                  cp->name);
       }
     }
 
@@ -1373,16 +1373,16 @@ config_file_startup(const char *conf, int restrictions)
     /* if we're on Win32, complain about compression */
     if ((options.compressprog && *options.compressprog)) {
       do_rawlog(LT_ERR,
-		T
-		("CONFIG: compression program is specified but not used in Win32, ignoring"),
-		options.compressprog);
+                T
+                ("CONFIG: compression program is specified but not used in Win32, ignoring"),
+                options.compressprog);
     }
 
     if (((options.compresssuff && *options.compresssuff))) {
       do_rawlog(LT_ERR,
-		T
-		("CONFIG: compression suffix is specified but not used in Win32, ignoring"),
-		options.compresssuff);
+                T
+                ("CONFIG: compression suffix is specified but not used in Win32, ignoring"),
+                options.compresssuff);
     }
 
     /* Also remove the compression options */
@@ -1415,63 +1415,63 @@ do_config_list(dbref player, const char *type, int lc)
     int found = 0;
     for (cgp = confgroups; cgp->name; cgp++) {
       if (string_prefix(T(cgp->name), type)
-	  && Can_View_Config_Group(player, cgp)) {
-	found = 1;
-	break;
+          && Can_View_Config_Group(player, cgp)) {
+        found = 1;
+        break;
       }
     }
     if (!found) {
       /* It wasn't a group. Is is one or more specific options? */
       for (cp = conftable; cp->name; cp++) {
-	if (cp->group && string_prefix(cp->name, type)) {
-	  notify(player, config_list_helper(player, cp, lc));
-	  found = 1;
-	}
+        if (cp->group && string_prefix(cp->name, type)) {
+          notify(player, config_list_helper(player, cp, lc));
+          found = 1;
+        }
       }
       if (!found) {
-	/* Ok, maybe a local option? */
-	for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
-	     cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
-	  if (cp->group && !strcasecmp(cp->name, type)) {
-	    notify(player, config_list_helper(player, cp, lc));
-	    found = 1;
-	  }
-	}
+        /* Ok, maybe a local option? */
+        for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
+             cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
+          if (cp->group && !strcasecmp(cp->name, type)) {
+            notify(player, config_list_helper(player, cp, lc));
+            found = 1;
+          }
+        }
       }
       if (!found) {
-	/* Wasn't found at all. Ok. */
-	notify(player, T("I only know the following types of options:"));
-	for (cgp = confgroups; cgp->name; cgp++) {
-	  if (Can_View_Config_Group(player, cgp))
-	    notify_format(player, " %-15s %s", T(cgp->name), cgp->desc);
-	}
+        /* Wasn't found at all. Ok. */
+        notify(player, T("I only know the following types of options:"));
+        for (cgp = confgroups; cgp->name; cgp++) {
+          if (Can_View_Config_Group(player, cgp))
+            notify_format(player, " %-15s %s", T(cgp->name), cgp->desc);
+        }
       }
     } else {
       /* Show all entries of that type */
       notify(player, cgp->desc);
       if (string_prefix("compile", type))
-	show_compile_options(player);
+        show_compile_options(player);
       else {
-	for (cp = conftable; cp->name; cp++) {
-	  if (cp->group && !strcmp(cp->group, cgp->name)) {
-	    notify(player, config_list_helper(player, cp, lc));
-	  }
-	}
-	for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
-	     cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
-	  if (cp->group && !strcasecmp(cp->group, cgp->name)) {
-	    notify(player, config_list_helper(player, cp, lc));
-	  }
-	}
+        for (cp = conftable; cp->name; cp++) {
+          if (cp->group && !strcmp(cp->group, cgp->name)) {
+            notify(player, config_list_helper(player, cp, lc));
+          }
+        }
+        for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
+             cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
+          if (cp->group && !strcasecmp(cp->group, cgp->name)) {
+            notify(player, config_list_helper(player, cp, lc));
+          }
+        }
       }
     }
   } else {
     /* If we're here, we ran @config without a type. */
     notify(player,
-	   T("Use: @config/list <type of options> where type is one of:"));
+           T("Use: @config/list <type of options> where type is one of:"));
     for (cgp = confgroups; cgp->name; cgp++) {
       if (Can_View_Config_Group(player, cgp))
-	notify_format(player, " %-15s %s", T(cgp->name), cgp->desc);
+        notify_format(player, " %-15s %s", T(cgp->name), cgp->desc);
     }
   }
   if (SUPPORT_PUEBLO)
@@ -1490,7 +1490,7 @@ config_list_helper(dbref player __attribute__ ((__unused__)), COBRA_CONF *cp, in
     safe_format(result, &bp, " %-40s %s", MAYBE_LC(cp->name), (char *) cp->loc);
   else if (cp->handler == cf_int)
     safe_format(result, &bp, " %-40s %d", MAYBE_LC(cp->name),
-		*((int *) cp->loc));
+                *((int *) cp->loc));
   else if (cp->handler == cf_time) {
     div_t n;
     int secs = *(int *) cp->loc;
@@ -1511,10 +1511,10 @@ config_list_helper(dbref player __attribute__ ((__unused__)), COBRA_CONF *cp, in
       safe_format(result, &bp, "%ds", secs);
   } else if (cp->handler == cf_bool)
     safe_format(result, &bp, " %-40s %s", MAYBE_LC(cp->name),
-		(*((int *) cp->loc) ? "Yes" : "No"));
+                (*((int *) cp->loc) ? "Yes" : "No"));
   else if (cp->handler == cf_dbref)
     safe_format(result, &bp, " %-40s #%d", MAYBE_LC(cp->name),
-		*((dbref *) cp->loc));
+                *((dbref *) cp->loc));
   *bp = '\0';
   return result;
 }
@@ -1522,7 +1522,7 @@ config_list_helper(dbref player __attribute__ ((__unused__)), COBRA_CONF *cp, in
 /* This one doesn't return the names */
 static char *
 config_list_helper2(dbref player __attribute__ ((__unused__)), COBRA_CONF *cp, int lc
-		    __attribute__ ((__unused__)))
+                    __attribute__ ((__unused__)))
 {
   static char result[BUFFER_LEN];
   char *bp = result;
@@ -1566,15 +1566,15 @@ FUNCTION(fun_config)
   if (args[0] && *args[0]) {
     for (cp = conftable; cp->name; cp++) {
       if (cp->group && !strcasecmp(cp->name, args[0])) {
-	safe_str(config_list_helper2(executor, cp, 0), buff, bp);
-	return;
+        safe_str(config_list_helper2(executor, cp, 0), buff, bp);
+        return;
       }
     }
     for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
-	 cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
+         cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
       if (cp->group && !strcasecmp(cp->name, args[0])) {
-	safe_str(config_list_helper2(executor, cp, 0), buff, bp);
-	return;
+        safe_str(config_list_helper2(executor, cp, 0), buff, bp);
+        return;
       }
     }
     safe_str(T("#-1 NO SUCH CONFIG OPTION"), buff, bp);
@@ -1585,7 +1585,7 @@ FUNCTION(fun_config)
       safe_chr(' ', buff, bp);
     }
     for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
-	 cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
+         cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
       safe_str(cp->name, buff, bp);
       safe_chr(' ', buff, bp);
     }
@@ -1605,15 +1605,15 @@ do_enable(dbref player, const char *param, int state)
   for (cp = conftable; cp->name; cp++) {
     if (cp->group && !strcasecmp(cp->name, param)) {
       if (cp->handler == cf_bool) {
-	cf_bool(param, (state ? "yes" : "no"), cp->loc, cp->max, 1);
-	if (state == 0)
-	  notify(player, T("Disabled."));
-	else
-	  notify(player, T("Enabled."));
-	do_log(LT_WIZ, player, NOTHING, "%s %s",
-	       cp->name, (state) ? "ENABLED" : "DISABLED");
+        cf_bool(param, (state ? "yes" : "no"), cp->loc, cp->max, 1);
+        if (state == 0)
+          notify(player, T("Disabled."));
+        else
+          notify(player, T("Enabled."));
+        do_log(LT_WIZ, player, NOTHING, "%s %s",
+               cp->name, (state) ? "ENABLED" : "DISABLED");
       } else
-	notify(player, T("That isn't a on/off option."));
+        notify(player, T("That isn't a on/off option."));
       return;
     }
   }
@@ -1661,14 +1661,14 @@ show_compile_options(dbref player)
 
 #ifdef USE_MAILER
   notify(player,
-	 T(" The extended built-in MUSH mailing system is being used."));
+         T(" The extended built-in MUSH mailing system is being used."));
 #ifdef ALLOW_NOSUBJECT
   notify(player,
-	 T(" Messages without subject lines have subject (no subject)"));
+         T(" Messages without subject lines have subject (no subject)"));
 #else
   notify(player,
-	 T
-	 (" Messages without subject lines use the beginning of the message as subject"));
+         T
+         (" Messages without subject lines use the beginning of the message as subject"));
 #endif
 #else
   notify(player, T(" The built-in MUSH mailing system is not being used."));

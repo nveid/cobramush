@@ -36,12 +36,12 @@ extern int queue_eol(DESC * d);
 int password_handler(DESC *, char *);
 
 /* Telnet codes */
-#define IAC		255     /**< interpret as command */
-#define GOAHEAD		249     /**< go ahead */
+#define IAC             255     /**< interpret as command */
+#define GOAHEAD         249     /**< go ahead */
 
 #define UNDEFINED_PROMPT "\x1B[1m>\x1b[0m"
-#define PI_LOCK		      0x1
-#define PI_PROMPT	      0x2
+#define PI_LOCK               0x1
+#define PI_PROMPT             0x2
 #define PI_INTERNAL_PROMPT    0x40
 
 extern DESC *descriptor_list;
@@ -505,7 +505,7 @@ prog_handler(DESC * d, char *input)
     for (i = 0; i < NUMQ && i < rcnt; i++)
       if (p_buf[i] && strlen(p_buf[i]) > 0) {
         strcpy(global_eval_context.renv[i], p_buf[i]);
-	global_eval_context.rnxt[i] = global_eval_context.renv[i];
+        global_eval_context.rnxt[i] = global_eval_context.renv[i];
       }
 
     for (; i < (rcnt - 1); i+= 2) {

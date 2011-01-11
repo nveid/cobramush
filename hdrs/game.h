@@ -13,13 +13,13 @@
 #define CHECK_GLOBAL               0x200
 
 /* hash table stuff */
-extern void init_func_hashtab(void);	/* eval.c */
-extern void init_math_hashtab(void);	/* funmath.c */
-extern void init_aname_table(void);	/* atr_tab.c */
-extern void init_flagspaces(void);	/* flags.c */
-extern void init_flag_table(const char *ns);	/* flags.c */
-extern void init_tag_hashtab(void);	/* funstr.c */
-extern void init_pronouns(void);	/* funstr.c */
+extern void init_func_hashtab(void);    /* eval.c */
+extern void init_math_hashtab(void);    /* funmath.c */
+extern void init_aname_table(void);     /* atr_tab.c */
+extern void init_flagspaces(void);      /* flags.c */
+extern void init_flag_table(const char *ns);    /* flags.c */
+extern void init_tag_hashtab(void);     /* funstr.c */
+extern void init_pronouns(void);        /* funstr.c */
 
 /* From bsd.c */
 extern void fcache_init(void);
@@ -46,7 +46,7 @@ extern int do_signal_qid(dbref signalby, int qid, enum qid_flags qid_flags, int 
 /* From command.c */
 enum hook_type { HOOK_BEFORE, HOOK_AFTER, HOOK_IGNORE, HOOK_OVERRIDE };
 extern void do_hook(dbref player, char *command, char *obj, char *attrname,
-		    enum hook_type flag);
+                    enum hook_type flag);
 extern void do_hook_list(dbref player, char *command);
 
 
@@ -67,7 +67,7 @@ extern void do_shutdown(dbref player, enum shutdown_type panic_flag);
 /* From look.c */
 enum exam_type { EXAM_NORMAL, EXAM_BRIEF, EXAM_MORTAL };
 extern void do_examine(dbref player, const char *name, enum exam_type flag,
-		       int all);
+                       int all);
 extern void do_inventory(dbref player);
 extern void do_find(dbref player, const char *name, char **argv);
 extern void do_whereis(dbref player, const char *name);
@@ -75,10 +75,10 @@ extern void do_score(dbref player);
 extern void do_sweep(dbref player, const char *arg1);
 enum ent_type { ENT_EXITS, ENT_THINGS, ENT_PLAYERS, ENT_ROOMS, ENT_ALL };
 extern void do_entrances(dbref player, const char *where, char **argv,
-			 enum ent_type val);
+                         enum ent_type val);
 enum dec_type { DEC_NORMAL, DEC_DB, DEC_FLAG, DEC_ATTR };
 extern void do_decompile(dbref player, const char *name, const char *prefix,
-			 enum dec_type dbflag, int skipdef);
+                         enum dec_type dbflag, int skipdef);
 
 /* From move.c */
 extern void do_get(dbref player, const char *what);
@@ -90,7 +90,7 @@ extern void do_firstexit(dbref player, const char *what);
 
 /* From player.c */
 extern void do_password(dbref player, dbref cause,
-			const char *old, const char *newobj);
+                        const char *old, const char *newobj);
 
 /* From predicat.c */
 extern void do_switch
@@ -109,13 +109,13 @@ extern void do_name(dbref player, const char *name, char *newname);
 extern void do_chown
   (dbref player, const char *name, const char *newobj, int preserve);
 extern int do_chzone(dbref player, const char *name, const char *newobj,
-		     int noisy);
+                     int noisy);
 extern int do_set(dbref player, const char *name, char *flag);
 extern void do_cpattr
   (dbref player, char *oldpair, char **newpair, int move, int noflagcopy);
   enum edit_type { EDIT_FIRST, EDIT_ALL} ;
 extern void do_gedit(dbref player, char *it, char **argv,
-		     enum edit_type target, int doit);
+                     enum edit_type target, int doit);
 extern void do_trigger(dbref player, char *object, char **argv);
 extern void do_use(dbref player, const char *what);
 extern void do_parent(dbref player, char *name, char *parent_name);
@@ -130,10 +130,10 @@ extern void do_whisper_list
 extern void do_pose(dbref player, const char *tbuf1, int space);
 enum wall_type { WALL_ALL };
 extern void do_wall(dbref player, const char *message, enum wall_type target,
-		    int emit);
+                    int emit);
 extern void do_page(dbref player, const char *arg1, const char *arg2,
-		    dbref cause, int noeval, int multipage, int override,
-		    int has_eq);
+                    dbref cause, int noeval, int multipage, int override,
+                    int has_eq);
 extern void do_page_port(dbref player, const char *arg1, const char *arg2);
 extern void do_think(dbref player, const char *message);
 #define PEMIT_SILENT 0x1
@@ -143,13 +143,13 @@ extern void do_emit(dbref player, const char *tbuf1, int flags);
 extern void do_pemit
   (dbref player, const char *arg1, const char *arg2, int flags);
 extern void do_pemit_list(dbref player, char *list, const char *message,
-			  int flags);
+                          int flags);
 extern void do_remit(dbref player, char *arg1, const char *arg2, int flags);
 extern void do_lemit(dbref player, const char *tbuf1, int flags);
 extern void do_zemit(dbref player, const char *arg1, const char *arg2,
-		     int flags);
+                     int flags);
 extern void do_oemit_list(dbref player, char *arg1, const char *arg2,
-			  int flags);
+                          int flags);
 extern void do_teach(dbref player, dbref cause, const char *tbuf1);
 
 /* From wiz.c */
@@ -195,4 +195,4 @@ extern void signal_cpu_limit(int signo);
 /* From version.c */
 extern void do_version(dbref player);
 
-#endif				/* __GAME_H */
+#endif                          /* __GAME_H */

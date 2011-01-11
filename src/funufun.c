@@ -22,8 +22,8 @@
 #include "confmagic.h"
 
 void do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
-	       char **args, dbref executor, dbref caller, dbref enactor,
-	       PE_Info * pe_info);
+               char **args, dbref executor, dbref caller, dbref enactor,
+               PE_Info * pe_info);
 
 /* ARGSUSED */
 FUNCTION(fun_s)
@@ -31,7 +31,7 @@ FUNCTION(fun_s)
   char const *p;
   p = args[0];
   process_expression(buff, bp, &p, executor, caller, enactor, PE_DEFAULT,
-		     PT_DEFAULT, pe_info);
+                     PT_DEFAULT, pe_info);
 }
 
 /* ARGSUSED */
@@ -44,7 +44,7 @@ FUNCTION(fun_localize)
 
   p = args[0];
   process_expression(buff, bp, &p, executor, caller, enactor, PE_DEFAULT,
-		     PT_DEFAULT, pe_info);
+                     PT_DEFAULT, pe_info);
 
   restore_global_regs("localize", saver);
 }
@@ -66,7 +66,7 @@ FUNCTION(fun_objeval)
   s = name;
   p = args[0];
   process_expression(name, &s, &p, executor, caller, enactor, PE_DEFAULT,
-		     PT_DEFAULT, pe_info);
+                     PT_DEFAULT, pe_info);
   *s = '\0';
 
   if (FUNCTION_SIDE_EFFECTS) {
@@ -88,7 +88,7 @@ FUNCTION(fun_objeval)
 
   p = args[1];
   process_expression(buff, bp, &p, obj, executor, enactor, PE_DEFAULT,
-		     PT_DEFAULT, pe_info);
+                     PT_DEFAULT, pe_info);
 
   LEAVE_OOREF;
 }
@@ -107,8 +107,8 @@ FUNCTION(fun_objeval)
  */
 void
 do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
-	  char **args, dbref executor, dbref caller
-	  __attribute__ ((__unused__)), dbref enactor, PE_Info * pe_info)
+          char **args, dbref executor, dbref caller
+          __attribute__ ((__unused__)), dbref enactor, PE_Info * pe_info)
 {
   int j;
   char *tptr[10];
@@ -123,7 +123,7 @@ do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
 
   /* copy the appropriate args into the stack */
   if (nargs > 10)
-    nargs = 10;			/* maximum ten args */
+    nargs = 10;                 /* maximum ten args */
   for (j = 0; j < nargs; j++)
     global_eval_context.wenv[j] = args[j];
   for (; j < 10; j++)
@@ -137,7 +137,7 @@ do_userfn(char *buff, char **bp, dbref obj, ATTR *attrib, int nargs,
   if (attrib->flags & AF_DEBUG)
     pe_flags |= PE_DEBUG;
   process_expression(buff, bp, &tp, obj, executor, enactor, pe_flags,
-		     PT_DEFAULT, pe_info);
+                     PT_DEFAULT, pe_info);
   free(tbuf);
 
   /* restore the stack */
@@ -251,7 +251,7 @@ FUNCTION(fun_uldefault)
   dp = mstr;
   sp = args[0];
   process_expression(mstr, &dp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   *dp = '\0';
   parse_attrib(executor, mstr, &thing, &attrib);
   if (GoodObject(thing) && attrib && CanEvalAttr(executor, thing, attrib)
@@ -262,27 +262,27 @@ FUNCTION(fun_uldefault)
     xargs = NULL;
     if (nargs > 2) {
       xargs =
-	(char **) mush_malloc((nargs - 2) * sizeof(char *), "udefault.xargs");
+        (char **) mush_malloc((nargs - 2) * sizeof(char *), "udefault.xargs");
       for (i = 0; i < nargs - 2; i++) {
-	xargs[i] = (char *) mush_malloc(BUFFER_LEN, "udefault");
-	dp = xargs[i];
-	sp = args[i + 2];
-	process_expression(xargs[i], &dp, &sp, executor, caller, enactor,
-			   PE_DEFAULT, PT_DEFAULT, pe_info);
-	*dp = '\0';
+        xargs[i] = (char *) mush_malloc(BUFFER_LEN, "udefault");
+        dp = xargs[i];
+        sp = args[i + 2];
+        process_expression(xargs[i], &dp, &sp, executor, caller, enactor,
+                           PE_DEFAULT, PT_DEFAULT, pe_info);
+        *dp = '\0';
       }
     }
     if (called_as[1] == 'L')
       save_global_regs("uldefault.save", preserve);
     do_userfn(buff, bp, thing, attrib, nargs - 2, xargs,
-	      executor, caller, enactor, pe_info);
+              executor, caller, enactor, pe_info);
     if (called_as[1] == 'L')
       restore_global_regs("uldefault.save", preserve);
 
     /* Free the xargs */
     if (nargs > 2) {
       for (i = 0; i < nargs - 2; i++)
-	mush_free(xargs[i], "udefault");
+        mush_free(xargs[i], "udefault");
       mush_free(xargs, "udefault.xargs");
     }
     LEAVE_OOREF;
@@ -294,7 +294,7 @@ FUNCTION(fun_uldefault)
   if (called_as[1] == 'L')
     save_global_regs("uldefault.save", preserve);
   process_expression(buff, bp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   if (called_as[1] == 'L')
     restore_global_regs("uldefault.save", preserve);
 
@@ -329,7 +329,7 @@ FUNCTION(fun_zfun)
       return;
     }
     do_userfn(buff, bp, zone, attrib, nargs - 1, args + 1, executor, caller,
-	      enactor, pe_info);
+              enactor, pe_info);
     LEAVE_OOREF;
     return;
   } else if (attrib || !Can_Examine(executor, zone)) {

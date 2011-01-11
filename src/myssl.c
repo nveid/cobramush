@@ -28,7 +28,7 @@
 #define MAXHOSTNAMELEN 32
 #define LC_MESSAGES 6
 void shutdown_checkpoint(void);
-#else				/* !WIN32 */
+#else                           /* !WIN32 */
 #ifdef I_SYS_FILE
 #include <sys/file.h>
 #endif
@@ -52,7 +52,7 @@ void shutdown_checkpoint(void);
 #ifdef I_SYS_STAT
 #include <sys/stat.h>
 #endif
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */
 #include <time.h>
 #ifdef I_SYS_WAIT
 #include <sys/wait.h>
@@ -81,13 +81,13 @@ void shutdown_checkpoint(void);
 #include "parse.h"
 #include "confmagic.h"
 
-#define MYSSL_RB        0x1	/**< Read blocked (on read) */
-#define MYSSL_WB        0x2	/**< Write blocked (on write) */
-#define MYSSL_RBOW      0x4	/**< Read blocked (on write) */
-#define MYSSL_WBOR      0x8	/**< Write blocked (on read) */
-#define MYSSL_ACCEPT    0x10	/**< We need to call SSL_accept (again) */
-#define MYSSL_VERIFIED  0x20	/**< This is an authenticated connection */
-#define MYSSL_HANDSHAKE 0x40	/**< We need to call SSL_do_handshake */
+#define MYSSL_RB        0x1     /**< Read blocked (on read) */
+#define MYSSL_WB        0x2     /**< Write blocked (on write) */
+#define MYSSL_RBOW      0x4     /**< Read blocked (on write) */
+#define MYSSL_WBOR      0x8     /**< Write blocked (on read) */
+#define MYSSL_ACCEPT    0x10    /**< We need to call SSL_accept (again) */
+#define MYSSL_VERIFIED  0x20    /**< This is an authenticated connection */
+#define MYSSL_HANDSHAKE 0x40    /**< We need to call SSL_do_handshake */
 
 #undef MYSSL_DEBUG
 #ifdef MYSSL_DEBUG
@@ -136,12 +136,12 @@ ssl_init(void)
   if (*options.ssl_private_key_file) {
     if (!SSL_CTX_use_certificate_chain_file(ctx, options.ssl_private_key_file)) {
       ssl_errordump
-	("Unable to load server certificate - only anonymous ciphers supported.");
+        ("Unable to load server certificate - only anonymous ciphers supported.");
     }
     if (!SSL_CTX_use_PrivateKey_file
-	(ctx, options.ssl_private_key_file, SSL_FILETYPE_PEM)) {
+        (ctx, options.ssl_private_key_file, SSL_FILETYPE_PEM)) {
       ssl_errordump
-	("Unable to load private key - only anonymous ciphers supported.");
+        ("Unable to load private key - only anonymous ciphers supported.");
     }
   }
 
@@ -151,11 +151,11 @@ ssl_init(void)
       ssl_errordump("Unable to load CA certificates");
     } else {
       if (options.ssl_require_client_cert)
-	SSL_CTX_set_verify(ctx,
-			   SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
-			   client_verify_callback);
+        SSL_CTX_set_verify(ctx,
+                           SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+                           client_verify_callback);
       else
-	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, client_verify_callback);
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, client_verify_callback);
 #if (OPENSSL_VERSION_NUMBER < 0x0090600fL)
       SSL_CTX_set_verify_depth(ctx, 1);
 #endif
@@ -164,8 +164,8 @@ ssl_init(void)
 
   SSL_CTX_set_options(ctx, SSL_OP_SINGLE_DH_USE | SSL_OP_ALL);
   SSL_CTX_set_mode(ctx,
-		   SSL_MODE_ENABLE_PARTIAL_WRITE |
-		   SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
+                   SSL_MODE_ENABLE_PARTIAL_WRITE |
+                   SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
 
   /* Set up DH callback */
   SSL_CTX_set_tmp_dh(ctx, get_dh1024());
@@ -199,7 +199,7 @@ client_verify_callback(int preverify_ok, X509_STORE_CTX * x509_ctx)
   X509_NAME_oneline(X509_get_subject_name(err_cert), buf, 256);
   if (!preverify_ok) {
     do_log(LT_ERR, 0, 0, "verify error:num=%d:%s:depth=%d:%s\n", err,
-	   X509_verify_cert_error_string(err), depth, buf);
+           X509_verify_cert_error_string(err), depth, buf);
     if (err == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT) {
       X509_NAME_oneline(X509_get_issuer_name(x509_ctx->current_cert), buf, 256);
       do_log(LT_ERR, 0, 0, "issuer= %s\n", buf);
@@ -422,10 +422,10 @@ ssl_accept(SSL * ssl)
     /* Successful accept - report it */
     if ((peer = SSL_get_peer_certificate(ssl))) {
       if (SSL_get_verify_result(ssl) == X509_V_OK) {
-	/* The client sent a certificate which verified OK */
-	X509_NAME_oneline(X509_get_subject_name(peer), buf, 256);
-	do_log(LT_CONN, 0, 0, "SSL client certificate accepted: %s", buf);
-	state |= MYSSL_VERIFIED;
+        /* The client sent a certificate which verified OK */
+        X509_NAME_oneline(X509_get_subject_name(peer), buf, 256);
+        do_log(LT_CONN, 0, 0, "SSL client certificate accepted: %s", buf);
+        state |= MYSSL_VERIFIED;
       }
     }
   }
@@ -446,7 +446,7 @@ ssl_accept(SSL * ssl)
  */
 int
 ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
-	 char *buf, int bufsize, int *bytes_read)
+         char *buf, int bufsize, int *bytes_read)
 {
   if ((net_read_ready && !(state & MYSSL_WBOR)) ||
       (net_write_ready && (state & MYSSL_RBOW))) {
@@ -455,27 +455,27 @@ ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
       *bytes_read = SSL_read(ssl, buf, bufsize);
       switch (SSL_get_error(ssl, *bytes_read)) {
       case SSL_ERROR_NONE:
-	/* Yay */
-	return state;
+        /* Yay */
+        return state;
       case SSL_ERROR_ZERO_RETURN:
-	/* End of data on this socket */
-	return -1;
+        /* End of data on this socket */
+        return -1;
       case SSL_ERROR_WANT_READ:
-	/* More needs to be read from the underlying socket */
-	ssl_debugdump("SSL_read wants read");
-	state |= MYSSL_RB;
-	break;
+        /* More needs to be read from the underlying socket */
+        ssl_debugdump("SSL_read wants read");
+        state |= MYSSL_RB;
+        break;
       case SSL_ERROR_WANT_WRITE:
-	/* More needs to be written to the underlying socket.
-	 * This can happen during a rehandshake.
-	 */
-	ssl_debugdump("SSL_read wants write");
-	state |= MYSSL_RBOW;
-	break;
+        /* More needs to be written to the underlying socket.
+         * This can happen during a rehandshake.
+         */
+        ssl_debugdump("SSL_read wants write");
+        state |= MYSSL_RBOW;
+        break;
       default:
-	/* Should never happen */
-	ssl_errordump("Unknown ssl_read failure!");
-	return -1;
+        /* Should never happen */
+        ssl_errordump("Unknown ssl_read failure!");
+        return -1;
       }
     } while (SSL_pending(ssl) && !(state & MYSSL_RB));
   }
@@ -494,7 +494,7 @@ ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
  */
 int
 ssl_write(SSL * ssl, int state, int net_read_ready, int net_write_ready,
-	  unsigned char *buf, int bufsize, int *offset)
+          unsigned char *buf, int bufsize, int *offset)
 {
   int r;
   if ((net_write_ready && bufsize) || (net_read_ready && !(state & MYSSL_WBOR))) {
@@ -586,7 +586,7 @@ ssl_read_ssl(FILE * fp, int sock)
   SSL_set_bio(ssl, bio, bio);
   return ssl;
 }
-#endif				/* BROKEN */
+#endif                          /* BROKEN */
 
 
-#endif				/* HAS_OPENSSL */
+#endif                          /* HAS_OPENSSL */

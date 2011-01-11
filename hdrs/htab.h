@@ -12,10 +12,10 @@ typedef struct hashentry HASHENT;
 /** A hash table entry.
  */
 struct hashentry {
-  struct hashentry *next;	/**< Pointer to next entry */
-  void *data;			/**< Data for this entry */
+  struct hashentry *next;       /**< Pointer to next entry */
+  void *data;                   /**< Data for this entry */
   /* int extra_size; */
-  char key[SOME_KEY_LEN];	/**< Key for this entry */
+  char key[SOME_KEY_LEN];       /**< Key for this entry */
 };
 
 #define HASHENT_SIZE (sizeof(HASHENT)-SOME_KEY_LEN)
@@ -24,13 +24,13 @@ typedef struct hashtable HASHTAB;
 /** A hash table.
  */
 struct hashtable {
-  int hashsize;			/**< Size of hash table */
-  int mask;			/**< Mask for entries in table */
-  int entries;			/**< Number of entries stored */
-  HASHENT **buckets;		/**< Pointer to pointer to entries */
-  int last_hval;		/**< State for hashfirst & hashnext. */
-  HASHENT *last_entry;		/**< State for hashfirst & hashnext. */
-  int entry_size;		/**< Size of each entry */
+  int hashsize;                 /**< Size of hash table */
+  int mask;                     /**< Mask for entries in table */
+  int entries;                  /**< Number of entries stored */
+  HASHENT **buckets;            /**< Pointer to pointer to entries */
+  int last_hval;                /**< State for hashfirst & hashnext. */
+  HASHENT *last_entry;          /**< State for hashfirst & hashnext. */
+  int entry_size;               /**< Size of each entry */
 };
 
 #define get_hashmask(x) hash_getmask(x)

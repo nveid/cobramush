@@ -32,11 +32,11 @@ typedef unsigned int LONG;
 /** An shs digest.
  */
 typedef struct {
-  LONG digest[5];		/**< message digest */
-  LONG countLo;			/**< 64-bit bit count, low half */
-  LONG countHi;			/**< 64-bit bit count, high half */
-  LONG data[16];		/**< SHS data buffer */
-  BYTE reverse_wanted;		/**< true to reverse (little_endian) false to not */
+  LONG digest[5];               /**< message digest */
+  LONG countLo;                 /**< 64-bit bit count, low half */
+  LONG countHi;                 /**< 64-bit bit count, high half */
+  LONG data[16];                /**< SHS data buffer */
+  BYTE reverse_wanted;          /**< true to reverse (little_endian) false to not */
 } SHS_INFO;
 
 void shsInit(SHS_INFO *shsInfo);

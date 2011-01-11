@@ -33,15 +33,15 @@ static void do_new_spitfile(dbref player, char *arg1, help_file *help_dat);
 static const char *string_spitfile(help_file *help_dat, char *arg1);
 static help_indx *help_find_entry(help_file *help_dat, const char *the_topic);
 static char *list_matching_entries(char *pattern, help_file *help_dat,
-				   const char *sep);
+                                   const char *sep);
 static const char *normalize_entry(help_file *help_dat, char *arg1);
 
 static void help_build_index(help_file *h, int restricted);
 
 /** Linked list of help topic names. */
 typedef struct TLIST {
-  char topic[TOPIC_NAME_LEN + 1];	/**< Name of topic */
-  struct TLIST *next;			/**< Pointer to next list entry */
+  char topic[TOPIC_NAME_LEN + 1];       /**< Name of topic */
+  struct TLIST *next;                   /**< Pointer to next list entry */
 } tlist;
 
 tlist *top = NULL;   /**< Pointer to top of linked list of topic names */
@@ -52,8 +52,8 @@ unsigned top_topics = 0;   /**< Maximum number of topics loaded */
 
 static void write_topic(long int p);
 
-#define TRUE 1	 /**< A true value */
-#define FALSE 0	 /**< A false value */
+#define TRUE 1   /**< A true value */
+#define FALSE 0  /**< A false value */
 
 COMMAND (cmd_helpcmd) {
   help_file *h;
@@ -72,7 +72,7 @@ COMMAND (cmd_helpcmd) {
 
   if (wildcard(arg_left))
     notify_format(player, T("Here are the entries which match '%s':\n%s"),
-		  arg_left, list_matching_entries(arg_left, h, ", "));
+                  arg_left, list_matching_entries(arg_left, h, ", "));
   else
     do_new_spitfile(player, arg_left, h);
 }
@@ -156,7 +156,7 @@ help_reindex(dbref player)
   if (player != NOTHING) {
     notify(player, T("Help files reindexed."));
     do_rawlog(LT_WIZ, T("Help files reindexed by %s(#%d)"), Name(player),
-	      player);
+              player);
   } else
     do_rawlog(LT_WIZ, T("Help files reindexed."));
 }
@@ -204,7 +204,7 @@ do_new_spitfile(dbref player, char *arg1, help_file *help_dat)
   if ((fp = fopen(help_dat->file, FOPEN_READ)) == NULL) {
     notify(player, T("Sorry, that function is temporarily unavailable."));
     do_log(LT_ERR, 0, 0, T("Can't open text file %s for reading"),
-	   help_dat->file);
+           help_dat->file);
     return;
   }
   if (fseek(fp, entry->pos, 0) < 0L) {
@@ -232,8 +232,8 @@ do_new_spitfile(dbref player, char *arg1, help_file *help_dat)
       notify(player, " ");
     } else {
       for (p = line; *p != '\0'; p++)
-	if (*p == '\n')
-	  *p = '\0';
+        if (*p == '\n')
+          *p = '\0';
       notify(player, line);
     }
   }
@@ -251,14 +251,14 @@ help_find_entry(help_file *help_dat, const char *the_topic)
   size_t n;
   help_indx *entry = NULL;
 
-  if (help_dat->entries < 10) {	/* Just do a linear search for small files */
+  if (help_dat->entries < 10) { /* Just do a linear search for small files */
     for (n = 0; n < help_dat->entries; n++) {
       if (string_prefix(help_dat->indx[n].topic, the_topic)) {
-	entry = &help_dat->indx[n];
-	break;
+        entry = &help_dat->indx[n];
+        break;
       }
     }
-  } else {			/* Binary search of the index */
+  } else {                      /* Binary search of the index */
     int left = 0;
     int cmp;
     int right = help_dat->entries - 1;
@@ -267,31 +267,31 @@ help_find_entry(help_file *help_dat, const char *the_topic)
       n = (left + right) / 2;
 
       if (left > right)
-	break;
+        break;
 
       cmp = strcasecmp(the_topic, help_dat->indx[n].topic);
 
       if (cmp == 0) {
-	entry = &help_dat->indx[n];
-	break;
+        entry = &help_dat->indx[n];
+        break;
       } else if (cmp < 0) {
-	/* We need to catch the first prefix */
-	if (string_prefix(help_dat->indx[n].topic, the_topic)) {
-	  int m;
-	  for (m = n - 1; m >= 0; m--) {
-	    if (!string_prefix(help_dat->indx[m].topic, the_topic))
-	      break;
-	  }
-	  entry = &help_dat->indx[m + 1];
-	  break;
-	}
-	if (left == right)
-	  break;
-	right = n - 1;
-      } else {			/* cmp > 0 */
-	if (left == right)
-	  break;
-	left = n + 1;
+        /* We need to catch the first prefix */
+        if (string_prefix(help_dat->indx[n].topic, the_topic)) {
+          int m;
+          for (m = n - 1; m >= 0; m--) {
+            if (!string_prefix(help_dat->indx[m].topic, the_topic))
+              break;
+          }
+          entry = &help_dat->indx[m + 1];
+          break;
+        }
+        if (left == right)
+          break;
+        right = n - 1;
+      } else {                  /* cmp > 0 */
+        if (left == right)
+          break;
+        left = n + 1;
       }
     }
   }
@@ -308,11 +308,11 @@ write_topic(long int p)
     if (num_topics >= top_topics) {
       top_topics += top_topics / 2 + 20;
       if (topics)
-	topics = (help_indx *) realloc(topics, top_topics * sizeof(help_indx));
+        topics = (help_indx *) realloc(topics, top_topics * sizeof(help_indx));
       else
-	topics = (help_indx *) malloc(top_topics * sizeof(help_indx));
+        topics = (help_indx *) malloc(top_topics * sizeof(help_indx));
       if (!topics) {
-	mush_panic(T("Out of memory"));
+        mush_panic(T("Out of memory"));
       }
     }
     temp = &topics[num_topics++];
@@ -372,19 +372,19 @@ help_build_index(help_file *h, int restricted)
     if (ntopics == 0) {
       /* Looking for the first topic, but we'll ignore blank lines */
       if (!line[0]) {
-	/* Someone's feeding us /dev/null? */
-	do_rawlog(LT_ERR, T("Malformed help file %s doesn't start with &"),
-		  h->file);
-	fclose(rfp);
-	return;
+        /* Someone's feeding us /dev/null? */
+        do_rawlog(LT_ERR, T("Malformed help file %s doesn't start with &"),
+                  h->file);
+        fclose(rfp);
+        return;
       }
       if (isspace((unsigned char) line[0]))
-	continue;
+        continue;
       if (line[0] != '&') {
-	do_rawlog(LT_ERR, T("Malformed help file %s doesn't start with &"),
-		  h->file);
-	fclose(rfp);
-	return;
+        do_rawlog(LT_ERR, T("Malformed help file %s doesn't start with &"),
+                  h->file);
+        fclose(rfp);
+        return;
       }
     }
     n = strlen(line);
@@ -394,36 +394,36 @@ help_build_index(help_file *h, int restricted)
     if (line[0] == '&') {
       ++ntopics;
       if (!in_topic) {
-	/* Finish up last entry */
-	if (ntopics > 1) {
-	  write_topic(pos);
-	}
-	in_topic = TRUE;
+        /* Finish up last entry */
+        if (ntopics > 1) {
+          write_topic(pos);
+        }
+        in_topic = TRUE;
       }
       /* parse out the topic */
       /* Get the beginning of the topic string */
       for (topic = &line[1];
-	   (*topic == ' ' || *topic == '\t') && *topic != '\0'; topic++) ;
+           (*topic == ' ' || *topic == '\t') && *topic != '\0'; topic++) ;
 
       /* Get the topic */
       strcpy(the_topic, "");
       for (i = -1, s = topic; *s != '\n' && *s != '\0'; s++) {
-	if (i >= TOPIC_NAME_LEN - 1)
-	  break;
-	if (*s != ' ' || the_topic[i] != ' ')
-	  the_topic[++i] = *s;
+        if (i >= TOPIC_NAME_LEN - 1)
+          break;
+        if (*s != ' ' || the_topic[i] != ' ')
+          the_topic[++i] = *s;
       }
       if ((restricted && the_topic[0] == '&')
-	  || (!restricted && the_topic[0] != '&')) {
-	the_topic[++i] = '\0';
-	cur = (tlist *) malloc(sizeof(tlist));
-	strcpy(cur->topic, the_topic);
-	cur->next = top;
-	top = cur;
+          || (!restricted && the_topic[0] != '&')) {
+        the_topic[++i] = '\0';
+        cur = (tlist *) malloc(sizeof(tlist));
+        strcpy(cur->topic, the_topic);
+        cur->next = top;
+        top = cur;
       }
     } else {
       if (in_topic) {
-	pos = bigpos;
+        pos = bigpos;
       }
       in_topic = FALSE;
     }
@@ -558,7 +558,7 @@ list_matching_entries(char *pattern, help_file *help_dat, const char *sep)
   bp = buff;
 
   if (help_dat->admin)
-    offset = 1;			/* To skip the leading & */
+    offset = 1;                 /* To skip the leading & */
   else
     offset = 0;
 
@@ -584,7 +584,7 @@ list_matching_entries(char *pattern, help_file *help_dat, const char *sep)
     if (quick_wild(pattern, help_dat->indx[n].topic + offset)) {
       safe_str(help_dat->indx[n].topic + offset, buff, &bp);
       if (sep)
-	safe_strl(sep, len, buff, &bp);
+        safe_strl(sep, len, buff, &bp);
     }
 
   if (bp > buff)

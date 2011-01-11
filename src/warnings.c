@@ -27,23 +27,23 @@
 /* We might check for both locked and unlocked warnings if we can't
  * figure out a lock.
  */
-#define W_UNLOCKED      0x1	/**< Check for unlocked-object warnings */
-#define W_LOCKED        0x2	/**< Check for locked-object warnings */
+#define W_UNLOCKED      0x1     /**< Check for unlocked-object warnings */
+#define W_LOCKED        0x2     /**< Check for locked-object warnings */
 
-#define W_EXIT_ONEWAY   0x1	/**< Find one-way exits */
-#define W_EXIT_MULTIPLE 0x2	/**< Find multiple exits to same place */
-#define W_EXIT_MSGS     0x4	/**< Find exits without messages */
-#define W_EXIT_DESC     0x8	/**< Find exits without descs */
-#define W_EXIT_UNLINKED 0x10	/**< Find unlinked exits */
+#define W_EXIT_ONEWAY   0x1     /**< Find one-way exits */
+#define W_EXIT_MULTIPLE 0x2     /**< Find multiple exits to same place */
+#define W_EXIT_MSGS     0x4     /**< Find exits without messages */
+#define W_EXIT_DESC     0x8     /**< Find exits without descs */
+#define W_EXIT_UNLINKED 0x10    /**< Find unlinked exits */
 /* Space for more exit stuff */
-#define W_THING_MSGS    0x100	/**< Find things without messages */
-#define W_THING_DESC    0x200	/**< Find things without descs */
+#define W_THING_MSGS    0x100   /**< Find things without messages */
+#define W_THING_DESC    0x200   /**< Find things without descs */
 /* Space for more thing stuff */
-#define W_ROOM_DESC     0x1000	/**< Find rooms without descs */
+#define W_ROOM_DESC     0x1000  /**< Find rooms without descs */
 /* Space for more room stuff */
-#define W_PLAYER_DESC   0x10000	/**< Find players without descs */
+#define W_PLAYER_DESC   0x10000 /**< Find players without descs */
 
-#define W_LOCK_PROBS    0x100000	/**< Find bad locks */
+#define W_LOCK_PROBS    0x100000        /**< Find bad locks */
 
 /* Groups of warnings */
 #define W_NONE          0      /**< No warnings */
@@ -59,8 +59,8 @@
 
 /** A structure representing a topology warning check. */
 typedef struct a_tcheck {
-  const char *name;	/**< Name of warning. */
-  warn_type flag;	/**< Bitmask of warning. */
+  const char *name;     /**< Name of warning. */
+  warn_type flag;       /**< Bitmask of warning. */
 } tcheck;
 
 
@@ -76,7 +76,7 @@ static void ct_thing(dbref player, dbref i, warn_type flags);
 
 
 static tcheck checklist[] = {
-  {"none", W_NONE},		/* MUST BE FIRST! */
+  {"none", W_NONE},             /* MUST BE FIRST! */
   {"exit-unlinked", W_EXIT_UNLINKED},
   {"thing-desc", W_THING_DESC},
   {"room-desc", W_ROOM_DESC},
@@ -108,7 +108,7 @@ complain(dbref player, dbref i, const char *name, const char *desc, ...)
 #ifdef HAS_VSNPRINTF
   char buff[BUFFER_LEN];
 #else
-  char buff[BUFFER_LEN * 3];	/* safety margin */
+  char buff[BUFFER_LEN * 3];    /* safety margin */
 #endif
   va_list args;
 
@@ -124,7 +124,7 @@ complain(dbref player, dbref i, const char *name, const char *desc, ...)
   va_end(args);
 
   notify_format(player, T("Warning '%s' for %s:"),
-		name, unparse_object(player, i));
+                name, unparse_object(player, i));
   notify(player, buff);
 }
 
@@ -162,7 +162,7 @@ ct_exit(dbref player, dbref i, warn_type flags)
   dst = Destination(i);
   if ((flags & W_EXIT_UNLINKED) && (dst == NOTHING))
     complain(player, i, "exit-unlinked",
-	     T("exit is unlinked; anyone can steal it"));
+             T("exit is unlinked; anyone can steal it"));
 
   if ((flags & W_EXIT_UNLINKED) && dst == AMBIGUOUS) {
     ATTR *a;
@@ -174,12 +174,12 @@ ct_exit(dbref player, dbref i, warn_type flags)
       var = "EXITTO";
     if (!a)
       complain(player, i, "exit-unlinked",
-	       T("Variable exit has no %s attribute"), var);
+               T("Variable exit has no %s attribute"), var);
     else {
       const char *x = atr_value(a);
       if (!x || !*x)
-	complain(player, i, "exit-unlinked",
-		 T("Variable exit has empty %s attribute"), var);
+        complain(player, i, "exit-unlinked",
+                 T("Variable exit has empty %s attribute"), var);
     }
   }
 
@@ -187,17 +187,17 @@ ct_exit(dbref player, dbref i, warn_type flags)
     if (flags & W_EXIT_MSGS) {
       lt = warning_lock_type(getlock(i, Basic_Lock));
       if ((lt & W_UNLOCKED) &&
-	  (!atr_get(i, "OSUCCESS") || !atr_get(i, "ODROP") ||
-	   !atr_get(i, "SUCCESS")))
-	complain(player, i, "exit-msgs",
-		 T("possibly unlocked exit missing succ/osucc/odrop"));
+          (!atr_get(i, "OSUCCESS") || !atr_get(i, "ODROP") ||
+           !atr_get(i, "SUCCESS")))
+        complain(player, i, "exit-msgs",
+                 T("possibly unlocked exit missing succ/osucc/odrop"));
       if ((lt & W_LOCKED) && !atr_get(i, "FAILURE"))
-	complain(player, i, "exit-msgs",
-		 T("possibly locked exit missing fail"));
+        complain(player, i, "exit-msgs",
+                 T("possibly locked exit missing fail"));
     }
     if (flags & W_EXIT_DESC) {
       if (!atr_get(i, "DESCRIBE"))
-	complain(player, i, "exit-desc", T("exit is missing description"));
+        complain(player, i, "exit-desc", T("exit is missing description"));
     }
   }
   src = Source(i);
@@ -212,15 +212,15 @@ ct_exit(dbref player, dbref i, warn_type flags)
   for (j = Exits(dst); GoodObject(j); j = Next(j))
     if (Location(j) == src) {
       if (!(flags & W_EXIT_MULTIPLE))
-	return;
+        return;
       else
-	count++;
+        count++;
     }
   if ((count == 0) && (flags & W_EXIT_ONEWAY))
     complain(player, i, "exit-oneway", T("exit has no return exit"));
   else if ((count > 1) && (flags & W_EXIT_MULTIPLE))
     complain(player, i, "exit-multiple",
-	     T("exit has multiple (%d) return exits"), count);
+             T("exit has multiple (%d) return exits"), count);
 }
 
 
@@ -248,13 +248,13 @@ ct_thing(dbref player, dbref i, warn_type flags)
   if (flags & W_THING_MSGS) {
     lt = warning_lock_type(getlock(i, Basic_Lock));
     if ((lt & W_UNLOCKED) &&
-	(!atr_get(i, "OSUCCESS") || !atr_get(i, "ODROP") ||
-	 !atr_get(i, "SUCCESS") || !atr_get(i, "DROP")))
+        (!atr_get(i, "OSUCCESS") || !atr_get(i, "ODROP") ||
+         !atr_get(i, "SUCCESS") || !atr_get(i, "DROP")))
       complain(player, i, "thing-msgs",
-	       T("possibly unlocked thing missing succ/osucc/drop/odrop"));
+               T("possibly unlocked thing missing succ/osucc/drop/odrop"));
     if ((lt & W_LOCKED) && !atr_get(i, "FAILURE"))
       complain(player, i, "thing-msgs",
-	       T("possibly locked thing missing fail"));
+               T("possibly locked thing missing fail"));
   }
 }
 
@@ -306,7 +306,7 @@ do_warnings(dbref player, const char *name, const char *warns)
     Warnings(thing) = w;
     if (Warnings(thing))
       notify_format(player, T("@warnings set to: %s"),
-		    unparse_warnings(Warnings(thing)));
+                    unparse_warnings(Warnings(thing)));
     else
       notify(player, T("@warnings cleared."));
   } else {
@@ -338,25 +338,25 @@ parse_warnings(dbref player, const char *warnings)
     while (w && *w) {
       found = 0;
       if (*w == '!') {
-	/* Found a negated warning */
-	w++;
-	for (c = checklist; c->name; c++) {
-	  if (!strcasecmp(w, c->name)) {
-	    negate_flags |= c->flag;
-	    found++;
-	  }
-	}
+        /* Found a negated warning */
+        w++;
+        for (c = checklist; c->name; c++) {
+          if (!strcasecmp(w, c->name)) {
+            negate_flags |= c->flag;
+            found++;
+          }
+        }
       } else {
-	for (c = checklist; c->name; c++) {
-	  if (!strcasecmp(w, c->name)) {
-	    flags |= c->flag;
-	    found++;
-	  }
-	}
+        for (c = checklist; c->name; c++) {
+          if (!strcasecmp(w, c->name)) {
+            flags |= c->flag;
+            found++;
+          }
+        }
       }
       /* At this point, we haven't matched any warnings. */
       if (!found && player != NOTHING) {
-	notify_format(player, T("Unknown warning: %s"), w);
+        notify_format(player, T("Unknown warning: %s"), w);
       }
       w = split_token(&s, ' ');
     }

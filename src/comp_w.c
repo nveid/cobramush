@@ -127,14 +127,14 @@
 #include "mymalloc.h"
 #include "confmagic.h"
 
-#define MAXTABLE 32768		/**< Maximum words in the table */
-#define MAXWORDS 100		/**< Maximum size of a word */
-#define COLLISION_LIMIT 20	/**< Maximum allowed collisions */
+#define MAXTABLE 32768          /**< Maximum words in the table */
+#define MAXWORDS 100            /**< Maximum size of a word */
+#define COLLISION_LIMIT 20      /**< Maximum allowed collisions */
 
-#define COMPRESS_HASH_MASK 0x7FFF	/**< 32767 in hex */
+#define COMPRESS_HASH_MASK 0x7FFF       /**< 32767 in hex */
 
-#define TABLE_FLAG 0x80		/**< Distinguish a table */
-#define TABLE_MASK 0x7F		/**< Mask out words within a table */
+#define TABLE_FLAG 0x80         /**< Distinguish a table */
+#define TABLE_MASK 0x7F         /**< Mask out words within a table */
 
 /* Table of words */
 
@@ -162,7 +162,7 @@ static void output_previous_word(void);
 int init_compress(FILE * f);
 #ifdef COMP_STATS
 void compress_stats(long *entries, long *mem_used,
-		    long *total_uncompressed, long *total_compressed);
+                    long *total_uncompressed, long *total_compressed);
 #endif
 static unsigned int hash_fn(const char *s, int hashtab_mask);
 
@@ -172,7 +172,7 @@ output_previous_word(void)
   char *p;
   int i, j;
 
-  word[wordpos++] = 0;		/* word's trailing null */
+  word[wordpos++] = 0;          /* word's trailing null */
 
   /* Don't bother putting single or double letter words in the table */
 
@@ -189,14 +189,14 @@ output_previous_word(void)
        (words[i] || (i & 0xFF) == 0) && j < COLLISION_LIMIT; i++, j++)
     if (words[i])
       if (strcmp(word, words[i]) == 0) {
-	*b++ = (i >> 8) | TABLE_FLAG;
-	*b++ = i & 0xFF;
-	return;
+        *b++ = (i >> 8) | TABLE_FLAG;
+        *b++ = i & 0xFF;
+        return;
       }
   /* not in table, add to it */
 
   if ((i & 0xFF) == 0) {
-    i++;			/* make sure we don't have a null in the message */
+    i++;                        /* make sure we don't have a null in the message */
     j++;
   }
   /* Can't add to table if full */
@@ -223,7 +223,7 @@ output_previous_word(void)
   *b++ = (i >> 8) | TABLE_FLAG;
   *b++ = i & 0xFF;
 
-}				/* end of output_previous_word */
+}                               /* end of output_previous_word */
 
 /** Word-compress a string.
  *
@@ -251,11 +251,11 @@ compress(char const *s)
   while (*p) {
     if (!(isdigit(*p) || isalpha(*p)) || wordpos >= MAXWORDS) {
       if (wordpos) {
-	word[wordpos++] = *p & 0x7F;	/* add trailing punctuation */
-	output_previous_word();
-	wordpos = 0;
+        word[wordpos++] = *p & 0x7F;    /* add trailing punctuation */
+        output_previous_word();
+        wordpos = 0;
       } else
-	*b++ = *p & 0x7F;
+        *b++ = *p & 0x7F;
     } else
       word[wordpos++] = *p & 0x7F;
     p++;
@@ -264,15 +264,15 @@ compress(char const *s)
   if (wordpos)
     output_previous_word();
 
-  *b = 0;			/* trailing null */
+  *b = 0;                       /* trailing null */
 
 #ifdef COMP_STATS
-  total_comp += u_strlen(buf);	/* calculate size of compressed   text */
-  total_uncomp += strlen(s);	/* calculate size of uncompressed text */
+  total_comp += u_strlen(buf);  /* calculate size of compressed   text */
+  total_uncomp += strlen(s);    /* calculate size of uncompressed text */
 #endif
 
   return u_strdup(buf);
-}				/* end of compress; */
+}                               /* end of compress; */
 
 
 /** Word-uncompress a string.
@@ -308,16 +308,16 @@ uncompress(unsigned char const *s)
     if (c & TABLE_FLAG) {
       i = ((c & TABLE_MASK) << 8) | *(++p);
       if (i >= MAXTABLE || words[i] == NULL) {
-	static int panicking = 0;
-	if (panicking) {
-	  do_rawlog(LT_ERR,
-		    "Error in string decompression occurred during panic dump.");
-	  exit(1);
-	} else {
-	  panicking = 1;	/* don't panic from within panic */
-	  do_rawlog(LT_ERR, "Error in string decompression, i = %i", i);
-	  mush_panic("Fatal error in decompression");
-	}
+        static int panicking = 0;
+        if (panicking) {
+          do_rawlog(LT_ERR,
+                    "Error in string decompression occurred during panic dump.");
+          exit(1);
+        } else {
+          panicking = 1;        /* don't panic from within panic */
+          do_rawlog(LT_ERR, "Error in string decompression, i = %i", i);
+          mush_panic("Fatal error in decompression");
+        }
       }
       strncpy((char *) b, words[i], words_len[i]);
       b += words_len[i] - 1;
@@ -326,11 +326,11 @@ uncompress(unsigned char const *s)
     p++;
   }
 
-  *b++ = 0;			/* trailing null */
+  *b++ = 0;                     /* trailing null */
 
   return buf;
 
-}				/* end of uncompress; */
+}                               /* end of uncompress; */
 
 /** Word-uncompress a string, allocating memory.
  * this function should be used when you're doing something like
@@ -371,7 +371,7 @@ init_compress(FILE * f __attribute__ ((__unused__)))
  */
 void
 compress_stats(long *entries, long *mem_used, long *total_uncompressed,
-	       long *total_compressed)
+               long *total_compressed)
 {
 
   *entries = total_entries;

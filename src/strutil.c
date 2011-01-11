@@ -128,8 +128,8 @@ strncasecmp(const char *s1, const char *s2, size_t n)
   return 0;
 
 }
-#endif				/* !WIN32 */
-#endif				/* !HAS_STRCASECMP */
+#endif                          /* !WIN32 */
+#endif                          /* !HAS_STRCASECMP */
 
 /** Does string begin with prefix? 
  * This comparison is case-insensitive.
@@ -162,14 +162,14 @@ string_match(const char *src, const char *sub)
   if (*sub != '\0') {
     while (*src) {
       if (string_prefix(src, sub))
-	return src;
+        return src;
       /* else scan to beginning of next word */
       while (*src && (isalpha((unsigned char) *src)
-		      || isdigit((unsigned char) *src)))
-	src++;
+                      || isdigit((unsigned char) *src)))
+        src++;
       while (*src && !isalpha((unsigned char) *src)
-	     && !isdigit((unsigned char) *src))
-	src++;
+             && !isdigit((unsigned char) *src))
+        src++;
     }
   }
   return NULL;
@@ -260,7 +260,7 @@ upcasestr(char *s)
  */
 int
 safe_accent(const char *RESTRICT base, const char *RESTRICT tmplate, size_t len,
-	    char *buff, char **bp)
+            char *buff, char **bp)
 {
   /* base and tmplate must be the same length */
   size_t n;
@@ -271,307 +271,307 @@ safe_accent(const char *RESTRICT base, const char *RESTRICT tmplate, size_t len,
     case 'A':
       switch (tmplate[n]) {
       case '`':
-	c = 192;
-	break;
+        c = 192;
+        break;
       case '\'':
-	c = 193;
-	break;
+        c = 193;
+        break;
       case '^':
-	c = 194;
-	break;
+        c = 194;
+        break;
       case '~':
-	c = 195;
-	break;
+        c = 195;
+        break;
       case ':':
-	c = 196;
-	break;
+        c = 196;
+        break;
       case 'o':
-	c = 197;
-	break;
+        c = 197;
+        break;
       case 'e':
       case 'E':
-	c = 198;
-	break;
+        c = 198;
+        break;
       default:
-	c = 'A';
+        c = 'A';
       }
       break;
     case 'a':
       switch (tmplate[n]) {
       case '`':
-	c = 224;
-	break;
+        c = 224;
+        break;
       case '\'':
-	c = 225;
-	break;
+        c = 225;
+        break;
       case '^':
-	c = 226;
-	break;
+        c = 226;
+        break;
       case '~':
-	c = 227;
-	break;
+        c = 227;
+        break;
       case ':':
-	c = 228;
-	break;
+        c = 228;
+        break;
       case 'o':
-	c = 229;
-	break;
+        c = 229;
+        break;
       case 'e':
       case 'E':
-	c = 230;
-	break;
+        c = 230;
+        break;
       default:
-	c = 'a';
+        c = 'a';
       }
       break;
     case 'C':
       if (tmplate[n] == ',')
-	c = 199;
+        c = 199;
       else
-	c = 'C';
+        c = 'C';
       break;
     case 'c':
       if (tmplate[n] == ',')
-	c = 231;
+        c = 231;
       else
-	c = 'c';
+        c = 'c';
       break;
     case 'E':
       switch (tmplate[n]) {
       case '`':
-	c = 200;
-	break;
+        c = 200;
+        break;
       case '\'':
-	c = 201;
-	break;
+        c = 201;
+        break;
       case '^':
-	c = 202;
-	break;
+        c = 202;
+        break;
       case ':':
-	c = 203;
-	break;
+        c = 203;
+        break;
       default:
-	c = 'E';
+        c = 'E';
       }
       break;
     case 'e':
       switch (tmplate[n]) {
       case '`':
-	c = 232;
-	break;
+        c = 232;
+        break;
       case '\'':
-	c = 233;
-	break;
+        c = 233;
+        break;
       case '^':
-	c = 234;
-	break;
+        c = 234;
+        break;
       case ':':
-	c = 235;
-	break;
+        c = 235;
+        break;
       default:
-	c = 'e';
+        c = 'e';
       }
       break;
     case 'I':
       switch (tmplate[n]) {
       case '`':
-	c = 204;
-	break;
+        c = 204;
+        break;
       case '\'':
-	c = 205;
-	break;
+        c = 205;
+        break;
       case '^':
-	c = 206;
-	break;
+        c = 206;
+        break;
       case ':':
-	c = 207;
-	break;
+        c = 207;
+        break;
       default:
-	c = 'I';
+        c = 'I';
       }
       break;
     case 'i':
       switch (tmplate[n]) {
       case '`':
-	c = 236;
-	break;
+        c = 236;
+        break;
       case '\'':
-	c = 237;
-	break;
+        c = 237;
+        break;
       case '^':
-	c = 238;
-	break;
+        c = 238;
+        break;
       case ':':
-	c = 239;
-	break;
+        c = 239;
+        break;
       default:
-	c = 'i';
+        c = 'i';
       }
       break;
     case 'N':
       if (tmplate[n] == '~')
-	c = 209;
+        c = 209;
       else
-	c = 'N';
+        c = 'N';
       break;
     case 'n':
       if (tmplate[n] == '~')
-	c = 241;
+        c = 241;
       else
-	c = 'n';
+        c = 'n';
       break;
     case 'O':
       switch (tmplate[n]) {
       case '`':
-	c = 210;
-	break;
+        c = 210;
+        break;
       case '\'':
-	c = 211;
-	break;
+        c = 211;
+        break;
       case '^':
-	c = 212;
-	break;
+        c = 212;
+        break;
       case '~':
-	c = 213;
-	break;
+        c = 213;
+        break;
       case ':':
-	c = 214;
-	break;
+        c = 214;
+        break;
       default:
-	c = 'O';
+        c = 'O';
       }
       break;
     case 'o':
       switch (tmplate[n]) {
       case '&':
-	c = 240;
-	break;
+        c = 240;
+        break;
       case '`':
-	c = 242;
-	break;
+        c = 242;
+        break;
       case '\'':
-	c = 243;
-	break;
+        c = 243;
+        break;
       case '^':
-	c = 244;
-	break;
+        c = 244;
+        break;
       case '~':
-	c = 245;
-	break;
+        c = 245;
+        break;
       case ':':
-	c = 246;
-	break;
+        c = 246;
+        break;
       default:
-	c = 'o';
+        c = 'o';
       }
       break;
     case 'U':
       switch (tmplate[n]) {
       case '`':
-	c = 217;
-	break;
+        c = 217;
+        break;
       case '\'':
-	c = 218;
-	break;
+        c = 218;
+        break;
       case '^':
-	c = 219;
-	break;
+        c = 219;
+        break;
       case ':':
-	c = 220;
-	break;
+        c = 220;
+        break;
       default:
-	c = 'U';
+        c = 'U';
       }
       break;
     case 'u':
       switch (tmplate[n]) {
       case '`':
-	c = 249;
-	break;
+        c = 249;
+        break;
       case '\'':
-	c = 250;
-	break;
+        c = 250;
+        break;
       case '^':
-	c = 251;
-	break;
+        c = 251;
+        break;
       case ':':
-	c = 252;
-	break;
+        c = 252;
+        break;
       default:
-	c = 'u';
+        c = 'u';
       }
       break;
     case 'Y':
       if (tmplate[n] == '\'')
-	c = 221;
+        c = 221;
       else
-	c = 'Y';
+        c = 'Y';
       break;
     case 'y':
       if (tmplate[n] == '\'')
-	c = 253;
+        c = 253;
       else if (tmplate[n] == ':')
-	c = 255;
+        c = 255;
       else
-	c = 'y';
+        c = 'y';
       break;
     case '?':
       if (tmplate[n] == 'u')
-	c = 191;
+        c = 191;
       else
-	c = '?';
+        c = '?';
       break;
     case '!':
       if (tmplate[n] == 'u')
-	c = 161;
+        c = 161;
       else
-	c = '!';
+        c = '!';
       break;
     case '<':
       if (tmplate[n] == '"')
-	c = 171;
+        c = 171;
       else
-	c = '<';
+        c = '<';
       break;
     case '>':
       if (tmplate[n] == '"')
-	c = 187;
+        c = 187;
       else
-	c = '>';
+        c = '>';
       break;
     case 's':
       if (tmplate[n] == 'B')
-	c = 223;
+        c = 223;
       else
-	c = 's';
+        c = 's';
       break;
     case 'p':
       if (tmplate[n] == '|')
-	c = 254;
+        c = 254;
       else
-	c = 'p';
+        c = 'p';
       break;
     case 'P':
       if (tmplate[n] == '|')
-	c = 222;
+        c = 222;
       else
-	c = 'P';
+        c = 'P';
       break;
     case 'D':
       if (tmplate[n] == '-')
-	c = 208;
+        c = 208;
       else
-	c = 'D';
+        c = 'D';
       break;
     default:
       c = base[n];
     }
     if (isprint(c)) {
       if (safe_chr((char) c, buff, bp))
-	return 1;
+        return 1;
     } else {
       if (safe_chr(base[n], buff, bp))
-	return 1;
+        return 1;
     }
   }
   return 0;
@@ -744,7 +744,7 @@ safe_str_space(const char *c, char *buff, char **bp)
 
   if (strchr(c, ' ')) {
     if (safe_chr('"', buff, bp) || safe_str(c, buff, bp) ||
-	safe_chr('"', buff, bp)) {
+        safe_chr('"', buff, bp)) {
       *bp = saved;
       return 1;
     }
@@ -884,7 +884,7 @@ u_strcpy(unsigned char *target, const unsigned char *source)
  */
 char *
 replace_string(const char *RESTRICT old, const char *RESTRICT newbit,
-	       const char *RESTRICT string)
+               const char *RESTRICT string)
 {
   char *result, *r;
   size_t len, newlen;
@@ -898,7 +898,7 @@ replace_string(const char *RESTRICT old, const char *RESTRICT newbit,
 
   while (*string) {
     char *s = strstr(string, old);
-    if (s) {			/* Match found! */
+    if (s) {                    /* Match found! */
       safe_strl(string, s - string, result, &r);
       safe_strl(newbit, newlen, result, &r);
       string = s + len;
@@ -952,7 +952,7 @@ const char *standard_tokens[2] = { "##", "#@" };
  */
 char *
 replace_string2(const char *old[2], const char *newbits[2],
-		const char *RESTRICT string)
+                const char *RESTRICT string)
 {
   char *result, *rp;
   char firsts[3] = { '\0', '\0', '\0' };
@@ -980,16 +980,16 @@ replace_string2(const char *old[2], const char *newbits[2],
       string += skip;
     }
     if(*string) {
-	    if (strncmp(string, old[0], oldlens[0]) == 0) {	/* Copy the first */
-		    safe_strl(newbits[0], newlens[0], result, &rp);
-		    string += oldlens[0];
-	    } else if (strncmp(string, old[1], oldlens[1]) == 0) {	/* The second */
-		    safe_strl(newbits[1], newlens[1], result, &rp); 
-		    string += oldlens[1]; 
-	    } else {
-		    safe_chr(*string, result, &rp);
-		    string++;
-	    }
+            if (strncmp(string, old[0], oldlens[0]) == 0) {     /* Copy the first */
+                    safe_strl(newbits[0], newlens[0], result, &rp);
+                    string += oldlens[0];
+            } else if (strncmp(string, old[1], oldlens[1]) == 0) {      /* The second */
+                    safe_strl(newbits[1], newlens[1], result, &rp); 
+                    string += oldlens[1]; 
+            } else {
+                    safe_chr(*string, result, &rp);
+                    string++;
+            }
     }
   }
 
@@ -1070,7 +1070,7 @@ split_token(char **sp, char sep)
     *str++ = '\0';
     if (sep == ' ') {
       while (*str == sep)
-	str++;
+        str++;
     }
   } else {
     str = NULL;
@@ -1110,10 +1110,10 @@ ansi_strlen(const char *p)
   while (*p) {
     if (*p == ESC_CHAR) {
       while ((*p) && (*p != 'm'))
-	p++;
+        p++;
     } else if (*p == TAG_START) {
       while ((*p) && (*p != TAG_END))
-	p++;
+        p++;
     } else {
       i++;
     }
@@ -1139,13 +1139,13 @@ ansi_strnlen(const char *p, size_t numchars)
   while (*p && numchars > 0) {
     if (*p == ESC_CHAR) {
       while ((*p) && (*p != 'm')) {
-	p++;
-	i++;
+        p++;
+        i++;
       }
     } else if (*p == TAG_START) {
       while ((*p) && (*p != TAG_END)) {
-	p++;
-	i++;
+        p++;
+        i++;
       }
     } else
       numchars--;
@@ -1287,9 +1287,9 @@ remove_markup(const char *orig, size_t * s_len)
 int
 format_long(long val, char *buff, char **bp, int maxlen, int base)
 {
-  char stack[128];		/* Even a negative 64 bit number will only be 21
-				   digits or so max. This should be plenty of
-				   buffer room. */
+  char stack[128];              /* Even a negative 64 bit number will only be 21
+                                   digits or so max. This should be plenty of
+                                   buffer room. */
   char *current;
   int size = 0, neg = 0;
   ldiv_t r;
@@ -1314,14 +1314,14 @@ format_long(long val, char *buff, char **bp, int maxlen, int base)
          easy way out since this value is rarely encountered. */
       switch (base) {
       case 10:
-	return safe_format(buff, bp, "%ld", val);
+        return safe_format(buff, bp, "%ld", val);
       case 16:
-	return safe_format(buff, bp, "%lx", val);
+        return safe_format(buff, bp, "%lx", val);
       case 8:
-	return safe_format(buff, bp, "%lo", val);
+        return safe_format(buff, bp, "%lo", val);
       default:
-	/* Weird base /and/ LONG_MIN. Fix someday. */
-	return 0;
+        /* Weird base /and/ LONG_MIN. Fix someday. */
+        return 0;
       }
     }
 
@@ -1356,27 +1356,27 @@ format_long(long val, char *buff, char **bp, int maxlen, int base)
     switch (size % 8) {
     case 0:
       while (current < stack + sizeof(stack)) {
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 7:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 6:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 5:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 4:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 3:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 2:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
     case 1:
-	*((*bp)++) = *(current++);
+        *((*bp)++) = *(current++);
       }
     }
   } else {
     while (current < stack + sizeof(stack)) {
       if (*bp - buff >= maxlen - 1) {
-	return 1;
+        return 1;
       }
       *((*bp)++) = *(current++);
     }
@@ -1480,7 +1480,7 @@ strncasecoll(const char *s1, const char *s2, size_t t)
   mush_free(d2, "string");
   return result;
 }
-#endif				/* HAS_STRXFRM && !WIN32 */
+#endif                          /* HAS_STRXFRM && !WIN32 */
 
 /** Return a string pointer past any ansi/html markup at the start.
  * \param p a string.
@@ -1494,10 +1494,10 @@ skip_leading_ansi(const char *p)
   while (*p == ESC_CHAR || *p == TAG_START) {
     if (*p == ESC_CHAR) {
       while (*p && *p != 'm')
-	p++;
-    } else {			/* TAG_START */
+        p++;
+    } else {                    /* TAG_START */
       while (*p && *p != TAG_END)
-	p++;
+        p++;
     }
     if (*p)
       p++;
@@ -1533,7 +1533,7 @@ parse_ansi_string(const char *src)
     y = skip_leading_ansi(src);
     if (y != src) {
       if (current)
-	mush_free(current, "markup_codes");
+        mush_free(current, "markup_codes");
       current = mush_strndup(src, y - src, "markup_codes");
       src = y;
     }
@@ -1576,11 +1576,11 @@ populate_codes(ansi_string *as)
   for (p = 0; p < as->len; p++)
     if (as->codes[p]) {
       if (current)
-	mush_free(current, "markup_codes");
+        mush_free(current, "markup_codes");
       current = mush_strdup(as->codes[p], "markup_codes");
     } else {
       if (!current)
-	current = mush_strdup(ANSI_NORMAL, "markup_codes");
+        current = mush_strdup(ANSI_NORMAL, "markup_codes");
       as->codes[p] = mush_strdup(current, "markup_codes");
     }
   if (current)
@@ -1603,24 +1603,24 @@ depopulate_codes(ansi_string *as)
   for (p = 0; p <= as->len; p++) {
     if (as->codes[p]) {
       if (normal) {
-	if (strcmp(as->codes[p], ANSI_NORMAL) == 0) {
-	  mush_free(as->codes[p], "markup_codes");
-	  as->codes[p] = NULL;
-	  continue;
-	} else {
-	  normal = 0;
-	}
+        if (strcmp(as->codes[p], ANSI_NORMAL) == 0) {
+          mush_free(as->codes[p], "markup_codes");
+          as->codes[p] = NULL;
+          continue;
+        } else {
+          normal = 0;
+        }
       }
 
       m = p;
       for (p++; p < as->len; p++) {
-	if (as->codes[p] && strcmp(as->codes[p], as->codes[m]) == 0) {
-	  mush_free(as->codes[p], "markup_codes");
-	  as->codes[p] = NULL;
-	} else {
-	  p--;
-	  break;
-	}
+        if (as->codes[p] && strcmp(as->codes[p], as->codes[m]) == 0) {
+          mush_free(as->codes[p], "markup_codes");
+          as->codes[p] = NULL;
+        } else {
+          p--;
+          break;
+        }
       }
     }
   }
@@ -1728,11 +1728,11 @@ int safe_ansi_string(ansi_string *as, size_t start, size_t len, char *buff, char
     /* p is now pointing to a starting code */
     q = p;
     while ((q >= 0) && as->codes[q] && !is_end_html_code(as->codes[q]) &&
-	   !is_end_ansi_code(as->codes[q])) {
+           !is_end_ansi_code(as->codes[q])) {
       if (is_ansi_code(as->codes[q]))
-	in_ansi = 1;
+        in_ansi = 1;
       else if (is_start_html_code(as->codes[q]))
-	in_html++;
+        in_html++;
       q--;
     }
     /* p is now pointing to the first starting code, and we know if we're
@@ -1837,7 +1837,7 @@ int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *buff, cha
      */
     for (q = q + 1; q <= p; q++) {
       if (safe_str(as->codes[q], buff, bp))
-	return 1;
+        return 1;
     }
   }
 
@@ -1848,15 +1848,15 @@ int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *buff, cha
   for (p = (int) start; p < (int) (start + len) && p < (int) as->len; p++) {
     if (as->codes[p]) {
       if (safe_str(as->codes[p], buff, bp))
-	return 1;
+        return 1;
       if (is_end_ansi_code(as->codes[p]))
-	in_ansi = 0;
+        in_ansi = 0;
       else if (is_ansi_code(as->codes[p]))
-	in_ansi = 1;
+        in_ansi = 1;
       if (is_end_html_code(as->codes[p]))
-	in_html--;
+        in_html--;
       else if (is_start_html_code(as->codes[p]))
-	in_html++;
+        in_html++;
     }
     if (safe_chr(as->text[p], buff, bp))
       return 1;
@@ -1868,13 +1868,13 @@ int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *buff, cha
       break;
     if (as->codes[p]) {
       if (is_end_ansi_code(as->codes[p])) {
-	in_ansi = 0;
-	if (safe_str(as->codes[p], buff, bp))
-	  return 1;
+        in_ansi = 0;
+        if (safe_str(as->codes[p], buff, bp))
+          return 1;
       } else if (is_end_html_code(as->codes[p])) {
-	in_html--;
-	if (safe_str(as->codes[p], buff, bp))
-	  return 1;
+        in_html--;
+        if (safe_str(as->codes[p], buff, bp))
+          return 1;
       }
     }
     p++;
@@ -1900,7 +1900,7 @@ int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *buff, cha
  */
 void
 safe_itemizer(int cur_num, int done, const char *delim, const char *conjoin,
-	      const char *space, char *buff, char **bp)
+              const char *space, char *buff, char **bp)
 {
   /* We don't do anything if it's the first one */
   if (cur_num == 1)
