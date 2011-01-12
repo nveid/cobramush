@@ -219,6 +219,7 @@ src/wild.c
 src/wiz.c
 src/mushlua.c
 src/mushlua.i
+src/mushlua_wrap.c
 utils/clwrapper.sh
 utils/customize.pl
 utils/fixdepend.pl
@@ -401,7 +402,6 @@ lua/test/trace-calls.lua
 lua/test/trace-globals.lua
 lua/test/xd.lua
 src/.indent.pro
-src/mushlua_wrappers.c
 utils/makedist.sh
 utils/preparedist.sh
 utils/transition.c
