@@ -9,6 +9,46 @@
 extern struct db_stat_info current_state;
 extern void moveit(dbref what, dbref where, int nomovemsgs);
 
+static int mlua_objref(lua_State *L) {
+  int nargs;
+  dbref obj;
+  long cretime;
+
+  nargs = lua_gettop(L);
+
+  if (nargs < 1 || nargs > 2) {
+    lua_pushstring(L, "incorrect number of arguments");
+    lua_error(L);
+  }
+
+  if (!lua_isnumber(L, 1)) {
+    lua_pushstring(L, "object's dbref must be an integer");
+    lua_error(L);
+  }
+
+  obj = lua_tointeger(L, 1);
+
+  if (obj < 0 || obj >= db_top || IsGarbage(obj)) {
+    lua_pushnil(L);
+    return 1;
+  }
+
+  if (nargs == 2) {
+    if (!lua_isnumber(L, 2)) {
+      lua_pushstring(L, "object's creation time must be an integer");
+      lua_error(L);
+    }
+    cretime = lua_tointeger(L, 2);
+    if (CreTime(obj) != cretime) {
+      lua_pushnil(L);
+      return 1;
+    }
+  }
+
+  lua_pushinteger(L, obj); /* TODO: a type-safe pointer to the object */
+  return 1;
+}
+
 static int mlua_notify(lua_State *L) {
   int nargs;
   dbref obj;
@@ -32,7 +72,8 @@ static int mlua_notify(lua_State *L) {
 }
 
 %}
-%native(notify) lua_CFunction mlua_notify(lua_State *L);
+%native(objref) int mlua_objref(lua_State *L);
+%native(notify) int mlua_notify(lua_State *L);
 int alias_command(const char *command, const char *alias);
 int alias_function(const char *function, const char *alias);
 void twiddle_flag_internal(const char *ns, int thing, const char *flag, int negate);
