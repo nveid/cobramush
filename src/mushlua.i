@@ -2,11 +2,14 @@
 #include "conf.h"
 #include "externs.h"
 #include "dbdefs.h"
+#include "game.h"
+#include "command.h"
+#include "function.h"
 
 extern struct db_stat_info current_state;
 extern void moveit(dbref what, dbref where, int nomovemsgs);
 
-static lua_CFunction mlua_notify(lua_State *L) {
+static int mlua_notify(lua_State *L) {
   int nargs;
   dbref obj;
 
@@ -24,6 +27,8 @@ static lua_CFunction mlua_notify(lua_State *L) {
     obj = lua_tonumber(L, 1);
     notify(obj, lua_tostring(L, -1) );
   }
+
+  return 0;
 }
 
 %}

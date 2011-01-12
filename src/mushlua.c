@@ -11,7 +11,7 @@
 
 #include "lua.h"
 #include "lualib.h"
-#include "lauxlib.c"
+#include "lauxlib.h"
 #include "mushlua.h"
 
 extern void luaopen_cobra(lua_State *);
