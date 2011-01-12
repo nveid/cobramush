@@ -14,3 +14,25 @@ case $libs in
         exit 1;
         ;;
 esac
+
+myincs="/usr/include $locincpth"
+otherincs=""
+for thisincl in $myincs; do
+    otherincs="$otherincs $thisincl/lua5.1"
+done
+
+lua_h_path=""
+for thisincl in $myincs $otherincs; do
+    if [ -r "$thisincl/lua.h" ]; then
+        lua_h_path="$thisincl"
+    fi
+done
+
+if [ x"$lua_h_path" == "x" ]; then
+    echo "Unable to find lua.h header. Check your LUA installation." >&4
+    echo "Looked in $myincs $otherincs for it" >&4
+    exit 1
+fi
+
+ccflags="$ccflags -I$lua_h_path"
+
