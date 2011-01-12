@@ -64,7 +64,7 @@ C_FILES=access.c atr_tab.c attrib.c boolexp.c bsd.c bufferq.c \
 	extmail.c filecopy.c flaglocal.c flags.c funcrypt.c function.c \
 	fundb.c fundiv.c funlist.c funlocal.c funmath.c funmisc.c funstr.c funtime.c \
 	funufun.c game.c help.c htab.c ident.c local.c lock.c log.c look.c \
-	malias.c match.c memcheck.c move.c mushlua.c mushlua_wrappers.c mycrypt.c mymalloc.c mysocket.c \
+	malias.c match.c memcheck.c move.c mushlua.c mushlua_wrap.c mycrypt.c mymalloc.c mysocket.c \
 	myssl.c notify.c parse.c pcre.c player.c plyrlist.c \
 	predicat.c privtab.c prog.o ptab.c rob.c rplog.c services.c set.c shs.c  \
 	sig.c speech.c sql.c strdup.c strtree.c  strutil.c tables.c timer.c unparse.c  \
@@ -90,7 +90,7 @@ COMMON_O_FILES=access.o atr_tab.o attrib.o boolexp.o bufferq.o \
 	extmail.o filecopy.o flaglocal.o flags.o funcrypt.o function.o \
 	fundb.o funlist.o fundiv.o funlocal.o funmath.o funmisc.o funstr.o funtime.o \
 	funufun.o game.o help.o htab.o ident.o local.o lock.o log.o look.o \
-	malias.o match.o memcheck.o move.o mushlua.o mushlua_wrappers.o mycrypt.o mymalloc.o \
+	malias.o match.o memcheck.o move.o mushlua.o mushlua_wrap.o mycrypt.o mymalloc.o \
 	mysocket.o myssl.o notify.o parse.o pcre.o player.o plyrlist.o predicat.o privtab.o \
 	prog.o   ptab.o rob.o rplog.o services.o set.o shs.o sig.o speech.o sql.o  strdup.o \
 	strtree.o  strutil.o tables.o timer.o unparse.o utils.o version.o warnings.o \
@@ -174,9 +174,9 @@ cmdlocal.c: cmdlocal.dst
 	  echo "********************************************************"; \
 	fi
 
-mushlua_wrappers.c: mushlua.i
-	@echo "Generating mushlua_wrappers.c"
-	-swig -o mushlua_wrappers.c -lua mushlua.i
+mushlua_wrap.c: mushlua.i
+	@echo "Generating mushlua_wrap.c"
+	swig -o mushlua_wrap.c -lua mushlua.i
 
 local.c: local.dst
 	@if [ ! -f local.c ]; then \

@@ -37,3 +37,20 @@ done
 
 cd ../..
 
+# Step 5: create auto-generated source/header files
+echo "Generating source and header files..."
+cd src
+swig -lua mushlua.i
+cd ..
+
+cd utils
+sh mkcmds.sh commands
+mv ../hdrs/cmds.h ../win32/
+sh mkcmds.sh switches
+mv ../hdrs/switches.h ../win32/
+sh mkcmds.sh functions
+mv ../hdrs/funs.h ../win32/
+sh mkcmds.sh patches
+mv ../hdrs/patches.h ../win32/
+
+cd ..
