@@ -1,5 +1,4 @@
 game/data/README
-game/README
 game/access.README
 game/aliascnf.dst
 game/getdate.README
@@ -11,7 +10,6 @@ game/restrictcnf.dst
 game/log/README
 game/save/README
 game/txt/evt/index.evt
-game/txt/evt/pennmush.evt
 game/txt/Makefile
 game/txt/README
 game/txt/changes.txt
@@ -50,10 +48,8 @@ I18N
 MANIFEST
 Makefile.SH
 Patchlevel
-README
 README.SQL
 README.SSL
-UPGRADING
 confmagic.h
 options.h.dist
 hdrs/access.h
@@ -243,10 +239,8 @@ win32/pennmush.dsp
 win32/pennmush.dsw
 Configure                    Portability tool
 config_h.SH                  Produces config.h
-game/lua/path.lua
 game/lua/README
 game/lua/test.lua
-game/mush.lua
 game/txt/changes/0.5b
 game/txt/changes/0.65b
 game/txt/changes/0.66b
