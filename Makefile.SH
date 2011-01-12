@@ -50,7 +50,7 @@ $spitshell >Makefile <<!GROK!THIS!
 #
 $make_set_make
 CC=$cc
-CCFLAGS=$optimize -I.. -I../hdrs -Wall -WNo-comment -Wno-parentheses -Wno-switch -Werror $ccflags $warnings
+CCFLAGS=$optimize -I.. -I../hdrs -Wall -Wno-comment -Wno-parentheses -Wno-switch -Werror $ccflags $warnings
 LDFLAGS=$ldflags
 CLIBS=$libs $cryptlib $libssl $libcrypto $libmysqlclient
 INSTALL=$install
