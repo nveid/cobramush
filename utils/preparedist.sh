@@ -13,7 +13,6 @@ echo "Setting scripts executable..."
 chmod 755 utils/makedist.sh
 chmod 755 utils/customize.pl
 chmod 755 utils/make_access_cnf.sh
-chmod 755 utils/mkvershlp.pl
 chmod 755 utils/update-cnf.pl
 chmod 755 utils/update.pl
 
@@ -40,17 +39,11 @@ cd ../..
 # Step 5: create auto-generated source/header files
 echo "Generating source and header files..."
 cd src
-swig -lua mushlua.i
+swig -o mushlua_wrap.c -lua mushlua.i
 cd ..
 
-cd utils
-sh mkcmds.sh commands
-mv ../hdrs/cmds.h ../win32/
-sh mkcmds.sh switches
-mv ../hdrs/switches.h ../win32/
-sh mkcmds.sh functions
-mv ../hdrs/funs.h ../win32/
-sh mkcmds.sh patches
-mv ../hdrs/patches.h ../win32/
+perl utils/mkcmds.pl all
+mv hdrs/cmds.h win32/
+mv hdrs/switches.h win32/
+mv hdrs/funs.h win32/
 
-cd ..
