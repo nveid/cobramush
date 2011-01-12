@@ -45,12 +45,12 @@ $spitshell >Makefile <<!GROK!THIS!
 # If you want to profile the code, add -pg -a -DPROFILING to CCFLAGS
 # and (probably) remove -O
 #
-# If you want to do a paranoid compile, add the following to CCFLAGS:
+# If you want to do a less paranoid compile, remove the following from CCFLAGS:
 # -Wall -Wno-comment -Wno-parentheses -Wno-switch -Werror
 #
 $make_set_make
 CC=$cc
-CCFLAGS=$optimize -I.. -I../lua/src -I../hdrs $ccflags $warnings
+CCFLAGS=$optimize -I.. -I../hdrs -Wall -WNo-comment -Wno-parentheses -Wno-switch -Werror $ccflags $warnings
 LDFLAGS=$ldflags
 CLIBS=$libs $cryptlib $libssl $libcrypto $libmysqlclient
 INSTALL=$install

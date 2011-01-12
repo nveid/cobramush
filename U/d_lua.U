@@ -3,20 +3,14 @@
 # see if lua exists, otherwise end configure script
 echo " "
 
-if $test -f lua/src/lua.c -o -f ../lua/src/lua.c ; then
-  echo "Let's see if we have LUA." >&4
+echo "Let's see if we have LUA (version 5.1)." >&4
 
-    case $libs in 
-      *lua*)   
-	       echo "We have the LUA library, too." >&4
-  	   ;;
-      *)       echo "Oops, no LUA library. Check your LUA installation." >&4
-               exit 1;
-	   ;;
-    esac
-else
-  echo "Can not find LUA source directory.  Check your LUA installation.">&4
-  exit 1
-fi
-
-
+case $libs in 
+    *lua5.1*)   
+        echo "We have the LUA 5.1 library, too." >&4
+        ;;
+    *)
+        echo "Oops, no LUA 5.1 library. Check your LUA installation." >&4
+        exit 1;
+        ;;
+esac
