@@ -13,7 +13,6 @@ checkLocalLua() {
         lua_h_path="$toplev/$thisincl"
       else
         otherincs="$otherincs $toplev/$thisincl $toplev/$thisincl/src"
-	echo "OI=$otherincs">&4
       fi
     done
       if $test  "$lua_h_path"  ; then
