@@ -1,6 +1,6 @@
 ?MAKE:  d_lua:  Loc test xlibpth libpth Csym Setvar Inhdr libs
 ?MAKE:	-pick add $@ %<
-# Declare a function to check for loca LUA installation 
+# Function to check for loca LUA installation 
 #
 checkLocalLua() {
     myincs="lua5.1 lua-5.1.4"
@@ -18,20 +18,21 @@ checkLocalLua() {
     done
       if $test  "$lua_h_path"  ; then
         echo "Found -llua" >&4
-       # try to link in local lua library into ldflags=
-       # Normally when you install the src in our directory it will be in the lua/src directory..
+?X:      try to link in local lua library into ldflags=
+?X:      Normally when you install the src in our directory it will be in the lua/src directory..
        if  $test -f "$lua_h_path/liblua.a"; then
           ldflags="$ldflags -L$lua_h_path"
 	  libs="$libs -llua"
        else
-          echo "Could not local LUA library.  Either install LUA development global libraries or compile your local LUA installation";
+          echo "Could not locate local LUA library."
+	  echo "Either install LUA development global libraries or compile your local LUA installation";
 	  exit 1;
        fi
       fi
 
 }
 
-# see if lua exists, otherwise end configure script
+?X: see if lua exists, otherwise end configure script
 echo " "
 
 echo "Let's search for LUA header files." >&4
@@ -55,7 +56,7 @@ if $test -z "$lua_h_path" ; then
 else 
  echo "Found LUA Header path at $lua_h_path">&4
  echo "Searching for LUA Library"
- # Could probably make this a function in libs.U and cut down on this kludge
+?X: Could probably make this a function in libs.U and cut down on this kludge
  thislib="lua5.1"
 	if xxx=`./loc lib$thislib.$so.[0-9]'*' X $libpth`; $test -f "$xxx"; then
 		echo "Found -l$thislib (shared)."
