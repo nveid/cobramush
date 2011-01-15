@@ -1570,6 +1570,7 @@ dbref
 create_div(dbref owner, const char *name)
 {
   char buf[BUFFER_LEN];
+  char buf2[BUFFER_LEN];
   dbref obj, loc;
 
   if(!can_pay_fees(owner, DIVISION_COST))
@@ -1607,9 +1608,10 @@ create_div(dbref owner, const char *name)
   }
   Parent(obj) = SDIV(owner).object;
   current_state.divisions++;
-  sprintf(buf, object_header(owner, obj));
+  strcpy(buf,  unparse_object(owner, obj));
+  strcpy(buf2,  unparse_object(owner, SDIV(obj).object));
   notify_format(owner, T("Division created: %s  Parent division: %s"),
-                buf, object_header(owner, SDIV(obj).object));
+                buf, buf2);
   return obj;
 }
 

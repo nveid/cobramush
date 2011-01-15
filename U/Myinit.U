@@ -26,5 +26,5 @@
 ?LINT:set defvoidused libswanted toplev
 ?INIT:toplev=`cd ..;pwd`
 defvoidused=15
-libswanted='nsl socket m c crypt bind resolv ld dl tcl intl lua5.1'
+libswanted='nsl socket m c crypt bind resolv ld dl tcl intl'
 

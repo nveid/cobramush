@@ -3,7 +3,7 @@
 ?RCS: Revision 3.0  1993/08/18  12:05:39  ram
 ?RCS: Baseline for dist 3.0 netwide release.
 ?RCS:
-?MAKE:d_sigchld d_sigcld: Myread cat cc ccflags rm Setvar libs ldflags
+?MAKE:d_sigchld d_sigcld: Myread cat cc ccflags rm Setvar libs ldflags d_lua
 ?MAKE:	-pick add $@ %<
 ?S:d_sigchld:
 ?S:	This variable is set if the system defines SIGCHLD
@@ -33,7 +33,7 @@
 ?M:#endif
 ?M:.
 ?T:val
-?LINT:set d_sigchld d_sigcld
+?LINT:set d_sigchld d_sigcld d_lua
 : see if we have SIGCHLD, SIGCLD, or both
 echo " "
 echo "How should a child signal a parent?" >&4

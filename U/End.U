@@ -18,9 +18,9 @@
 ?X: To force any unit to be included, copy this unit to your private U directory
 ?X: and add the name of the unit desired to the ?MAKE: dependency line.
 ?X: 
-?MAKE:End: $W d_tcl MailList d_lua
+?MAKE:End: $W d_tcl MailList
 ?MAKE:	-pick add $@ %<
-?LINT:use $W d_tcl MailList d_lua
+?LINT:use $W d_tcl MailList
 : end of configuration questions
 echo " "
 echo "End of configuration questions."

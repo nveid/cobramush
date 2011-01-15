@@ -3134,13 +3134,13 @@ FUNCTION(fun_regreplace)
   char abuf[BUFFER_LEN], *abp;
   char prebuf[BUFFER_LEN], *prep;
   char postbuf[BUFFER_LEN], *postp;
-  pcre *old_re_code;
   int flags = 0, all = 0, match_offset = 0, len, funccount;
   int i;
 
   int old_re_subpatterns;
   int *old_re_offsets;
   char *old_re_from;
+
 
   old_re_subpatterns = global_eval_context.re_subpatterns;
   old_re_offsets = global_eval_context.re_offsets;
@@ -3251,7 +3251,12 @@ FUNCTION(fun_regreplace)
     if (study)
       mush_free((Malloc_t) study, "pcre.extra");
 
-    global_eval_context.re_code = old_re_code;
+    /* TODO: this was set to the declared variable "pcre **old_re_code".. 
+     * it was initialized and set in this function. Should look into this more.
+     * For now just setting this variable to NULL instead
+     */
+
+    global_eval_context.re_code = NULL;
     global_eval_context.re_offsets = old_re_offsets;
     global_eval_context.re_subpatterns = old_re_subpatterns;
     global_eval_context.re_from = old_re_from;

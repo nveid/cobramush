@@ -1,19 +1,40 @@
 ?MAKE:  d_lua:  Loc test xlibpth libpth Csym Setvar Inhdr libs
 ?MAKE:	-pick add $@ %<
+# Declare a function to check for loca LUA installation 
+#
+checkLocalLua() {
+    myincs="lua5.1 lua-5.1.4"
+    otherincs=""
+    thisincl=""
+    for thisincl in $myincs; do
+      if $test -r "$toplev/$thisincl/src/lua.h" ; then
+        lua_h_path="$toplev/$thisincl/src"
+      elif $test -r "$toplev/$thisincl/lua.h" ; then
+        lua_h_path="$toplev/$thisincl"
+      else
+        otherincs="$otherincs $toplev/$thisincl $toplev/$thisincl/src"
+	echo "OI=$otherincs">&4
+      fi
+    done
+      if $test  "$lua_h_path"  ; then
+        echo "Found -llua" >&4
+       # try to link in local lua library into ldflags=
+       # Normally when you install the src in our directory it will be in the lua/src directory..
+       if  $test -f "$lua_h_path/liblua.a"; then
+          ldflags="$ldflags -L$lua_h_path"
+	  libs="$libs -llua"
+       else
+          echo "Could not local LUA library.  Either install LUA development global libraries or compile your local LUA installation";
+	  exit 1;
+       fi
+      fi
+
+}
+
 # see if lua exists, otherwise end configure script
 echo " "
 
-echo "Let's see if we have LUA (version 5.1)." >&4
-
-case $libs in 
-    *lua5.1*)   
-        echo "We have the LUA 5.1 library, too." >&4
-        ;;
-    *)
-        echo "Oops, no LUA 5.1 library. Check your LUA installation." >&4
-        exit 1;
-        ;;
-esac
+echo "Let's search for LUA header files." >&4
 
 myincs="/usr/include $locincpth"
 otherincs=""
@@ -23,16 +44,70 @@ done
 
 lua_h_path=""
 for thisincl in $myincs $otherincs; do
-    if [ -r "$thisincl/lua.h" ]; then
+    if $test -r "$thisincl/lua.h";  then
         lua_h_path="$thisincl"
     fi
 done
 
-if [ x"$lua_h_path" == "x" ]; then
-    echo "Unable to find lua.h header. Check your LUA installation." >&4
-    echo "Looked in $myincs $otherincs for it" >&4
-    exit 1
+if $test -z "$lua_h_path" ; then
+    echo "Unable to find global lua.h header. Checking local directories." >&4
+    checkLocalLua
+else 
+ echo "Found LUA Header path at $lua_h_path">&4
+ echo "Searching for LUA Library"
+ # Could probably make this a function in libs.U and cut down on this kludge
+ thislib="lua5.1"
+	if xxx=`./loc lib$thislib.$so.[0-9]'*' X $libpth`; $test -f "$xxx"; then
+		echo "Found -l$thislib (shared)."
+		case " $libs " in
+		*"-l$thislib "*);;
+		*) libs="$libs -l$thislib";;
+		esac
+	elif xxx=`./loc lib$thislib.$so X $libpth` ; $test -f "$xxx"; then
+		echo "Found -l$thislib (shared)."
+		case " $libs " in
+		*"-l$thislib "*);;
+		*) libs="$libs -l$thislib";;
+		esac
+	elif xxx=`./loc lib$thislib$_a X $libpth`; $test -f "$xxx"; then
+		echo "Found -l$thislib."
+		case " $libs " in
+		*"-l$thislib "*);;
+		*) libs="$libs -l$thislib";;
+		esac
+?X: Don't forget about OS/2 where -lmalloc is spelled out malloc.a
+	elif xxx=`./loc $thislib$_a X $libpth`; $test -f "$xxx"; then
+		echo "Found -l$thislib."
+		case " $libs " in
+		*"-l$thislib "*);;
+		*) libs="$libs -l$thislib";;
+		esac
+	elif xxx=`./loc lib${thislib}_s$_a X $libpth`; $test -f "$xxx"; then
+		echo "Found -l${thislib}_s."
+		case " $dflt " in
+		*"-l$thislib "*);;
+		*) libs="$libs -l${thislib}_s";;
+		esac
+	elif xxx=`./loc Slib$thislib$_a X $xlibpth`; $test -f "$xxx"; then
+		echo "Found -l$thislib."
+		case " $libs " in
+		*"-l$thislib "*);;
+		*) libs="$libs -l$thislib";;
+		esac
+        else
+	   echo "Can't find global LUA Library.  Checking Local."
+	   checkLocalLua
+         fi
+
+
+fi
+
+if test -z "$lua_h_path"; then 
+   echo "I Give up..">&4
+   echo "Looked in $otherincs for it" >&4
+   exit 1;
 fi
 
 ccflags="$ccflags -I$lua_h_path"
+
 
