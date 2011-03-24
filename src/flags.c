@@ -2292,7 +2292,10 @@ do_flag_alias(dbref player, const char *name, const char *alias)
       do_flag_info("FLAG", player, f->name);
   } else {
     /* Insert the flag in the ptab by the given alias */
-    if (alias_flag(name, alias))
+    ptab_start_inserts(n->tab);
+    ptab_insert(n->tab, alias, f);
+    ptab_end_inserts(n->tab);
+    if ((f = match_flag_ns(n, alias)))
       do_flag_info("FLAG", player, alias);
     else
       notify(player, T("Unknown failure adding alias."));
