@@ -583,7 +583,7 @@ FUNTAB flist[] = {
   {"REGMATCHI", fun_regmatch, 2, 3, FN_REG},
   {"REGRAB", fun_regrab, 2, 4, FN_REG},
   {"REGRABALL", fun_regrab, 2, 4, FN_REG},
-  {"REGRABALLI", fun_regrab, 2, 3, FN_REG},
+  {"REGRABALLI", fun_regrab, 2, 4, FN_REG},
   {"REGRABI", fun_regrab, 2, 3, FN_REG},
   {"REGREP", fun_regrep, 3, 3, FN_REG},
   {"REGREPI", fun_regrep, 3, 3, FN_REG},

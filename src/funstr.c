@@ -665,70 +665,94 @@ FUNCTION(fun_tr)
 
   char charmap[256];
   char instr[BUFFER_LEN], outstr[BUFFER_LEN];
-  char rawstr[BUFFER_LEN];
   char *ip, *op;
   size_t i, len;
+  unsigned char cur, dest;
   char *c;
   ansi_string *as;
 
-  /* No ansi allowed in find or replace lists */
-  c = remove_markup(args[1], &len);
-  memcpy(rawstr, c, len);
-
-  /* do length checks first */
-
+  /* Initialize */
   for (i = 0; i < 256; i++) {
     charmap[i] = (char) i;
   }
 
+#define goodchr(x) (isprint(x) || (x == '\n'))
+  /* Convert ranges in input string, and check that
+   * we don't receive a nonprinting char such as
+   * beep() */
   ip = instr;
+  c = remove_markup(args[1], NULL);
+  while (*c) {
+    cur = (unsigned char) *c;
+    if (!goodchr(cur)) {
+      safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
+      return;
+    }
+    /* Tack it onto the string */
+    /* Do we have a range? */
+    if (*(c + 1) && *(c + 1) == '-' && *(c + 2)) {
+      dest = (unsigned char) *(c + 2);
+      if (!goodchr(dest)) {
+	safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
+	return;
+      }
+      if (dest > cur) {
+	for (; cur <= dest; cur++) {
+	  if (goodchr(cur))
+	    safe_chr(cur, instr, &ip);
+	}
+      } else {
+	for (; cur >= dest; cur--) {
+	  if (goodchr(cur))
+	    safe_chr(cur, instr, &ip);
+	}
+      }
+      c += 3;
+    } else {
+      safe_chr(cur, instr, &ip);
+      c++;
+    }
+  }
+  *ip = '\0';
+
+  /* Convert ranges in output string, and check that
+   * we don't receive a nonprinting char such as
+   * beep() */
   op = outstr;
-
-  for (i = 0; i < len; i++) {
-    safe_chr(rawstr[i], instr, &ip);
-    /* Handle a range of characters */
-    if (i != len - 1 && rawstr[i + 1] == '-' && i != len - 2) {
-      int dir, sentinel, cur;
-
-      if (rawstr[i] < rawstr[i + 2])
-	dir = 1;
-      else
-	dir = -1;
-
-      sentinel = rawstr[i + 2] + dir;
-      cur = rawstr[i] + dir;
-
-      while (cur != sentinel) {
-	safe_chr((char) cur, instr, &ip);
-	cur += dir;
+  c = remove_markup(args[2], NULL);
+  while (*c) {
+    cur = (unsigned char) *c;
+    if (!goodchr(cur)) {
+      safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
+      return;
+    }
+    /* Tack it onto the string */
+    /* Do we have a range? */
+    if (*(c + 1) && *(c + 1) == '-' && *(c + 2)) {
+      dest = (unsigned char) *(c + 2);
+      if (!goodchr(dest)) {
+	safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
+	return;
       }
-      i += 2;
+      if (dest > cur) {
+	for (; cur <= dest; cur++) {
+	  if (goodchr(cur))
+	    safe_chr(cur, outstr, &op);
+	}
+      } else {
+	for (; cur >= dest; cur--) {
+	  if (goodchr(cur))
+	    safe_chr(cur, outstr, &op);
+	}
+      }
+      c += 3;
+    } else {
+      safe_chr(cur, outstr, &op);
+      c++;
     }
   }
-
-  c = remove_markup(args[2], &len);
-  memcpy(rawstr, c, len);
-  for (i = 0; i < len; i++) {
-    safe_chr(rawstr[i], outstr, &op);
-    /* Handle a range of characters */
-    if (i != len - 1 && rawstr[i + 1] == '-' && i != len - 2) {
-      int dir, sentinel, cur;
-
-      if (rawstr[i] < rawstr[i + 2])
-	dir = 1;
-      else
-	dir = -1;
-
-      sentinel = rawstr[i + 2] + dir;
-      cur = rawstr[i] + dir;
-
-      while (cur != sentinel) {
-	safe_chr((char) cur, outstr, &op);
-	cur += dir;
-      }
-      i += 2;
-    }
-  }
+  *op = '\0';
+#undef goodchr
 
   if ((ip - instr) != (op - outstr)) {
     safe_str(T("#-1 STRING LENGTHS MUST BE EQUAL"), buff, bp);

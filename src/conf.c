@@ -1357,7 +1357,7 @@ config_file_startup(const char *conf, int restrictions)
       if (!cp->overridden) {
 	do_rawlog(LT_ERR,
 		  T
-		  ("CONFIG: local directive '%s' missing from cnf file. using default value."),
+		  ("CONFIG: local directive '%s' missing from cnf file. Using default value."),
 		  cp->name);
       }
     }
