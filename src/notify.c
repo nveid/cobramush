@@ -972,12 +972,11 @@ notify_anything_loc(dbref speaker, na_lookup func,
       }
     }
     /* if object is flagged LISTENER, check for ^ listen patterns
-     *    * these are like AHEAR - object cannot trigger itself.
      *    * unlike normal @listen, don't pass the message on.
      *    */
 
-    if ((speaker != target) && (ThingListen(target) || RoomListen(target))
-        && eval_lock(speaker, target, Listen_Lock)
+    if ((ThingListen(target) || RoomListen(target))
+	&& eval_lock(speaker, target, Listen_Lock)
       )
       atr_comm_match(target, speaker, '^', ':',
                      (char *) notify_makestring(msgbuf, messages, NA_ASCII), 0,

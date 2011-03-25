@@ -806,6 +806,47 @@ eval_lock(dbref player, dbref thing, lock_type ltype)
   return eval_boolexp(player, getlock(thing, ltype), thing, NULL);
 }
 
+/** Evaluate a lock.
+ * Evaluate lock ltype on thing for player, passing dbrefs for %0/%1.
+ * \param player dbref attempting to pass the lock.
+ * \param thing object containing the lock.
+ * \param ltype type of lock to check.
+ * \retval 1 player passes the lock.
+ * \retval 0 player does not pass the lock.
+ */
+int
+eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
+	       dbref env1)
+{
+  char *myenv[10] = { NULL };
+  char e0[SBUF_LEN], e1[SBUF_LEN], *ep;
+  char *preserves[10];
+  int result;
+
+  if (env0 != NOTHING) {
+    ep = e0;
+    safe_dbref(env0, e0, &ep);
+    *ep = '\0';
+    myenv[0] = e0;
+  }
+
+  if (env1 != NOTHING) {
+    ep = e1;
+    safe_dbref(env1, e1, &ep);
+    *ep = '\0';
+    myenv[1] = e1;
+  }
+
+  save_global_env("eval_lock_save", preserves);
+  restore_global_env("eval_lock", myenv);
+
+  boolexp b = getlock(thing, ltype);
+  log_activity(LA_LOCK, thing, unparse_boolexp(player, b, UB_DBREF));
+  result = eval_boolexp(player, b, thing, NULL);
+  restore_global_env("eval_lock_save", preserves);
+  return result;
+}
+
 /** Active a lock's failure attributes.
  * \param player dbref failing to pass the lock.
  * \param thing object containing the lock.

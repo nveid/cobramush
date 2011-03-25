@@ -127,17 +127,17 @@ FUNCTION(fun_time)
       } else {
       /* Always make time(player) return a time,
        * even if player's TZ is unset or wonky */
-        a = atr_get(thing, "TZ");
-        if (a) { 
-          ptr = atr_value(a);
-          if(is_strict_number(ptr)) {
-            utc = 1;
-            tz = strtod(ptr, NULL);
-            if (tz >= -24.0 || tz <= 24.0) {
-              mytime += (int) (tz * 3600);
-            }
-          } else setenv("TZ", ptr, 1);
-        } 
+	a = atr_get(thing, "TZ");
+	if (a) { 
+	  ptr = atr_value(a);
+	  if(is_strict_number(ptr)) {
+	    utc = 1;
+	    tz = strtod(ptr, NULL);
+	    if (tz >= -24.0 && tz <= 24.0) {
+	      mytime += (int) (tz * 3600);
+	    }
+	  } else setenv("TZ", ptr, 1);
+	} 
       }
     }
   } else if (!strcmp("UTCTIME", called_as)) {
@@ -205,16 +205,6 @@ FUNCTION(fun_etimefmt)
 
 }
 
-/* ARGSUSED */
-FUNCTION(fun_stringsecs)
-{
-  int secs;
-  if (etime_to_secs(args[0], &secs))
-    safe_integer(secs, buff, bp);
-  else
-    safe_str(T("#-1 INVALID TIMESTRING"), buff, bp);
-}
-
 /** Convert an elapsed time string (3d 2h 1m 10s) to seconds.
  * \param str1 a time string.
  * \param secs pointer to an int to fill with number of seconds.
@@ -272,6 +262,61 @@ etime_to_secs(char *str1, int *secs)
   return 1;
 }
 
+
+/* ARGSUSED */
+FUNCTION(fun_stringsecs)
+{
+  /* parse the result from timestring() back into a number of seconds */
+
+  int secs = 0;
+  char *str1 = args[0];
+  char str2[BUFFER_LEN];
+  int i;
+
+  while (str1 && *str1) {
+    while (*str1 == ' ')
+      str1++;
+    i = 0;
+    while (isdigit((unsigned char) *str1)) {
+      str2[i] = *str1;
+      str1++;
+      i++;
+    }
+    if (i == 0) {
+      safe_str(T("#-1 INVALID TIMESTRING"), buff, bp);	// no numbers
+      return;
+    }
+    str2[i] = '\0';
+    if (!*str1) {
+      secs += parse_integer(str2);	// no more chars, just add seconds and stop
+      break;
+    }
+    switch (*str1) {
+    case 'd':
+    case 'D':
+      secs += (parse_integer(str2) * 86400);	// days
+      break;
+    case 'h':
+    case 'H':
+      secs += (parse_integer(str2) * 3600);	// hours
+      break;
+    case 'm':
+    case 'M':
+      secs += (parse_integer(str2) * 60);	// minutes
+      break;
+    case 's':
+    case 'S':
+    case ' ':
+      secs += parse_integer(str2);	// seconds
+      break;
+    default:
+      safe_str(T("#-1 INVALID TIMESTRING"), buff, bp);
+      return;
+    }
+    str1++;			// move past the time char
+  }
+  safe_integer(secs, buff, bp);
+}
 
 /* ARGSUSED */
 FUNCTION(fun_timestring)

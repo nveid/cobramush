@@ -4143,7 +4143,7 @@ FUNCTION(fun_lwho)
   int start, count;
   int powered = !(strchr(called_as, 'M') != NULL) && Priv_Who(executor);
   int xwho = *called_as == 'X';
-  int objid = strchr(called_as, 'D') != NULL;
+  int objid = (index(called_as, 'D') != NULL);
 
   first = 1;
   if(!xwho && nargs && args[0] && *args[0]) {
@@ -4385,6 +4385,7 @@ FUNCTION(fun_zwho)
   dbref zone, victim;
   int first;
   int powered = (strcmp(called_as, "ZMWHO") && Priv_Who(executor));
+  int objid = (index(called_as, 'D') != NULL);
   first = 1;
 
   zone = match_thing(executor, args[0]);
@@ -4401,7 +4402,7 @@ FUNCTION(fun_zwho)
     return;
   }
 
-  if (!GoodObject(zone) || !(eval_lock(victim, zone, Zone_Lock) || CanSee(victim,zone))) {
+  if (!GoodObject(zone) || (!Priv_Who(executor) && !(eval_lock(victim, zone, Zone_Lock) || CanSee(victim,zone)))) {
     safe_str(T(e_perm), buff, bp);
     return;
   }
@@ -4417,13 +4418,17 @@ FUNCTION(fun_zwho)
 
   DESC_ITER_CONN(d) {
     if (Zone(Location(d->player)) == zone &&
-        (!Hidden(d) || (powered && CanSee(victim, d->player))) ) {
-        if (first) {
-          first = 0;
-        } else {
-          safe_chr(' ', buff, bp);
-        }
-        safe_dbref(d->player, buff, bp);
+	(!Hidden(d) || (powered && CanSee(victim, d->player))) ) {
+	if (first) {
+	  first = 0;
+	} else {
+	  safe_chr(' ', buff, bp);
+	}
+	safe_dbref(d->player, buff, bp);
+	if (objid) {
+	  safe_chr(':', buff, bp);
+	  safe_integer(CreTime(d->player), buff, bp);
+	}
       }
   }
 }

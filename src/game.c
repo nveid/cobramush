@@ -1994,7 +1994,7 @@ linux_uptime(dbref player __attribute__ ((__unused__)))
   {
     struct tm *t;
     t = localtime(&mudtime);
-    strftime(tbuf1, sizeof tbuf1, "%I:%M%p ", t);
+    strftime(tbuf1, sizeof tbuf1, "Server uptime: %I:%M%p ", t);
     nl = tbuf1 + strlen(tbuf1);
   }
   /* System uptime */
@@ -2251,6 +2251,14 @@ do_uptime(dbref player, int mortal)
                   (options.warn_counter - mudtime) / 60,
                   (options.warn_counter - mudtime) % 60, tbuf1);
   }
+
+  notify_format(player,
+		T
+		("PennMUSH Uptime: %ld days %ld hours %ld minutes %ld seconds"),
+		(mudtime - globals.first_start_time) / 86400,
+		((mudtime - globals.first_start_time) % 86400) / 3600,
+		(((mudtime - globals.first_start_time) % 86400) % 3600) / 60,
+		(((mudtime - globals.first_start_time) % 86400) % 3600) % 60);
 
   /* Mortals, go no further! */
   if (!Site(player) || mortal)

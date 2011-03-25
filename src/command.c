@@ -1159,20 +1159,20 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
       safe_str(ls, commandraw, &c2);
     }
     if (cmd->type & CMD_T_EQSPLIT) {
-      safe_chr('=', commandraw, &c2);
-      if (cmd->type & CMD_T_RS_ARGS) {
-        int rsa_index;
-        /* This is counterintuitive, but rsa[]
-         * starts at 1. */
-        if (rsa[1]) {
-          safe_str(rsa[1], commandraw, &c2);
-          for (rsa_index = 2; rsa[rsa_index]; rsa_index++) {
-            safe_chr(',', commandraw, &c2);
-            safe_str(rsa[rsa_index], commandraw, &c2);
-          }
-        }
-      } else {
-        safe_str(rs, commandraw, &c2);
+      if(rhs_present) {
+	safe_chr('=', commandraw, &c2);
+	if (cmd->type & CMD_T_RS_ARGS) {
+	  int rsa_index;
+	  /* This is counterintuitive, but rsa[]
+	   * starts at 1. */
+	  if (rsa[1]) {
+	    safe_str(rsa[1], commandraw, &c2);
+	    for (rsa_index = 2; rsa[rsa_index]; rsa_index++) {
+	      safe_chr(',', commandraw, &c2);
+	      safe_str(rsa[rsa_index], commandraw, &c2);
+	    }
+	  }
+	}
       }
 #ifdef NEVER
       /* We used to do this, but we're not sure why */
@@ -1371,7 +1371,7 @@ int command_lock(const char *name, const char *lock) {
  * This does nothing more than notify the player
  * with "This command has not been implemented"
  */
-COMMAND (cmd_unimplemented) {
+COMMAND(cmd_unimplemented) {
   char *saveregs[NUMQ];
 
   if (strcmp(cmd->name, "UNIMPLEMENTED_COMMAND") != 0 &&

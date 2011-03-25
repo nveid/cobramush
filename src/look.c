@@ -79,13 +79,14 @@ look_exits(dbref player, dbref loc, const char *exit_name)
   a = atr_get(loc, "EXITFORMAT");
   if (a) {
     char *wsave[10], *rsave[NUMQ];
-    char *arg, *buff, *bp, *save;
+    char *arg, *arg2, *buff, *bp, *save;
     char const *sp;
     int j;
 
     arg = (char *) mush_malloc(BUFFER_LEN, "string");
+    arg2 = (char *) mush_malloc(BUFFER_LEN, "string");
     buff = (char *) mush_malloc(BUFFER_LEN, "string");
-    if (!arg || !buff)
+    if (!arg || !buff || !arg2)
       mush_panic("Unable to allocate memory in look_exits");
     save_global_regs("look_exits", rsave);
     for (j = 0; j < 10; j++) {
@@ -126,6 +127,7 @@ look_exits(dbref player, dbref loc, const char *exit_name)
     mush_free((Malloc_t) tbuf2, "string");
     mush_free((Malloc_t) nbuf, "string");
     mush_free((Malloc_t) arg, "string");
+    mush_free((Malloc_t) arg2, "string");
     mush_free((Malloc_t) buff, "string");
     return;
   }

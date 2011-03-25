@@ -399,9 +399,9 @@ do_teleport(dbref player, const char *arg1, const char *arg2, int silent,
      */
     if (player == victim) {
       if (Fixed(victim) || RPMODE(victim))
-        notify(player, T("You can't do that IC!"));
-      else
-        safe_tel(victim, HOME, silent);
+	notify(player, T("You can't do that IC!"));
+      else if(command_check_byname(victim, "HOME"))
+	safe_tel(victim, HOME, silent);
       return;
     } else
       destination = Home(victim);
@@ -1995,7 +1995,8 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
   }
 
   if ((spec.owner != ANY_OWNER && spec.owner != Owner(player)
-      && !(CanSearch(player, spec.owner) || (spec.type == TYPE_PLAYER)))) {
+      && !(CanSearch(player, spec.owner) || (spec.type == TYPE_PLAYER)) ||
+      (ZMaster(spec.owner) && eval_lock(player, spec.owner, Zone_Lock)))) {
     giveto(player, FIND_COST);
     notify(player, T("You need a search warrant to do that."));
     return -1;
