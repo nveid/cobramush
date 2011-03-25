@@ -241,7 +241,7 @@ void
 do_buy(dbref player, char *item, char *from, int price)
 {
   dbref vendor;
-  char *prices;
+  char prices[BUFFER_LEN];
   char *plus;
   char *cost;
   char finditem[BUFFER_LEN];
@@ -309,10 +309,10 @@ do_buy(dbref player, char *item, char *from, int price)
     a = atr_get(vendor, "PRICELIST");
     if (!a)
       continue;
-    /* atr_value uses a static buffer, so we'll take advantage of that */
-    prices = atr_value(a);
+    strncpy(prices,atr_value(a),BUFFER_LEN);
+    prices[BUFFER_LEN-1] = '\0';
     upcasestr(prices);
-    count = list2arr(r, BUFFER_LEN / 2, atr_value(a), ' ');
+    count = list2arr(r, BUFFER_LEN / 2, prices, ' ');
     if (!count)
       continue;
     for (i = 0; i < count; i++) {
