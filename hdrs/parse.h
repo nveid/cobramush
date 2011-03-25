@@ -52,7 +52,7 @@ extern dbref parse_objid(char const *str);
 
 
 
-/* The following routines all take varoius arguments, and return
+/* The following routines all take various arguments, and return
  * string representations of same.  The string representations
  * are stored in static buffers, so the next call to each function
  * will destroy any old string that was there.
@@ -67,7 +67,7 @@ char *unparse_number(NVAL num);
 char *unparse_types(int type);
 
 /* The following routines all take strings as arguments, and return
- * true iff the string is a valid representation of the appropriate type.
+ * true if the string is a valid representation of the appropriate type.
  */
 int is_dbref(char const *str);
 int is_objid(char const *str);
@@ -206,7 +206,7 @@ int process_expression(char *buff, char **bp, char const **str,
  * and PE_FUNCTION_CHECK must be active for function evaluation to occur.
  *
  * PE_FUNCTION_MANDATORY causes an error to be reported if a function call
- * is attempted for a non-existant function.  Otherwise, the function call
+ * is attempted for a non-existent function.  Otherwise, the function call
  * is not evaluated, but rather treated as normal text.
  *
  * PE_LITERAL prevents { and [ from being recognized and causing recursion.
@@ -233,7 +233,7 @@ int process_expression(char *buff, char **bp, char const **str,
 /* These represent '\0', '}', ']', ')', ',', ';', '=', and ' ', respectively.
  * If the character corresponding to a set flag is encountered, then
  * process_expression() will exit, with *str pointing at the terminating
- * charater.  '\0' is always a terminating character.
+ * character.  '\0' is always a terminating character.
  *
  * PT_DEFAULT, below, is provided as syntactic sugar.
  */

@@ -309,8 +309,8 @@ do_buy(dbref player, char *item, char *from, int price)
     a = atr_get(vendor, "PRICELIST");
     if (!a)
       continue;
-    strncpy(prices,atr_value(a),BUFFER_LEN);
-    prices[BUFFER_LEN-1] = '\0';
+    strncpy(prices, atr_value(a), BUFFER_LEN);
+    prices[BUFFER_LEN - 1] = '\0';
     upcasestr(prices);
     count = list2arr(r, BUFFER_LEN / 2, prices, ' ');
     if (!count)
@@ -437,7 +437,7 @@ do_give_to(dbref player, char *arg, int silent)
     notify(player, T("Did you want to give something *to* someone?"));
     return;
   }
-  while ((s > arg) && isspace(*(s - 1))) {
+  while ((s > arg) && isspace((unsigned char) *(s - 1))) {
     s--;
   }
   if (s == arg) {
@@ -447,7 +447,7 @@ do_give_to(dbref player, char *arg, int silent)
   *s++ = '\0';
   s = (char *) string_match(s, "TO ");
   s += 3;
-  while (*s && isspace(*s))
+  while (*s && isspace((unsigned char) *s))
     s++;
   if (!*s) {
     notify(player, T("Give to whom?"));

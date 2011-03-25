@@ -1761,8 +1761,9 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
     restriction = args[n + 1];
     /* A special old-timey kludge */
     if (class && !*class && restriction && *restriction) {
-      if (isdigit(*restriction) || ((*restriction == '#') && *(restriction + 1)
-				    && isdigit(*(restriction + 1)))) {
+      if (isdigit((unsigned char) *restriction)
+	  || ((*restriction == '#') && *(restriction + 1)
+	      && isdigit((unsigned char) *(restriction + 1)))) {
       size_t offset = 0;
       if (*restriction == '#')
         offset = 1;
@@ -1774,16 +1775,19 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
     }
     if (!class || !*class || !restriction)
       continue;
-    if (isdigit(*class) ||
-      ((*class == '#') && *(class + 1) && isdigit(*(class + 1)))) {
+    if (isdigit((unsigned char) *class) ||
+	((*class == '#') && *(class + 1)
+	 && isdigit((unsigned char) *(class + 1)))) {
+ 
       size_t offset = 0;
       if (*class == '#')
       offset = 1;
       spec->low = parse_integer(class + offset);
       if (!GoodObject(spec->low))
       spec->low = 0;
-      if (isdigit(*restriction) || ((*restriction == '#') && *(restriction + 1)
-				    && isdigit(*(restriction + 1)))) {
+      if (isdigit((unsigned char) *restriction)
+	  || ((*restriction == '#') && *(restriction + 1)
+	      && isdigit((unsigned char) *(restriction + 1)))) {
 	offset = 0;
 	if (*restriction == '#')
 	  offset = 1;

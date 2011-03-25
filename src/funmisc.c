@@ -293,7 +293,7 @@ FUNCTION(fun_switch)
   int j, per;
   char mstr[BUFFER_LEN], pstr[BUFFER_LEN], *dp;
   char const *sp;
-  char *tbuf1;
+  char *tbuf1 = NULL;
   int first = 1, found = 0, exact = 0;
 
   if (strstr(called_as, "ALL"))
@@ -343,11 +343,15 @@ FUNCTION(fun_switch)
 
   if (!(nargs & 1) && !found) {
     /* Default case */
-    tbuf1 = replace_string("#$", mstr, args[nargs - 1]);
-    sp = tbuf1;
+    if (!exact) {
+      tbuf1 = replace_string("#$", mstr, args[nargs - 1]);
+      sp = tbuf1;
+    } else
+      sp = args[nargs - 1];
     process_expression(buff, bp, &sp, executor, caller, enactor,
 		       PE_DEFAULT, PT_DEFAULT, pe_info);
-    mush_free((Malloc_t) tbuf1, "replace_string.buff");
+    if (!exact)
+      mush_free((Malloc_t) tbuf1, "replace_string.buff");
   }
 }
 

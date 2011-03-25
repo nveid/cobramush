@@ -994,7 +994,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
       cmd = command_find("ATTRIB_SET");
     } else {
       c = command;
-      while ((*c) && (*c != '/') && (*c != ' '))
+      while ((*c) && (*c != '/'))
 	c++;
       b = *c;
       *c = '\0';

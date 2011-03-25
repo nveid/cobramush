@@ -250,8 +250,8 @@ is_dbref(char const *str)
  * by a : and at least one digit, and nothing else.
  * In regex: ^#-?\d+(:\d+)?$
  * \param str string to check.
- * \retval 1 string is a dbref.
- * \retval 0 string is not a dbref.
+ * \retval 1 string is an objid
+ * \retval 0 string is not an objid.
  */
 int
 is_objid(char const *str)
