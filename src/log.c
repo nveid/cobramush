@@ -123,12 +123,12 @@ start_all_logs(void)
   start_log(&cmdlog_fp, CMDLOG);
 }
 
-/** Redirect stderr to a error log file. 
+/** Redirect stderr to a error log file and close stdout and stdin. 
  * Should be called after start_all_logs().
  * \param log name of logfile to redirect stderr to.
  */
 void
-redirect_stderr(void)
+redirect_streams(void)
 {
   FILE *errlog_fp;
 
@@ -145,6 +145,10 @@ redirect_stderr(void)
     setvbuf(stderr, NULL, _IOLBF, BUFSIZ);
     fclose(errlog_fp);
   }
+#ifndef DEBUG_BYTECODE
+  fclose(stdout);
+#endif
+  fclose(stdin);
 }
 
 

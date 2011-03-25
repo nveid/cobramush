@@ -797,7 +797,7 @@ init_game_config(const char *conf)
   conf_default_set();
   config_file_startup(conf, 0);
   start_all_logs();
-  redirect_stderr();
+  redirect_streams();
 
   /* Initialize the attribute chunk storage */
   chunk_init();
@@ -2223,24 +2223,24 @@ do_uptime(dbref player, int mortal)
   notify_format(player,
 		T
 		("Time until next database save: %ld minutes %ld seconds, at %s"),
-		(options.dump_counter - mudtime) / 60,
-		(options.dump_counter - mudtime) % 60, tbuf1);
+		((long) difftime(options.dump_counter, mudtime)) / 60,
+		((long) difftime(options.dump_counter, mudtime)) % 60, tbuf1);
 
   when = localtime(&options.dbck_counter);
   strftime(tbuf1, sizeof tbuf1, "%X", when);
   notify_format(player,
 		T
 		("   Time until next dbck check: %ld minutes %ld seconds, at %s."),
-		(options.dbck_counter - mudtime) / 60,
-		(options.dbck_counter - mudtime) % 60, tbuf1);
+		((long) difftime(options.dbck_counter, mudtime)) / 60,
+		((long) difftime(options.dbck_counter, mudtime)) % 60, tbuf1);
 
   when = localtime(&options.purge_counter);
   strftime(tbuf1, sizeof tbuf1, "%X", when);
   notify_format(player,
 		T
 		("        Time until next purge: %ld minutes %ld seconds, at %s."),
-		(options.purge_counter - mudtime) / 60,
-		(options.purge_counter - mudtime) % 60, tbuf1);
+		((long) difftime(options.purge_counter, mudtime)) / 60,
+		((long) difftime(options.purge_counter, mudtime)) % 60, tbuf1);
 
   if (options.warn_interval) {
     when = localtime(&options.warn_counter);
@@ -2248,17 +2248,20 @@ do_uptime(dbref player, int mortal)
     notify_format(player,
 		  T
 		  ("    Time until next @warnings: %ld minutes %ld seconds, at %s."),
-		  (options.warn_counter - mudtime) / 60,
-		  (options.warn_counter - mudtime) % 60, tbuf1);
+		  ((long) difftime(options.warn_counter, mudtime)) / 60,
+		  ((long) difftime(options.warn_counter, mudtime)) % 60, tbuf1);
   }
 
   notify_format(player,
 		T
 		("PennMUSH Uptime: %ld days %ld hours %ld minutes %ld seconds"),
-		(mudtime - globals.first_start_time) / 86400,
-		((mudtime - globals.first_start_time) % 86400) / 3600,
-		(((mudtime - globals.first_start_time) % 86400) % 3600) / 60,
-		(((mudtime - globals.first_start_time) % 86400) % 3600) % 60);
+		((long) difftime(mudtime, globals.first_start_time)) / 86400,
+		((long) difftime(mudtime, globals.first_start_time) % 86400) /
+		3600,
+		(((long) difftime(mudtime, globals.first_start_time) % 86400) %
+		 3600) / 60,
+		(((long) difftime(mudtime, globals.first_start_time) % 86400) %
+		 3600) % 60);
 
   /* Mortals, go no further! */
   if (!Site(player) || mortal)

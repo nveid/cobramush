@@ -58,7 +58,7 @@ typedef struct bque {
   dbref ooref;			/**< Used when doing twin checks */
   dbref sem;			/**< semaphore object to block on */
   char *semattr;		/**< semaphore attribute to block on */
-  int left;			/**< seconds left until execution */
+  time_t left;			/**< seconds left until execution */
   char *env[10];		/**< environment, from wild match */
   char *rval[NUMQ];		/**< environment, from setq() */
   char *comm;			/**< command to be executed */
@@ -791,7 +791,7 @@ que_next(void)
   /* Wait queue is in sorted order so we only have to look at the first
      item on it. Anything else is wasted time. */
   if (qwait) {
-    curr = qwait->left - mudtime;
+    curr = (int) difftime(qwait->left, mudtime);
     if (curr <= 2)
       return 1;
     if (curr < min)
@@ -801,7 +801,7 @@ que_next(void)
   for (point = qsemfirst; point; point = point->next) {
     if (point->left == 0)	/* no timeout */
       continue;
-    curr = point->left - mudtime;
+    curr = (int) difftime(point->left, mudtime);
     if (curr <= 2)
       return 1;
     if (curr < min) {
@@ -1060,7 +1060,7 @@ do_wait(dbref player, dbref cause, char *arg1, char *cmd, int until, char finvoc
   }
   /* get timeout, default of -1 */
   if (tcount && *tcount)
-    waitfor = atol(tcount);
+    waitfor = parse_integer(tcount);
   else
     waitfor = -1;
   add_to_sem(thing, 1, aname);

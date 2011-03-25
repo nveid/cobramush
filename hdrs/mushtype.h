@@ -1,11 +1,6 @@
 #ifndef MUSH_TYPES_H
 #define MUSH_TYPES_H
 #include "copyrite.h"
-#include "options.h"
-#include <stdio.h>
-#ifdef WIN32
-#include <windows.h>
-#endif
 #ifdef HAS_OPENSSL
 #include <openssl/ssl.h>
 #endif

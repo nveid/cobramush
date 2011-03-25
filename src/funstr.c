@@ -176,7 +176,7 @@ FUNCTION(fun_art)
     safe_chr('a', buff, bp);
     return;
   }
-  c = tolower(*p);
+  c = DOWNCASE(*p);
   if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
     safe_str("an", buff, bp);
   else
@@ -487,7 +487,7 @@ FUNCTION(fun_comp)
     safe_str(T("#-1 INVALID THIRD ARGUMENT"), buff, bp);
     return;
   } else if (nargs == 3) {
-    type = toupper(*args[2]);
+    type = UPCASE(*args[2]);
   }
 
   switch (type) {

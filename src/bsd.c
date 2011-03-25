@@ -2904,7 +2904,7 @@ dump_messages(DESC *d, dbref player, int isnew)
 
   if (ModTime(player))
     notify_format(player, T("%ld failed connections since last login."),
-		  ModTime(player));
+		  (long) ModTime(player));
   ModTime(player) = (time_t) 0;
   announce_connect(player, isnew, num);	/* broadcast connect message */
   check_last(player, d->addr, d->ip);	/* set Last, Lastsite, give paycheck */
@@ -3124,7 +3124,7 @@ parse_connect(const char *msg1, char *command, char *user, char *pass)
     msg++;
   p = (unsigned char *) user;
 
-  if (PLAYER_NAME_SPACES && *msg == '\"') {
+  if (*msg == '\"') {
     for (; *msg && ((*msg == '\"') || isspace(*msg)); msg++) ;
     while (*msg && (*msg != '\"')) {
       while (*msg && !isspace(*msg) && (*msg != '\"'))
@@ -3675,15 +3675,15 @@ dump_users(DESC *call_by, char *match, int doing)
 }
 
 static const char *
-time_format_1(long dt)
+time_format_1(time_t dt)
 {
   register struct tm *delta;
-  time_t holder;		/* A hack for 64bit SGI */
+
   static char buf[64];
   if (dt < 0)
     dt = 0;
-  holder = (time_t) dt;
-  delta = gmtime(&holder);
+
+  delta = gmtime(&dt);
   if (delta->tm_yday > 0) {
     sprintf(buf, "%dd %02d:%02d",
 	    delta->tm_yday, delta->tm_hour, delta->tm_min);
@@ -3694,14 +3694,14 @@ time_format_1(long dt)
 }
 
 static const char *
-time_format_2(long dt)
+time_format_2(time_t dt)
 {
   register struct tm *delta;
   static char buf[64];
   if (dt < 0)
     dt = 0;
 
-  delta = gmtime((time_t *) & dt);
+  delta = gmtime(&dt);
   if (delta->tm_yday > 0) {
     sprintf(buf, "%dd", delta->tm_yday);
   } else if (delta->tm_hour > 0) {

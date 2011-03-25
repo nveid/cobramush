@@ -220,6 +220,7 @@ dispatch(void)
   }
   /* A USR1 does a shutdown/reboot */
   if (usr1_triggered) {
+    do_rawlog(LT_ERR, T("SIGUSR1 received. Rebooting."));
     do_reboot(NOTHING, 0);	/* We don't return from this */
     usr1_triggered = 0;		/* But just in case */
   }

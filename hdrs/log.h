@@ -14,7 +14,7 @@
 /* From log.c */
 extern void start_all_logs(void);
 extern void end_all_logs(void);
-extern void redirect_stderr(void);
+extern void redirect_streams(void);
 extern void WIN32_CDECL do_log
   (int logtype, dbref player, dbref object, const char *fmt, ...)
   __attribute__ ((__format__(__printf__, 4, 5)));

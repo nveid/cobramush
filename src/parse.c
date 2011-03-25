@@ -847,7 +847,7 @@ process_expression(char *buff, char **bp, char const **str,
 	  if (!nextc)
 	    goto exit_sequence;
 	  (*str)++;
-	  if (!isdigit(nextc)) {
+	  if (!isdigit((unsigned char) nextc)) {
 	    safe_str(T(e_int), buff, bp);
 	    break;
 	  }

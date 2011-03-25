@@ -207,7 +207,7 @@ indent:
 	(set +e; for file in *.dst *.c  ../hdrs/*.h ; do echo $$file; \
 	/usr/bin/expand $$file > tmpfile; mv -f tmpfile $$file; \
 	/usr/bin/indent -npro -kr -ci2 -ss -psl -ip4 -i2 -cs -l80 -lc75 \
-	-T ATRALIAS -T DESC -T CNode -T CONF -T BQUE -T FUN \
+	-T atr_err -T ATRALIAS -T DESC -T CNode -T CONF -T BQUE -T FUN \
 	-T NVAL -T i_rec -T f_rec -T USERFN_ENTRY -T PRIV -T FLAG \
 	-T FLAGENT -T FLAG_ALIAS -T tlist -T u -T stat -T tcheck -T ATTR \
 	-T ALIST -T CHTAB -T FBLKHDR -T FBLOCK -T OPTTAB -T dbref \
@@ -231,8 +231,9 @@ distclean: clean
 test_compress: comp_h.c
 	$(CC) $(CFLAGS) -o test_compress -DSTANDALONE comp_h.c
 
-portmsg: portmsg.c
-	$(CC) $(CFLAGS) -o portmsg portmsg.c $(LIBS)
+portmsg: portmsg.c mysocket.c sig.o
+	$(CC) $(CCFLAGS) -DINFOSLAVE -o portmsg portmsg.c mysocket.c sig.o \
+	 $(LDFLAGS) $(LIBS)
 
 # Some dependencies that make depend doesn't handle well
 compress.o: comp_h.c comp_w.c comp_w8.c
