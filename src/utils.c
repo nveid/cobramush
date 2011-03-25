@@ -254,7 +254,7 @@ call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc, char *ret,
   char rbuff[BUFFER_LEN];
   char *rp;
   char *old_wenv[10];
-  int old_args;
+  int old_args = 0;
   int i;
   int pe_ret;
   char const *ap;

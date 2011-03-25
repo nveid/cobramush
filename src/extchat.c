@@ -1089,8 +1089,8 @@ list_partial_matches(dbref player, const char *name, enum chan_match_type type)
     if (!Chan_Can_See(p, player))
       continue;
     if ((type == PMATCH_ALL) || ((type == PMATCH_ON)
-				 ? (long) OnChannel(player, p)
-				 : !OnChannel(player, p))) {
+				 ? !!onchannel(player, p)
+				 : !onchannel(player, p))) {
       strcpy(cleanp, remove_markup(ChanName(p), NULL));
       if (string_prefix(cleanp, cleanname)) {
 	safe_chr(' ', buff, &bp);

@@ -554,7 +554,7 @@ flag_read_all(FILE * in, const char *ns)
   FLAG *f;
   FLAGSPACE *n;
   char alias[BUFFER_LEN];
-  int count;
+  int count, found = 0;
  
   if (!(flagdb_flags & DBF_LABELS)) {
     flag_read_all_oldstyle(in, ns);
@@ -575,16 +575,48 @@ flag_read_all(FILE * in, const char *ns)
   /* If we are reading flags from the db, they are definitive. */
   clear_all_flags(n);
   db_read_this_labeled_number(in, "flagcount", &count);
-  for (; count > 0; count--) {
+  for (;;) {
+    int c;
+
+    c = fgetc(in);
+    ungetc(c, in);
+
+   if (c != ' ')
+      break;
+
+   found++;
+
     if ((f = flag_read(in))) 
      flag_add(n, f->name, f);
   }
+
+  if (found != count) 
+    do_rawlog(LT_ERR,
+	      T("WARNING: Actual number of flags (%d) different than expected count (%d)."),
+	      found, count);
+ 
  /* Assumes we'll always have at least one alias */
-  db_read_this_labeled_number(in, "flagaliascount", &count);
-  for (; count > 0; count--) {
+  db_read_this_labeled_number(in, "flagaliascount", &count);	      
+  for (found = 0 ;;) {
+    int c;
+    
+    c = fgetc(in);
+    ungetc(c, in);
+
+    if (c != ' ')
+      break;
+
+    found++;
+
     if ((f = flag_alias_read(in, alias, n)))
       flag_add(n, alias, f);
   }
+
+  if (found != count) 
+    do_rawlog(LT_ERR,
+	      T("WARNING: Actual number of flags (%d) different than expected count (%d)."),
+		found, count);
+
   flag_add_additional();
 }
 
@@ -1288,7 +1320,8 @@ unparse_flags(dbref thing, dbref player)
   }
   for (i = 0; i < n->flagbits; i++) {
     if ((f = n->flags[i])) {
-      if (has_flag(thing, f) && Can_See_Flag(player, thing, f))
+      if (has_flag(thing, f) && Can_See_Flag(player, thing, f) 
+	  && f->letter)
 	*p++ = f->letter;
     }
   }

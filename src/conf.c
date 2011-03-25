@@ -1643,6 +1643,10 @@ show_compile_options(dbref player)
   notify(player, T(" The MUSH was compiled with SQL support."));
 #endif
 
+#ifdef HAS_MYSQL
+  notify(player, T(" The MUSH was compiled with MySQL support."));
+#endif
+
 #ifdef INFO_SLAVE
   notify(player, T(" DNS and ident lookups are handled by a slave process."));
 #else

@@ -29,11 +29,20 @@ HASHTAB htab_player_list;
 
 static int hft_initialized = 0;
 static void init_hft(void);
+static void delete_dbref(void*);
+
+/** Free a player_dbref struct. */
+static void
+delete_dbref(void *data) 
+{
+  mush_free(data, "plyrlist.entry");
+}
+
 
 static void
 init_hft(void)
 {
-  hashinit(&htab_player_list, 256, sizeof(dbref));
+  hash_init(&htab_player_list, 256, sizeof(dbref), delete_dbref);
   hft_initialized = 1;
 }
 
@@ -43,7 +52,7 @@ clear_players(void)
 {
   if (hft_initialized)
     hashflush(&htab_player_list, 256);
-  else
+   else
     init_hft();
 }
 
@@ -54,12 +63,16 @@ clear_players(void)
 void
 add_player(dbref player)
 {
-  long tmp;
-  tmp = player;
-  if (!hft_initialized)
-    init_hft();
-  hashadd(strupper(Name(player)), (void *) tmp, &htab_player_list);
+   dbref *p;
+   if (!hft_initialized)
+     init_hft();
+   p = mush_malloc(sizeof *p, "plyrlist.entry");
+   if (!p)
+     mush_panic(T("Unable to allocate memory in plyrlist!"));
+   *p = player;
+   hashadd(strupper(Name(player)), p, &htab_player_list);
 }
+ 
 
 /** Add a player's alias list to the player list htab.
  * \param player dbref of player to add.
@@ -121,23 +134,13 @@ lookup_player(const char *name)
 dbref
 lookup_player_name(const char *name)
 {
-  long tmp;
-  void *hval;
-  hval = hashfind(strupper(name), &htab_player_list);
-  if (!hval)
+  dbref *p;
+  p = hashfind(strupper(name), &htab_player_list);
+  if (!p)
     return NOTHING;
-  tmp = (long) hval;
-  return (dbref) tmp;
-  /* By the way, there's a flaw in this code. If #0 was a player, we'd
-   * hash its name with a dbref of (void *)0, aka NULL, so we'd never
-   * be able to retrieve that player. However, we assume that #0 will
-   * always be the base room, and never a player, so that's ok.
-   * Nathan Baum offered a fix (hash the value + 1 and subtract 1 on
-   * lookup) but we (foolishly?) cling to our assumption and don't bother.
-   */
+  return *p;
 }
-
-
+ 
 /** Remove a player from the player list htab.
  * \param player dbref of player to remove.
  * \param alias key to remove if given.
@@ -161,8 +164,14 @@ delete_player(dbref player, const char *alias)
       sp = split_token(&s, ALIAS_DELIMITER);
       while (sp && *sp && *sp == ' ')
       sp++;
-      if (sp && *sp && strcasecmp(sp, Name(player)))
-      hashdelete(strupper(sp), &htab_player_list);
+      if (sp && *sp) {
+	dbref *p;
+	p = mush_malloc(sizeof *p, "plyrlist.entry");
+	if (!p)
+	  mush_panic(T("Unable to allocate memory in plyrlist!"));
+	*p = player;
+	hashadd(strupper(sp), p, &htab_player_list);
+      }
     }
   } else
     hashdelete(strupper(Name(player)), &htab_player_list);

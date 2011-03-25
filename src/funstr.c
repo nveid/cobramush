@@ -29,12 +29,7 @@
 
 
 #ifdef WIN32
-#define LC_MESSAGES 6
 #pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
-#endif
-
-#ifdef __APPLE__
-#define LC_MESSAGES 6
 #endif
 
 HASHTAB htab_tag;  /**< Hash table of safe html tags */
@@ -103,7 +98,7 @@ void
 init_pronouns(void)
 {
   int translate = 0;
-#ifdef HAS_SETLOCALE
+#if defined(HAS_SETLOCALE) && defined(LC_MESSAGES)
   char *loc;
   if ((loc = setlocale(LC_MESSAGES, NULL))) {
     if (strcmp(loc, "C") && strncmp(loc, "en", 2))

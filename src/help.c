@@ -83,7 +83,7 @@ COMMAND (cmd_helpcmd) {
 void
 init_help_files(void)
 {
-  hash_init(&help_files, 8, sizeof(help_file));
+  hash_init(&help_files, 8, sizeof(help_file), NULL);
   help_init = 1;
 }
 
@@ -99,15 +99,11 @@ void
 add_help_file(const char *command_name, const char *filename, int admin)
 {
   help_file *h;
-  char newfilename[256] = "\0";
-
-  /* Must use a buffer for MacOS file path conversion */
-  strncpy(newfilename, filename, 256);
 
   if (help_init == 0)
     init_help_files();
 
-  if (!command_name || !filename || !*command_name || !*newfilename)
+  if (!command_name || !filename || !*command_name || !*filename)
     return;
 
   /* If there's already an entry for it, complain */
@@ -119,7 +115,7 @@ add_help_file(const char *command_name, const char *filename, int admin)
 
   h = mush_malloc(sizeof *h, "help_file.entry");
   h->command = mush_strdup(strupper(command_name), "help_file.command");
-  h->file = mush_strdup(newfilename, "help_file.filename");
+  h->file = mush_strdup(filename, "help_file.filename");
   h->entries = 0;
   h->indx = NULL;
   h->admin = admin;

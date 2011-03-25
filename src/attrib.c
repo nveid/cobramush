@@ -1570,6 +1570,11 @@ atr_comm_divmatch(dbref thing, dbref player, int type, int end,
       if (!s)
         continue;
       *s++ = '\0';
+      if (type == '^' && !AF_Ahear(ptr)) {
+	if ((thing == player && !AF_Mhear(ptr))
+	    || (thing != player && AF_Mhear(ptr)))
+	  continue;
+      }
 
       if (AF_Regexp(ptr)) {
         /* Turn \: into : */

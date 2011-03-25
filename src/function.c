@@ -840,6 +840,8 @@ func_hash_insert(const char *name, FUN *func)
   hashadd(name, (void *) func, &htab_function);
 }
 
+static void delete_function(void*);
+
 /** Initialize the function hash table.
  */
 void
@@ -848,7 +850,7 @@ init_func_hashtab(void)
   FUNTAB *ftp;
 
   hashinit(&htab_function, 512, sizeof(FUN));
-  hashinit(&htab_user_function, 32, sizeof(FUN));
+  hash_init(&htab_user_function, 32, sizeof(FUN), delete_function);
   for (ftp = flist; ftp->name; ftp++) {
     function_add(ftp->name, ftp->fun, ftp->minargs, ftp->maxargs, ftp->flags);
   }
@@ -1319,7 +1321,31 @@ do_function(dbref player, char *name, char *argv[], int preserve)
   }
 }
 
+/** Free a @function pointer when it's removed from the hash table */
+static void
+delete_function(void *data)
+{
+  size_t table_index, i;
+  FUN *fp = data;
+  
+  table_index = fp->where.offset;
+  mush_free((void *) fp->name, "func_hash.name");
+  mush_free(fp, "func_hash.FUN");
+  /* Fix up the user function table. Expensive, but how often will
+   * we need to delete an @function anyway?
+   */
+  mush_free((Malloc_t) userfn_tab[table_index].name, "userfn_tab.name");
+  mush_free((Malloc_t) userfn_tab[table_index].fn, "usrfn_tab.fn");
+  userfn_count--;
+  for (i = table_index; i < userfn_count; i++) {
+    fp = (FUN *) hashfind(userfn_tab[i + 1].fn, &htab_user_function);
+    fp->where.offset = i;
+    userfn_tab[i].thing = userfn_tab[i + 1].thing;
+    userfn_tab[i].name = userfn_tab[i + 1].name;
+    userfn_tab[i].fn = userfn_tab[i + 1].fn;
+  }
 
+}
 /** Restore an overridden built-in function.
  * \verbatim
  * If a built-in function is deleted with @function/delete, it can be
@@ -1334,7 +1360,6 @@ void
 do_function_restore(dbref player, const char *name)
 {
   FUN *fp;
-  Size_t table_index, i;
 
   if (!Global_Funcs(player)) {
     notify(player, T("Permission denied."));
@@ -1362,30 +1387,7 @@ do_function_restore(dbref player, const char *name)
   notify(player, T("Restored."));
 
   /* Delete any @function with the same name */
-  fp = (FUN *) hashfind(strupper(name), &htab_user_function);
-  if (!fp)
-    return;
-  /* Remove it from the hash table */
-  hashdelete(fp->name, &htab_user_function);
-  /* Free its memory */
-  table_index = fp->where.offset;
-  mush_free((void *) fp->name, "func_hash.name");
-  mush_free(fp, "func_hash.FUN");
-  /* Fix up the user function table. Expensive, but how often will
-   * we need to delete an @function anyway?
-   */
-  mush_free((Malloc_t) userfn_tab[table_index].name, "userfn_tab.name");
-  mush_free((Malloc_t) userfn_tab[table_index].fn, "userfn_tab.fn");
-  userfn_count--;
-  for (i = table_index; i < userfn_count; i++) {
-    fp = (FUN *) hashfind(userfn_tab[i + 1].fn, &htab_user_function);
-    fp->where.offset = i;
-    userfn_tab[i].thing = userfn_tab[i + 1].thing;
-    userfn_tab[i].name = mush_strdup(userfn_tab[i + 1].name, "userfn_tab.name");
-    mush_free((Malloc_t) userfn_tab[i + 1].name, "userfn_tab.name");
-    userfn_tab[i].fn = mush_strdup(userfn_tab[i + 1].fn, "userfn_tab.fn");
-    mush_free((Malloc_t) userfn_tab[i + 1].fn, "userfn_tab.fn");
-  }
+  hashdelete(strupper(name), &htab_user_function);
 }
 
 /** Delete a function.
@@ -1403,7 +1405,6 @@ do_function_delete(dbref player, char *name)
    * For security, you must control the object the function uses
    * to delete the function.
    */
-  Size_t table_index, i;
   FUN *fp;
 
   if (!Global_Funcs(player)) {
@@ -1425,31 +1426,12 @@ do_function_delete(dbref player, char *name)
     return;
   }
 
-  table_index = fp->where.offset;
-  if (!controls(player, userfn_tab[table_index].thing)) {
+  if (!controls(player, userfn_tab[fp->where.offset].thing)) {
     notify(player, T("You can't delete that @function."));
     return;
   }
   /* Remove it from the hash table */
   hashdelete(fp->name, &htab_user_function);
-  /* Free its memory */
-  mush_free((void *) fp->name, "func_hash.name");
-  mush_free(fp, "func_hash.FUN");
-  /* Fix up the user function table. Expensive, but how often will
-   * we need to delete an @function anyway?
-   */
-  mush_free((Malloc_t) userfn_tab[table_index].name, "userfn_tab.name");
-  mush_free((Malloc_t) userfn_tab[table_index].fn, "userfn_tab.fn");
-  userfn_count--;
-  for (i = table_index; i < userfn_count; i++) {
-    fp = (FUN *) hashfind(userfn_tab[i + 1].fn, &htab_user_function);
-    fp->where.offset = i;
-    userfn_tab[i].thing = userfn_tab[i + 1].thing;
-    userfn_tab[i].name = mush_strdup(userfn_tab[i + 1].name, "userfn_tab.name");
-    mush_free((Malloc_t) userfn_tab[i + 1].name, "userfn_tab.name");
-    userfn_tab[i].fn = mush_strdup(userfn_tab[i + 1].fn, "userfn_tab.fn");
-    mush_free((Malloc_t) userfn_tab[i + 1].fn, "userfn_tab.fn");
-  }
   notify(player, T("Function deleted."));
 }
 

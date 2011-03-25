@@ -1421,7 +1421,7 @@ decompose_str(char *what)
 {
   static char value[BUFFER_LEN];
   char *ptr, *s, *codestart;
-  char ansi_letter;
+  char ansi_letter = '\0';
   int len;
   int dospace;
   int flag_depth, ansi_depth;
@@ -1439,7 +1439,7 @@ decompose_str(char *what)
 #ifdef NEVER
   /* Put a \ at the beginning if it won't already be put there,
    * unless it's a space, which would require %b, %r, or %t anyway */
-  if (!escaped_chars[(unsigned int) *what] && !isspace(*what)) {
+  if (!escaped_chars[(unsigned int) *what] && !isspace((unsigned char)*what)) {
     safe_chr('\\', value, &s);
   }
 #endif

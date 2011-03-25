@@ -942,6 +942,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
       break;
     }
 #endif /* CHAT_SYSTEM */
+    break;
   case NUMBER_TOKEN:
     /* parse_force() destructively modifies the command to replace
      * the first space with a '=' if the command is an actual

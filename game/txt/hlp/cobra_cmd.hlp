@@ -1119,11 +1119,6 @@ See also: @poll, WHO, DOING
   into a room you don't control, the room must be JUMP_OK, and you must
   pass the teleport lock.
 
-  Note that the enter lock of an object or room being used as a Zone
-  Master Object determines control of that zone. Please note that if
-  you're using a room as a ZMO (i.e. as a zone master room), only the
-  controllers of that zone will be able to teleport into that room
-  (which is a good thing for security).
 & @emit
 & \  
   @emit[/<switch>] [<message>]
@@ -2664,7 +2659,7 @@ See also @emit, @oemit, @remit, NOSPOOF, and SPOOFING.
 See also: @doing, WHO, DOING
 & @poor
   @poor <value>.
-  This is a Director only command.  It sets every player's money supply to
+  This is a God only command.  It sets every player's money supply to
   value.
 
 See also: MONEY

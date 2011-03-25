@@ -89,7 +89,7 @@ void putbytes(FILE * f, unsigned char *lbytes, int byte_limit);
 void db_free(void);
 int load_flag_db(FILE *);
 void db_write_flag_db(FILE *);
-static void init_objdata_htab(int size);
+static void init_objdata_htab(int size, void(*free_data)(void*));
 static void db_write_flags(FILE * f);
 static void db_write_powers(FILE * f);
 static dbref db_read_oldstyle(FILE * f);
@@ -837,7 +837,7 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
     attrcount++;
   }
 
-  db_write_labeled_number(f, "attrcount", count);
+  db_write_labeled_number(f, "attrcount", attrcount);
 
   for (list = o->list; list; list = next) {
     next = AL_NEXT(list);
@@ -881,10 +881,10 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
     }
 
     /* write that info out */
-    db_write_labeled_string(f, "name", name);
-    db_write_labeled_dbref(f, "owner", owner);
-    db_write_labeled_string(f, "flags", atrflag_to_string(AL_FLAGS(list)));
-    db_write_labeled_number(f, "derefs", AL_DEREFS(list));
+    db_write_labeled_string(f, " name", name);
+    db_write_labeled_dbref(f, "  owner", owner);
+    db_write_labeled_string(f, "  flags", atrflag_to_string(AL_FLAGS(list)));
+    db_write_labeled_number(f, "  derefs", AL_DEREFS(list));
 
     /* now check the attribute */
     strcpy(tbuf1, atr_value(list));
@@ -906,7 +906,7 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
 		i);
       do_rawlog(LT_CHECK, "%s\n", tbuf1);
     }
-    db_write_labeled_string(f, "value", tbuf1);
+    db_write_labeled_string(f, "  value", tbuf1);
     if (flag && fixmemdb) {
       /* Fix the db in memory */
       flags = AL_FLAGS(list);
@@ -1105,14 +1105,24 @@ get_new_locks(dbref i, FILE * f, int c)
   int flags;
   char type[BUFFER_LEN];
   boolexp b;
-  int count = c, n, derefs = 0;
+  int count = c, derefs = 0, found = 0;
 
   if (c < 0) {
     db_read_this_labeled_string(f, "lockcount", &val);
     count = parse_integer(val);
   }
 
-  for (n = 0; n < count; n++) {
+  for (;;) {
+    int c;
+
+    c = fgetc(f);
+    ungetc(c, f);
+
+    if (c != ' ') 
+      break;
+
+    found++;
+
     /* Name of the lock */
     db_read_this_labeled_string(f, "type", &val);
     strcpy(type, val);
@@ -1130,6 +1140,12 @@ get_new_locks(dbref i, FILE * f, int c)
     b = parse_boolexp_d(GOD, key, type, derefs);
     add_lock_raw(creator, i, type, b, flags);
   }
+
+  if (found != count) 
+    do_rawlog(LT_ERR,
+	      T("WARNING: Actual lock count (%d) different from expected count (%d)."),
+		found, count);
+
 }
 
 
@@ -1347,10 +1363,21 @@ db_read_attrs(FILE * f, dbref i, int count)
    int derefs = 0, lock_derefs = 0;
    int flags;
    char *tmp;
+   int found = 0;
 
    List(i) = NULL;
 
-   for (; count > 0; count--) {
+   for(;;) {
+     int c;
+ 
+     c = fgetc(f);
+     ungetc(c, f);
+     
+     if (c != ' ')
+       break;
+ 
+     found++;
+ 
      db_read_this_labeled_string(f, "name", &tmp);
      strcpy(name, tmp);
      db_read_this_labeled_dbref(f, "owner", &owner);
@@ -1384,6 +1411,11 @@ db_read_attrs(FILE * f, dbref i, int count)
      strcpy(value, tmp);
      atr_new_add(i, name, value, owner, flags, derefs, w_lock, r_lock, modtime);
    }
+   if (found != count) 
+    do_rawlog(LT_ERR,
+	      T("WARNING: Actual attribute count (%d) different than expected count (%d)."),
+		found, count);
+
 }
 
 /* Load Seperate Flag Database
@@ -1478,7 +1510,7 @@ db_read_oldstyle(FILE * f)
       /* make sure database is at least this big *1.5 */
     case '~':
       db_init = (getref(f) * 3) / 2;
-      init_objdata_htab(db_init);
+      init_objdata_htab(db_init, NULL);
       break;
       /* Use the MUSH 2.0 header stuff to see what's in this db */
     case '+':
@@ -1797,7 +1829,7 @@ db_read(FILE * f)
       break;
     case '~':
       db_init = (getref(f) * 3) / 2;
-      init_objdata_htab(db_init);
+      init_objdata_htab(db_init, NULL);
       break;
     case '!':
       /* Read an object */
@@ -2026,9 +2058,9 @@ db_read(FILE * f)
 }
 
 static void
-init_objdata_htab(int size)
+init_objdata_htab(int size, void (*free_data)(void*))
 {
-  hashinit(&htab_objdata, size, 4);
+  hash_init(&htab_objdata, size, 4, free_data);
   hashinit(&htab_objdata_keys, 8, 32);
 }
 
@@ -2152,7 +2184,7 @@ create_minimal_db(void)
   master_room = new_object();	/* #2 */
   master_division = new_object(); /* #3 */
 
-  init_objdata_htab(DB_INITIAL_SIZE);
+  init_objdata_htab(DB_INITIAL_SIZE, NULL);
 
   set_name(start_room, "Room Zero");
   Type(start_room) = TYPE_ROOM;

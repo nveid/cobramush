@@ -822,6 +822,7 @@ eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
   char e0[SBUF_LEN], e1[SBUF_LEN], *ep;
   char *preserves[10];
   int result;
+  boolexp b;
 
   if (env0 != NOTHING) {
     ep = e0;
@@ -840,7 +841,7 @@ eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
   save_global_env("eval_lock_save", preserves);
   restore_global_env("eval_lock", myenv);
 
-  boolexp b = getlock(thing, ltype);
+  b = getlock(thing, ltype);
   log_activity(LA_LOCK, thing, unparse_boolexp(player, b, UB_DBREF));
   result = eval_boolexp(player, b, thing, NULL);
   restore_global_env("eval_lock_save", preserves);

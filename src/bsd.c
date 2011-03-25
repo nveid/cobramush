@@ -27,7 +27,6 @@
 #define EINTR WSAEINTR
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #define MAXHOSTNAMELEN 32
-#define LC_MESSAGES 6
 #pragma warning( disable : 4761)	/* disable warning re conversion */
 #else				/* !WIN32 */
 #ifdef I_SYS_FILE
@@ -77,10 +76,6 @@
 #include <floatingpoint.h>
 #endif
 #include <locale.h>
-#ifdef __APPLE__
-#define LC_MESSAGES     6
-#define AUTORESTART
-#endif
 #include <setjmp.h>
 
 #include "conf.h"
@@ -519,10 +514,14 @@ main(int argc, char **argv)
       do_rawlog(LT_ERR, "Failed to set time locale from environment.");
     else
       do_rawlog(LT_ERR, "Setting time locale to %s", loc);
+#ifdef LC_MESSAGES
     if ((loc = setlocale(LC_MESSAGES, "")) == NULL)
       do_rawlog(LT_ERR, "Failed to set messages locale from environment.");
     else
       do_rawlog(LT_ERR, "Setting messages locale to %s", loc);
+#else
+    do_rawlog(LT_ERR, "No support for message locale.");
+#endif
     if ((loc = setlocale(LC_COLLATE, "")) == NULL)
       do_rawlog(LT_ERR, "Failed to set collate locale from environment.");
     else
@@ -671,9 +670,6 @@ main(int argc, char **argv)
 #endif
   WSACleanup();			/* clean up */
 #else
-#ifdef __APPLE__
-  unlink("runid");
-#endif
   exit(0);
 #endif
 }

@@ -124,6 +124,14 @@ block_signals(void)
   sigset_t mask;
   sigfillset(&mask);
   sigprocmask(SIG_BLOCK, &mask, NULL);
+#elif defined(WIN32)
+    /* The only signals Windows knows about */
+  signal(SIGABRT, SIG_IGN);
+  signal(SIGFPE, SIG_IGN);
+  signal(SIGILL, SIG_IGN);
+  signal(SIGINT, SIG_IGN);
+  signal(SIGSEGV, SIG_IGN);
+  signal(SIGTERM, SIG_IGN);
 #else
   int i;
   for (i = 0; i < NSIG; i++)

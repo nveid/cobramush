@@ -183,7 +183,7 @@ FUNCTION(fun_mapsql)
   char numbuff[20];
   int numfields;
   char rbuff[BUFFER_LEN];
-  int funccount;
+  int funccount = 0;
   int do_fieldnames = 0;
   int i;
   MYSQL_FIELD *fields;

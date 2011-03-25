@@ -154,7 +154,7 @@ hash_getmask(int *size)
  * \param data_size size of an individual datum to store in the table.
  */
 void
-hash_init(HASHTAB *htab, int size, int data_size)
+hash_init(HASHTAB *htab, int size, int data_size, void (*free_data)(void*))
 {
   int i;
 
@@ -166,6 +166,7 @@ hash_init(HASHTAB *htab, int size, int data_size)
     htab->buckets[i] = NULL;
 
   htab->entry_size = data_size;
+  htab->free_data = free_data;
 }
 
 /** Return a hashtable entry given a key.
