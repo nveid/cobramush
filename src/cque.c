@@ -167,10 +167,13 @@ add_to_generic(dbref player, int am, const char *name, int flags)
   if (a)
     num = parse_integer(atr_value(a));
   num += am;
-  if (num) {
-    sprintf(buff, "%d", num);
-    (void) atr_add(player, name, buff, GOD, flags);
-  } else {
+  /* We set the attribute's value to 0 even if we're going to clear
+   * it later, because clearing it may fail (perhaps someone's also
+   * foolishly using it as a branch in an attribute tree)
+   */
+  sprintf(buff, "%d", num);
+  (void) atr_add(player, name, buff, GOD, flags);
+  if (!num) {
     (void) atr_clr(player, name, GOD);
   }
   return (num);
