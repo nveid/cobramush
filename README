@@ -13,7 +13,8 @@ The file I18N discusses internationalization.
 I.    Introduction and history
 II.   Getting Help, Reporting Bugs
 III.  Getting a .pennmush.org hostname and mailing lists
-IV.   Comments
+IV.   Miscellaneous
+V.    Comments
 
 You may also want to take a look at Javelin's Guide for PennMUSH Gods,
 at http://pennmush.org/~alansz/guide.html
@@ -131,29 +132,28 @@ There are three places one could get help with a problem:
    informed of new patches, subscribe to pennmush-announce instead,
    at http://www.pennmush.org/mailman/listinfo/pennmush-announce)
 
-2. pennmush-bugs@pennmush.org is the bug reporting address
-   for the PennMUSH developers (suggestions go to pennmush-developers,
-   bugs to pennmush-bugs). This will generally give you the fastest
-   response and is ideal for unusual bugs. A web-based submission
-   form is at http://www.pennmush.org/jitterbug/pennmush
+2. The PennMUSH bug-tracking site is http://dev.pennmush.org/
+   To file a new report, click on the 'New Ticket' link. If
+   you want to get emails about updates to the bug report, put your
+   email address in the appropriate field. For 'type', please select
+   the most appropriate category: Bug, suggested feature, documetation
+   issue, build/compliation problems, etc. Be sure to include what version
+   of PennMUSH you found the problem on.
 
-When reporting a problem, please always include the following
-information:
+   If the problem resulted in a crash and a core dump, a stack trace of
+   the core dump (see the section above) should also be included.
 
-1. PennMUSH version number
-2. The type of machine you are using (Sun SparcStation, IBM RS/6000, etc.)
-3. The operating system and version (SunOS 4.1.2, AIX 3.2.4, etc.),
-4. The compiler and compiler version (gcc 2.4.5, SGI cc 2.10, etc. -- the
-   'file' command usually tells you the compiler version, if there's no
-   built-in option like '-v' or '-V' to give it),
-5. Whether or not you have made any changes to the code.
+   If we need additional stuff (like a log of the Configure or make), we'll
+   ask for it, but if you know that it's relevant, you can send it along,
+   too.
 
-If the problem resulted in a crash and a core dump, a stack trace of
-the core dump (see the section above) should also be included.
+   You can also search to see if anyone else has already reported the issue,'
+   see what issues have been fixed for upcoming releases, and much more at
+   the site.
 
-If I need additional stuff (like a log of the Configure or make), I'll
-ask for it, but if you know that it's relevant, you can send it along,
-too.
+   The old way of emailing pennmush-bugs@pennmush.org still works, but using
+   the web interface allows you to specifically give an issue type when 
+   reporting something.
 
 ============================================================================
 
@@ -178,9 +178,28 @@ the pennmush.org domain. Details are on the same web page.
 
 ============================================================================
 
-IV. Comments
+IV. Miscellaneous
 
-IV.a. Amberyl's Comments
+V.a Announcing when a mush is down
+
+If your mush is no longer running on a given port or server and
+you want to and are able to leave a programming running listening
+on that port, you can tell people about a new location or other news.
+
+Run:
+
+% make portmsg
+
+Then start the port announcer with:
+
+% ./src/portmsg message.txt port#
+
+Any connections to the given port will see the contents of the message
+file and then be disconnected after a few seconds.
+
+V. Comments
+
+V.a. Amberyl's Comments
 
 These are in the first person.  :)
 
@@ -213,7 +232,7 @@ if you see me on a MUSH, feel free to say hi.
 	      --  Lydia Leong  (lwl@digex.net)
 		  "Amberyl" just about everywhere
 
-IV.b. Paul/Javelin's Comments
+V.b. Paul/Javelin's Comments
 
 And let me recognize T. Alexander Popiel, Shawn Wagner, Nick Gammon,
 Dan Williams, Ervin Hearn III, Ralph Melton, David Cheatham, and Thorvald
@@ -230,7 +249,7 @@ you might have done to get it to compile and run on unusual systems.
 		   Javelin at most places
 
 
-IV.c. Alex/Talek's Comments
+V.c. Alex/Talek's Comments
 
 I would like to thank Ralph, Amberyl, Moonchilde, and all the others
 who went either with us or before us.
