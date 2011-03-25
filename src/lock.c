@@ -155,6 +155,8 @@ static lock_list *free_list = NULL;
 static lock_list *next_free_lock(void);
 static void free_lock(lock_list *ll);
 
+extern int unparsing_boolexp;
+
 /** Return a list of all available locks
  * \param buff the buffer
  * \param bp a pointer to the current position in the buffer
@@ -800,9 +802,11 @@ int
 eval_lock(dbref player, dbref thing, lock_type ltype)
 {
   boolexp b = getlock(thing, ltype);
-  log_activity(LA_LOCK, thing, unparse_boolexp(player, b, UB_DBREF));
-  if(Pass_Lock(player, thing) && IS_passlock_type(ltype))
+ if(Pass_Lock(player, thing) && IS_passlock_type(ltype))
     return 1;
+  /* Prevent overwriting a static buffer in unparse_boolexp() */
+  if (!unparsing_boolexp)
+    log_activity(LA_LOCK, thing, unparse_boolexp(player, b, UB_DBREF));
   return eval_boolexp(player, getlock(thing, ltype), thing, NULL);
 }
 

@@ -778,6 +778,9 @@ safe_boref(dbref player, dbref thing, enum u_b_f flag, char *buff,
   }
 }
 
+/** True if unparse_boolexp() is being evaluated. */
+int unparsing_boolexp = 0;
+
 /** Display a boolexp.
  * This function returns the textual representation of the boolexp.
  * \param player The object wanting the decompiled boolexp.
@@ -791,6 +794,8 @@ unparse_boolexp(dbref player, boolexp b, enum u_b_f flag)
   static char boolexp_buf[BUFFER_LEN];
   char *buftop = boolexp_buf;
   unsigned char *bytecode = NULL;
+
+  unparsing_boolexp = 1;
 
   if (b == TRUE_BOOLEXP)
     safe_str("*UNLOCKED*", boolexp_buf, &buftop);
@@ -924,6 +929,7 @@ unparse_boolexp(dbref player, boolexp b, enum u_b_f flag)
   }
 done:
   *buftop++ = '\0';
+  unparsing_boolexp = 0;
 
   return boolexp_buf;
 }

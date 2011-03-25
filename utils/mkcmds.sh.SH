@@ -25,7 +25,7 @@ $spitshell >mkcmds.sh <<!GROK!THIS!
 $startsh
 echo=$echo
 n=$n
-c=$c
+c="$c"
 !GROK!THIS!
 
 : In the following dollars and backticks do not need the extra backslash.
