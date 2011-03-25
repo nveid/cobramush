@@ -60,6 +60,8 @@ int add_lock_raw(dbref player, dbref thing, lock_type type,
 		 boolexp key, int flags);
 void free_locks(lock_list *ll);
 int eval_lock(dbref player, dbref thing, lock_type ltype);
+int eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
+		   dbref env1);
 int fail_lock(dbref player, dbref thing, lock_type ltype, const char *def,
 	      dbref loc);
 void do_unlock(dbref player, const char *name, lock_type type);

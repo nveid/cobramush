@@ -303,8 +303,7 @@ can_move(dbref player, const char *direction)
 {
   int ok;
   if (!strcasecmp(direction, "home")) {
-    ok = !Fixed(player);
-    ok = ok && command_check_byname(player, "HOME");
+    ok = command_check_byname(player, "HOME");
   } else {
     /* otherwise match on exits - don't use GoodObject here! */
     ok = (match_result(player, direction, TYPE_EXIT, MAT_ENGLISH | MAT_EXIT) !=

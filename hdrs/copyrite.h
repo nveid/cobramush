@@ -170,7 +170,7 @@
  *
  * Past and present PennMUSH development team members:
  *  T. Alexander Popiel, Ralph Melton, Thorvald Natvig, Luuk de Waard,
- *  Shawn Wagner, Ervin Hearn III, Alan "Javelin" Schwartz
+ *  Shawn Wagner, Ervin Hearn III, Alan "Javelin" Schwartz, Greg Millam
  * Past and present PennMUSH porters:
  *  Nick Gammon, Sylvia, Dan Williams, Ervin Hearn III
  * TinyMUSH 2.2, TinyMUSH 3.0, TinyMUX 2, and RhostMUSH developers

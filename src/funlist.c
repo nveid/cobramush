@@ -42,8 +42,9 @@ static int regrep_helper(dbref who, dbref what, dbref parent,
 /** Type definition for a qsort comparison function */
 typedef int (*comp_func) (const void *, const void *);
 static void sane_qsort(void **array, int left, int right, comp_func compare);
+enum itemfun_op { IF_DELETE, IF_REPLACE, IF_INSERT };
 static void do_itemfuns(char *buff, char **bp, char *str, char *num,
-			char *word, char *sep, int flag);
+			char *word, char *sep, enum itemfun_op flag);
 
 char *iter_rep[MAX_ITERS];  /**< itext values */
 int iter_place[MAX_ITERS];  /**< inum numbers */
@@ -2335,11 +2336,11 @@ FUNCTION(fun_index)
  * \param num string containing the element number to operate on.
  * \param word string to insert/delete/replace.
  * \param sep separator string.
- * \param flag operation to perform: 0 - delete, 1 - replace, 2 - insert
+ * \param flag operation to perform: IF_DELETE, IF_REPLACE, IF_INSERT
  */
 static void
 do_itemfuns(char *buff, char **bp, char *str, char *num, char *word,
-	    char *sep, int flag)
+	    char *sep, enum itemfun_op flag)
 {
   char c;
   int el, count, len = -1;
@@ -2358,7 +2359,7 @@ do_itemfuns(char *buff, char **bp, char *str, char *num, char *word,
     c = ' ';
 
   /* we can't remove anything before the first position */
-  if ((el < 1 && flag != 2) || el == 0) {
+  if ((el < 1 && flag != IF_INSERT) || el == 0) {
     safe_str(str, buff, bp);
     return;
   }
@@ -2408,7 +2409,7 @@ do_itemfuns(char *buff, char **bp, char *str, char *num, char *word,
     sptr[-1] = '\0';
 
   switch (flag) {
-  case 0:
+  case IF_DELETE:
     /* deletion */
     if (!eptr) {		/* last element in the string */
       if (el != 1)
@@ -2421,7 +2422,7 @@ do_itemfuns(char *buff, char **bp, char *str, char *num, char *word,
       safe_str(eptr, buff, bp);
     }
     break;
-  case 1:
+  case IF_REPLACE:
     /* replacing */
     if (!eptr) {		/* last element in string */
       if (el != 1) {
@@ -2439,7 +2440,7 @@ do_itemfuns(char *buff, char **bp, char *str, char *num, char *word,
       safe_str(eptr, buff, bp);
     }
     break;
-  case 2:
+  case IF_INSERT:
     /* insertion */
     if (sptr == str) {		/* first element in string */
       safe_str(word, buff, bp);
@@ -2449,8 +2450,10 @@ do_itemfuns(char *buff, char **bp, char *str, char *num, char *word,
       safe_str(str, buff, bp);
       safe_chr(c, buff, bp);
       safe_str(word, buff, bp);
-      safe_chr(c, buff, bp);
-      safe_str(sptr, buff, bp);
+      if (sptr && *sptr) {	/* Don't add an osep to the end of the list */
+	safe_chr(c, buff, bp);
+	safe_str(sptr, buff, bp);
+      }
     }
     break;
   }
@@ -2462,7 +2465,7 @@ FUNCTION(fun_ldelete)
 {
   /* delete a word at position X of a list */
 
-  do_itemfuns(buff, bp, args[0], args[1], NULL, args[2], 0);
+  do_itemfuns(buff, bp, args[0], args[1], NULL, args[2], IF_DELETE);
 }
 
 /* ARGSUSED */
@@ -2470,7 +2473,7 @@ FUNCTION(fun_replace)
 {
   /* replace a word at position X of a list */
 
-  do_itemfuns(buff, bp, args[0], args[1], args[2], args[3], 1);
+  do_itemfuns(buff, bp, args[0], args[1], args[2], args[3], IF_REPLACE);
 }
 
 /* ARGSUSED */
@@ -2478,7 +2481,7 @@ FUNCTION(fun_insert)
 {
   /* insert a word at position X of a list */
 
-  do_itemfuns(buff, bp, args[0], args[1], args[2], args[3], 2);
+  do_itemfuns(buff, bp, args[0], args[1], args[2], args[3], IF_INSERT);
 }
 
 /* ARGSUSED */
