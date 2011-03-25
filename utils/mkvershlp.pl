@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 #
 # Generate game/txt/hlp/ files from the CHANGES file(s).
 # Should be run by Makefile from top-level directory

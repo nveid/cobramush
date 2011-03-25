@@ -20,6 +20,7 @@
 #include "externs.h"
 #include "parse.h"
 #include "dbdefs.h"
+#include "attrib.h"
 #include "log.h"
 #include "match.h"
 #include "attrib.h"

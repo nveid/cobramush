@@ -1127,14 +1127,14 @@ add_follower(dbref leader, dbref follower)
   char *bp;
   a = atr_get_noparent(leader, "FOLLOWERS");
   if (!a) {
-    (void) atr_add(leader, "FOLLOWERS", unparse_dbref(follower), GOD, NOTHING);
+    (void) atr_add(leader, "FOLLOWERS", unparse_dbref(follower), GOD, 0);
   } else {
     bp = tbuf1;
     safe_str(atr_value(a), tbuf1, &bp);
     safe_chr(' ', tbuf1, &bp);
     safe_dbref(follower, tbuf1, &bp);
     *bp = '\0';
-    (void) atr_add(leader, "FOLLOWERS", tbuf1, GOD, NOTHING);
+    (void) atr_add(leader, "FOLLOWERS", tbuf1, GOD, 0);
   }
 }
 
@@ -1147,14 +1147,14 @@ add_following(dbref follower, dbref leader)
   char *bp;
   a = atr_get_noparent(follower, "FOLLOWING");
   if (!a) {
-    (void) atr_add(follower, "FOLLOWING", unparse_dbref(leader), GOD, NOTHING);
+    (void) atr_add(follower, "FOLLOWING", unparse_dbref(leader), GOD, 0);
   } else {
     bp = tbuf1;
     safe_str(atr_value(a), tbuf1, &bp);
     safe_chr(' ', tbuf1, &bp);
     safe_dbref(leader, tbuf1, &bp);
     *bp = '\0';
-    (void) atr_add(follower, "FOLLOWING", tbuf1, GOD, NOTHING);
+    (void) atr_add(follower, "FOLLOWING", tbuf1, GOD, 0);
   }
 }
 
@@ -1186,8 +1186,7 @@ del_follower(dbref leader, dbref follower)
   /* Let's take it apart and put it back together w/o follower */
   strcpy(flwr, unparse_dbref(follower));
   strcpy(tbuf1, atr_value(a));
-  (void) atr_add(leader, "FOLLOWERS",
-		 remove_word(tbuf1, flwr, ' '), GOD, NOTHING);
+  (void) atr_add(leader, "FOLLOWERS", remove_word(tbuf1, flwr, ' '), GOD, 0);
 }
 
 /* Delete someone from a player's FOLLOWING attribute */
@@ -1203,8 +1202,7 @@ del_following(dbref follower, dbref leader)
   /* Let's take it apart and put it back together w/o leader */
   strcpy(ldr, unparse_dbref(leader));
   strcpy(tbuf1, atr_value(a));
-  (void) atr_add(follower, "FOLLOWING",
-		 remove_word(tbuf1, ldr, ' '), GOD, NOTHING);
+  (void) atr_add(follower, "FOLLOWING", remove_word(tbuf1, ldr, ' '), GOD, 0);
 }
 
 static void

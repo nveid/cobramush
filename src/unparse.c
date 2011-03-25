@@ -121,7 +121,6 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
   static char buf[BUFFER_LEN], *bp;
   static char tbuf1[BUFFER_LEN];
   char *p;
-  int got_nameformat = 0;
 
   couldunparse = 0;
   if (!(GoodObject(loc) || (loc == NOTHING) || (loc == AMBIGUOUS) ||
@@ -146,14 +145,12 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
     /* Don't let 'em get dbrefs when they're IC */
     if ((Can_Examine(player, loc) || can_link_to(player, loc) ||
 	 JumpOk(loc) || ChownOk(loc) || DestOk(loc)) &&
-	(!Myopic(player) || !obey_myopic) &&
-	!(use_nameformat && got_nameformat)
-	) {
+	(!Myopic(player) || !obey_myopic)) {
       /* show everything */
       if (SUPPORT_PUEBLO)
 	couldunparse = 1;
       bp = buf;
-      if (ANSI_NAMES && ShowAnsi(player) && !got_nameformat)
+      if (ANSI_NAMES && ShowAnsi(player))
 	safe_format(buf, &bp, "%s%s%s(#%d%s)", ANSI_HILITE, tbuf1,
 		    ANSI_NORMAL, loc, unparse_flags(loc, player));
       else
@@ -162,7 +159,7 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
       *bp = '\0';
     } else {
       /* show only the name */
-      if (ANSI_NAMES && ShowAnsi(player) && !got_nameformat) {
+      if (ANSI_NAMES && ShowAnsi(player)) {
 	bp = buf;
 	safe_format(buf, &bp, "%s%s%s", ANSI_HILITE, tbuf1, ANSI_NORMAL);
 	*bp = '\0';

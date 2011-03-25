@@ -182,7 +182,7 @@ add_to_generic(dbref player, int am, const char *name, int flags)
 static int
 add_to(dbref player, int am)
 {
-  return (add_to_generic(player, am, "QUEUE", NOTHING));
+  return (add_to_generic(player, am, "QUEUE", 0));
 }
 
 static int

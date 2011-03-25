@@ -103,7 +103,7 @@ password_check(dbref player, const char *password)
 	return 0;
       }
     /* Something worked. Change password to SHS-encrypted */
-    (void) atr_add(player, pword_attr, passwd, GOD, NOTHING);
+    (void) atr_add(player, pword_attr, passwd, GOD, 0);
   }
   free(saved);
   return 1;
@@ -223,7 +223,7 @@ dbref create_guest(const char *host, const char *ip) {
 		copy_flag_bitmask("FLAG", Flags(gst_id), flags);
 	}
 	mush_free((Malloc_t) guest_name, "gst_buf");
-	atr_add(gst_id, "DESCRIBE", GUEST_DESCRIBE, gst_id, NOTHING);
+	atr_add(gst_id, "DESCRIBE", GUEST_DESCRIBE, gst_id, 0);
 
 	SLEVEL(gst_id) = LEVEL_GUEST;
 	Home(gst_id) = options.guest_start;
@@ -391,7 +391,7 @@ email_register_player(const char *name, const char *email, const char *host,
   reserve_fd();
   /* Ok, all's well, make a player */
   player = make_player(name, passwd, host, ip);
-  (void) atr_add(player, "REGISTERED_EMAIL", email, GOD, NOTHING);
+  (void) atr_add(player, "REGISTERED_EMAIL", email, GOD, 0);
   SLEVEL(player) = LEVEL_UNREGISTERED;
   powergroup_db_set(NOTHING, player, PLAYER_DEF_POWERGROUP, 1);
   return player;
@@ -432,14 +432,14 @@ make_player(const char *name, const char *password, const char *host,
   set_initial_warnings(player);
   /* Modtime tracks login failures */
   ModTime(player) = (time_t) 0;
-  (void) atr_add(player, "XYXXY", mush_crypt(password), GOD, NOTHING);
+  (void) atr_add(player, "XYXXY", mush_crypt(password), GOD, 0);
   giveto(player, START_BONUS);	/* starting bonus */
-  (void) atr_add(player, "LAST", show_time(mudtime, 0), GOD, NOTHING);
-  (void) atr_add(player, "LASTSITE", host, GOD, NOTHING);
+  (void) atr_add(player, "LAST", show_time(mudtime, 0), GOD, 0);
+  (void) atr_add(player, "LASTSITE", host, GOD, 0);
   (void) atr_add(player, "LASTIP", ip, GOD, NOTHING);
-  (void) atr_add(player, "LASTFAILED", " ", GOD, NOTHING);
+  (void) atr_add(player, "LASTFAILED", " ", GOD, 0);
   sprintf(temp, "%d", START_QUOTA);
-  (void) atr_add(player, "RQUOTA", temp, GOD, NOTHING);
+  (void) atr_add(player, "RQUOTA", temp, GOD, 0);
   (void) atr_add(player, "ICLOC", EMPTY_ATTRS ? "" : " ", GOD,
 		 AF_MDARK | AF_PRIVATE | AF_NOCOPY);
 #ifdef USE_MAILER
@@ -503,7 +503,7 @@ do_password(dbref player, dbref cause, const char *old, const char *newobj)
   } else if (!ok_password(newobj)) {
     notify(player, T("Bad new password."));
   } else {
-    (void) atr_add(player, "XYXXY", mush_crypt(newobj), GOD, NOTHING);
+    (void) atr_add(player, "XYXXY", mush_crypt(newobj), GOD, 0);
     notify(player, T("You have changed your password."));
   }
 }
@@ -554,12 +554,12 @@ check_last(dbref player, const char *host, const char *ip)
    */
 
   /* set the new attributes */
-  (void) atr_add(player, "LAST", s, GOD, NOTHING);
+  (void) atr_add(player, "LAST", s, GOD, 0);
   if(!has_flag_by_name(player, "WEIRDSITE", TYPE_PLAYER)) {
-   (void) atr_add(player, "LASTSITE", host, GOD, NOTHING);
-   (void) atr_add(player, "LASTIP", ip, GOD, NOTHING);
+   (void) atr_add(player, "LASTSITE", host, GOD, 0);
+   (void) atr_add(player, "LASTIP", ip, GOD, 0);
   }
-  (void) atr_add(player, "LASTFAILED", " ", GOD, NOTHING);
+  (void) atr_add(player, "LASTFAILED", " ", GOD, 0);
 }
 
 
@@ -575,5 +575,5 @@ check_lastfailed(dbref player, const char *host)
   bp = last_place;
   safe_format(last_place, &bp, T("%s on %s"), host, show_time(mudtime, 0));
   *bp = '\0';
-  (void) atr_add(player, "LASTFAILED", last_place, GOD, NOTHING);
+  (void) atr_add(player, "LASTFAILED", last_place, GOD, 0);
 }

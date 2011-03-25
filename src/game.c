@@ -1954,7 +1954,7 @@ do_dolist(dbref player, char *list, char *command, dbref cause,
   *bp = '\0';
   if (flags & DOL_MAP) {
     /* if we're doing a @map, copy the list to an attribute */
-    (void) atr_add(player, "MAPLIST", outbuf, GOD, NOTHING);
+    (void) atr_add(player, "MAPLIST", outbuf, GOD, 0);
     notify(player, T("Function mapped onto list."));
   }
   if (flags & DOL_NOTIFY) {

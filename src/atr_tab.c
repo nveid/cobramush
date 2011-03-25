@@ -86,6 +86,7 @@ PRIV attr_privs_view[] = {
   {"nearby", 'n', AF_NEARBY, AF_NEARBY},
   {"amhear", 'M', AF_MHEAR, AF_MHEAR},
   {"aahear", 'A', AF_AHEAR, AF_AHEAR},
+  {"root", '`', AF_ROOT, AF_ROOT},
   {NULL, '\0', 0, 0}
 };
 

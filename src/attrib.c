@@ -31,15 +31,6 @@
 #pragma warning( disable : 4761)        /* disable warning re conversion */
 #endif
 
-/** Attribute error - too many attribs */
-#define AE_TOOMANY -4
-/** Attribute error - invalid name */
-#define AE_BADNAME -3
-/** Attribute error - attempt to overwrite a safe attribute */
-#define AE_SAFE -2
-/** Attribute error - general failure */
-#define AE_ERROR -1
-
 /* Catchall Attribute any non-standard attributes will conform to this */
 ATTR *catchall;
 
@@ -52,13 +43,9 @@ extern PRIV attr_privs_set[];
 extern PRIV attr_privs_view[];
 dbref atr_on_obj = NOTHING;
 
-/** A flag to show if we're in the middle of a @wipe (this changes
- * behaviour for atr_clr()).  Yes, this is gross and ugly, but it
- * seemed like a better idea than propogating signature changes
- * for atr_clr() and do_set_atr() through the entire codebase.  If
- * you come up with a better way, PLEASE fix this...
- */
-int we_are_wiping;
+static int real_atr_clr(dbref thinking, char const *atr, dbref player,
+			int we_are_wiping);
+
 
 dbref global_parent_depth[] = { 0, 0 };
 
@@ -81,11 +68,17 @@ typedef struct atrpage {
   ATTR atrs[ATTRS_PER_PAGE];    /**< Array of attribute structures */
 } ATTRPAGE;
 
-static ATTR *atr_free_list;
-static ATTR *get_atr_free_list(void);
+static int atr_clear_children(dbref player, dbref thing, ATTR *root);
+static ATTR *atr_free_list = NULL;
+static ATTR *alloc_atr(void);
+static ATTR *pop_free_list(void);
+static void push_free_list(ATTR *);
+static void atr_free_one(ATTR *);
 static ATTR *find_atr_pos_in_list(ATTR *** pos, char const *name);
+static atr_err can_create_attr(dbref player, dbref obj, char const *atr_name,
+			       unsigned int flags);
 static int can_create_attr(dbref player, dbref obj, char const *atr_name,
-                           int flags);
+                           unsigned int flags);
 static ATTR *find_atr_in_list(ATTR * atr, char const *name);
 
 /** Utility define for can_write_attr_internal and can_create_attr.
@@ -264,7 +257,7 @@ find_atr_in_list(ATTR * atr, char const *name)
   return NULL;
 }
 
-/** Find the place to insert/delete an attribute with the specified name.
+/** Find the place to insert an attribute with the specified name.
  * \param pos a pointer to the ATTR ** holding the list position
  * \param name the attribute name to look for
  * \return the matching attribute, or NULL if no matching attribute
@@ -358,8 +351,7 @@ atrflag_to_string(int mask)
       lock_owner = AL_CREATOR(std); \
       ns_chk = 0; \
     } else { \
-      if (flags != NOTHING) \
-        AL_FLAGS(atr) |= flags; \
+      AL_FLAGS(atr) = flags; \
       AL_WLock(atr) = AL_RLock(atr) = TRUE_BOOLEXP; \
       lock_owner = NOTHING; \
       ns_chk = 1; \
@@ -377,12 +369,14 @@ atrflag_to_string(int mask)
  * \param player the player trying to do the write.
  * \param obj the object targetted for the write.
  * \param atr the attribute being interrogated.
- * \param flags the default flags to add to the attribute.
+ * \param flags the default flags to add to the attribute. 
+ *              0 for default flags if it's a builtin attribute.
  * \retval 0 if the player cannot write the attribute.
  * \retval 1 if the player can write the attribute.
  */
 static int
-can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
+can_create_attr(dbref player, dbref obj, char const *atr_name,
+		unsigned int flags)
 {
   char *p;
   ATTR tmpatr, *atr;
@@ -447,7 +441,7 @@ can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
     return AE_TOOMANY;
   }
 
-  return 1;
+  return AE_OKAY;
 }
 
 /*======================================================================*/
@@ -469,8 +463,11 @@ create_atr(dbref thing, char const *atr_name)
     return NULL;
 
   /* allocate a new page, if needed */
-  ptr = get_atr_free_list();
-  atr_free_list = AL_NEXT(ptr);
+  ptr = pop_free_list();
+  if (ptr == NULL) {
+    st_delete(name, &atr_names);
+    return NULL;
+  }
 
   /* initialize atr */
   AL_WLock(ptr) = TRUE_BOOLEXP;
@@ -503,11 +500,14 @@ create_atr(dbref thing, char const *atr_name)
  */
 void
 atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
-            dbref player, int flags, unsigned char derefs, boolexp wlock,
+            dbref player, unsigned int flags, unsigned char derefs, boolexp wlock,
             boolexp rlock, time_t modtime)
 {
   ATTR *ptr;
   boolexp lock;
+  dbref lock_owner;
+  int ns_chk;
+  char *p, root_name[ATTRIBUTE_NAME_LIMIT + 1];
 
   if (!EMPTY_ATTRS && !*s)
     return;
@@ -527,7 +527,35 @@ atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   if((lock = dup_bool(rlock))) 
     AL_RLock(ptr) = lock;
 
-  AL_FLAGS(ptr) = (flags != NOTHING) ? flags : 0;
+  strcpy(root_name, atr);
+  if ((p = strrchr(root_name, '`'))) {
+    ATTR *root = NULL;
+    *p = '\0';
+    root = find_atr_in_list(List(thing), root_name);
+    if (!root) {
+      do_rawlog(LT_ERR, T("Missing root attribute '%s' on object #%d!\n"),
+		root_name, thing);
+      root = create_atr(thing, root_name);
+      set_default_flags(root, 0, lock_owner, ns_chk);
+      if(lock_owner == NOTHING)
+	lock_owner = player;
+      AL_FLAGS(root) |= AF_ROOT;
+      AL_CREATOR(root) = player;
+      if (!EMPTY_ATTRS) {
+	unsigned char *t = compress(" ");
+	if (!t) {
+	  mush_panic(T("Unable to allocate memory in atr_new_add()!"));
+	}
+	root->data = chunk_create(t, u_strlen(t), 0);
+	free(t);
+      }
+    } else {
+      if (!AL_FLAGS(root) & AF_ROOT) 	/* Upgrading old database */
+	AL_FLAGS(root) |= AF_ROOT; 
+    }
+  }
+
+  AL_FLAGS(ptr) = flags;
   AL_FLAGS(ptr) &= ~AF_COMMAND & ~AF_LISTEN;
   AL_CREATOR(ptr) = ooref != NOTHING ? ooref : player;
 
@@ -540,6 +568,7 @@ atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
     unsigned char *t = compress(s);
     if (!t)
       return;
+
     ptr->data = chunk_create(t, u_strlen(t), derefs);
     free(t);
 
@@ -560,17 +589,16 @@ atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
  * \param atr name of the attribute to set.
  * \param s value of the attribute to set.
  * \param player the attribute creator.
- * \param flags bitmask of attribute flags for this attribute.
- * \retval AE_BADNAME invalid attribute name.
- * \retval AE_SAFE attempt to overwrite a SAFE attribute.
- * \retval AE_ERROR general failure.
- * \retval 1 success.
+ * \param flags bitmask of attribute flags for this attribute. 0 will use
+ *         default.
+ * \return AE_OKAY or an AE_* error code.
  */
-int
+
+atr_err
 atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
-        dbref player, int flags)
+        dbref player, unsigned int flags)
 {
-  ATTR *ptr;
+  ATTR *ptr, *root = NULL;
   dbref lock_owner; /* Not used.. but set in set_default_flags */
   int ns_chk;
   char *p;
@@ -604,8 +632,8 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
 
   /* make a new atr, if needed */
   if (!ptr) {
-    int res = can_create_attr(player, thing, atr, flags);
-    if (res < 0) {
+    atr_err res = can_create_attr(player, thing, atr, flags);
+    if (res != AE_OKAY) {
       ooref = tooref;
       return res;
     }
@@ -615,13 +643,13 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
     for (p = strchr(missing_name, '`'); p; p = strchr(p + 1, '`')) {
       *p = '\0';
 
-      ptr = find_atr_in_list(ptr, missing_name);
+      root = find_atr_in_list(ptr, missing_name);
 
-      if (!ptr) {
-        ptr = create_atr(thing, missing_name);
-        if (!ptr) {
+      if (!root) {
+        root = create_atr(thing, missing_name);
+        if (!root) {
           ooref = tooref;
-          return AE_ERROR;
+          return AE_TREE;
         }
 
         /* update modification time here, because from now on,
@@ -634,20 +662,21 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
           set_lmod(thing, lmbuf);
         }
 
-        set_default_flags(ptr, flags, lock_owner, ns_chk);
-        AL_FLAGS(ptr) &= ~AF_COMMAND & ~AF_LISTEN;
-        AL_CREATOR(ptr) = ooref != NOTHING ? Owner(ooref) : Owner(player);
-        AL_MODTIME(ptr) = mudtime;
+        set_default_flags(root, flags, lock_owner, ns_chk);
+        AL_FLAGS(root) &= ~AF_COMMAND & ~AF_LISTEN;
+	AL_FLAGS(root) |= AF_ROOT;
+        AL_CREATOR(root) = ooref != NOTHING ? Owner(ooref) : Owner(player);
+        AL_MODTIME(root) = mudtime;
         if (!EMPTY_ATTRS) {
           unsigned char *t = compress(" ");
           if (!t) {
+	    mush_panic(T("Unable to allocate memory in atr_add()!"));
             ooref = tooref;
-            return AE_ERROR;
           }
-          ptr->data = chunk_create(t, u_strlen(t), 0);
+	  root->data = chunk_create(t, u_strlen(t), 0);
           free(t);
         }
-      }
+      } else AL_FLAGS(root) |= AF_ROOT;
 
       *p = '`';
     }
@@ -707,15 +736,14 @@ atr_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
  * \param thing object to clear attribute from.
  * \param atr name of attribute to remove.
  * \param player enactor attempting to remove attribute.
- * \retval 0 no attribute found to reset
- * \retval AE_SAFE attribute is safe
- * \retval AE_ERROR other failure
+ * \param we_are_wiping true if called by \@wipe.
+ * \return AE_OKAY or AE_* error code.
  */
-int
-atr_clr(dbref thing, char const *atr, dbref player)
+static atr_err
+real_atr_clr(dbref thing, char const *atr, dbref player, int we_are_wiping)
 {
-  ATTR *ptr, **prev, *sub;
-  size_t len;
+  ATTR *ptr, **prev;
+  int can_clear = 1;
 
   tooref = ooref;
   if (player == GOD)
@@ -726,7 +754,7 @@ atr_clr(dbref thing, char const *atr, dbref player)
 
   if (!ptr) {
     ooref = tooref;
-    return 0;
+    return AE_NOTFOUND;
   }
 
   if (ptr && AF_Safe(ptr)) {
@@ -738,59 +766,79 @@ atr_clr(dbref thing, char const *atr, dbref player)
     return AE_ERROR;
   }
 
-  sub = atr_sub_branch(ptr);
-  if (!we_are_wiping && sub) {
+  if ((AL_FLAGS(ptr) & AF_ROOT) && !we_are_wiping) {
     ooref = tooref;
-    return AE_ERROR;
+    return AE_TREE;
   }
 
-  if (!IsPlayer(thing) && !AF_Nodump(ptr)) {
-    char lmbuf[1024];
-    ModTime(thing) = mudtime;
-    snprintf(lmbuf, 1023, "%s[#%d]", ptr->name, player);
-    lmbuf[strlen(lmbuf) + 1] = '\0';
-    set_lmod(thing, lmbuf);
-  }
+  /* We only hit this if wiping. */
+  if (AL_FLAGS(ptr) & AF_ROOT)
+    can_clear = atr_clear_children(player, thing, ptr);
 
-  *prev = AL_NEXT(ptr);
+  if (can_clear) {
+    char *p;
+    char root_name[ATTRIBUTE_NAME_LIMIT + 1];
 
-  if (ptr->data)
-    chunk_delete(ptr->data);
+    strcpy(root_name, AL_NAME(ptr));
 
-  len = strlen(AL_NAME(ptr));
-  st_delete(AL_NAME(ptr), &atr_names);
-
-  free_atr_locks(ptr);
-
-  AL_NEXT(ptr) = atr_free_list;
-  AL_FLAGS(ptr) = 0;
-  atr_free_list = ptr;
-  AttrCount(thing)--;
-
-  if (we_are_wiping && sub) {
-    while (*prev != sub)
-      prev = &AL_NEXT(*prev);
-    ptr = *prev;
-    while (ptr && strlen(AL_NAME(ptr)) > len && AL_NAME(ptr)[len] == '`') {
-      *prev = AL_NEXT(ptr);
-
-      if (ptr->data)
-        chunk_delete(ptr->data);
-      st_delete(AL_NAME(ptr), &atr_names);
-
-      AL_NEXT(ptr) = atr_free_list;
-      AL_FLAGS(ptr) = 0;
-      atr_free_list = ptr;
-      AttrCount(thing)--;
-
-      ptr = *prev;
-    }
-  }
-  ooref = tooref;
-  return 1;
+   if (!IsPlayer(thing) && !AF_Nodump(ptr))
+     ModTime(thing) = mudtime;
+   *prev = AL_NEXT(ptr);
+   atr_free_one(ptr);
+   AttrCount(thing)--;
+ 
+   /* If this was the only leaf of a tree, clear the AF_ROOT flag from
+    * the parent. */
+   if ((p = strrchr(root_name, '`'))) {
+     ATTR *root;
+     *p = '\0';
+  
+     root = find_atr_in_list(List(thing), root_name);
+     *p = '`';
+  
+     if (!root) {
+	do_rawlog(LT_ERR, T("Attribute %s on object #%d lacks a parent!"),
+		  root_name, thing);
+     } else {
+	if (!atr_sub_branch(root))
+	  AL_FLAGS(root) &= ~AF_ROOT;
+     }
+   }
+  
+   return AE_OKAY;
+ } else
+   return AE_TREE;
 }
 
-/** Retrieve an attribute from an object or its ancestors.
+/* Remove an attribute from an object.
+ * This function clears an attribute from an object. 
+ * Permission is denied if the attribute is a branch, not a leaf.
+ * \param thing object to clear attribute from.
+ * \param atr name of attribute to remove.
+ * \param player enactor attempting to remove attribute.
+ * \return AE_OKAY or an AE_* error code
+ */
+atr_err
+atr_clr(dbref thing, char const *atr, dbref player)
+{
+ return real_atr_clr(thing, atr, player, 0);
+}
+  
+  
+/* \@wipe an attribute (And any leaves) from an object.
+ * This function clears an attribute from an object. 
+ * \param thing object to clear attribute from.
+ * \param atr name of attribute to remove.
+ * \param player enactor attempting to remove attribute.
+ * \return AE_OKAY or an AE_* error code.
+ */
+atr_err
+wipe_atr(dbref thing, char const *atr, dbref player)
+{
+ return real_atr_clr(thing, atr, player, 1);
+}
+ 
+ /** Retrieve an attribute from an object or its ancestors.
  * This function retrieves an attribute from an object, or from its
  * parent chain, returning a pointer to the first attribute that
  * matches or NULL. This is a pointer to an attribute structure, not
@@ -965,7 +1013,7 @@ atr_iter_get(dbref player, dbref thing, const char *name, int mortal,
  * \param thing dbref of object
  */
 void
-atr_free(dbref thing)
+atr_free_all(dbref thing)
 {
   ATTR *ptr;
 
@@ -982,17 +1030,7 @@ atr_free(dbref thing)
 
   while ((ptr = List(thing))) {
     List(thing) = AL_NEXT(ptr);
-    if (AL_WLock(ptr) != TRUE_BOOLEXP)
-      free_boolexp(AL_WLock(ptr));
-    if (AL_RLock(ptr) != TRUE_BOOLEXP)
-      free_boolexp(AL_RLock(ptr));
-
-    if (ptr->data)
-      chunk_delete(ptr->data);
-    st_delete(AL_NAME(ptr), &atr_names);
-
-    AL_NEXT(ptr) = atr_free_list;
-    atr_free_list = ptr;
+    atr_free_one(ptr);
   }
 }
 
@@ -1740,12 +1778,12 @@ one_comm_match(dbref thing, dbref player, const char *atr, const char *str)
  */
 int
 do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
-           dbref player, int flags)
+           dbref player, unsigned int flags)
 {
   ATTR *old;
   char name[BUFFER_LEN];
   char tbuf1[BUFFER_LEN];
-  int res;
+  atr_err res;
   int was_hearer;
   int was_listener;
   dbref contents;
@@ -1850,14 +1888,26 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
       s ? atr_add(thing, name, s, player,
                   (flags & 0x02) ? AF_NOPROG : NOTHING)
       : atr_clr(thing, name, player);
-  if (res == AE_SAFE) {
+  switch (res) {
+  case AE_SAFE:
     notify_format(player, T("Attribute %s is SAFE. Set it !SAFE to modify it."),
 		  name);
     return 0;
-  } else if (res == AE_BADNAME) {
-    notify(player, T("That's not a very good name for an attribute."));
+  case AE_TREE:
+    if (!s) {
+      notify_format(player,
+		    T("Unable to remove '%s' because of a protected tree attribute."),
+		    name);
+      return 0;
+    } else {
+      notify_format(player,
+		    T("Unable to set '%s' because of a failure to create a needed parent attribute."), name);
+      return 0;
+    }
+  case AE_BADNAME:
+    notify_format(player, T("That's not a very good name for an attribute."));
     return 0;
-  } else if (res == AE_ERROR) {
+  case AE_ERROR:
     if (*missing_name) {
       if (s && (EMPTY_ATTRS || *s))
         notify_format(player, T("You must set %s first."), missing_name);
@@ -1869,12 +1919,15 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
     } else
       notify(player, T("That attribute cannot be changed by you."));
     return 0;
-  } else if (res == AE_TOOMANY) {
+  case AE_TOOMANY:
     notify(player, T("Too many attributes on that object to add another."));
     return 0;
-  } else if (!res) {
+  case AE_NOTFOUND:
     notify(player, T("No such attribute to reset."));
     return 0;
+  case AE_OKAY:
+    /* Success */
+    break;
   }
   if (!strcmp(name, "ALIAS") && IsPlayer(thing)) {
     reset_player_list(thing, NULL, tbuf1, NULL, s);
@@ -2075,14 +2128,14 @@ do_atrchown(dbref player, const char *arg1, const char *arg2)
  * \return the pointer to the head of the attribute free list.
  */
 static ATTR *
-get_atr_free_list(void)
+alloc_atr(void)
 {
   if (!atr_free_list) {
     ATTRPAGE *page;
     int j;
     page = (ATTRPAGE *) mush_malloc(sizeof(ATTRPAGE), "ATTRPAGE");
     if (!page)
-      mush_panic("Couldn't allocate memory in get_atr_free_list");
+      mush_panic("Couldn't allocate memory in alloc_attr");
     for (j = 0; j < ATTRS_PER_PAGE - 1; j++)
       AL_NEXT(page->atrs + j) = page->atrs + j + 1;
     AL_NEXT(page->atrs + ATTRS_PER_PAGE - 1) = NULL;
@@ -2272,7 +2325,105 @@ can_write_attr_internal(dbref player, dbref obj, ATTR * atr, int safe)
     *p = '`';
   }
 
-  return 1;
+  return AE_OKAY;
+}
+
+
+/** Remove all child attributes from root attribute that can be.
+ * \param player object doing a @wipe.
+ * \param thing object being @wiped.
+ * \param root root of attribute tree.
+ * \return 1 if all children were deleted, 0 if some were left.
+ */
+static int
+atr_clear_children(dbref player, dbref thing, ATTR *root)
+{
+  ATTR *sub, *next = NULL, *prev;
+  int skipped = 0;
+
+  prev = root;
+
+  for (sub = atr_sub_branch(root);
+       sub && string_prefix(AL_NAME(sub), AL_NAME(root)); sub = next) {
+    if (AL_FLAGS(sub) & AF_ROOT) {
+      if (!atr_clear_children(player, thing, sub)) {
+	skipped++;
+	next = AL_NEXT(sub);
+	prev = sub;
+	continue;
+      }
+    }
+
+    next = AL_NEXT(sub);
+
+    if (!Can_Write_Attr(player, thing, sub)) {
+      skipped++;
+      prev = sub;
+      continue;
+    }
+
+    /* Can safely delete attribute.  */
+    AL_NEXT(prev) = next;
+    atr_free_one(sub);
+    AttrCount(thing)--;
+
+  }
+
+  return !skipped;
+
+}
+
+/** Pop an empty attribute off of the free list for use on
+ * an object.
+ * \return the pointer to an attribute, or NULL on error.
+ */
+static ATTR *
+pop_free_list(void)
+{
+  ATTR *ptr;
+  ptr = alloc_atr();
+  if (!ptr)
+    return NULL;
+  atr_free_list = AL_NEXT(ptr);
+  AL_NEXT(ptr) = NULL;
+  return ptr;
+}
+
+/** Push a now-unused attribute onto the free list
+ * \param An attribute that's been deleted from an object and
+ * had its chunk reference deleted.
+ */
+static void
+push_free_list(ATTR *a)
+{
+  memset(a, 0, sizeof(*a));
+  AL_NEXT(a) = atr_free_list;
+  atr_free_list = a;
+}
+
+/** Delete one attribute, deallocating its name and data.
+ * <strong>Does not update the owning object's attribute list or
+ * attribute count. That is the caller's responsibility.</strong>
+ *
+ * \param a the attribute to free
+ */
+static void
+atr_free_one(ATTR *a)
+{
+  if (!a)
+    return;
+
+  if (AL_WLock(a) != TRUE_BOOLEXP)
+    free_boolexp(AL_WLock(a));
+  if (AL_RLock(a) != TRUE_BOOLEXP)
+    free_boolexp(AL_RLock(a));
+
+  st_delete(AL_NAME(a), &atr_names);
+
+  if (a->data)
+    chunk_delete(a->data);
+
+  push_free_list(a);
 }
 
 /** Return the compressed data for an attribute.

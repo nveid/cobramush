@@ -1247,7 +1247,7 @@ db_free(void)
     for (i = 0; i < db_top; i++) {
       set_name(i, NULL);
       set_lmod(i, NULL);
-      atr_free(i);
+      atr_free_all(i);
       free_locks(Locks(i));
     }
 
@@ -1294,9 +1294,8 @@ get_list(FILE * f, dbref i)
       }
       *q++ = '\0';
       flags = atoi(q);
-      /* Remove obsolete AF_NUKED flag and AF_STATIC, just in case */
+      /* Remove obsolete AF_NUKED flag just in case */
       flags &= ~AF_NUKED;
-      flags &= ~AF_STATIC;
       if (!(indb_flags & DBF_AF_VISUAL)) {
 	/* Remove AF_ODARK flag. If it wasn't there, set AF_VISUAL */
 	if (!(flags & AF_ODARK))

@@ -2205,9 +2205,10 @@ FUNCTION(fun_speak)
   else
     close = args[6];
 
+
   switch (*string) {
   case ':':
-    safe_str(Name(speaker), buff, bp);
+    safe_str(accented_name(speaker), buff, bp);
     string++;
     if (*string == ' ') {
       /* semipose it instead */
@@ -2218,7 +2219,7 @@ FUNCTION(fun_speak)
     break;
   case ';':
     string++;
-    safe_str(Name(speaker), buff, bp);
+    safe_str(accented_name(speaker), buff, bp);
     if (*string == ' ') {
       /* pose it instead */
       safe_chr(' ', buff, bp);
@@ -2240,7 +2241,8 @@ FUNCTION(fun_speak)
   if (!transform || (!say && !strstr(string, open))) {
     /* nice and easy */
     if (say)
-      safe_format(buff, bp, "%s %s \"%s\"", Name(speaker), say_string, string);
+      safe_format(buff, bp, "%s %s \"%s\"", accented_name(speaker),
+		  say_string, string);
     else
       safe_str(string, buff, bp);
     LEAVE_OOREF;
@@ -2258,7 +2260,7 @@ FUNCTION(fun_speak)
       return;
     }
     if (strlen(rbuff) > 0) {
-      safe_format(buff, bp, "%s %s %s", Name(speaker), say_string, rbuff);
+      safe_format(buff, bp, "%s %s %s", accented_name(speaker), say_string, rbuff);
       LEAVE_OOREF;
       return;
     } else if (null == 1) {
@@ -2280,7 +2282,7 @@ FUNCTION(fun_speak)
     int delete = 0;
 
     if (say) {
-      safe_str(Name(speaker), buff, bp);
+      safe_str(accented_name(speaker), buff, bp);
       safe_chr(' ', buff, bp);
       safe_str(say_string, buff, bp);
       safe_chr(' ', buff, bp);

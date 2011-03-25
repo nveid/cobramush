@@ -1468,7 +1468,7 @@ logout_sock(DESC *d)
     snprintf(tbuf1, BUFFER_LEN-1, "%ld %ld %d %d", (mudtime - d->connected_at),
 	d->idle_total, d->unidle_times, d->cmds); 
     tbuf1[strlen(tbuf1)+1] = '\0';
-    (void) atr_add(d->player, "LASTACTIVITY", tbuf1, GOD, NOTHING);
+    (void) atr_add(d->player, "LASTACTIVITY", tbuf1, GOD, 0);
     announce_disconnect(d->player);
 #ifdef USE_MAILER
     do_mail_purge(d->player);
@@ -1552,7 +1552,7 @@ shutdownsock(DESC *d)
       snprintf(tbuf1, BUFFER_LEN-1, "%ld %ld %d %d", (mudtime - d->connected_at), 
 	  d->idle_total , d->unidle_times, d->cmds);
       tbuf1[strlen(tbuf1)+1] = '\0';
-      (void) atr_add(d->player, "LASTACTIVITY", tbuf1, GOD, NOTHING);
+      (void) atr_add(d->player, "LASTACTIVITY", tbuf1, GOD, 0);
       announce_disconnect(d->player);
 #ifdef USE_MAILER
       do_mail_purge(d->player);
@@ -3887,7 +3887,7 @@ announce_disconnect(dbref player)
       (void) queue_attribute(obj, "ADISCONNECT", player);
     }
     clear_flag_internal(player, "CONNECTED");
-    (void) atr_add(player, "LASTLOGOUT", show_time(mudtime, 0), GOD, NOTHING);
+    (void) atr_add(player, "LASTLOGOUT", show_time(mudtime, 0), GOD, 0);
   } else {
     /* note: when you partially disconnect, ADISCONNECTS are not executed */
     sprintf(tbuf1, T("%s has partially disconnected."), Name(player));
@@ -5323,7 +5323,7 @@ load_reboot_db(void)
     snprintf(tbuf1, BUFFER_LEN-1, "%ld %ld %d %d", (mudtime - closed->connected_at),
 	 closed->idle_total , closed->unidle_times, closed->cmds);
     tbuf1[strlen(tbuf1)+1] = '\0';
-    (void) atr_add(closed->player, "LASTACTIVITY", tbuf1, GOD, NOTHING);
+    (void) atr_add(closed->player, "LASTACTIVITY", tbuf1, GOD, 0);
     announce_disconnect(closed->player);
     mush_free(closed, "descriptor");
     closed = nextclosed;
@@ -5646,7 +5646,7 @@ COMMAND(cmd_su) {
 	sep[1] = '\0';
 	arr2list(p_buf, cnt-1, tbuf, &tbp, sep);
 	/* Add the attribute back */
-	(void) atr_add(player, "XYXX_DIVRCD", tbuf, GOD, NOTHING);
+	(void) atr_add(player, "XYXX_DIVRCD", tbuf, GOD, 0);
       }
     } else {
       notify(player, "Must specify what player you wish to @su into.");

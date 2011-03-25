@@ -1084,9 +1084,26 @@ wipe_helper(dbref player, dbref thing, dbref parent __attribute__ ((__unused__))
    * attributes using this command and wildcards.  Wiping a specific
    * attr still works, though.
    */
+  int saved_count = AttrCount(thing);
+ 
   if (wildcard(pattern) && (AL_FLAGS(atr) & AF_PRIVILEGE) && !Director(player))
 	  return 0;
-  return do_set_atr(thing, AL_NAME(atr), NULL, player, 0) == 1;
+  switch (wipe_atr(thing, AL_NAME(atr), player)) {
+  case AE_SAFE:
+    notify_format(player, T("Attribute %s is SAFE. Set it !SAFE to modify it."),
+		  AL_NAME(atr));
+    return 0;
+  case AE_ERROR:
+    notify_format(player, T("Unable to wipe attribute %s"), AL_NAME(atr));
+    return 0;
+  case AE_TREE:
+    notify_format(player,
+		  T("Attribute %s cannot be wiped because a child attribute cannot be wiped."),
+		  AL_NAME(atr));
+    /* Fall through */
+  default:
+    return saved_count - AttrCount(thing);
+ }
 }
 
 /** Clear an attribute.
@@ -1101,6 +1118,7 @@ do_wipe(dbref player, char *name)
 {
   dbref thing;
   char *pattern;
+  int wiped;
 
   if ((pattern = strchr(name, '/')) != NULL)
     *pattern++ = '\0';
@@ -1121,12 +1139,14 @@ do_wipe(dbref player, char *name)
     return;
   }
 
-  we_are_wiping = 1;
-
-  if (!atr_iter_get(player, thing, pattern, 0, wipe_helper, NULL))
+  switch ((wiped = atr_iter_get(player, thing, pattern, 0, wipe_helper, NULL))) {
+  case 0:
     notify(player, T("No attributes wiped."));
-  else
-    notify(player, T("Attributes wiped."));
-
-  we_are_wiping = 0;
+    break;
+  case 1:
+    notify(player, T("One attribute wiped."));
+    break;
+  default:
+    notify_format(player, T("%d attributes wiped."), wiped);
+  }
 }

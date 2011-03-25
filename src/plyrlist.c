@@ -13,11 +13,11 @@
 #include <stdlib.h>
 
 #include "copyrite.h"
-
 #include "conf.h"
 #include "externs.h"
 #include "mushdb.h"
 #include "dbdefs.h"
+#include "attrib.h"
 #include "flags.h"
 #include "attrib.h"
 #include "htab.h"

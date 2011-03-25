@@ -221,7 +221,7 @@ do_quota(dbref player, const char *arg1, const char *arg2, int set_q)
     limit = dlimit;
 
   (void) atr_add(!IsDivision(who) ? Owner(who) : who, "RQUOTA", tprintf("%d", limit - owned), GOD,
-		 NOTHING);
+		 0);
 
   notify_format(player, T("Objects: %d   Limit: %d"), owned, limit);
 }
@@ -284,10 +284,10 @@ do_allquota(dbref player, const char *arg1, int quiet)
     }
     if (limit != -1) {
       if (limit <= owned) {
-	(void) atr_add(who, "RQUOTA", "0", GOD, NOTHING);
+	(void) atr_add(who, "RQUOTA", "0", GOD, 0);
       } else {
 	(void) atr_add(who, "RQUOTA", tprintf("%d", limit - owned), GOD,
-		       NOTHING);
+		       0);
       }
     }
   }
@@ -811,7 +811,7 @@ do_newpassword(dbref player, dbref cause,
       notify(player, T("Bad password."));
     } else {
       /* it's ok, do it */
-      (void) atr_add(victim, "XYXXY", mush_crypt(password), GOD, NOTHING);
+      (void) atr_add(victim, "XYXXY", mush_crypt(password), GOD, 0);
       notify_format(player, T("Password for %s changed."), Name(victim));
       notify_format(victim, T("Your password has been changed by %s."),
 		    Name(player));

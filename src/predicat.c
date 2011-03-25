@@ -124,11 +124,11 @@ charge_action(dbref player, dbref thing, const char *awhat)
       int res;
       if ((res = queue_attribute(thing, awhat, player)))
 	(void) atr_add(thing, "CHARGES", tprintf("%d", num - 1),
-		       Owner(b->creator), NOTHING);
+		       Owner(b->creator), 0);
       return res;
     } else {
       /* no charges left, try to execute runout */
-      return queue_attribute(thing, "RUNOUT", player);
+      return queue_attribute(thing, "RUNOUT", 0);
     }
   }
 }
@@ -639,7 +639,7 @@ get_current_quota(dbref who)
   else
     limit = owned;
 
-  (void) atr_add(IsDivision(who) ? who : Owner(who), "RQUOTA", tprintf("%d", limit), GOD, NOTHING);
+  (void) atr_add(IsDivision(who) ? who : Owner(who), "RQUOTA", tprintf("%d", limit), GOD, 0);
 
   return limit;
 }
@@ -657,13 +657,13 @@ change_quota(dbref who, int payment)
     return;
 
   (void) atr_add(Owner(who), "RQUOTA",
-		 tprintf("%d", get_current_quota(who) + payment), GOD, NOTHING);
+		 tprintf("%d", get_current_quota(who) + payment), GOD, 0);
 
   /* Check If Division Quota has to be adjusted now */
 
   if(GoodObject(Division(who)) && !NoQuota(Division(who))) 
   (void) atr_add(Division(who), "RQUOTA",
-		 tprintf("%d", get_current_quota(Division(who)) + payment), GOD, NOTHING);
+		 tprintf("%d", get_current_quota(Division(who)) + payment), GOD, 0);
 
     
 }

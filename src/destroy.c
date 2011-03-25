@@ -704,7 +704,7 @@ free_object(dbref thing)
   }
 
   /* chomp chomp */
-  atr_free(thing);
+  atr_free_all(thing);
   List(thing) = NULL;
   /* don't eat name otherwise examine will crash */
 

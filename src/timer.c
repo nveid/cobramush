@@ -39,6 +39,7 @@
 #include "game.h"
 #include "help.h"
 #include "parse.h"
+#include "attrib.h"
 #include "confmagic.h"
 
 

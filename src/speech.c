@@ -849,7 +849,7 @@ do_page(dbref player, const char *arg1, const char *arg2, dbref cause,
   }
   *tp = '\0';
   *tp2 = '\0';
-  (void) atr_add(player, "LASTPAGED", tbuf, GOD, NOTHING);
+  (void) atr_add(player, "LASTPAGED", tbuf, GOD, 0);
 
   /* Reset tbuf to use later */
   tp = tbuf;

@@ -1,5 +1,4 @@
-/* This must be first, otherwise dbref will be undefined */
-#include "mushtype.h"
+/* Must be included after mushtype.h to get dbref typedef */
 #ifndef _CHUNK_H_
 #define _CHUNK_H_
 

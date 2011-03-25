@@ -1,3 +1,9 @@
+/**
+ * \file attrib.h
+ *
+ * \brief Attribute-related prototypes and constants.
+ */
+
 #ifndef _ATTRIB_H
 #define _ATTRIB_H
 
@@ -13,7 +19,7 @@
 
 struct attr {
   char const *name;		/**< Name of attribute */
-  int flags;			/**< Attribute flags */
+  unsigned int flags;			/**< Attribute flags */
   chunk_reference_t data;	/**< The attribute's value, compressed */
   dbref creator;		/**< The attribute's creator's dbref */
   boolexp write_lock;		/**< Attribute lock set */
@@ -42,23 +48,36 @@ extern void attr_init_postconfig(void);
 extern void do_attribute_lock(dbref player, char *name, char *lock, switch_mask swi);
 
 /* From attrib.c */
+
+/** atr_add(), atr_clr() error codes */
+typedef enum {
+  AE_OKAY = 0, /**< Success */
+  AE_ERROR = -1, /**< general failure */
+  AE_SAFE = -2,	/**< attempt to overwrite a safe attribute */
+  AE_BADNAME = -3, /**< invalid name */
+  AE_TOOMANY = -4, /**< too many attribs */
+  AE_TREE = -5,	/**< unable to delete/create entire tree */
+  AE_NOTFOUND = -6 /** No such attribute */
+} atr_err;
+ 
 extern int good_atr_name(char const *s);
 extern ATTR *atr_match(char const *string);
 extern ATTR *atr_sub_branch(ATTR *branch);
 extern void atr_new_add(dbref thing, char const *RESTRICT atr,
-			char const *RESTRICT s, dbref player, int flags,
+			char const *RESTRICT s, dbref player, unsigned int flags,
 			unsigned char derefs, boolexp wlock, boolexp rlock,
 			time_t modtime);
-extern int atr_add(dbref thing, char const *RESTRICT atr,
-		   char const *RESTRICT s, dbref player, int flags);
-extern int atr_clr(dbref thing, char const *atr, dbref player);
+extern atr_err atr_add(dbref thing, char const *RESTRICT atr,
+		   char const *RESTRICT s, dbref player, unsigned int flags);
+extern atr_err atr_clr(dbref thing, char const *atr, dbref player);
+extern atr_err wipe_atr(dbref thing, char const *atr, dbref player);
 extern ATTR *atr_get(dbref thing, char const *atr);
 extern ATTR *atr_get_noparent(dbref thing, char const *atr);
 typedef int (*aig_func) (dbref, dbref, dbref, const char *, ATTR *, void *);
 extern int atr_iter_get(dbref player, dbref thing, char const *name,
 			int mortal, aig_func func, void *args);
 extern ATTR *atr_complete_match(dbref player, char const *atr, dbref privs);
-extern void atr_free(dbref thing);
+extern void atr_free_all(dbref thing);
 extern void atr_cpy(dbref dest, dbref source);
 extern char const *convert_atr(int oldatr);
 extern int atr_comm_match(dbref thing, dbref player, int type, int end,
@@ -70,7 +89,7 @@ extern int atr_comm_divmatch(dbref thing, dbref player, int type, int end,
 extern int one_comm_match(dbref thing, dbref player, const char *atr,
                          const char *str);
 extern int do_set_atr(dbref thing, char const *RESTRICT atr,
-                     char const *RESTRICT s, dbref player, int flags);
+                     char const *RESTRICT s, dbref player, unsigned int flags);
 extern void do_atrlock(dbref player, char const *arg1, char const *arg2, char write_lock);
 extern void do_atrchown(dbref player, char const *arg1, char const *arg2);
 extern int string_to_atrflag(dbref player, const char *p);
@@ -90,6 +109,7 @@ safe_atr_value(ATTR *atr)
 
 
 /* possible attribute flags */
+#define AF_EMPTY_FLAGS  0x0	/**< No flag at all */
 #define AF_ODARK        0x1	/* OBSOLETE! Leave here but don't use */
 #define AF_INTERNAL     0x2	/* no one can see it or set it */
 #define AF_PRIVILEGE    0x4	/* Only privileged players can change it */
@@ -103,7 +123,7 @@ safe_atr_value(ATTR *atr)
 #define AF_REGEXP       0x400	/* Match $/^ patterns using regexps */
 #define AF_CASE         0x800	/* Match $/^ patterns case-sensitive */
 #define AF_SAFE         0x1000	/* This attribute may not be modified */
-#define AF_STATIC       0x10000	/* OBSOLETE! Leave here but don't use */
+#define AF_ROOT         0x10000	/* Root of an attribute tree */
 #define AF_COMMAND      0x20000	/* INTERNAL: value starts with $ */
 #define AF_LISTEN       0x40000	/* INTERNAL: value starts with ^ */
 #define AF_NODUMP       0x80000	/* INTERNAL: attribute is not saved */
@@ -115,8 +135,16 @@ safe_atr_value(ATTR *atr)
 #define AF_PUBLIC	0x2000000 /* Override SAFER_UFUN */
 #define AF_ANON		0x4000000 /* INTERNAL: Attribute doesn't exist in the database */
 #define AF_POWINHERIT	0x8000000	/* Execute with powers of object it's on */
+#define AF_NONAME       0x10000000	/**< No name in did_it */
 #define AF_MHEAR	0x20000000    /* ^-listens can be triggered by %! */
 #define AF_AHEAR	0x40000000    /* ^-listens can be triggered by anyone */
+#define AF_NOSPACE      0x80000000	/**< No space in did_it */
+
+#define AF_MAXVAL       0x100000000	/**< Largest attribute flag value. */
+
+/*** external predefined attributes. */
+    extern ATTR attr[];
+ 
 
 /* external predefined attributes. */
     extern ATTR attr[];
@@ -135,10 +163,14 @@ safe_atr_value(ATTR *atr)
 #define AL_RLock(alist)		((alist)->read_lock)
 #define AL_MODTIME(alist)	((alist)->last_modified)
 
-/* Errors from ok_player_alias */
-#define OPAE_SUCCESS	1
-#define OPAE_INVALID	-1
-#define OPAE_TOOMANY	-2
-#define OPAE_NULL	-3
+/** Errors from ok_player_alias */
+/** Success */
+#define OPAE_SUCCESS    1
+/** Invalid alias */
+#define OPAE_INVALID    -1
+/** Too many aliases already set */
+#define OPAE_TOOMANY    -2
+/** Null alias */
+#define OPAE_NULL       -3
 
 #endif				/* __ATTRIB_H */

@@ -27,8 +27,10 @@
 #include "command.h"
 #include "parse.h"
 #include "privtab.h"
-#include "confmagic.h"
 #include "log.h"
+#include "case.h"
+#include "confmagic.h"
+
 
 static void look_exits(dbref player, dbref loc, const char *exit_name);
 static void look_contents(dbref player, dbref loc, const char *contents_name);
@@ -344,8 +346,6 @@ look_helper_veiled(dbref player, dbref thing __attribute__ ((__unused__)),
       !strcmp(AL_NAME(atr), "DESCRIBE") && !strcmp(pattern, "*"))
     return 0;
   strcpy(fbuf, privs_to_letters(attr_privs_view, AL_FLAGS(atr)));
-  if (atr_sub_branch(atr))
-    strcat(fbuf, "`");
   if (AF_Veiled(atr)) {
     if (ShowAnsi(player))
       notify_format(player,
@@ -388,8 +388,6 @@ look_helper(dbref player, dbref thing __attribute__ ((__unused__)),
       !strcmp(AL_NAME(atr), "DESCRIBE") && !strcmp(pattern, "*"))
     return 0;
   strcpy(fbuf, privs_to_letters(attr_privs_view, AL_FLAGS(atr)));
-  if (atr_sub_branch(atr))
-    strcat(fbuf, "`");
   r = safe_atr_value(atr);
   if (ShowAnsi(player))
     notify_format(player,
@@ -1637,7 +1635,7 @@ decompose_str(char *what)
 	      }
 	      /* If background color, change the letter to a capital. */
 	      if (*(ptr - 1) == '4')
-	        ansi_letter = toupper(ansi_letter);
+	        ansi_letter = UPCASE(ansi_letter);
 	      safe_chr(ansi_letter, value, &s);
 	    }
 	    /* No "else" here: If a two-digit code
@@ -1708,7 +1706,7 @@ decompile_helper(dbref player, dbref thing __attribute__ ((__unused__)),
     if (dh->skipdef && ptr) {
       /* Standard attribute. Get the default perms, if any. */
       /* Are we different? If so, do as usual */
-      int npmflags = AL_FLAGS(ptr) & (~AF_PREFIXMATCH);
+      unsigned int npmflags = AL_FLAGS(ptr) & (~AF_PREFIXMATCH);
       if (AL_FLAGS(atr) != AL_FLAGS(ptr) && AL_FLAGS(atr) != npmflags)
 	privs = privs_to_string(attr_privs_view, AL_FLAGS(atr));
     } else {
