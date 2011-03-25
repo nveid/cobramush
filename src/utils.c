@@ -149,8 +149,8 @@ parse_anon_attrib(dbref player, char *str, dbref *thing, ATTR **attrib)
       AL_FLAGS(*attrib) = AF_ANON;
       AL_NEXT(*attrib) = NULL;
       *thing = player;
-      return;
     }
+    return;
   }
   parse_attrib(player, str, thing, attrib);
 }
