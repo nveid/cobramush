@@ -42,5 +42,8 @@ for i in hlp nws evt ; do
     cd ..
 done
 
-cd ../..
+# Step 6: Create connect.txt file
+cd ../../
+( utils/makeconnect.sh ; mv connect.txt game/txt )
+
 
