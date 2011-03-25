@@ -70,6 +70,7 @@ FUNCTION(fun_pemit)
 {
   int ns = string_prefix(called_as, "NS");
   int flags = PEMIT_LIST;
+  dbref saved_orator = orator;
   if (!command_check_byname(executor, ns ? "@nspemit" : "@pemit") ||
       fun->flags & FN_NOSIDEFX) {
     safe_str(T(e_perm), buff, bp);
@@ -79,6 +80,7 @@ FUNCTION(fun_pemit)
   if (ns)
     flags |= PEMIT_SPOOF;
   do_pemit_list(executor, args[0], args[1], flags);
+  orator = saved_orator;
 }
 
 

@@ -1261,13 +1261,9 @@ FUNCTION(fun_sortkey)
   char sep;
   char outsep[BUFFER_LEN];
   int i;
-  char tbuff[BUFFER_LEN];
-  char *tp;
-  char const *cp;
   char result[BUFFER_LEN];
-  char *rp;
-  ATTR *attrib;
-  dbref thing;
+  ufun_attrib ufun;
+  char *wenv[1];
 
   /* sortkey(attr,list,sort_type,delim,osep) */
 
@@ -1283,31 +1279,17 @@ FUNCTION(fun_sortkey)
   } else
     strcpy(outsep, args[4]);
 
-  /* Find object and attribute to get sortby function from. */
-  parse_anon_attrib(executor, args[0], &thing, &attrib);
-  if (!GoodObject(thing) || !attrib || !Can_Read_Attr(executor, thing, attrib)) { 
-    free_anon_attrib(attrib);
+  /* find our object and attribute */
+  if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
     return;
-  }
-  if (!CanEvalAttr(executor, thing, attrib)) {
-    free_anon_attrib(attrib);
-    return;
-  }
-  tp = tbuff;
-  safe_str(atr_value(attrib), tbuff, &tp);
-  *tp = '\0';
 
   nptrs = list2arr_ansi(ptrs, MAX_SORTSIZE, args[1], sep);
 
   /* Now we make a list of keys */
   for (i = 0; i < nptrs; i++) {
-    global_eval_context.wenv[0] = (char *) ptrs[i];
-    rp = result;
-    cp = tbuff;
-    process_expression(result, &rp, &cp,
-		       thing, executor, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
-    *rp = '\0';
+    /* Build our %0 args */
+    wenv[0] = (char *)ptrs[i];
+    call_ufun(&ufun, wenv, 2, result, executor, enactor, pe_info);
     keys[i] = mush_strdup(result, "sortkey");
   }
 
@@ -1510,7 +1492,7 @@ FUNCTION(fun_setunion)
 {
   char sep;
   char **a1, **a2;
-  int n1, n2, x1, x2, val;
+  int n1, n2, x1, x2, val, orign1, orign2;
   int lastx1, lastx2, found;
   char *sort_type = ALPHANUM_LIST;
   int osepl = 0;
@@ -1529,8 +1511,8 @@ FUNCTION(fun_setunion)
     mush_panic("Unable to allocate memory in fun_diff");
 
   /* make arrays out of the lists */
-  n1 = list2arr_ansi(a1, MAX_SORTSIZE, args[0], sep);
-  n2 = list2arr_ansi(a2, MAX_SORTSIZE, args[1], sep);
+  orign1 = n1 = list2arr_ansi(a1, MAX_SORTSIZE, args[0], sep);
+  orign2 = n2 = list2arr_ansi(a2, MAX_SORTSIZE, args[1], sep);
 
   if (nargs < 4) {
     osepd[0] = sep;
@@ -1638,8 +1620,8 @@ FUNCTION(fun_setunion)
       }
     }
   }
-  freearr(a1, n1);
-  freearr(a2, n2);
+  freearr(a1, orign1);
+  freearr(a2, orign2);
   mush_free((Malloc_t) a1, "ptrarray");
   mush_free((Malloc_t) a2, "ptrarray");
 }
@@ -2638,7 +2620,7 @@ FUNCTION(fun_after)
 FUNCTION(fun_revwords)
 {
   char **words;
-  int count;
+  int count, origcount;
   char sep;
   char *osep, osepd[2] = { '\0', '\0' };
 
@@ -2654,7 +2636,7 @@ FUNCTION(fun_revwords)
 
   words = (char **) mush_malloc(sizeof(char *) * BUFFER_LEN, "wordlist");
 
-  count = list2arr_ansi(words, BUFFER_LEN, args[0], sep);
+  origcount = count = list2arr_ansi(words, BUFFER_LEN, args[0], sep);
   if (count == 0) {
     mush_free((Malloc_t) words, "wordlist");
     return;
@@ -2665,7 +2647,7 @@ FUNCTION(fun_revwords)
     safe_str(osep, buff, bp);
     safe_str(words[--count], buff, bp);
   }
-  freearr(words, count);
+  freearr(words, origcount);
   mush_free((Malloc_t) words, "wordlist");
 }
 
@@ -2821,10 +2803,14 @@ FUNCTION(fun_iter)
     tbuf2 = replace_string2(standard_tokens, replace, args[1]);
     sp = tbuf2;
     if (process_expression(buff, bp, &sp, executor, caller, enactor,
-			   PE_DEFAULT, PT_DEFAULT, pe_info))
+			   PE_DEFAULT, PT_DEFAULT, pe_info)) {
+      mush_free((Malloc_t) tbuf2, "replace_string.buff");
       break;
-    if (*bp == (buff + BUFFER_LEN - 1) && pe_info->fun_invocations == funccount)
+    }
+    if (*bp == (buff + BUFFER_LEN - 1) && pe_info->fun_invocations == funccount) {
+      mush_free((Malloc_t) tbuf2, "replace_string.buff");
       break;
+    }
     funccount = pe_info->fun_invocations;
     oldbp = *bp;
     mush_free((Malloc_t) tbuf2, "replace_string.buff");
