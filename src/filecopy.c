@@ -197,7 +197,7 @@ Win32MUSH_setup(void)
 #ifndef _DEBUG
   char FileName[256];
   if (GetModuleFileName(NULL, FileName, 256) != 0) {
-    if (!strcasecmp(rindex(FileName, '\\') + 1, "cobramush.exe")) {
+    if (!strcasecmp(strrchr(FileName, '\\') + 1, "cobramush.exe")) {
       if (CopyFile("cobramush.exe", "cobramush_run.exe", FALSE)) {
 	do_rawlog(LT_ERR, "Successfully copied executable, starting copy.");
 #ifdef WIN32SERVICES
