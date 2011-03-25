@@ -613,7 +613,7 @@ local_wild_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
       return quick_wild_new(s, d, cs);
     }
   } else
-    return 0;
+    return (!d || !*d) ? 1 : 0;
 }
 
 /** Does a string contain a wildcard character (* or ?)?
