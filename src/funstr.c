@@ -1363,16 +1363,18 @@ init_tag_hashtab(void)
 FUNCTION(fun_ord)
 {
   char *m;
+  unsigned char what;
   size_t len = 0;
   if (!args[0] || !args[0][0]) {
     safe_str(T("#-1 FUNCTION EXPECTS ONE CHARACTER"), buff, bp);
     return;
   }
   m = remove_markup(args[0], &len);
+  what = (unsigned char) *m;
 
   if (len != 2)			/* len includes trailing nul */
-    safe_str(T("#-1 FUNCTION EXPECTS ONE CHARACTER"), buff, bp);
-  else if (isprint((unsigned char) *m))
+    safe_str(T("#-1 FUNCTION (ORD) EXPECTS ONE CHARACTER"), buff, bp);
+  else if(isprint(what) || what == '\n')
     safe_integer((unsigned char) *m, buff, bp);
   else
     safe_str(T("#-1 UNPRINTABLE CHARACTER"), buff, bp);

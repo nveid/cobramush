@@ -459,8 +459,10 @@ FUNCTION(fun_vmax)
   NVAL a, b;
 
   /* return if a list is empty */
-  if (!args[0] || !args[1])
+  if (!args[0] || !args[1]) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
@@ -468,8 +470,10 @@ FUNCTION(fun_vmax)
   p2 = trim_space_sep(args[1], sep);
 
   /* return if a list is empty */
-  if (!*p1 || !*p2)
+  if (!*p1 || !*p2) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   /* max the vectors */
   start = *bp;
@@ -501,8 +505,10 @@ FUNCTION(fun_vmin)
   NVAL a, b;
 
   /* return if a list is empty */
-  if (!args[0] || !args[1])
+  if (!args[0] || !args[1]) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
@@ -543,8 +549,10 @@ FUNCTION(fun_vadd)
   char sep;
 
   /* return if a list is empty */
-  if (!args[0] || !args[1])
+  if (!args[0] || !args[1]) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
@@ -552,8 +560,10 @@ FUNCTION(fun_vadd)
   p2 = trim_space_sep(args[1], sep);
 
   /* return if a list is empty */
-  if (!*p1 || !*p2)
+  if (!*p1 || !*p2) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   /* add the vectors */
   start = *bp;
@@ -582,8 +592,10 @@ FUNCTION(fun_vsub)
   char sep;
 
   /* return if a list is empty */
-  if (!args[0] || !args[1])
+  if (!args[0] || !args[1]) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
@@ -591,8 +603,10 @@ FUNCTION(fun_vsub)
   p2 = trim_space_sep(args[1], sep);
 
   /* return if a list is empty */
-  if (!*p1 || !*p2)
+  if (!*p1 || !*p2) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   /* subtract the vectors */
   start = *bp;
@@ -621,8 +635,10 @@ FUNCTION(fun_vmul)
   char sep;
 
   /* return if a list is empty */
-  if (!args[0] || !args[1])
+  if (!args[0] || !args[1]) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
@@ -630,8 +646,10 @@ FUNCTION(fun_vmul)
   p2 = trim_space_sep(args[1], sep);
 
   /* return if a list is empty */
-  if (!*p1 || !*p2)
+  if (!*p1 || !*p2) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   /* multiply the vectors */
   start = *bp;
@@ -678,8 +696,10 @@ FUNCTION(fun_vdot)
   char sep;
 
   /* return if a list is empty */
-  if (!args[0] || !args[1])
+  if (!args[0] || !args[1]) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep))
     return;
@@ -687,8 +707,10 @@ FUNCTION(fun_vdot)
   p2 = trim_space_sep(args[1], sep);
 
   /* return if a list is empty */
-  if (!*p1 || !*p2)
+  if (!*p1 || !*p2) {
+    safe_str(T("#-1 VECTORS MUST BE SAME DIMENSIONS"), buff, bp);
     return;
+  }
 
   /* multiply the vectors */
   product = 0;
@@ -711,16 +733,20 @@ FUNCTION(fun_vmag)
   char sep;
 
   /* return if a list is empty */
-  if (!args[0])
+  if (!args[0]) {
+    safe_str(T("#-1 VECTOR MUST NOT BE EMPTY"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 2, &sep))
     return;
   p1 = trim_space_sep(args[0], sep);
 
   /* return if a list is empty */
-  if (!*p1)
+  if (!*p1) {
+    safe_str(T("#-1 VECTOR MUST NOT BE EMPTY"), buff, bp);
     return;
+  }
 
   /* sum the squares */
   num = parse_number(split_token(&p1, sep));
@@ -742,16 +768,20 @@ FUNCTION(fun_vunit)
   char sep;
 
   /* return if a list is empty */
-  if (!args[0])
+  if (!args[0]) {
+    safe_str(T("#-1 VECTOR MUST NOT BE EMPTY"), buff, bp);
     return;
+  }
 
   if (!delim_check(buff, bp, nargs, args, 2, &sep))
     return;
   p1 = trim_space_sep(args[0], sep);
 
   /* return if a list is empty */
-  if (!*p1)
+  if (!*p1) {
+    safe_str(T("#-1 VECTOR MUST NOT BE EMPTY"), buff, bp);
     return;
+  }
 
   /* copy the vector, since we have to walk it twice... */
   strcpy(tbuf, p1);
@@ -1679,7 +1709,7 @@ FUNCTION(fun_lmath)
   MATH *op;
 
   /* Allocate memory */
-  ptr = (char **) mush_malloc(BUFFER_LEN, "string");
+  ptr = (char **) mush_malloc(sizeof(char *) * BUFFER_LEN, "string");
 
   if (!delim_check(buff, bp, nargs, args, 3, &sep)) {
     mush_free((Malloc_t) ptr, "string");

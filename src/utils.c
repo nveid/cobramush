@@ -49,7 +49,6 @@
 dbref find_entrance(dbref door);
 void initialize_mt(void);
 static unsigned long genrand_int32(void);
-static long genrand_int31(void);
 static void init_genrand(unsigned long);
 static void init_by_array(unsigned long *, int);
 extern int local_can_interact_first(dbref from, dbref to, int type);
@@ -628,12 +627,6 @@ genrand_int32(void)
   return y;
 }
 
-/* generates a random number on [0,0x7fffffff]-interval */
-static long
-genrand_int31(void)
-{
-  return (long) (genrand_int32() >> 1);
-}
 
 /** Get a uniform random long between low and high values, inclusive.
  * Based on MUX's RandomINT32()
@@ -679,7 +672,7 @@ get_random_long(long low, long high)
   n_limit = ULONG_MAX - (ULONG_MAX % x);
 
   do {
-    n = genrand_int31();
+    n = genrand_int32();
   } while (n >= n_limit);
 
   return low + (n % x);
