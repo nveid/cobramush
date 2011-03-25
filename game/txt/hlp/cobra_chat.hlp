@@ -33,7 +33,7 @@
   as normal, preventing user-defined commands like "+last" from
   being clobbered by the chat system.
 
-  See also: chat
+  See also: chat, CHAN_USEFIRSTMATCH
 & @cemit
   @cemit[/noisy][/noeval] <channel>=<message>
 
