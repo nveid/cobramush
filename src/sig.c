@@ -125,7 +125,7 @@ block_signals(void)
   sigfillset(&mask);
   sigprocmask(SIG_BLOCK, &mask, NULL);
 #elif defined(WIN32)
-    /* The only signals Windows knows about */
+  /* The only signals Windows knows about */
   signal(SIGABRT, SIG_IGN);
   signal(SIGFPE, SIG_IGN);
   signal(SIGILL, SIG_IGN);

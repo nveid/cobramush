@@ -179,9 +179,9 @@ COBRA_CONF conftable[] = {
   ,
   {"ssl_ip_addr", cf_str, options.ssl_ip_addr, 64, 0, "net"}
   ,
-  {"port", cf_int, &options.port, 32000, 0, "net"}
+  {"port", cf_int, &options.port, 65535, 0, "net"}
   ,
-  {"ssl_port", cf_int, &options.ssl_port, 32000, 0, "net"}
+  {"ssl_port", cf_int, &options.ssl_port, 65535, 0, "net"}
   ,
   {"use_dns", cf_bool, &options.use_dns, 2, 0, "net"}
   ,

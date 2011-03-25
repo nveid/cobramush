@@ -80,7 +80,7 @@ static int add_to_sem(dbref player, int am, const char *name);
 static int queue_limit(dbref player);
 void free_qentry(BQUE *point);
 static int pay_queue(dbref player, const char *command);
-int wait_que(dbref player, int wait, char *command,
+int wait_que(dbref player, int waituntil, char *command,
 	      dbref cause, dbref sem, const char *semattr, int until, char finvoc);
 void init_qids();
 int  create_qid();
@@ -487,7 +487,7 @@ queue_attribute_useatr(dbref executor, ATTR *a, dbref enactor)
  * they're due to expire; semaphore queue entries are just added
  * to the back of the queue.
  * \param player the enqueuing object.
- * \param wait time to wait, or 0.
+ * \param waittill time to wait, or 0.
  * \param command command to enqueue.
  * \param cause object that caused command to be enqueued.
  * \param sem object to serve as a semaphore, or NOTHING.
@@ -495,12 +495,12 @@ queue_attribute_useatr(dbref executor, ATTR *a, dbref enactor)
  * \param until 1 if we wait until an absolute time.
  */
 int
-wait_que(dbref player, int wait, char *command, dbref cause, dbref sem,
+wait_que(dbref player, int waittill, char *command, dbref cause, dbref sem,
 	 const char *semattr, int until, char finvoc)
 {
   BQUE *tmp;
   int a, qid;
-  if (wait == 0) {
+  if (waittill == 0) {
     if (sem != NOTHING)
       add_to_sem(sem, -1, semattr);
     parse_que(player, command, cause);
@@ -542,10 +542,10 @@ wait_que(dbref player, int wait, char *command, dbref cause, dbref sem,
   copy_namedregs(&tmp->namedregs, &global_eval_context.namedregs);
 
   if (until) {
-    tmp->left = wait;
+    tmp->left = waittill;
   } else {
-    if (wait >= 0)
-      tmp->left = mudtime + wait;
+    if (waittill >= 0)
+      tmp->left = mudtime + waittill;
     else
       tmp->left = 0;		/* semaphore wait without a timeout */
   }

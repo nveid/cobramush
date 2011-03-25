@@ -262,6 +262,9 @@ diffs:
 checkin: versions autogen
 	@prcs checkin
 
+commit: indent
+	@svn commit
+
 patch: versions
 	@make-patch-header
 	@make diffs

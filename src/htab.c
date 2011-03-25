@@ -154,7 +154,7 @@ hash_getmask(int *size)
  * \param data_size size of an individual datum to store in the table.
  */
 void
-hash_init(HASHTAB *htab, int size, int data_size, void (*free_data)(void*))
+hash_init(HASHTAB *htab, int size, int data_size, void (*free_data) (void *))
 {
   int i;
 

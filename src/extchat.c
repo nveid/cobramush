@@ -183,6 +183,8 @@ onchannel(dbref who, CHAN *ch)
       notify(player, T("CHAT: I don't know which channel you mean.")); \
       list_partial_matches(player, name, PMATCH_ALL); \
       return; \
+    case CMATCH_EXACT: \
+    case CMATCH_PARTIAL: \
     default: \
       break; \
      } \
@@ -3673,6 +3675,8 @@ do_chan_buffer(dbref player, const char *name, const char *lines)
   }
 }
 
+/* msg is a printf-style format that has exactly and only 2 %s specifiers
+   in it. */
 static void
 format_channel_broadcast(CHAN *chan, CHANUSER *u, dbref victim, int flags,
 			 const char *msg, const char *extra)

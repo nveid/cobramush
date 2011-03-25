@@ -32,8 +32,8 @@ static int help_init = 0;
 static void do_new_spitfile(dbref player, char *arg1, help_file *help_dat);
 static const char *string_spitfile(help_file *help_dat, char *arg1);
 static help_indx *help_find_entry(help_file *help_dat, const char *the_topic);
-static char *list_matching_entries(char *pattern, help_file *help_dat,
-				   const char *sep);
+static const char *list_matching_entries(char *pattern, help_file *help_dat,
+					 const char *sep);
 static const char *normalize_entry(help_file *help_dat, char *arg1);
 
 static void help_build_index(help_file *h, int restricted);
@@ -542,7 +542,7 @@ string_spitfile(help_file *help_dat, char *arg1)
 }
 
 /** Return a string with all help entries that match a pattern */
-static char *
+static const char *
 list_matching_entries(char *pattern, help_file *help_dat, const char *sep)
 {
   static char buff[BUFFER_LEN];

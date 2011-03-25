@@ -2988,7 +2988,7 @@ FUNCTION(fun_mix)
   if (!fetch_ufun_attrib(args[0], executor, &ufun, 1))
     return;
 
-  first = 0;
+  first = 1;
   while (1) {
     words = 0;
     for (n = 0; n < lists; n++) {

@@ -1113,12 +1113,12 @@ get_new_locks(dbref i, FILE * f, int c)
   }
 
   for (;;) {
-    int c;
+    int ch;
 
-    c = fgetc(f);
-    ungetc(c, f);
+    ch = fgetc(f);
+    ungetc(ch, f);
 
-    if (c != ' ') 
+    if (ch != ' ')
       break;
 
     found++;
@@ -1141,10 +1141,11 @@ get_new_locks(dbref i, FILE * f, int c)
     add_lock_raw(creator, i, type, b, flags);
   }
 
-  if (found != count) 
+  if (found != count)
     do_rawlog(LT_ERR,
-	      T("WARNING: Actual lock count (%d) different from expected count (%d)."),
-		found, count);
+	      T
+	      ("WARNING: Actual lock count (%d) different from expected count (%d)."),
+	      found, count);
 
 }
 
@@ -2058,7 +2059,7 @@ db_read(FILE * f)
 }
 
 static void
-init_objdata_htab(int size, void (*free_data)(void*))
+init_objdata_htab(int size, void (*free_data) (void *))
 {
   hash_init(&htab_objdata, size, 4, free_data);
   hashinit(&htab_objdata_keys, 8, 32);

@@ -48,6 +48,8 @@ void decompile_atrs(dbref player, dbref thing, const char *name,
 		    const char *pattern, const char *prefix, int skipdef);
 void decompile_locks(dbref player, dbref thing, const char *name, int skipdef);
 
+static void insert_spaces(int count, int dospace, char *buff, char **bp);
+
 extern PRIV attr_privs_view[];
 
 static void
@@ -1416,6 +1418,40 @@ struct dh_args {
 
 extern char escaped_chars[UCHAR_MAX + 1];
 
+static void
+insert_spaces(int count, int dospace, char *buff, char **bp)
+{
+  if (count) {
+    if (count >= 5) {
+      safe_str("[space(", buff, bp);
+      safe_number(count, buff, bp);
+      safe_str(")]", buff, bp);
+    } else if (count == 1) {
+      if (dospace) {
+	safe_str("%b", buff, bp);
+      } else {
+	safe_chr(' ', buff, bp);
+      }
+    } else {
+      /* Take care of the final %b */
+      count--;
+      if (dospace) {
+	safe_str("%b", buff, bp);
+	count--;
+      }
+      while (count) {
+	safe_chr(' ', buff, bp);
+	count--;
+	if (count) {
+	  count--;
+	  safe_str("%b", buff, bp);
+	}
+      }
+      safe_str("%b", buff, bp);
+    }
+  }
+}
+
 char *
 decompose_str(char *what)
 {
@@ -1424,6 +1460,7 @@ decompose_str(char *what)
   char ansi_letter = '\0';
   int len;
   int dospace;
+  int spaces;
   int flag_depth, ansi_depth;
   int digits;
 
@@ -1443,26 +1480,29 @@ decompose_str(char *what)
     safe_chr('\\', value, &s);
   }
 #endif
+
   dospace = 1;
+  spaces = 0;
   for (; *ptr; ptr++) {
     switch (*ptr) {
     case ' ':
-      if (dospace) {
-        safe_str("%b", value, &s);
-      } else {
-        safe_chr(' ', value, &s);
-      }
-      dospace = !dospace;
+      spaces++;
       break;
     case '\n':
+      insert_spaces(spaces, dospace, value, &s);
+      spaces = 0;
       dospace = 0;
       safe_str("%r", value, &s);
       break;
     case '\t':
+      insert_spaces(spaces, dospace, value, &s);
+      spaces = 0;
       dospace = 0;
       safe_str("%t", value, &s);
       break;
     case ESC_CHAR:
+      insert_spaces(spaces, dospace, value, &s);
+      spaces = 0;
       ptr++;
       if (!*ptr) {
 	ptr--;
@@ -1492,7 +1532,7 @@ decompose_str(char *what)
 	  } else if (digits >= 2) {
 	    digits = 3;		/* If we encounter a 3-number code, break out. */
 	    break;
-	  } else if (isdigit(*ptr)) {
+	  } else if (isdigit((unsigned char) *ptr)) {
 	    digits++;		/* Count the numbers we encounter. */
 	  } else {
 	    digits = 3;
@@ -1535,11 +1575,11 @@ decompose_str(char *what)
 	dospace = 1;
 
 	/* code for decompiling ansi */
-	for (; isdigit(*ptr) || *ptr == ';'; ptr++) {
+	for (; isdigit((unsigned char) *ptr) || *ptr == ';'; ptr++) {
 	  if (*ptr == ';')	/* Yes, it is necessary to do it this way. */
 	    ptr++;
 	  /* Break if there is an 'm' here. */
-	  if (!*ptr || !isdigit(*ptr))
+	  if (!*ptr || !isdigit((unsigned char) *ptr))
 	    break;
 	  /* Check to see if the code is one character long. */
 	  if (*(ptr + 1) == ';' || *(ptr + 1) == 'm') {
@@ -1612,6 +1652,8 @@ decompose_str(char *what)
       }
       break;
     default:
+      insert_spaces(spaces, dospace, value, &s);
+      spaces = 0;
       if (escaped_chars[(unsigned int) *ptr]) {
         safe_chr('\\', value, &s);
       }
@@ -1620,10 +1662,8 @@ decompose_str(char *what)
     }
   }
   /* Now check the last space. */
-  if (*(s - 1) == ' ') {
-    s -= 1;
-    safe_str("%b", value, &s);
-  }
+  insert_spaces(spaces, dospace, value, &s);
+  spaces = 0;
   for (; ansi_depth > 0; ansi_depth--) {
     safe_str(")]", value, &s);
   }

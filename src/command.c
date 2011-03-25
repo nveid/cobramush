@@ -1718,7 +1718,7 @@ static int
 command_check(dbref player, COMMAND_INFO *cmd, switch_mask switches)
 {
   int ok;
-  char *mess = NULL;
+  const char *mess = NULL;
 
   /* God doesn't get fucked with */
   if(LEVEL(player) >= LEVEL_GOD)

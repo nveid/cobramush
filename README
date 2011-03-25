@@ -19,12 +19,12 @@ You may also want to take a look at Javelin's Guide for PennMUSH Gods,
 at http://pennmush.org/~alansz/guide.html
 or by ftp from pennmush.org, /pub/PennMUSH/Guide
 ============================================================================
- 
+
 I. Introduction and history
 
 PennMUSH uses a version-numbering system that includes version
 numbers (like 1.7.2) and patchlevels (like p32), usually written
-together (1.7.2p32). 
+together (1.7.2p32).
 
 Starting with 1.7.2, version numbers that are even (like 1.7.2) are
 stable releases - patchlevels on the latest stable release will only be
@@ -61,8 +61,8 @@ avoid the confusion that resulted from PernMUSH actually running
 TinyMUSH 2.0.
 
 In January of 1995, Amberyl passed on her mantle to Javelin (aka
-Paul@Dune, Alan Schwartz), who is now the maintainer of the primary
-public distribution in development. He released two patchlevels
+Paul@Dune, Alan Schwartz), who continuted as the maintainer of the
+primary public distribution in development. He released two patchlevels
 numbered "dune-1" and "dune-2" before releasing PennMUSH 1.50 pl11 and
 later distributions. The numbering scheme changed again with PennMUSH
 1.6.0 (see CHANGES.OLD).
@@ -85,6 +85,11 @@ began using the Artistic License (see the COPYRITE file),
 an open source/free software license. This license was
 simultaneously adopted by TinyMUSH (2.2.5, 3.x) and TinyMUX to
 facilitate code sharing and widen use.
+
+In July 2006, Javelin retired from the role of Maintainer, passing the
+mantle of lead developer to Raevnos and that of release management to
+Ervin Hearn (Noltar). Many thanks go to Javelin whose contributions and
+guidance of PennMUSH have shaped it into the codebase that it is today.
 
 A MUSH manual should be available at ftp.digex.net, ftp.math.okstate.edu,
 primerd.prime.com, or from wherever you got this code from. The manual
@@ -126,7 +131,7 @@ There are three places one could get help with a problem:
    informed of new patches, subscribe to pennmush-announce instead,
    at http://www.pennmush.org/mailman/listinfo/pennmush-announce)
 
-2. pennmush-bugs@pennmush.org is the bug reporting address 
+2. pennmush-bugs@pennmush.org is the bug reporting address
    for the PennMUSH developers (suggestions go to pennmush-developers,
    bugs to pennmush-bugs). This will generally give you the fastest
    response and is ideal for unusual bugs. A web-based submission
@@ -140,7 +145,7 @@ information:
 3. The operating system and version (SunOS 4.1.2, AIX 3.2.4, etc.),
 4. The compiler and compiler version (gcc 2.4.5, SGI cc 2.10, etc. -- the
    'file' command usually tells you the compiler version, if there's no
-   built-in option like '-v' or '-V' to give it), 
+   built-in option like '-v' or '-V' to give it),
 5. Whether or not you have made any changes to the code.
 
 If the problem resulted in a crash and a core dump, a stack trace of
@@ -160,12 +165,12 @@ you can have yourmush.pennmush.org assigned as a hostname for your MUSH,
 so players don't need to telnet to obscuresite.obscuredomain.com!
 
 NOTE: A hostname is not the same thing as a site. We don't have accounts
-for you to run your MUSH from. You must already have your MUSH 
+for you to run your MUSH from. You must already have your MUSH
 running at someplace.edu or whatever -- we just provide a nice hostname
 that will resolve into your current site's IP address.
 
-How do you get a pennmush.org hostname? Go to 
-http://lists.pennmush.org/pennmush.html, and follow the instructions.
+How do you get a pennmush.org hostname? Go to
+http://services.pennmush.org/, and follow the instructions.
 It may take a day or two before the hostname will work.
 
 Thovald also has volunteered to host mailing lists for MUSHes in
@@ -174,11 +179,11 @@ the pennmush.org domain. Details are on the same web page.
 ============================================================================
 
 IV. Comments
- 
+
 IV.a. Amberyl's Comments
 
 These are in the first person.  :)
- 
+
 I've been working with this code for a year and a quarter now.  I can't
 claim that it's particularly elegant or inspired; all I can say is that
 it works (most of the time), and that I've had fun writing it.  I'm

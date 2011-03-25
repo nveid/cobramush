@@ -585,7 +585,6 @@ quick_regexp_match(const char *RESTRICT s, const char *RESTRICT d, int cs)
 
 /** Either an order comparison or a wildcard match with no memory.
  *
- * This routine will cause crashes if fed NULLs instead of strings.
  *
  * \param s pattern to match against.
  * \param d string to check.
@@ -596,22 +595,25 @@ quick_regexp_match(const char *RESTRICT s, const char *RESTRICT d, int cs)
 int
 local_wild_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
 {
-  switch (*s) {
-  case '>':
-    s++;
-    if (is_number(s) && is_number(d))
-      return (parse_number(s) < parse_number(d));
-    else
-      return (strcoll(s, d) < 0);
-  case '<':
-    s++;
-    if (is_number(s) && is_number(d))
-      return (parse_number(s) > parse_number(d));
-    else
-      return (strcoll(s, d) > 0);
-  }
-
-  return quick_wild_new(s, d, cs);
+  if (s && *s) {
+    switch (*s) {
+    case '>':
+      s++;
+      if (is_number(s) && is_number(d))
+	return (parse_number(s) < parse_number(d));
+      else
+	return (strcoll(s, d) < 0);
+    case '<':
+      s++;
+      if (is_number(s) && is_number(d))
+	return (parse_number(s) > parse_number(d));
+      else
+	return (strcoll(s, d) > 0);
+    default:
+      return quick_wild_new(s, d, cs);
+    }
+  } else
+    return 0;
 }
 
 /** Does a string contain a wildcard character (* or ?)?

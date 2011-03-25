@@ -31,8 +31,8 @@ struct hashtable {
   int last_hval;		/**< State for hashfirst & hashnext. */
   HASHENT *last_entry;		/**< State for hashfirst & hashnext. */
   int entry_size;		/**< Size of each entry */
-  void (*free_data)(void*);     /**< Function to call on data when deleting
-				   a entry. */
+  void (*free_data) (void *);	/**< Function to call on data when deleting
+                                   a entry. */
 };
 
 #define get_hashmask(x) hash_getmask(x)
@@ -44,7 +44,7 @@ struct hashtable {
 #define hashflush(tab, size) hash_flush(tab,size)
 #define hashfree(tab) hash_flush(tab, 0)
 extern int hash_getmask(int *size);
-extern void hash_init(HASHTAB *htab, int size, int data_size, void (*)(void*));
+extern void hash_init(HASHTAB *htab, int size, int data_size, void (*)(void *));
 extern HASHENT *hash_find(HASHTAB *htab, const char *key);
 extern void *hash_value(HASHENT *entry);
 extern char *hash_key(HASHENT *entry);

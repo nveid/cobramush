@@ -131,10 +131,6 @@ else
     mv -f ../hdrs/temp.$$.h ../hdrs/cmds.h
 fi
 
-if [ -d "../win32" ]; then
-  cp ../hdrs/cmds.h ../win32/cmds.h
-fi
-
 ;;
 functions)
 
@@ -151,10 +147,6 @@ if [ $cmpstat -eq 0 ]; then
     rm -f ../hdrs/temp.$$.h
 else
     mv -f ../hdrs/temp.$$.h ../hdrs/funs.h
-fi
-
-if [ -d "../win32" ]; then
-  cp ../hdrs/funs.h ../win32/funs.h
 fi
 ;;
 esac

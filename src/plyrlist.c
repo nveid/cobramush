@@ -29,11 +29,11 @@ HASHTAB htab_player_list;
 
 static int hft_initialized = 0;
 static void init_hft(void);
-static void delete_dbref(void*);
+static void delete_dbref(void *);
 
 /** Free a player_dbref struct. */
 static void
-delete_dbref(void *data) 
+delete_dbref(void *data)
 {
   mush_free(data, "plyrlist.entry");
 }
@@ -52,7 +52,7 @@ clear_players(void)
 {
   if (hft_initialized)
     hashflush(&htab_player_list, 256);
-   else
+  else
     init_hft();
 }
 

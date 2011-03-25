@@ -840,7 +840,7 @@ func_hash_insert(const char *name, FUN *func)
   hashadd(name, (void *) func, &htab_function);
 }
 
-static void delete_function(void*);
+static void delete_function(void *);
 
 /** Initialize the function hash table.
  */
@@ -1327,7 +1327,7 @@ delete_function(void *data)
 {
   size_t table_index, i;
   FUN *fp = data;
-  
+
   table_index = fp->where.offset;
   mush_free((void *) fp->name, "func_hash.name");
   mush_free(fp, "func_hash.FUN");
@@ -1346,6 +1346,7 @@ delete_function(void *data)
   }
 
 }
+
 /** Restore an overridden built-in function.
  * \verbatim
  * If a built-in function is deleted with @function/delete, it can be
