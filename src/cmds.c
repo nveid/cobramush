@@ -956,7 +956,7 @@ COMMAND (cmd_wait) {
   int qid;
 
   qid = do_wait(player, cause, arg_left, arg_right, SW_ISSET(sw, SWITCH_UNTIL), 0);
-  atr_add(player, "QID", tprintf("%d", qid), player, NOTHING); 
+  atr_add(player, "QID", tprintf("%d", qid), player, 0); 
 }
 
 COMMAND (cmd_wall) {

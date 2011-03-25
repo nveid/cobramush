@@ -436,7 +436,7 @@ make_player(const char *name, const char *password, const char *host,
   giveto(player, START_BONUS);	/* starting bonus */
   (void) atr_add(player, "LAST", show_time(mudtime, 0), GOD, 0);
   (void) atr_add(player, "LASTSITE", host, GOD, 0);
-  (void) atr_add(player, "LASTIP", ip, GOD, NOTHING);
+  (void) atr_add(player, "LASTIP", ip, GOD, 0);
   (void) atr_add(player, "LASTFAILED", " ", GOD, 0);
   sprintf(temp, "%d", START_QUOTA);
   (void) atr_add(player, "RQUOTA", temp, GOD, 0);

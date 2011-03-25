@@ -2635,7 +2635,7 @@ void add_to_div_exit_path(dbref player, dbref div_obj) {
 
   if(divrcd == NULL) {
     /* simple one, just add a one liner to this guy */
-    atr_add(player, "XYXX_DIVRCD", unparse_number(div_obj), GOD, NOTHING);
+    atr_add(player, "XYXX_DIVRCD", unparse_number(div_obj), GOD, 0);
   } else {
     /* Ok.. First we're gonna have to list2arr to get our boys */
     cnt = list2arr(tp_buf, BUFFER_LEN / 2 , (char *) safe_atr_value(divrcd), ' '); 
@@ -2649,7 +2649,7 @@ void add_to_div_exit_path(dbref player, dbref div_obj) {
     safe_chr(' ', tbuf, &tbp);
     safe_str(unparse_number(div_obj), tbuf, &tbp);
     *tbp = '\0';
-    (void) atr_add(player, "XYXX_DIVRCD", tbuf, GOD, NOTHING);
+    (void) atr_add(player, "XYXX_DIVRCD", tbuf, GOD, 0);
   }
 
 }

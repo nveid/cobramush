@@ -166,7 +166,7 @@ COMMAND(cmd_prog)
                   object_header(Owner(player), player));
 
     tooref = ooref, ooref = NOTHING;
-    atr_add(target, "XY_PROGPROMPT", t, GOD, NOTHING);
+    atr_add(target, "XY_PROGPROMPT", t, GOD, 0);
     ooref = tooref;
     memset(buf, '\0', BUFFER_LEN);
     bp = buf;
@@ -193,7 +193,7 @@ COMMAND(cmd_prog)
   *tbp = '\0';
 
   /* Now Save to XY_PROGENV */
-  (void) atr_add(target, "XY_PROGENV", tbuf1, GOD, NOTHING);
+  (void) atr_add(target, "XY_PROGENV", tbuf1, GOD, 0);
 
 
   /* Place them into the actual program */
@@ -301,7 +301,7 @@ FUNCTION(fun_prog)
   tbp--;
   *tbp = '\0';
   /* Now Save to XY_PROGENV */
-  (void) atr_add(target, "XY_PROGENV", tbuf1, GOD, NOTHING);
+  (void) atr_add(target, "XY_PROGENV", tbuf1, GOD, 0);
 
 
 
@@ -387,7 +387,7 @@ COMMAND(cmd_prompt)
       prompt = arg_right;
       /* Save the prompt as well */
       tooref = ooref, ooref = NOTHING;
-      atr_add(who, "XY_PROGPROMPT", arg_right, GOD, NOTHING);
+      atr_add(who, "XY_PROGPROMPT", arg_right, GOD, 0);
       ooref = tooref;
     } else
       prompt = (char *) UNDEFINED_PROMPT;
@@ -538,7 +538,7 @@ prog_handler(DESC * d, char *input)
   bp--;
   *bp = '\0';
   /* Now Save to XY_PROGENV */
-  (void) atr_add(d->player, "XY_PROGENV", buf, GOD, NOTHING);
+  (void) atr_add(d->player, "XY_PROGENV", buf, GOD, 0);
 
   return 1;
 }
@@ -723,7 +723,7 @@ prog_place(dbref player, dbref object, ATTR * patr, int lock)
   if (!(lock & PI_PROMPT)) {
     atr_clr(player, "XY_PROGPROMPT", GOD);
   }
-  (void) atr_add(player, "XY_PROGINFO", str, GOD, NOTHING);
+  (void) atr_add(player, "XY_PROGINFO", str, GOD, 0);
   ooref = tooref;
   DESC_ITER_CONN(d)
       if (d->player == player) {

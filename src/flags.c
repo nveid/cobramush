@@ -1464,7 +1464,7 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
 		  icloc = GoodObject((absroom = absolute_room(thing))) ? absroom : thing;
 		  if(GoodObject(icloc) && has_flag_by_name(icloc, "ICFUNCS" , NOTYPE) 
 			  && !Going(icloc)) {
-				  (void) atr_add(thing, "INF_RPLOC", unparse_dbref(Location(thing)), GOD, NOTHING); 
+				  (void) atr_add(thing, "INF_RPLOC", unparse_dbref(Location(thing)), GOD, 0); 
 				  icloc = Home(thing);
 			  } else {
 				  notify(player, "That player is not an IC Location, therefore can't go OOC.");
