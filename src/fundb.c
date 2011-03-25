@@ -2008,9 +2008,8 @@ FUNCTION(fun_grep)
   sensitive = !strcmp(called_as, "GREP") || !strcmp(called_as, "WILDGREP");
   wild = !strcmp(called_as, "WILDGREPI") || !strcmp(called_as, "WILDGREP");
   tp = grep_util(executor, it, args[1], args[2], sensitive, wild);
-  add_check("fun_grep.attr_list");
   safe_str(tp, buff, bp);
-  mush_free((Malloc_t) tp, "fun_grep.attr_list");
+  mush_free(tp, "grep_util.buff");
 }
 
 /* Get database size statistics */

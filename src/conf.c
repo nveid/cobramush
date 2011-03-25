@@ -1580,14 +1580,25 @@ FUNCTION(fun_config)
     safe_str(T("#-1 NO SUCH CONFIG OPTION"), buff, bp);
     return;
   } else {
+    int first = 1;
     for (cp = conftable; cp->name; cp++) {
-      safe_str(cp->name, buff, bp);
-      safe_chr(' ', buff, bp);
+      if (cp->group) {
+	if (first)
+	  first = 0;
+	else
+	  safe_chr(' ', buff, bp);
+	safe_str(cp->name, buff, bp);
+      }
     }
     for (cp = (COBRA_CONF *) hash_firstentry(&local_options); cp;
 	 cp = (COBRA_CONF *) hash_nextentry(&local_options)) {
-      safe_str(cp->name, buff, bp);
-      safe_chr(' ', buff, bp);
+      if (cp->group) {
+	if (first)
+	  first = 0;
+	else
+	  safe_chr(' ', buff, bp);
+	safe_str(cp->name, buff, bp);
+      }
     }
   }
 }

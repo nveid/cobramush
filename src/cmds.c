@@ -1091,16 +1091,13 @@ COMMAND (cmd_leave) {
 }
 
 COMMAND (cmd_page) {
-  int has_eq = 0;
-  if (args_raw && *args_raw && strchr(args_raw, '='))
-    has_eq = 1;
   if (SW_ISSET(sw, SWITCH_PORT))
     do_page_port(player, arg_left, arg_right);
   else
     do_page(player, arg_left, arg_right, cause, SW_ISSET(sw, SWITCH_NOEVAL),
 	    !(SW_ISSET(sw, SWITCH_BLIND) ||
 	      (!(SW_ISSET(sw, SWITCH_LIST)) && (BLIND_PAGE))),
-	    SW_ISSET(sw, SWITCH_OVERRIDE), has_eq);
+	    SW_ISSET(sw, SWITCH_OVERRIDE), rhs_present);
 }
 
 COMMAND (cmd_pose) {

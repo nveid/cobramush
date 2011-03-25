@@ -86,7 +86,7 @@ extern long flagdb_flags;
 FLAG flag_table[] = {
   {"CHOWN_OK", 'C', NOTYPE, CHOWN_OK, F_ANY, F_ANY},
   {"DARK", 'D', NOTYPE, DARK, F_ANY, F_ANY},
-  {"GOING", 'G', NOTYPE, GOING, F_INTERNAL, F_ANY},
+  {"GOING", 'G', NOTYPE, GOING, F_INTERNAL, F_INTERNAL},
   {"HAVEN", 'H', NOTYPE, HAVEN, F_ANY, F_ANY},
   {"LINK_OK", 'L', NOTYPE, LINK_OK, F_ANY, F_ANY},
   {"OPAQUE", 'O', NOTYPE, LOOK_OPAQUE, F_ANY, F_ANY},
