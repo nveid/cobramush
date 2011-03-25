@@ -19,10 +19,6 @@ chmod 755 utils/update.pl
 
 # Step 2: create auto-generated source/header files
 echo "Generating source and header files..."
-cd src
-swig -o mushlua_wrap.c -lua mushlua.i
-cd ..
-
 perl utils/mkcmds.pl all
 mv hdrs/cmds.h win32/
 mv hdrs/switches.h win32/
