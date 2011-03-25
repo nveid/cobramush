@@ -423,6 +423,13 @@ can_create_attr(dbref player, dbref obj, char const *atr_name, int flags)
 	lock_owner = AL_CREATOR(atr);
       num_new++;
     }
+    /* Only GOD can create an AF_NODUMP attribute (used for semaphores)
+     * or add a leaf to a tree with such an attribute
+     */
+    if ((AL_FLAGS(atr) & AF_NODUMP) && (player != GOD)) {
+      missing_name[0] = '\0';
+      return AE_ERROR;
+    }
     if (Cannot_Write_This_Attr(player, atr, obj, 1, ns_chk, lock_owner)) {
       free_atr_locks(atr);
       missing_name[0] = '\0';
