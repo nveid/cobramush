@@ -1886,7 +1886,7 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   was_listener = Listener(thing);
   res =
       s ? atr_add(thing, name, s, player,
-                  (flags & 0x02) ? AF_NOPROG : NOTHING)
+                  (flags & 0x02) ? AF_NOPROG : 0)
       : atr_clr(thing, name, player);
   switch (res) {
   case AE_SAFE:
@@ -2325,7 +2325,7 @@ can_write_attr_internal(dbref player, dbref obj, ATTR * atr, int safe)
     *p = '`';
   }
 
-  return AE_OKAY;
+  return 1;
 }
 
 
