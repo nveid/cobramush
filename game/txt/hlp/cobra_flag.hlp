@@ -31,8 +31,8 @@
   indicate the TYPE of an object. The absence of these four special flags
   indicates the object is of type THING.
 
-  See also: examine, flags(), hasflag(), orflags(), andflags(),
-  orlflags(), andlflags(), types of objects, type(), hastype(), @flag
+See also: examine, flags(), hasflag(), orflags(), andflags(), orlflags(),
+  andlflags(), types of objects, type(), hastype(), @flag
 & FLAG LIST
 & FLAGS LIST
 Flag  Title           Flag  Title              Flag  Title
@@ -81,7 +81,7 @@ which are available.
   To make a room your home, type '@link me=here' while standing in the
   room.
 
-  See also: @link
+See also: @link
 & ANSI
   Flag:  ANSI  (players)
   
@@ -95,7 +95,7 @@ which are available.
   See also the COLOR flag. If COLOR is not set, and ANSI is, you will
   see vt100 ANSI codes, but not color ANSI codes.
 
-  See also: COLOR, ansi(), @config
+See also: COLOR, ansi(), @config
 & AUDIBLE
   Flag:  AUDIBLE  (all types)
 
@@ -152,7 +152,7 @@ which are available.
   > <a whole buncha commands>
   GAME: Object Walker(#123) lost a Penny to queue loss.
 
-  See also: no_pay
+See also: no_pay
 & BUILDER
   BUILDER 
 
@@ -169,7 +169,7 @@ which are available.
   You must be carrying the thing, or in the room in order to set the
   flag, unless you use the DBREF number.
 
-  See also: @chown
+See also: @chown
 & CLOUDY
   Flag:  CLOUDY (exits)
 
@@ -186,7 +186,7 @@ which are available.
   When set on a player, this flag allows the player to see ANSI color.
   The ANSI flag must also be set.
 
-  See also: ANSI, ansi()
+See also: ANSI, ansi()
 & CONNECTED
   Flag:  CONNECTED  (players)
 
@@ -197,7 +197,7 @@ which are available.
   Mortal code can't use hasflag(<x>,connected) to test if a player is 
   connected. Consider using conn(), lwho(), or mwho() instead.
 
-  See also: conn(), lwho(), mwho()
+See also: conn(), lwho(), mwho()
 & DARK
   Flag:  DARK  (all types)
 
@@ -273,7 +273,7 @@ which are available.
 
   DESTROY_OK takes precedence over SAFE.
 
-  See also: @destroy
+See also: @destroy
 & ENTER_OK
   Flag:  ENTER_OK  (all types)
  
@@ -286,7 +286,7 @@ which are available.
 
   This flag has no effect on rooms.
 
-  See also: enter, leave, give, @lock
+See also: enter, leave, give, @lock
 & FIXED
   Flag: FIXED (players)
   
@@ -326,7 +326,7 @@ which are available.
   actions, listen, be triggered, evaluate functions or substitutions,
   etc.
 
-  See also: @halt, @restart
+See also: @halt, @restart
 & HAVEN
   Flag:  HAVEN (players, rooms)
 
@@ -379,7 +379,7 @@ which are available.
   Objects, players, and exits which have the LIGHT flag set on them
   (and are not also set DARK) appear in the contents of DARK rooms.
 
-  See also: DARK
+See also: DARK
 & LINK_OK
   Flag: LINK_OK  (rooms, things)
 
@@ -414,7 +414,7 @@ which are available.
   object numbers.  This flag is only valid for players; objects belonging 
   to MYOPIC players are automatically considered to be MYOPIC.
 
-  See also: DBREF
+See also: DBREF
 & MISTRUST
   Flag:  MISTRUST  (things, rooms, exits)
 
@@ -429,14 +429,14 @@ which are available.
   and don't want those objects to be able to affect your objects.
 
 
-  See also: control
+See also: control
 & NOACCENTS
   Flag: NOACCENTS  (players)
 
   This flag causes all accented characters to be converted to non-accented
   before being sent to a connection. See HELP STRIPACCENTS() for caveats.
 
-  See also: i18n, accent(), stripaccents()
+See also: i18n, accent(), stripaccents()
 & NO_COMMAND
   Flag:  NO_COMMAND  (all types)
   
@@ -447,7 +447,7 @@ which are available.
   be set NO_COMMAND. Many MUSHes choose to have all objects initially set
   NO_COMMAND at creation. The flag has no effect on exits.
 
-  See also: USER-DEFINED COMMANDS
+See also: USER-DEFINED COMMANDS
 & NO_LEAVE
 & NOLEAVE
   Flag: NO_LEAVE (objects)
@@ -456,7 +456,7 @@ which are available.
   Attempts to leave the object will trigger its @LFAIL, @OLFAIL,
   and @ALFAIL, if set.
 
-  See also: leave
+See also: leave
 & NO_TEL
   Flag:  NO_TEL  (rooms)
 
@@ -530,7 +530,7 @@ which are available.
 
   Meaningless for rooms.
 
-  See also: TRANSPARENT, look
+See also: TRANSPARENT, look
 & ORPHAN
   Flag:  ORPHAN   (all types)
 
@@ -539,7 +539,7 @@ which are available.
   retrieved from the ancestor. It has no effect on the object's 
   true @parents, only on its use of the ancestor.
 
-  See also: @parent, ancestors
+See also: @parent, ancestors
 & PLAYER
   Flag:  PLAYER  (player)
 
@@ -637,7 +637,7 @@ See: @force, PUPPETS
   the exit's description.  The exit list and succ/fail messages of the
   room will NOT be displayed. See also CLOUDY.
 
-  See also: CLOUDY, OPAQUE, EXITS, @exitformat
+See also: CLOUDY, OPAQUE, EXITS, @exitformat
 & UNFINDABLE
   Flag:  UNFINDABLE  (all types)
   
@@ -673,7 +673,7 @@ See: @force, PUPPETS
   "#<object>] <command>". Something like "#1300] @trigger me/test" is a
   good example of typical VERBOSE output.
 
-  See also: PUPPET, DEBUG
+See also: PUPPET, DEBUG
 & VISUAL 
   Flag:  VISUAL  (all types)
 
@@ -682,7 +682,7 @@ See: @force, PUPPETS
   It does not enable them to make changes to the object. Very useful
   for getting help with code.
 
-  See also: examine, brief
+See also: examine, brief
 & WIZARD
   Flag:  WIZARD    (all types)
 
@@ -701,7 +701,7 @@ See: @force, PUPPETS
   rooms zoned to it. Like NO_TEL, the "home" command will still work.
   This flag is intended for use in puzzle rooms and IC areas.
 
-  See also: ZONES, ZONE MASTERS, @chzone, ZONE MASTER ROOMS
+See also: ZONES, ZONE MASTERS, @chzone, ZONE MASTER ROOMS
 & SHARED
 & ZONE
   Flag:  SHARED   (players) 
@@ -710,7 +710,7 @@ See: @force, PUPPETS
   Objects owned by a Zone Master are controlled by anyone who passes the 
   player's zone lock.  
 
-  See also: ZONE MASTERS
+See also: ZONE MASTERS
 & LISTEN_PARENT
   Flag:  LISTEN_PARENT (things, rooms)
   
@@ -718,5 +718,5 @@ See: @force, PUPPETS
   flag causes ^ listen patterns to be checked on the object's parents as
   well as on the object.
 
-  See also: MONITOR, LISTENING
+See also: MONITOR, LISTENING
 

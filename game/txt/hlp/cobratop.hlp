@@ -154,7 +154,7 @@ Type "help <topic name>" for help.
     Test 2, success.
     Test 3, success.
 
-  See also: ATTRIBUTES, SUBSTITUTION, @asuccess, @dolist
+See also: ATTRIBUTES, SUBSTITUTION, @asuccess, @dolist
 & ANCESTORS
   ANCESTORS
 
@@ -167,8 +167,8 @@ Type "help <topic name>" for help.
   parent chain. There is one ancestor for each object type (room, exit,
   thing, player), and @config lists the dbref of each ancestor object
   (@config ancestor_room, etc.) Under normal circumstances, if an attribute
-  can't be retrieve from an object or any of its explicit parents,
-  the attribute will be looked on on the appropriate ancestor.
+  can't be retrieved from an object or any of its explicit parents,
+  the attribute will be looked for on the appropriate ancestor.
   The ORPHAN flag may be set on an object to cause lookups on that 
   object to ignore ancestors (like the pre-ancestor behavior).
 
@@ -181,7 +181,7 @@ Type "help <topic name>" for help.
   ^-commands; you should use the master room for global commands,
   instead.
 
-  See also: PARENTS, ORPHAN
+See also: PARENTS, ORPHAN
 & ANONYMOUS ATTRIBUTES
 & LAMBDA
 & #LAMBDA
@@ -198,7 +198,7 @@ Type "help <topic name>" for help.
   pieces of code. Anything long or complicated should go in an
   actual attribute, for readability and maintainability.
 
-  See HELP ANONYMOUS2 for examples.
+  See 'HELP ANONYMOUS2' for examples.
 & ANONYMOUS2
   A typical usage of anonymous attributes would be to convert
   a list of dbrefs to names, as so:
@@ -221,7 +221,7 @@ Type "help <topic name>" for help.
   filter(). However, this can lead to problems with evaluating un-trusted
   code. Use secure() or escape() where neccessary.
 
-  See HELP ANONYMOUS3 for another example.
+  See 'HELP ANONYMOUS3' for another example.
 & ANONYMOUS3
   
   You can also use lit() to avoid having the code evaluated twice, if
@@ -257,7 +257,7 @@ Type "help <topic name>" for help.
 
   You must control an object in order to set attributes on it.
 
-  See also: @atrlock, @atrchown, ATTRIBUTES
+See also: @atrlock, @atrchown, ATTRIBUTES
 & ATTRIBUTES
 & ATTRIBUTES LIST
 & ATTRIBUTE LIST
@@ -294,7 +294,7 @@ Standard Attributes: (see @list/attribs for the complete list)
     &<attribute name> <object>=<content>
 
   It is also possible to have non-standard attributes, which can be named 
-  anything you like. Please see help NON-STANDARD ATTRIBUTES for more 
+  anything you like. Please see 'help NON-STANDARD ATTRIBUTES' for more 
   information on those. 
 
 (continued in help attributes3)
@@ -363,6 +363,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   non-zero number       TRUE                    TRUE 
   #<non-negative>       TRUE                    FALSE               *
   #<negative>           FALSE                   FALSE                
+
   null string           FALSE                   FALSE
   0<non-numbers..>      TRUE                    FALSE               *
   <non-numbers...>      TRUE                    FALSE               *
@@ -381,7 +382,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   (note: These rules only apply when a function expects a Boolean
   value, not for strings that expect other values.)
 
-  See also: BOOLEAN FUNCTIONS, not(), t()
+See also: BOOLEAN FUNCTIONS, not(), t()
 & CLIENTS
   Clients are special software programs that you can use to connect to 
   MUSHes. They are usually much nicer to use than raw telnet and give you
@@ -429,7 +430,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   There's also one special case: anyone can @link an unlinked exit
   (at which point the exit is @chowned to the linker).
 
-  See also: controls(), TRUST, MISTRUST, ZONES, SHARED PLAYERS
+See also: controls(), TRUST, MISTRUST, ZONES, SHARED PLAYERS
 & COSTS
   These are usually:
 
@@ -468,7 +469,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   and Rhost [Rhost] servers, as well as to the players of Belgariad MUSH,
   DuneMUSH, and M*U*S*H, and everyone else using this server!
 
-  See also: help code, help license
+See also: help code, help license
 & DATABASE
 & DBREFS
 & DBREF NUMBER
@@ -508,7 +509,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   flag is 'O' (o), which looks like '0' (zero) on some clients. Make sure 
   you have the right number before using it in your code!
 
-  See also: MYOPIC, OPAQUE, MUSHCODE
+See also: MYOPIC, OPAQUE, MUSHCODE
 & DROP-TOS
 
   When you use the @link command on a room, it sets another room or
@@ -528,7 +529,7 @@ Standard Attributes: (see @list/attribs for the complete list)
 
   Drop-tos are useful for keeping rooms uncluttered. 
 
-  See also: @link, STICKY, LINK_OK, @lock
+See also: @link, STICKY, LINK_OK, @lock
 & %#
 & %N
 & %~
@@ -551,7 +552,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   replaced with the name of the enactor (the person who typed 'get <object>'
   in this case). 
   
-  See also: EXECUTOR, SUBSTITUTION, DBREF
+See also: EXECUTOR, SUBSTITUTION, DBREF
 & EVALUATION ORDER
   Whenever some text is entered by an object or thing, the MUSH program
   attempts to match it against a valid game command in the following 
@@ -610,7 +611,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   command on the box, so Cyclonus was still the enactor, but the box was
   the object that was actually doing the @emit, and was thus the executor.
 
-  See also: ENACTOR, SUBSTITUTION
+See also: ENACTOR, SUBSTITUTION
 & EXITS
   An exit is a one-way link that takes you from its source room to its 
   destination room. To open an exit from a room, you must control that room.
@@ -652,7 +653,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   Anyone can create variable exits, but the destinations must be to places
   that the exit can normally @link to.
 
-  See also: @link, @open, link_ok, CLOUDY, TRANSPARENT, @firstexit
+See also: @link, @open, link_ok, CLOUDY, TRANSPARENT, @firstexit
 & FAILURE
   FAILURE  
 
@@ -673,7 +674,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   more information. However, there are failure messages at this time
   only for the above.
 
-  See also: @lock, @fail, @efail, @lfail
+See also: @lock, @fail, @efail, @lfail
 & GENDER
 & SEX
   Gender on a MUSH is entirely up to you. You can set yourself (or any
@@ -681,9 +682,9 @@ Standard Attributes: (see @list/attribs for the complete list)
   is in the SEX attribute is not recognizable, the MUSH will assume 
   the object is neuter. Setting a gender attribute will enable 
   pronoun substitution by the MUSH. The SEX attribute is visual to
-  anyone who wants to see it. 
+  anyone who wants to see it.
 
-  See also: @sex, SUBSTITUTION
+See also: @sex, SUBSTITUTION
 & GLOBALS
 & GLOBAL COMMANDS
   A command is "global" if it can be used anywhere in the world of the
@@ -693,7 +694,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   MUSH, but you can usually find MUSH-specific help on them by
   typing "+help". 
 
-  See also: MASTER ROOM, USER-DEFINED COMMANDS, EVALUATION
+See also: MASTER ROOM, USER-DEFINED COMMANDS, EVALUATION
 & HERE
   The word 'here' refers to the room you are in. For example,
   to rename the room  you're in (if you control it), you could enter 
@@ -716,7 +717,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   You can set the drop-to in a room to home by doing:
         @link <room dbref or "here">=home
 
-  See also: DROP-TOS, @link, STICKY, LINK_OK, FIXED, EXITS
+See also: DROP-TOS, @link, STICKY, LINK_OK, FIXED, EXITS
 & INTERIORS
   Here's a quick description of how to make things that can be entered:
         
@@ -749,7 +750,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   messages and people on the inside from seeing the 'ox' messages which
   is a good thing.)
 
-  See also: enter, leave, @prefix, @filter, AUDIBLE, @listen
+See also: enter, leave, @prefix, @filter, AUDIBLE, @listen
 & LAST & LASTLOGOUT
   LAST and LASTLOGOUT
 
@@ -769,7 +770,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   objects or yourself to that  room if it is set ABODE, and can set 
   the destination of exits to that room if it is LINK_OK.
 
-  See also: LINK_OK, ABODE, @link
+See also: LINK_OK, ABODE, @link
 & LISTENING
   
   There are two basic ways to trigger action on the MUSH. The basic way
@@ -825,8 +826,8 @@ Standard Attributes: (see @list/attribs for the complete list)
 
   Listen patterns are checked after the object's normal @listen attribute.
 
-  See also: @listen, @ahear, @amhear, @aahear, MONITOR, 
-          USER-DEFINED COMMANDS, LISTEN_PARENT
+See also: @listen, @ahear, @amhear, @aahear, MONITOR, LISTEN_PARENT,
+  USER-DEFINED COMMANDS
 
 & LISTS
   The word "list" is used in the help files to refer to a string that
@@ -844,7 +845,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   is made up of similar items (so the fourth list in the example is NOT a 
   typical one).
 
-  See also: STRINGS, List Functions
+See also: STRINGS, List Functions
 & LOOPING
   Looping in an object can have its good parts and its bad parts.
   The good part is when you activate part of a program multiple times
@@ -858,7 +859,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   machine that isn't @halt'd will drain your pennies while you are away
   from the mush!
 
-  See also: @ps, HALT, COSTS, @trigger
+See also: @ps, HALT, COSTS, @trigger
 & MASTER ROOM
   
   The Master Room enables global commands and exits. Exits in the Master
@@ -869,7 +870,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   a global command that you would like to see enabled for the MUSH, speak
   to a wizard.
   
-  See also: EVALUATION, GLOBAL COMMANDS
+See also: EVALUATION, GLOBAL COMMANDS
 & ME
   The word 'me' refers to yourself. Some things to do when 
   starting out: 
@@ -878,7 +879,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   3) lock yourself:                     @lock me==me
   4) set your gender:                   @sex me=<male|female|neuter|plural>
 
-  See also: help newbie, help @lock, help @describe, help @sex
+See also: help newbie, help @lock, help @describe, help @sex
 & MONEY
   The MUSH has a built-in money system, which gives a starting amount
   of money to new players and hands out a daily allowance thereafter.
@@ -953,8 +954,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   All attributes can be used in attribute locks and can be 'owned' 
   independent of object ownership. 
   
-  See also: ATTRIBUTES, ATTRIB-OWNERSHIP, Attribute Functions, 
-     ATTRIBUTE TREES
+See also: ATTRIBUTES, ATTRIB-OWNERSHIP, Attribute Functions, ATTRIBUTE TREES
 & PARENT
 & PARENTS
 & OBJECT PARENTS
@@ -1084,7 +1084,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   #18 :waves hello
   Punch> Punch waves hello
 
-  See also: PUPPET, @force, DBREF
+See also: PUPPET, @force, DBREF
 & QUEUE
   QUEUE
 
@@ -1101,7 +1101,7 @@ Standard Attributes: (see @list/attribs for the complete list)
   (wizards, you, and your objects) or unless you are VISUAL.  It 
   tracks how many active commands you have in the queue.
 
-  See also: @ps, LOOPING
+See also: @ps, LOOPING
 & REGEXP
 & REGEXPS
   (This help text is largely from TinyMUSH 2.2.4, with permission)
@@ -1364,16 +1364,16 @@ Continued in 'help regexp classes2'
 
   The registers can also be accessed using the V-function (v(0) through v(9)).
 
-  Please see help setq() for more information about the setq registers.
+  Please see 'help setq()' for more information about the setq registers.
 
-  See also: SUBSTITUTIONS, @trigger, USER-DEFINED COMMANDS, setq()
+See also: SUBSTITUTIONS, @trigger, USER-DEFINED COMMANDS, setq()
 & RQUOTA
   RQUOTA
 
   This attribute tracks remaining building quota if it is implemented.  
   It is settable in-game only by a wizard, and is only visible to wizards.
 
-  See also: @quota, @squota
+See also: @quota, @squota
 & SEMAPHORES
   The most complicated thing about semaphores is their name. Before you try
   to use semaphores, you should first be familiar with the "@wait" command.
@@ -1433,7 +1433,7 @@ Continued in 'help regexp classes2'
   [ 30 seconds passes. ]
   Wizard waits 30 seconds.
  
-  See also: @wait, @drain, @notify
+See also: @wait, @drain, @notify
 (continued in help semaphores4)
 & SEMAPHORES4
   Semaphores can be used to enforce mutual exclusion - to prevent
@@ -1464,7 +1464,7 @@ Continued in 'help regexp classes2'
  attributes can be used, as long as they follow a few simple rules:
  If the attribute is already set, it has to have the same owner (God)
  and flags as the SEMAPHORE attribute would (typically no_inherit, no_clone,
- and locked - see help @set and @atrlock), and have a numeric or empty
+ and locked - see 'help @set' and '@atrlock'), and have a numeric or empty
  value. If it's not set, it can't be one of the built in attributes
  (See @list attribs) unless, naturally, it is SEMAPHORE.
 
@@ -1539,7 +1539,7 @@ Continued in 'help regexp classes2'
 
         Foozle 09blert bar baz foo.
 
-  See also: string functions
+See also: string functions
 & %
 & SUBSTITUTIONS
   The % symbol is used in MUSH commands to indicate a substitution -- some
@@ -1607,7 +1607,7 @@ Continued in 'help regexp classes2'
   %! = #11
   %L = #13
 
-  See also: EVALUATION, ENACTOR, EXECUTOR, DBREFS, v()
+See also: EVALUATION, ENACTOR, EXECUTOR, DBREFS, v()
 & SUCCESS
   A "success" normally occurs when you attempt to do something that is
   restricted by an @lock and you pass the @lock. (Note that if no lock
@@ -1621,7 +1621,7 @@ Continued in 'help regexp classes2'
   more information. Many of these actions have standard attributes that
   you can set messages in for when someone succeeds.
 
-  See also: FAILURE, @lock, VERBS, ATTRIBUTES, @success, @asuccess, @osuccess
+See also: FAILURE, @lock, VERBS, ATTRIBUTES, @success, @asuccess, @osuccess
 & SWITCHES
   SWITCHES
  
@@ -1641,7 +1641,7 @@ Continued in 'help regexp classes2'
 
   Help on the switches available for a command is available in the help
   file for that command.
-  (If you are looking for information on @switch, see help @switch instead.)
+  (If you are looking for information on @switch, see 'help @switch'.)
 & TYPES OF OBJECTS
   
   Everything on a MUSH is an object in the MUSH database. There are four
@@ -1673,7 +1673,7 @@ Continued in 'help regexp classes2'
     commands. Can send @mail as themselves. You can have $-commands and 
     ^-patterns on things. Things can carry, be carried, and can follow.
 
-  See also: EXITS, USER-DEFINED COMMANDS, LISTENING, GLOBALS
+See also: EXITS, USER-DEFINED COMMANDS, LISTENING, GLOBALS
 & $-COMMANDS
 & MACROS
 & USER-DEFINED COMMANDS
@@ -1723,7 +1723,7 @@ Continued in 'help regexp classes2'
 
   *BE SURE TO @LOCK/USE ME==ME IF YOU SET MACROS ON YOURSELF!*
 
-  See also: STACK, SUBSTITUTIONS, @lock
+See also: STACK, SUBSTITUTIONS, @lock
 & VERBS
   For most verbs there are three forms: Verb (what the Enactor sees),
   Overb (what others in the area see) and Averb (the action to be 
@@ -1788,7 +1788,7 @@ Continued in 'help regexp classes2'
 
   A backslash (\) can be used to escape * and ? if you want to match 
   a literal asterisk or question mark.
-  See also: USER-DEFINED COMMANDS, REGEXP
+See also: USER-DEFINED COMMANDS, REGEXP
 & ZONE MASTER ROOMS
 & ZMR
   
@@ -1806,7 +1806,7 @@ Continued in 'help regexp classes2'
   exits, or for zones with restricted commands that can go on a separate
   use-locked object from general ones.
 
-  See also: ZONES, MASTER ROOM, EVALUATION
+See also: ZONES, MASTER ROOM, EVALUATION
 & ZONE MASTERS
 & ZMP
 & SHARED PLAYERS
@@ -1874,7 +1874,7 @@ Continued in 'help regexp classes2'
   ZMO, and the players @chzoned to it so they can use the commands
   anywhere.
 
-  See also: @chzone, SHARED PLAYERS
+See also: @chzone, SHARED PLAYERS
 & matching
   Matching is the process the MUSH uses to determine which object you
   mean when you try to do something with an object. Different commands

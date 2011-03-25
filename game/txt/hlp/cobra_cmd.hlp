@@ -16,6 +16,8 @@ Help is available for the following MUSH commands:
  
   @-ATTRIBUTES   @-BUILDING     @-GENERAL      @-Director
  
+  Commands that can only be used by connected players are listed in
+  HELP SOCKET COMMANDS.
 & @-ATTRIBUTES
 These '@' commands set standard message/action sets on objects. Each comes
 in 3 versions: @<whatever>, @o<whatever>, and @a<whatever>. Only the
@@ -289,7 +291,7 @@ See also: leave, @lfail, @olfail, ACTION LISTS
 
   @alias has no effect on non-players.
 
-  See also: @name, alias(), fullalias()
+See also: @name, alias(), fullalias()
 & @allhalt
   @allhalt
 
@@ -458,7 +460,7 @@ See also: use, @use, ACTION LISTS, @charges, @runout
   don't like @switch. If <command> is given, it is executed instead of
   the rest of the commands in the current queue.
 
-  @assert does the inverse: stopping execution if <boolean> evaluse to false.
+  @assert does the inverse: it stops execution if <boolean> evaluates to false.
 
   Examples:
   > @va obj=$testme *:@pemit %#=Before break;@break %0;@pemit %#=After break
@@ -566,10 +568,10 @@ See also: ZONES, @chzoneall
   
 See also: @chzone, ZONES
 & @clone
-  @clone <object, room, or exit>[=<new name>]
-  @clone/preserve <object, room, or exit>[=<new name>]
+  @clone <thing, room, or exit>[=<new name>]
+  @clone/preserve <thing, room, or exit>[=<new name>]
 
-  For objects, creates an exact duplicate of it and puts it in the
+  For things, creates an exact duplicate of it and puts it in the
   current room. For exits, it creates an exact duplicate of that
   exit, except the clone's source is the current room rather than
   whatever the original exit's source was. For rooms, creates an
@@ -698,7 +700,7 @@ See also: @create
   through '@conformat here = Contents: [iter(%0,name(##))]',
   for example. More complex things are, obviously, possible.
  
-  See also: @exitformat, @nameformat, @descformat
+See also: @exitformat, @nameformat, @descformat
 & @invformat
   @invformat <object> [=<format>]
 
@@ -723,7 +725,7 @@ See also: @create
   This is useful for things like room parents that enforce a consistent
   "look" for each room's @desc.
 
-  See also: @exitformat, @nameformat, @conformat, @idescformat
+See also: @exitformat, @nameformat, @conformat, @idescformat
 & @idescformat
   @idescformat <object> [=<text>]
 
@@ -735,7 +737,7 @@ See also: @create
   This is useful for things like object parents that enforce a consistent
   "look" for each object's @idesc.
 
-  See also: @exitformat, @nameformat, @conformat, @descformat
+See also: @exitformat, @nameformat, @conformat, @descformat
 & @nameaccent
   @nameaccent <object> [=<accent template>]
 
@@ -749,7 +751,7 @@ See also: @create
   If a container has both a @nameaccent and a @nameformat, the
   @nameformat is used.
 
-  See also: accent(), @nameformat
+See also: accent(), @nameformat
 & @nameformat
   @nameformat <object> [=<format>]
 
@@ -763,7 +765,7 @@ See also: @create
   Example: Show the room's zone after its name.
   @nameformat here = %1 [if(isdbref(zone(%0)),<[name(zone(%0))]>)]
 
-  See also: @exitformat, @conformat, @descformat
+See also: @exitformat, @conformat, @descformat
 & @cost
   @cost <object> = <amount> 
 
@@ -812,16 +814,16 @@ See also: ATTRIBUTES, NON-STANDARD ATTRIBUTES
 & @create
   @create <name> [=<cost>]
 
-  Creates a thing with the specified name. Creating an object costs
+  Creates a thing with the specified name. Creating a thing costs
   a certain amount of MUSH money, which usually defaults to 10 pennies.
   You can specify a higher cost if you wish, but not a lower one.
-  This cost is refunded if you @destroy/@recycle the object.
+  This cost is refunded if you @destroy/@recycle the thing.
 
-  Once you have created an object, you can use it as a PUPPET, to store
+  Once you have created a thing, you can use it as a PUPPET, to store
   USER-DEFINED COMMANDS, or just as a prop. Some MUSHes choose to limit 
   the number of objects that players can create by setting a QUOTA.
  
-  See also: give, @quota, MONEY
+See also: give, @quota, MONEY
 & @dbck
   @dbck
   This is a Director only command.  It forces the database to perform a
@@ -989,8 +991,8 @@ See also: SAFE, GOING, DESTROY_OK
     This will do just the same as the above, except it will also create
     an exit named "Out <S>;s;south;out;o" coming back from the kitchen
     to whatever room you are currently in.
-    
-See also: @open, @link, EXITS, @create
+
+See also: @open, @link, EXITS, @create, DBREF
 & @doing
   @doing <message>
   @doing/header <message>
@@ -1043,13 +1045,13 @@ See also: @poll, WHO, DOING
   @drop <object> [=<message>]. <object> can be a thing, player, exit,
   or room, specified as <name> or #<number> or 'me' or 'here'. Sets 
   the drop message for <object>. The message is displayed when a 
-  player drops <object>. Without  a message argument, it clears the 
+  player drops <object>. Without a message argument, it clears the 
   message. 
 
   On an exit, this message is sent to a player after they pass through
   the exit.
 
-  See also: drop, @odrop, @adrop.
+See also: drop, @odrop, @adrop.
 & @dump
   @dump [/paranoid] [check interval]
  
@@ -1073,7 +1075,7 @@ See also: @poll, WHO, DOING
   If you have a chair, you could "@ealias chair = sit down" and then just
   type "sit down" instead of "enter chair" - using the object name is
   not necessary. Note that the enter alias is checked after normal exits.
-  Like an exit, it may have a semi-colon separated list of words,
+  Like an exit, it may have a semicolon separated list of words,
   i.e. sit down;sit;sit on chair
 & @edit
 & @gedit
@@ -1255,7 +1257,7 @@ See also: @lock, locktypes, @elock
   One could change the format to 'Exits: Exit1 Exit2 Exit3' through
   '@exitformat here = Exits: [iter(%0,name(##))]', for example.
 
-  See also: TRANSPARENT, @conformat, @nameformat, @descformat
+See also: TRANSPARENT, @conformat, @nameformat, @descformat
 & @failure
   @failure <object> [=<message>]
 
@@ -1337,6 +1339,13 @@ See also: @search
   the object (using the 'follow' command). 
 
 See also: follow, unfollow, followers(), @ofollow, @afollow
+& @unfollow
+  @unfollow <object> = <message>
+
+  Sets the message shown to someone after they stop following 
+  the object (using the 'unfollow' command). 
+
+See also: follow, unfollow, followers(), @ounfollow, @aunfollow
 & @FORWARDLIST
   @forwardlist <object> [=<list of dbrefs>]
 
@@ -1368,13 +1377,6 @@ See also: @filter, @prefix, AUDIBLE, PUPPET
   @lock/forward me=$me)
 
 See also: DEBUG
-& @unfollow
-  @unfollow <object> = <message>
-
-  Sets the message shown to someone after they stop following 
-  the object (using the 'unfollow' command). 
-
-See also: follow, unfollow, followers(), @ounfollow, @aunfollow
 & @force
   @force[/noeval] <object>=<command>
 
@@ -1395,7 +1397,7 @@ See also: follow, unfollow, followers(), @ounfollow, @aunfollow
   the forcee runs the command. @force/noeval will only
   evaluate the command when the forcee runs it.
 
-Example:
+Examples:
   @create Lackey
   > Created: Object #103 
   @fo Lackey = go east
@@ -1437,7 +1439,7 @@ See also: PUPPET, DBREF
       flag table. It requires the exact flag name or alias to be used.
       Be very very careful with this. 
 
-  See also: help flags. See help @flag2 for information on @flag/add
+See also: help flags. See help @flag2 for information on @flag/add
 & @flag2
   @flag/add is used to add a new flag with the given name. Arguments
   other than the flag name are optional:
@@ -1897,56 +1899,40 @@ For example:
   > Recorder records: Whee!
 
 See also: LISTENING, @ahear, @amhear, @aahear
-& NEW LOCKS
-  In PennMUSH 1.7.5, several new features have been added to locks.
-
-  Locks can now be inherited off of parents, just like attributes.
-  By default, locks are set no_inherit, but this flag can be cleared.
-
-  There are now lock flags including ones to control inheritance,
-  copying in a @clone, who can set them, and so on. Details are
-  in HELP @LSET.
-  
-  Indirect lock keys (@#1234) can now refer to other lock names on
-  objects, not just a lock of the same name. See HELP @LOCK4.
-
-  There is a new lock key for testing flags and object types. 
-  See HELP @LOCK9 for more information.
 & LOCKING
 & LOCKS
 & @lock
   @lock[/<switch>] <object>=<key> 
   
-  This command "locks" the object, specifying (by the key) who or what can
-  do certain things with the object. There are many different types of locks,
-  all of which are described in "help locktypes" and which are designated by
-  the switch. The "basic" lock determines, for players and objects, who can
-  pick them up. For exits, it determines who can go through the exit.
-  All other locks can be set the same way as the basic lock.
+  This command "locks" the object, specifying a key which determines who or
+  what can do certain things with the object. There are many different types
+  of locks, all of which are described in "help locktypes" and which are
+  designated by the switch. The "basic" lock determines, for players and
+  things, who can pick them up. For exits, it determines who can go through
+  the exit. All other locks can be set the same way as the basic lock.
 
   Whenever you "pass" the basic lock, you succeed in doing something with
   the object. This triggers the @success/@osuccess/@asuccess
   messages and actions. If you fail to pass the basic lock, you trigger
   the @failure/@ofailure/@afailure messages and actions. Other locktypes
-  may also have such success/failure messages.
+  may also have such success/failure messages: see "help failure" for info.
 
   You can specify <object> and <key> as either the name of an object in
   the immediate area, a DBREF number, "me", or "here". 
 
-  Many new features have recently been added to locks. See HELP NEW LOCKS
-  for details.
-
 (continued in help @lock2)  
 & @lock2
   You can lock an object in several different ways. The simplest lock is to
-  lock it to one other thing:
+  lock it to one other object with the '=', signifying a DBRef # match.:
    @lock My Toy = = me
      This locks the object "My Toy" to you and you alone. It is recommended
      that you @lock me == me in order to prevent anyone else from picking
-     you up. The two = signs are NOT a typo!
-
-  You can lock an object -against- one other object as well, using the '!' 
-  symbol:
+     you up. The two = signs are NOT a typo! The first is part of the @lock
+     syntax (as shown at the top of "help @lock") the second is a lock key
+     that means "exactly this object".
+  
+  You can lock an object -against- another object as well, using the '!' 
+  symbol before any other key:
     @lock Shared Toy = !Vector Sigma
       This locks the object "Shared Toy" to everyone -except- Vector Sigma.
       Everyone except Vector will be able to pick up the object.
@@ -2087,7 +2073,7 @@ EVALUATION LOCKS
 
     @lock <object>=objid^<object id>
 
-See also: locktypes, @clock, objid()
+See also: locktypes, @clock, elock(), lock(), objid()
 & locktypes
 & locklist
 & lock types
@@ -2123,13 +2109,13 @@ See also: locktypes, @clock, objid()
   @lock/examine         Who can examine this object if it's VISUAL
   @lock/chzone          Who can @chzone to this object if it's a ZMO
   @lock/forward         Who can @forwardlist a message to this object 
-  @lock/control		Who can control this object (only if set)
-  @lock/dropto		Who can trigger this container's drop-to.
-  @lock/destroy		Who can destroy this object if it's DESTROY_OK
+  @lock/control	        Who can control this object (only if set)
+  @lock/dropto	        Who can trigger this container's drop-to.
+  @lock/destroy	        Who can destroy this object if it's DESTROY_OK
   @lock/interact        Who can send sound (say/pose/emit/etc) to this object
   @lock/take            Who can get things contained in this object
 
-  See also: @lock, @lset, @clock, FAILURE
+See also: @lock, @lset, @clock, FAILURE
 & @lset
   @lset <object>/<lock type>=[!]<flag>
 
@@ -2152,7 +2138,7 @@ See also: locktypes, @clock, objid()
   are /check, /cmd, /conn, /err, /trace, and /wiz, specifying which
   file to log to.  /cmd is default.
 
-  See also: @logwipe
+See also: @logwipe
 & @logwipe
   @logwipe/<switch> <password>
 
@@ -2161,7 +2147,7 @@ See also: locktypes, @clock, objid()
   log wipe password from the MUSH's configuration file to use this
   command.
 
-  See also: @log
+See also: @log
 & @map
   @map[/delim] [<delim>] <list> = <function or pattern>
  
@@ -2243,7 +2229,7 @@ See also: go, @omove, @oxmove, @amove
   ONAME and ANAME. The old name will be passed at %0 to these;
   the new name will be passed as %1.
 
-  See also: @alias
+See also: @alias
 & @newpassword
   @newpassword <player> = <password>
 
@@ -2461,7 +2447,7 @@ See also: go, @move, @omove, @amove
   
   If the =<message> part is omitted, the message will be reset.
 
-Ex: @opay Vending Machine=sticks a quarter in the vending machine.
+  Ex: @opay Vending Machine=sticks a quarter in the vending machine.
 
 See also: give, @cost, @payment, @apayment, MONEY
 & @open
@@ -2472,8 +2458,8 @@ See also: give, @cost, @payment, @apayment, MONEY
   This command opens an exit in the room you are standing in with the 
   specified name. You can then use the @link command to set the exit's
   destination, or you can set it automatically by using the DBREF of a
-  destination, which can be a room or object. (Note that you CANNOT open
-  exits from objects.) If you also include the second exit name, an exit
+  destination, which can be a room or thing. (Note that you CANNOT open
+  exits from things.) If you also include the second exit name, an exit
   from the destination room will be opened back to the room you are in.
 
   NOTE: you can have as many exit aliases as you like by adding more,
@@ -2481,7 +2467,7 @@ See also: give, @cost, @payment, @apayment, MONEY
   the full exit name to go through the exit. Only the exit name appears in
   the list of Obvious Exits in a room.
 
-Ex: @open Up;u;climb = #255, Down;dow;do;d;fall
+  Ex: @open Up;u;climb = #255, Down;dow;do;d;fall
 
 See also: EXITS, @link, @dig
 & @osuccess
@@ -2497,7 +2483,7 @@ See also: EXITS, @link, @dig
   if the name of the exit is included in the message. It is recommended 
   that you put @osuccs on all exits and all takeable objects.
 
-Ex: @osucc North=heads north into the catacombs.
+  Ex: @osucc North=heads north into the catacombs.
   
   If the =<message> part is omitted, the message will be reset.
 
@@ -2578,7 +2564,7 @@ See also: PARENTS, parent(), lparent()
   it a certain amount of MUSH money. If =<message> is omitted, the message
   is reset to nothing. May be abbreviated @pay. 
 
-See also: give, @apay, @opay, and @cost.
+See also: give, @apay, @opay, @cost.
 & @receive
 & @oreceive
 & @areceive
@@ -2645,7 +2631,7 @@ See also: give
   Note that page-lock and the HAVEN flag will block @pemits as well, 
   except from Directors or those with the pemit_all power.
 
-See also @emit, @oemit, @remit, NOSPOOF, and SPOOFING.
+  See also @emit, @oemit, @remit, NOSPOOF, and SPOOFING.
 & @poll
   @poll
   @poll <poll question>
@@ -2755,7 +2741,7 @@ See also: @motd, @list, @listmotd
    dbref instead of the executor's dbref, and requires control over
    the enactor or the Can_nspemit power.
 
-See also: @emit, @pemit, @oemit, SPOOFING, NOSPOOF and CONTROL.
+See also: @emit, @pemit, @oemit, SPOOFING, NOSPOOF, CONTROL.
 & @restart
   @restart <object> or @restart/all
   
@@ -3068,7 +3054,7 @@ See also: GENDER, SUBSTITUTION
 
   Example: @sql SHOW TABLES
 
-  See also: sql(), sqlescape(), mapsql()
+See also: sql(), sqlescape(), mapsql()
 & @squota
   @squota <victim> [= [+|-] <amount>]
 
@@ -3121,12 +3107,12 @@ See also: @osuccess, @asuccess
 & @sweep
   @sweep [connected | here | inventory | exits ]
  
-  @sweep gives you a list of all objects/players that are listening in
-  the room you are currently in, as well as the objects you are
-  carrying. Most objects only listen for a particular string or
-  phrase, so they normally do not pose a problem if you need privacy.
-  You will have to be careful of players and puppets since they will
-  hear everything you say and do. (And might post the same to r.g.m!)
+  @sweep gives you a list of all nearby objects that are listening,
+  including the room you are in and the objects you are carrying.
+  Most objects only listen for a particular string or phrase, so they
+  normally do not pose a problem if you need privacy. You will have to be
+  careful of players and puppets since they will hear everything you say
+  and do. (And might post the same to r.g.m!)
   AUDIBLE exits are also shown on an ordinary sweep, if the room is
   also AUDIBLE. (Audible exits aren't active unless the room is audible).
  
@@ -3202,7 +3188,7 @@ See also: switch wildcards, @select, switch()
   As a special case, using "home" as the <room> teleports the object
   to its home.
 
-  See also: JUMP_OK, NO_TEL, @oxtport, @tport, @otport, @atport, @lock
+See also: JUMP_OK, NO_TEL, @oxtport, @tport, @otport, @atport, @lock
 & @tport
   @tport <object> [=<message>]
 
@@ -3214,7 +3200,7 @@ See also: switch wildcards, @select, switch()
   an object. It can also pass values to that attribute on the stack 
   as %0 - %9.
 
-  Example:
+  Examples:
     &GREET me=POSE waves hi.
     @tr me/GREET
     > Cyclonus waves hi.
@@ -3355,7 +3341,7 @@ See also: use, @ouse, @ause, @charges, @runout
   See "help @verb3" for examples.
   
 & @verb3
-  Example:
+  Examples:
   
   &VERB_EXAMPLE Test Object=$test:@verb me=%#,TEST,You just tested.,OTEST,
        just tested the example.,ATEST,%N
@@ -3409,14 +3395,15 @@ See also: USER-DEFINED COMMANDS, STACK, @trigger, @select
   whichever happens first.
  
   More forms that support semaphores on arbitrary attributes are described in
-  help @wait2
-  See also the help for: SEMAPHORES, @drain, @notify
+  "help @wait2".
+
+See also: SEMAPHORES, @drain, @notify
 & @wait2
   Normally, a semaphore wait depends on the SEMAPHORE attribute of the object
   in question. However, it is useful to be able to use other attributes as
   semaphores, so one object can be used as the blocker for multiple different
   things at once. Possible attribute names aren't completely arbitrary. See
-  HELP SEMAPHORES5 for details.
+  "HELP SEMAPHORES5" for details.
 
   The syntax for these are:
  
@@ -3703,7 +3690,7 @@ See also: news, help
     ignores the object's VISUAL flag (but not its attribute flags)
   The /all switch shows the values of VEILED attributes.
 
-  See also: ATTRIBUTE TREES
+See also: ATTRIBUTE TREES
 & follow
   follow <object>
 
@@ -3714,8 +3701,8 @@ See also: news, help
   through. This doesn't prevent you from going somewhere else on your
   own.
 
-See also: unfollow, dismiss, desert, followers(), following(), 
-          @follow, @ofollow, @afollow
+See also: unfollow, dismiss, desert, followers(), following(), @follow,
+  @ofollow, @afollow
 & dismiss
   dismiss <object>
   dismiss
@@ -3771,7 +3758,7 @@ See also: @lock, ENTER_OK, give, drop, @success, inventory
   from PRICELIST. The item purchased is passed in as %0,
   and the amount paid as %1
 
-  See also: buy, @buy, @obuy, @pricelist, MONEY, ACTION LISTS
+See also: buy, @buy, @obuy, @pricelist, MONEY, ACTION LISTS
 & @buy
   @buy <object> [=<message>]
 
@@ -3779,7 +3766,7 @@ See also: @lock, ENTER_OK, give, drop, @success, inventory
   the object, using the 'buy' command. The item purchased is passed
   in as %0, and the amount paid as %1.
 
-  See also: buy, @abuy, @obuy, @pricelist, MONEY
+See also: buy, @abuy, @obuy, @pricelist, MONEY
 & @obuy
   @obuy <object> [=<message>]
 
@@ -3789,7 +3776,7 @@ See also: @lock, ENTER_OK, give, drop, @success, inventory
   the beginning of the message. The item purchased is passed in as %0,
   and the amount paid as %1.
 
-  See also: buy, @abuy, @obuy, @pricelist, MONEY
+See also: buy, @abuy, @obuy, @pricelist, MONEY
 & @pricelist
   @pricelist <object>=<item1>:<price1>[,<price2>][ <item2>:...]
 
@@ -3805,7 +3792,7 @@ See also: @lock, ENTER_OK, give, drop, @success, inventory
   ex:
     @PRICELIST vendor=mansion:1000+ large_house:100-200 house:20,30,50
 
-  See also: buy, @abuy, @buy, @obuy, MONEY
+See also: buy, @abuy, @buy, @obuy, MONEY
 & buy
   buy <item>[ from <vendor>][ for <cost>]
 
@@ -3825,7 +3812,7 @@ See also: @lock, ENTER_OK, give, drop, @success, inventory
   > buy coke
   You enjoy a delicious coke.
 
-  See also: @ABUY, @BUY, @PRICELIST
+See also: @ABUY, @BUY, @PRICELIST
 & give
   give[/silent] <player>=<number>
   give[/silent] <number> to <player>
@@ -4042,7 +4029,7 @@ See also: @lock, @alias, pose, :, ;, HAVEN, NOSPOOF, FLAGS
   of the message, and is handy when you want to say things that use special 
   characters like % or []'s.
 
-  See also: whisper, pose
+See also: pose, whisper
 & score
   score
   
@@ -4130,3 +4117,15 @@ See also: @doing, @poll, DOING
   are checked for commands as if it was a master room.
 
   See 'help USER-DEFINED COMMANDS'.
+& socket commands
+  These commands can only be entered by a connected player through their
+  client. They generally do things that only affect a specific connection
+  and would be meaningless if run by an object or disconnected player.
+
+  DOING	    IDLE      LOGOUT     OUTPUTPREFIX OUTPUTSUFFIX QUIT
+  SESSION   WHO
+
+  In addition, the following commands can only be used at the login
+  screen:
+
+  cd ch connect create 

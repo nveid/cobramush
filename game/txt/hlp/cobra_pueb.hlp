@@ -29,7 +29,7 @@ Pueblo support has been enabled in the server (check @config):
 - Object lists (like the ones found in 'examine') have links
 - Conversion of ANSI sequences to <FONT> tags.
 
-See 'HTML', 'HTML Functions' and '@VRML_URL' for more help.
+See also: 'HTML', 'HTML Functions' and '@VRML_URL' for more help.
 
 & @VRML_URL
 & VRML
@@ -45,7 +45,7 @@ Example:
 To learn about the VRML Format, have a look at the Pueblo Help, which
 mentions several good sites for learning.
 
-See also 'HTML'.
+See also: 'HTML'.
 
 & HTML
 Hyper Text Markup Language (http://www.w3.org)
@@ -56,7 +56,7 @@ one of the MUSH HTML Functions. (See 'HTML Functions').
 
 HTML tags are stripped when sent to non-HTML capable players.
 
-See 'HTML Functions'.
+See also: 'HTML Functions'.
 & HTML FUNCTIONS
 HTML Functions are used to output HTML tags to HTML capable
 users. These tags will be stripped by the system for anything

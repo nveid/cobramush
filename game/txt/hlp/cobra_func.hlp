@@ -1,7 +1,7 @@
 & FUNCTIONS
   Functions are specialized commands used to manipulate strings and
   other input. Function take the general form:  [FUNCTION(<input>)]
-    
+
   The brackets are used to delimit and force evaluation of the function 
   (or nested functions). The brackets can also be used to group functions 
   for the purposes of string concatenation. In general, more than one pair 
@@ -55,22 +55,22 @@
   String functions:  string manipulation (ESCAPE, FLIP)
   Time functions: Formatting and display of time (TIME, CONVSECS)
   Utility functions: general utilities (ISINT, COMP)
-  
+
   The command "@config/functions" lists all of the game's built-in functions.
   The command "@function" lists all of the game's custom global functions
     defined via the @function command.
-  
+
 & Attribute functions
   The primary purpose of these functions is to access information
   stored in attributes on objects.
-  
+
   aposs()       attrib_set()  default()     edefault()    eval()
   get()         grep()        grepi()       lattr()       nattr()
   obj()         poss()        regrep()      regrepi()     subj()
   udefault()    ufun()        uldefault()   ulocal()      v-function
   wildgrep()    wildgrepi()   xget()        zfun()
 
-  See also: ATTRIBUTES, NON-STANDARD ATTRIBUTES
+See also: ATTRIBUTES, NON-STANDARD ATTRIBUTES
 & Bitwise functions
   These functions treat integers as a sequence of binary bits (Either 0
   or 1) and manipulate them.
@@ -90,12 +90,12 @@
   are all considered "true" when passed to these functions.
   Alternatively, your MUSH may be using TinyMUSH 2.2 booleans,
   in which case only non-zero numbers are "true".
-  
+
   and()         cand()        cor()         eq()          gt()
   gte()         lt()          lte()         nand()        neq()
   nor()         not()         or()          t()           xor()
-    
-  See also: BOOLEAN VALUES, @config
+
+See also: BOOLEAN VALUES, @config
 & Communication functions
   Communication functions are side-effect functions that send a message
   to an object or objects.
@@ -116,18 +116,18 @@
 & Dbref functions
   Dbref functions return a dbref or list of dbrefs related to some value
   on an object.
-  
+
   children()    con()         entrances()   exit()        followers()
   following()   home()        lcon()        lexits()      loc()
   locate()      lparent()     lplayers()    lsearch()     lvcon()
   lvexits()     lvplayers()   namelist()    next()        nextdbref()
   num()         owner()       parent()      pmatch()      rloc()
   rnum()        room()        where()       zone()
-  
-  See also: DBREF
+
+See also: DBREF
 & Information functions
   Information functions return values related to objects or the game.
- 
+
   alias()       andflags()    andlflags()   config()      controls()
   ctime()       elock()       findable()    flags()       fullalias()
   fullname()    hasattr()     hasattrp()    hasflag()     haspower()
@@ -152,8 +152,8 @@
   setunion()    shuffle()     sort()        sortby()      sortkey()
   splice()      step()        table()       unique()      wordpos()
   words()
-    
-  See also: LISTS
+
+See also: LISTS
 & Math functions
   Math functions take one or more floating point numbers and return 
   a numeric value.
@@ -165,7 +165,7 @@
   mul()         pi()          power()       root()        round()
   sign()        sin()         sqrt()        stddev()      sub()
   tan()         trunc()       val()
- 
+
   These functions operate only on integers (if passed floating point
   numbers, they will return an error or misbehave):
   dec()         div()         floordiv()    inc()         mod()
@@ -178,13 +178,13 @@
 & Regular expression functions
   These functions take a regular expression (regexp, or re) and match
   it against assorted things.
-  
+
   regedit()     regeditall() regeditalli()  regediti()    regmatch()
   regmatchi()   regrab()     regraball()    regraballi()  regrabi()
   regrep()      regrepi()    reswitch()     reswitchall() reswitchalli()
   reswitchi()
- 
-  See also: string functions, regexp
+
+See also: string functions, regexp
 & SQL functions
   These functions perform queries or other operations on an SQL
   database to which the MUSH is connected, if SQL support is
@@ -195,31 +195,31 @@
 & String functions
   String functions take at least one string and return a transformed
   string, parts of a string, or a value related to the string(s).
-  
-  accent()      after()       alphamin()    alphamax()    art()
-  before()      brackets()    capstr()      case()        caseall()
-  cat()         center()      comp()        chr()         decrypt()
-  delete()      digest()      edit()        encrypt()     escape()
-  if()          ifelse()      foreach()     lcstr()       left()        
-  lit()         ljust()       merge()       mid()         ord()         
-  ordinal()     pos()         regedit()     lpos()        regmatch()    
-  repeat()      reverse()     right()       rjust()       scramble()    
-  secure()      sha0()        space()       spellnum()    squish()      
-  strcat()      strinsert()   stripaccents()stripansi()   strlen()      
-  strmatch()    strreplace()  switch()      trim()        ucstr()       
-  wrap()
- 
-  See also: STRINGS
+
+  accent()      after()       align()       alphamin()    alphamax()
+  art()         before()      brackets()    capstr()      case()
+  caseall()     cat()         center()      comp()        chr()
+  decompose()   decrypt()     delete()      digest()      edit()
+  encrypt()     escape()      if()          ifelse()      foreach()
+  lcstr()       left()        lit()         ljust()       merge()
+  mid()         ord()         ordinal()     pos()         regedit()
+  lpos()        regmatch()    repeat()      reverse()     right()
+  rjust()       scramble()    secure()      sha0()        space()
+  spellnum()    squish()      strcat()      strinsert()   stripaccents()
+  stripansi()   strlen()      strmatch()    strreplace()  switch()
+  trim()        ucstr()       wrap()
+
+See also: STRINGS
 & Time functions
   These functions return times or format times.
-  
+
   convsecs()    convutcsecs() convtime()    ctime()       etimefmt()
   isdaylight()  mtime()       restarttime() secs()        starttime()
   stringsecs()  time()        timefmt()     timestring()  utctime()
 
 & Utility functions
   These functions don't quite fit into any other category.
-  
+
   allof()       ansi()        atrlock()     beep()        checkpass()
   clone()       create()      die()         dig()         firstof()
   functions()   isdbref()     isint()       isnum()       isword()
@@ -242,7 +242,7 @@
   output of functions when you don't use that output.
 & ABS()
   abs(<number>)
- 
+
   Returns the absolute value of a number. i.e. ABS(-4) returns 4;
   ABS(2) returns 2, etc.
 & ACCENT()
@@ -257,9 +257,9 @@
   the one assumes (ISO 8859-1), and some clients strip these 8-bit
   characters.
 
-  See HELP ACCENT2 for a description of the template argument.
+  See 'HELP ACCENT2' for a description of the template argument.
 
-  See also: stripaccents(), NOACCENTS
+See also: stripaccents(), NOACCENTS
 & ACCENT2
   For each character in <string>, the corresponding character of
   <template> is checked according to the table below, and a replacement
@@ -284,7 +284,7 @@
   cedilla    Small tail below    ,          C,c
              letter
 
-  See HELP ACCENT3 for more
+  See 'HELP ACCENT3' for more
 & ACCENT3
   These are non-accent special characters, mostly punctuation and
   non-roman letters.
@@ -302,7 +302,7 @@
   Capital eth         -          D
   Lower-case eth      &          o
   
-  See HELP ACCENT4 for examples
+  See 'HELP ACCENT4' for examples
 & ACCENT4
   Some examples of accent() and their expected outputs:
 
@@ -327,7 +327,7 @@
   Returns the angle that has the given <cosine> (arc-cosine), with the
   angle expressed in the given angle type, or radians by default.
 
-  See HELP CTU() for more on the angle type.
+  See 'HELP CTU()' for more on the angle type.
 & ADD()
   add(<number>, <number>[, ... , <numberN>])
 
@@ -345,6 +345,7 @@
    > think after(foo bar baz,ba)
    r baz
 
+See also: before(), rest()
 & ALIGN()
   align(<widths>,<col1>,...,<coln>[,<filler>[,<colsep>[,<rowsep>]]])
 
@@ -359,7 +360,7 @@
   left-aligned. A '-' causes it to be centered, and '>' makes it
   right-aligned. No prefix defaults to left-aligned. A '.' after the
   number implies the column is to be repeated for as long as there is
-  a non-repeating column.
+  text remaining in a non-repeating column.
 
   <filler> is a single character that, if given, is the character used
   to fill empty columns and remaining spaces. <colsep>, if given, is
@@ -388,6 +389,7 @@
          +                  Luke                  +
          +----------------------------------------+
 
+See also: center(), ljust(), rjust()
 & ALLOF()
   allof(<expr1>[, ... , <exprN>],<osep>)
 
@@ -407,7 +409,7 @@
   > say allof(#-1,#101,#2970,,#-3,0,#319,null(This Doesn't Count),|)
   You say, "#101|#2970|#319"
 
-  See also: firstof(), BOOLEAN VALUES
+See also: firstof(), BOOLEAN VALUES
 & ALPHAMAX()
   alphamax(<word1>[, ... , <wordN>])
 
@@ -432,7 +434,7 @@
   effects), while cand() stops evaluation after the first argument
   that evaluates to false.
 
-  See also: BOOLEAN VALUES, or(), xor(), not()
+See also: BOOLEAN VALUES, or(), xor(), not()
 & ANDFLAGS()
   andflags(<object>,<string of flag letters>)
 
@@ -513,7 +515,7 @@
   Returns the angle with the given <sine> (arc-sine), with the angle
   expressed in the given angle type, or radians by default.
 
-  See HELP CTU() for more on the angle type.
+  See 'HELP CTU()' for more on the angle type.
 & ATAN()
 & ATAN2()
   atan(<tangent>[,<angle type>])
@@ -527,7 +529,7 @@
   result. It is useful in converting between cartesian and polar
   coordinates.
 
-  See HELP CTU() for more on the angle type.
+  See 'HELP CTU()' for more on the angle type.
 & ATRLOCK()
   atrlock(<object>/<attrib>[, <on|off>])
 
@@ -558,7 +560,7 @@
   attrib_set(me/foo,%0) will _always_ create an attribute.
 
   Of course, if the empty_attrs configuration option is turned off,
-  then the above paragraph doesn't apply.  See @config attribs.
+  then the above paragraph doesn't apply.  See '@config attribs'.
   
 & BAND()
   band(<integer1>, <integer2>[, ... , <integerN>])
@@ -590,6 +592,7 @@
    > think before(foo bar baz,r)
    foo ba
 
+See also: after(), first()
 & BRACKETS()
   brackets([<string>])
 
@@ -625,7 +628,7 @@
   bound is returned. If it's higher than the higher bound,
   the higher bound is returned.
   
-  See also: ceil(), floor(), round(), trunc()
+See also: ceil(), floor(), round(), trunc()
 & BXOR()
   bxor(<integer>, <integer>[, ... , <integerN>])
 
@@ -637,18 +640,20 @@
   Returns <string> with the first character capitalized.
   Example: capstr(foo bar baz) returns "Foo bar baz"
 
-  See also: lcstr(), ucstr()
+See also: lcstr(), ucstr()
 & CAT()
   cat(<string1>[, ... , <stringN>])
 
   cat() concatenates strings, separating each string by a space.
   So "[cat(one, two)]" will return 'one two'.
+
+See also: strcat()
 & CEIL()
   ceil(<number>)
  
   Returns the least integral value greater than or equal to <number>.
 
-  See also: floor(), bound(), round(), trunc()
+See also: floor(), bound(), round(), trunc()
 & CENTER()
   center(<string>, <width>[, <fill>[, <rightfill>]])
  
@@ -661,7 +666,7 @@
   If <string> divides <width> into uneven portions, the left side
   will be one character shorter than the right side.
  
-  Example:
+  Examples:
     > say center(X,5,-)
     You say, "--X--"
     > say center(X,5,-=)
@@ -671,6 +676,7 @@
     > say center(hello,16,12345)
     You say, "12345hello543215"
 
+See also: align(), ljust(), rjust()
 & CHECKPASS()
   checkpass(<player>, <string>)
 
@@ -708,7 +714,7 @@
   The caller can use the function on himself, but using on any other
   player requires special powers.
 
-  See also: Connection Functions
+See also: Connection Functions
 & SENT()
   sent(<player|descriptor>)
 
@@ -718,7 +724,7 @@
   The caller can use the function on himself, but using on any other
   player requires special powers.
 
-  See also: Connection Functions
+See also: Connection Functions
 & RECV()
   recv(<player|descriptor>)
 
@@ -728,7 +734,7 @@
   The caller can use the function on himself, but using on any other
   player requires special powers.
 
-  See also: Connection Functions
+See also: Connection Functions
 & COMP()
   comp(<value1>, <value2>[,<type>])
 
@@ -759,7 +765,7 @@
   or the enactor (%#).  You CANNOT get the contents of anything else,
   regardless of whether or not you have objects in it.
 
-  See also: lcon(), next()
+See also: lcon(), next()
 & CONFIG()
   config()
   config(<option>)
@@ -778,7 +784,7 @@
   Players who are not connected have a conn value of "-1", as do dark
   wizards, when conn() is used on them by a non-priv'ed player.
  
-  See also: CONNECTED
+See also: CONNECTED
 & CONTROLS()
   controls(<object>, <victim>)
   
@@ -788,7 +794,7 @@
   object). You must control <object> or <victim>, or have the See_All
   power, to use this function.
 
-  See also: CONTROL
+See also: CONTROL
   
 & CONVSECS()
 & CONVUTCSECS()
@@ -803,14 +809,15 @@
   convutcsecs() and convsecs() with a second argument of 'utc' return
   the time based on UTC time instead of the server's local time.
   
-  Example:
+  Examples:
   > say [secs()]
   You say, "709395750"
   > say [convsecs(709395750)]
   You say, "Wed Jun 24 10:22:54 1992"
   > say [convutcsecs(709395750)]
   You say, "Wed Jun 24 14:22:30 1992"
-  See also: convtime(), time()
+
+See also: convtime(), time()
 & CONVTIME()
   convtime(<time string>)
 
@@ -832,26 +839,26 @@
   > say [convtime(Wed Jun 24 10:22:54 1992)]
   You say, "709395774"
 
-  See also: convsecs(), time()
+See also: convsecs(), time()
 & COS()
   cos(<angle>[,<angle type>])
  
   Returns the cosine of <angle>. Angle must be in the given angle
   type, or radians by default. 
 
-  Example:
+  Examples:
   > say cos(90, d)
   You say, "0" 
   > say cos(1.570796)
   You say, "0"
 
-  See HELP CTU() for more on the angle type.
+  See 'HELP CTU()' for more on the angle type.
 & PCREATE()
   pcreate(<name>, <password>)
 
   Creates a player with a given name and password. Wizard-only.
 
-  See also: @pcreate
+See also: @pcreate
 & CREATE()
   create(<object>, <cost>)
  
@@ -897,7 +904,8 @@
 
   Note especially the last example, which will trip you up if you use
   floating point numbers with dec() and expect it to work like sub().
-  See also: inc()
+
+See also: inc()
 & DECOMPOSE()
   decompose(<string>)
 
@@ -905,7 +913,7 @@
   parse-able characters to recreate <string> exactly after one parsing. It
   takes care of multiple spaces, '%r's, and '%t's.
 
-  See also: @decompile2, escape(), secure()
+See also: @decompile2, escape(), secure()
 & DECRYPT()
   decrypt(<string>, <password>)
 
@@ -933,7 +941,7 @@
     > say default(me/Test, No fruits!)
     You say "No fruits!"
  
-  See also: get(), eval(), ufun(), edefault(), udefault(), uldefault()
+See also: get(), eval(), ufun(), edefault(), udefault(), uldefault()
  
 & DELETE()
   delete(<string>, <first>, <len>)
@@ -949,7 +957,8 @@
     You say, "abcfgh"
     > say delete(abcdefgh, 3, -2)
     You say, "abefgh"
- 
+
+See also: strreplace()
 & DIE()
   die(<number of times to roll die>, <number of sides on die>[, <show>])
  
@@ -962,7 +971,7 @@
   be a space-seperated list of the individual rolls rather than their
   sum.
 
-  Example:
+  Examples:
   > think die(3, 6)
   6
   > think die(3, 6, 1)
@@ -987,7 +996,7 @@
   Without SSL, only the sha algorithm is enabled. In both cases, sha returns
   the same thing as the sha0() function.
 
-  See also: sha0()
+See also: sha0()
 & DIST2D()
   dist2d(<x1>, <y1>, <x2>, <y2>)
 
@@ -1017,14 +1026,14 @@
   Note that add(mul(div(%0,%1),%1),remainder(%0,%1)) always yields %0,
   and add(mul(floordiv(%0,%1),%1),modulo(%0,%1)) also always yields %0.
 
-  See also: modulo(), fdiv()
+See also: modulo(), fdiv()
 & DOING()
   doing(<player|descriptor>)
 
   Given the name of a connected player, returns that player's @doing
   string if they can be seen on the WHO list.
 
-  See also: @poll, @doing, poll()
+See also: @poll, @doing, poll()
 & E()
   e()
  
@@ -1047,7 +1056,7 @@
     > say edefault(me/Test,You have no marbles.)
     You say "You have no marbles."
   
-  See also: get(), eval(), ufun(), default(), udefault()
+See also: get(), eval(), ufun(), default(), udefault()
  
 & EDIT()
   edit(<string>, <search>, <replace>[, ... , <searchN>, <replaceN>])
@@ -1070,7 +1079,7 @@
 
   edit() can not replace a literal single ^ or $. Use regedit() for that.
   
-  See also: @edit, regedit()
+See also: @edit, regedit()
 & ELEMENT()
   element(<list>, <item>,<single-character separator>)
   
@@ -1083,7 +1092,7 @@
     > say [element(this|is|a|test|string,is,|)]
     You say, "2"
 
-  See also: match(), grab()
+See also: match(), grab()
 & ELEMENTS()
   elements(<list of words>, <list of numbers>[,<delim>[, <osep>]])
  
@@ -1097,7 +1106,7 @@
     > say elements(Foof|Ack|Beep|Moo,3 1,|)
     You say "Beep|Foof"
 
-  See also: extract(), index(), grab()
+See also: extract(), index(), grab()
 & ELOCK()
   elock(<object>[/<locktype>], <victim>)
 
@@ -1113,7 +1122,7 @@
       think elock(Dancing Slippers/drop, Princess)
       > 0
   
-  See also: @lock, locktypes
+See also: @lock, locktypes
 & EMIT()
 & NSEMIT()
   emit(<message>)
@@ -1128,7 +1137,9 @@
 
   Returns an encrypted string produced by a simple password-based
   encrypted algorithm. Good passwords are long passwords.
-  This is not high-security encryption.  See also decrypt().
+  This is not high-security encryption.
+
+See also: decrypt()
 & ENTRANCES()
   entrances([<object> [,<type>[, <begin>[, <end>]]]])
 
@@ -1153,7 +1164,7 @@
 
   Takes two numbers, and returns 1 if they are equal, 0 otherwise.
   
-  See also: neq()
+See also: neq()
 & ESCAPE()
   escape(<string>)
  
@@ -1170,7 +1181,7 @@
   message object).  Since the function preserves the original string, 
   it is, in most cases, a better choice than SECURE().
 
-  See also: decompose(), secure()
+See also: decompose(), secure()
 & EVAL()
 & GET_EVAL()
   eval(<object>, <attribute>)
@@ -1193,7 +1204,7 @@
   of xget() -- using a slash rather than a comma to separate the object from
   the attribute. It is included for TinyMUSH 2.x compatibility.
   
-  See also: get(), u(), xget()
+See also: get(), u(), xget()
 & EXIT()
   exit(<object>)
 
@@ -1205,7 +1216,7 @@
   enactor (%#).  You CANNOT get the exit list of anything else,
   regardless of whether or not you have objects in it.
 
-  See also: lexits(), next()
+See also: lexits(), next()
 & EXP()
   exp(<number>)
  
@@ -1223,14 +1234,14 @@
     think extract(This is a test string,3,2)
     > a test
 
-  See also: index(), elements(), grab()
+See also: index(), elements(), grab()
 & FDIV()
   fdiv(<numerator>, <denominator>)
  
   Returns the quotient of the two numbers. Note that the DIV() and MOD()
   functions cannot be used on floating point numbers.
 
-  See also: div()
+See also: div()
 & FILTER()
 & FILTERBOOL()
   filter([<obj>/]<attr>, <list>[,<delimiter>[, <osep>]])
@@ -1252,7 +1263,7 @@
     > say [filter(test/is_odd, 1 2 3 4 5 6)]
     You say, "1 3 5"
 
-  See also: anonymous attributes
+See also: anonymous attributes
 & FINDABLE()
   findable(<object>, <victim>)
  
@@ -1266,7 +1277,7 @@
 
   Returns the first element of a list.
 
-  See also: rest(), last()
+See also: before(), rest(), last()
 & FIRSTOF()
   firstof(<expr1>, <expr2>[, ... , <exprN>])
 
@@ -1290,7 +1301,7 @@
   > say firstof(get(%#/royal cheese),#-1 This Has No Meaning,0,)
   You say, ""
 
-  See also: allof(), BOOLEAN VALUES
+See also: allof(), BOOLEAN VALUES
 & FLAGS()
   flags(<object>)
   flags(<object>/<attribute>)
@@ -1305,7 +1316,7 @@
   some flags may not have flag letters, and multiple flags may have
   the same letter (and will appear twice).
 
-  See also: lflags()
+See also: lflags()
 & LFLAGS()
   lflags(<object>)
   lflags(<object>/<attribute>)
@@ -1317,7 +1328,7 @@
   Given no arguments, this function returns a space-separated list
   of all flag names known to the server.
 
-  See also: flags()
+See also: flags()
 & FLIP()
 & REVERSE()
   flip(<string>)
@@ -1325,12 +1336,14 @@
 
   This function reverses a string. For example, "flip(foo bar baz)"
   returns "zab rab oof".
+
+See also: revwords()
 & FLOOR()
   floor(<number>)
  
   Returns the greatest integral value less than or equal to <number>.
 
-  See also: ceil(), bound(), round(), trunc()
+See also: ceil(), bound(), round(), trunc()
 & FMOD()
   fmod(<number>, <divisor>)
 
@@ -1376,7 +1389,7 @@
     > say [fold(test/add_nums,1 2 3 4 5)]
     You say, "15"
 
-  See also: anonymous attributes
+See also: anonymous attributes
 & FOLLOWERS()
   followers(<object>)
 
@@ -1417,7 +1430,7 @@ Continued in HELP FOREACH2
     > say [foreach(is_alphanum,jt1o+)]
     You say, "1 1 1 1 0 "
 
-  See also: anonymous attributes
+See also: anonymous attributes
  
 & FRACTION()
   fraction(<number>)
@@ -1472,8 +1485,8 @@ Continued in HELP FOREACH2
   extract(list, match(list, pattern, delimiter), 1, delimiter) or
   the regular expression variation thereof.
 
-  See also: match(), extract(), element(), elements(), index(), regmatch(),
-            graball()
+See also: match(), extract(), element(), elements(), index(), regmatch(),
+  graball()
 & GRABALL()
 & REGRABALL()
 & REGRABALLI()
@@ -1495,7 +1508,7 @@ Continued in HELP FOREACH2
   > say regraball(This is testing a test,s$)
   You say "This is"
   
-  See also: match(), matchall(), grab(), regmatch()
+See also: match(), matchall(), grab(), regmatch()
 & GREP()
 & REGREP()
 & WILDGREP()
@@ -1604,7 +1617,7 @@ Continued in HELP FOREACH2
   The caller can use the function on himself, but using on any other
   player requires special powers.
 
-  See also: Connection Functions, ipaddr(), ports(), lports()
+See also: Connection Functions, ipaddr(), ports(), lports()
 & IDLE()
 & IDLESECS()
   idle(<player|descriptor>)
@@ -1624,7 +1637,7 @@ Continued in HELP FOREACH2
   if the <condition> is true, or <false expression> (if provided) if the
   <condition> is false.
 
-  See also:  BOOLEAN VALUES, switch()
+See also: BOOLEAN VALUES, switch()
 & INAME()
   iname(<object>)
 
@@ -1635,7 +1648,7 @@ Continued in HELP FOREACH2
   You must be see_all, control <object>, or be inside it to use this
   function.
 
-  See also: @nameformat, name(), fullname()
+See also: @nameformat, name(), fullname()
 & INC()
   inc(<integer>)
   inc(<string-ending-in-integer>)
@@ -1654,7 +1667,8 @@ Continued in HELP FOREACH2
 
   Note especially the last example, which will trip you up if you use
   floating point numbers with inc() and expect it to work like add().
-  See also: dec()
+
+See also: dec()
 & INDEX()
   index(<list>,<character>, <first>, <length>)
   
@@ -1674,7 +1688,7 @@ Continued in HELP FOREACH2
     blue tribble^
     cute doll"
 
-  See also: extract(), elements(), grab()
+See also: extract(), elements(), grab()
 & INSERT()
   insert(<list>, <position>, <new item>[,<single-character separator>])
 
@@ -1713,14 +1727,14 @@ Continued in HELP FOREACH2
   This function returns 1 if the string is a valid object dbref, and
   0 if the string is not a valid object dbref.
  
-  See also: DBREFS
+See also: DBREFS
 & ISINT()
   isint(<string>)
 
   Returns 1 if its argument is an integer, and 0 otherwise. Integers can
   begin with a '+' or '-' sign, but the rest of the string must be digits.
 
-  See also: isnum()
+See also: isnum()
 & ISNUM()
   isnum(<string>)
 
@@ -1729,7 +1743,7 @@ Continued in HELP FOREACH2
   the characters in the string must be digits, and an optional decimal
   point.
 
-  See also: isint()
+See also: isint()
 & ISWORD()
   isword(<string>)
   
@@ -1780,8 +1794,8 @@ Continued in HELP FOREACH2
   <pattern> is what will be "mapped" onto each element of the list,
   with the token "##" being replaced successively by the next word in
   the list, and the token "#@" being replaced by the word's position
-  in the list (see also help itext() and help inum()).  The result is
-  concatenated and returned as a space separated list.  This is similar
+  in the list (also see 'help itext()' and see 'help inum()').  The result
+  is concatenated and returned as a space separated list.  This is similar
   to @dolist, but the results are made into a list rather than executed.
 
   The list may be <delimiter>-separated.
@@ -1861,13 +1875,13 @@ Continued in HELP ITER2
   The caller can use the function on himself, but using on any other
   player requires special powers.
 
-  See also: Connection Functions, hostname(), ports(), lports()
+See also: Connection Functions, hostname(), ports(), lports()
 & LAST()
   last(<list>[,<delimiter>])
   
   Returns the last element of a list.
 
-  See also: first(), rest()
+See also: first(), rest()
 & LATTR()
 & LATTRP()
   lattr(<object>[/<attribute pattern>])
@@ -1884,7 +1898,7 @@ Continued in HELP ITER2
 
   lattrp() also includes attributes inherited from parents.
 
-  See also: nattr(), examine
+See also: nattr(), examine
 & NATTR()
 & NATTRP()
 & ATTRCNT()
@@ -1901,7 +1915,7 @@ Continued in HELP ITER2
 
   nattrp() and attrpcnt() also count matching attributes on the parent.
 
-  See also: lattr()
+See also: lattr()
 & LCON()
   lcon(<object>)
 
@@ -1913,14 +1927,14 @@ Continued in HELP ITER2
   or the enactor (%#).  You CANNOT get the contents of anything else,
   regardless of whether or not you have objects in it.
 
-  See also: lexits(), lplayers(), con(), next(), lvcon()
+See also: lexits(), lplayers(), con(), next(), lvcon()
 & LCSTR()
   lcstr(<string>)
 
   Returns <string> with all letters converted to lowercase.
   Example: lcstr(Foo BAR bAz) returns "foo bar baz"
 
-  See also: capstr(), ucstr()
+See also: capstr(), ucstr()
 & LDELETE()
   Ldelete(<list>, <position>[,<single-character separator>])
   
@@ -1938,6 +1952,7 @@ Continued in HELP ITER2
 
   Returns the first <length> characters from string.
 
+See also: left(), mid()
 & NSLEMIT()
 & LEMIT()
   lemit(<message>)
@@ -1958,7 +1973,7 @@ Continued in HELP ITER2
   enactor (%#).  You CANNOT get the exit list of anything else,
   regardless of whether or not you have objects in it.
 
-  See also: lcon(), exit(), next(), lvexits()
+See also: lcon(), exit(), next(), lvexits()
 & LJUST()
   ljust(<string>, <length>[,<fill>])
   
@@ -1976,7 +1991,8 @@ Continued in HELP ITER2
     You say, "
     0foo---7
     01234567"
- 
+
+See also: align(), center(), rjust()
 & LINK()
   link(<name>, <destination>[, <preserve>])
  
@@ -2021,7 +2037,7 @@ Continued in HELP ITER2
   Supported <op>'s are: add and band bor bxor div fdiv max mean 
   median min modulo mul nand nor or remainder stddev sub xor
 
-  Example:
+  Examples:
   >think lmath(add, 1|2|3, |)
   6
   >think lmath(max, 1 2 3)
@@ -2068,7 +2084,7 @@ Continued in HELP ITER2
   > say [setr(0, Outside)]-[localize(setr(0, Inside))]-%q0
   You say, "Outside-Inside-Outside"
 
-  See also: setq(), setr(), r(), ulocal(), uldefault(), s()
+See also: setq(), setr(), r(), ulocal(), uldefault(), s()
 & LOCATE()
   locate(<looker>, <name>, <parameters>)
  
@@ -2125,7 +2141,8 @@ for an object named "Test", preferring a thing over other types.
 
   This is a side-effect function and may not be enabled on some MUSHes.
  
-  See also: @lock, locktypes, lockflags(), llockflags(), lset(), llocks()
+See also: @lock, locktypes, elock(), lockflags(), llockflags(), lset(),
+  llocks()
 & LLOCKS()
 & LOCKS()
   llocks(<object>)
@@ -2140,7 +2157,7 @@ for an object named "Test", preferring a thing over other types.
   > th llocks(me)
   Basic USER:ITSME Use
 
-  See also: lock(), lset(), lockflags(), llockflags()
+See also: lock(), lset(), lockflags(), llockflags()
 & LOCKFLAGS()
   lockflags(<object>[/<locktype>])
   lockflags()
@@ -2152,7 +2169,7 @@ for an object named "Test", preferring a thing over other types.
   Given no arguments, this function returns a string consisting of
   all the flag letters the server knows.
 
-  See also: llockflags(), lset(), lock(), llocks()
+See also: llockflags(), lset(), lock(), llocks()
 & LLOCKFLAGS()
   llockflags(<object>[/<locktype>])
   llockflags()
@@ -2163,7 +2180,7 @@ for an object named "Test", preferring a thing over other types.
   Given no arguments, this function returns a space-separated list
   of all flag names known to the server.
 
-  See also: lockflags(), lset(), lock(), llocks()
+See also: lockflags(), lset(), lock(), llocks()
 & LSET()
   lset(<object>/<lock type>,[!]<flag>)
   
@@ -2189,14 +2206,14 @@ for an object named "Test", preferring a thing over other types.
   see_all power. You must be in <object> or control it to use this
   function.
 
-  See also: lvplayers(), lcon(), lthings()
+See also: lvplayers(), lcon(), lthings()
 & LTHINGS()
   lthings(<object>)
 
   This function returns the dbrefs of all things, dark or not, in 
   <object>. You must be in <object> or control it to use this function.
 
-  See also: lvthings(), lcon()
+See also: lvthings(), lcon()
 & LPOS()
   lpos(<string>, <character>)
 
@@ -2213,7 +2230,7 @@ for an object named "Test", preferring a thing over other types.
   > say lpos(a-bc-def-g, -)
   You say, "1 4 8"
 
-  See also: pos()
+See also: pos()
 & LSEARCH()
 & NLSEARCH()
 & SEARCH()
@@ -2299,14 +2316,14 @@ for an object named "Test", preferring a thing over other types.
   and visible (non-dark). You must be in <object> or control it to use this
   function.
 
-  See also: lcon()
+See also: lcon()
 & LVEXITS()
   lvexits(<room>)
 
   This function returns the dbrefs of all visible (non-dark) exits from
   <room>. You must be in the room or control it to use this function.
 
-  See also: lexits()
+See also: lexits()
 & LVPLAYERS()
   lvplayers(<object>)
 
@@ -2334,7 +2351,7 @@ for an object named "Test", preferring a thing over other types.
 
   lwohid() returns a list of objid's instead.
 
-  See also: mwho(), nwho(), xwho()
+See also: mwho(), nwho(), xwho()
 & MAP()
   map([<object>/]<attribute>, <list>[,<delim>[, <osep>]])
   
@@ -2357,7 +2374,7 @@ for an object named "Test", preferring a thing over other types.
     > say [map(times_two,1;2;3;4;5,;)]
     You say, "2;4;6;8;10"
 
-  See also: anonymous attributes
+See also: anonymous attributes
 & MATCH()
   match(<list>, <pattern>[,<delimiter>])
 
@@ -2373,7 +2390,7 @@ for an object named "Test", preferring a thing over other types.
   To match an entire string  (for example, to match "red blue green"
   to "*bl*"), use the strmatch() function.
 
-  See also: element(), grab()
+See also: element(), grab()
 & MATCHALL()
   matchall(<list>, <pattern>[,<delim>[, <osep>]])
  
@@ -2390,7 +2407,7 @@ for an object named "Test", preferring a thing over other types.
   > say matchall(This is testing a test,tes*)
   You say "3 5"
  
-  See also: match(), strmatch(), graball()
+See also: match(), strmatch(), graball()
 & MAX()
   max(<number>[, ... , <numberN>])
 
@@ -2401,20 +2418,20 @@ for an object named "Test", preferring a thing over other types.
 
   Returns the mean (arithmetic average) of its arguments.
 
-  See also: median(), stddev()
+See also: median(), stddev()
 & MEDIAN()
   median(<number>[, ... , <numberN>)
 
   Returns the median (the middlemost numerically) of its arguments.
 
-  See also: mean(), stddev()
+See also: mean(), stddev()
 & MEMBER()
   member(<list>, <word>[,<delimiter>])
 
   Takes a list and a word, and returns the position of <word>
   if <word> is a word in <list>.  A word is defined as a string which
   has no interior spaces.  So '  hello  ' would be one word, while
-  'hello there' would be two.  See LISTS
+  'hello there' would be two.  See 'LISTS'
 
   member() is case-sensitive and requires an exact match. For wild
   card patterns, use match().
@@ -2437,7 +2454,7 @@ for an object named "Test", preferring a thing over other types.
     > say [merge(AB[space(2)]EF,abcdef,)]
     You say, "ABcdEF"
 
-  See also: TR()  
+See also: splice(), tr()  
 & MID()
   mid(<string>, <first>, <length>)
 
@@ -2453,7 +2470,7 @@ for an object named "Test", preferring a thing over other types.
     > say mid(foobar, 2, -2)
     You say, "oo"
 
-  See also: LEFT(), RIGHT()  
+See also: left(), right()  
 & MIN()
   min(<number>[, ... , <numberN>])
 
@@ -2471,7 +2488,7 @@ for an object named "Test", preferring a thing over other types.
   specified, it defaults to a space. If using more than 2 lists, the last
   argument must be a delimiter.
 
-  See HELP MIX2 for examples
+  See 'MIX2' for examples
 & MIX2  
   Examples of mix():
  
@@ -2485,7 +2502,7 @@ for an object named "Test", preferring a thing over other types.
   > say [mix(add_nums, 1:1:1, 2:2:2, 3:3:3, :)]
   You say, "6:6:6"
 
-  See also: anonymous attributes
+See also: anonymous attributes
 & MOD()
 & MODULO()
 & MODULUS()
@@ -2510,7 +2527,7 @@ for an object named "Test", preferring a thing over other types.
 
   Mod and modulus are just aliases for modulo.
 
-  See also: DIV
+See also: div()
 & MONEY()
   money(<object>)
   money(<integer>)
@@ -2567,7 +2584,7 @@ for an object named "Test", preferring a thing over other types.
   doesn't match an element in the original <list 1>, a corresponding
   element from <list 2> does not appear in the final result.
 
-  See HELP MUNGE2 for examples.
+  See 'MUNGE2' for examples.
 & MUNGE2
   For example: Consider attribute PLACES, which contains "Fort Benden Ista",
   and another attribute DBREFS contains the dbrefs of the main JUMP_OK
@@ -2580,7 +2597,7 @@ for an object named "Test", preferring a thing over other types.
   > say [munge(sort,v(places),v(dbrefs))]
   You say, "#9000 #20 #5000"
  
-  See HELP MUNGE3 for another example
+  See 'MUNGE3' for another example.
 & MUNGE3
   Another common task that munge() is well suited for is sorting a list
   of dbrefs of players by order of connection. This example reuses the 
@@ -2591,7 +2608,7 @@ for an object named "Test", preferring a thing over other types.
   > say [munge(sort,iter(v(faction_members),conn(##)),v(faction_members))]
   You say, "#12 #234 #3"
 
-  See also: anonymous attributes
+See also: anonymous attributes
 & MWHO()
 & MWHOID()
   mwho()
@@ -2685,7 +2702,7 @@ for an object named "Test", preferring a thing over other types.
 
   Basically the same as [not(eq(<num1>,<num2>))].
 
-  See also: eq(), not()
+See also: eq(), not()
 & NEXT()
   next(<object>)
 
@@ -2703,7 +2720,7 @@ for an object named "Test", preferring a thing over other types.
   regardless of whether or not you have objects in it.  These rules
   apply to exits, as well.
 
-  See also: lcon(), lexits(), con(), exit()
+See also: lcon(), lexits(), con(), exit()
 & NEXTDBREF()
   nextdbref()
 
@@ -2719,14 +2736,14 @@ for an object named "Test", preferring a thing over other types.
   for use on privileged global objects who need an unprivileged count
   of who's online.
 
-  See also: nwho(), mwho(), xmwho()
+See also: nwho(), mwho(), xmwho()
 & NOR()
   nor(<boolean>[, ... , <booleanN>])
 
   Returns 1 if all its arguments are false, 0 if one is true.
   Equivalent to not(or()), but more efficient.
 
-  See also: and(), or(), xor(), not()
+See also: and(), or(), xor(), not()
 & NOT()
   not(<boolean value>)
 
@@ -2735,9 +2752,9 @@ for an object named "Test", preferring a thing over other types.
   the input is equivalent to false(0), it returns a 1.
 
   The definition of truth and falsehood depends on configuration settings;
-  see help BOOLEAN VALUES for details.
+  see 'BOOLEAN VALUES' for details.
  
-  See also: and(), or(), nor(), xor()
+See also: and(), or(), nor(), xor()
 
 & NUM()
   num(<object>)
@@ -2754,7 +2771,7 @@ for an object named "Test", preferring a thing over other types.
   ncon(<object>)  is identical to words(lcon(<object>))
   nvcon(<object>) is identical to words(lvcon(<object>))
 
-  See also: nexits(), nplayers(), xcon(), lcon(), lvcon()
+See also: nexits(), nplayers(), xcon(), lcon(), lvcon()
 & NVEXITS()
 & NEXITS()
   nexits(<room>)
@@ -2765,7 +2782,7 @@ for an object named "Test", preferring a thing over other types.
   nexits(<room>)  is identical to words(lexits(<room>))
   nvexits(<room>) is identical to words(lvexits(<room>))
 
-  See also: ncon(), nplayers(), xexits(), lexits(), lvexits()
+See also: ncon(), nplayers(), xexits(), lexits(), lvexits()
 & NVPLAYERS()
 & NPLAYERS()
   nplayers(<object>)
@@ -2776,7 +2793,7 @@ for an object named "Test", preferring a thing over other types.
   nplayers(<object>)  is identical to words(lplayers(<object>))
   nvplayers(<object>) is identical to words(lvplayers(<object>))
 
-  See also: ncon(), nexits(), xplayers(), lplayers(), lvplayers()
+See also: ncon(), nexits(), xplayers(), lplayers(), lvplayers()
 & NVTHINGS()
 & NTHINGS()
   nthings(<object>)
@@ -2787,14 +2804,14 @@ for an object named "Test", preferring a thing over other types.
   nthings(<object>)  is identical to words(lthings(<object>))
   nvthings(<object>) is identical to words(lvthings(<object>))
 
-  See also: ncon(), nexits(), xthings(), lthings(), lvthings()
+See also: ncon(), nexits(), xthings(), lthings(), lvthings()
 & NWHO()
   nwho()
 
   This returns a count of all currently-connected players. When
   mortals use this function, DARK wizards or royalty are NOT counted.
 
-  See also: lwho(), nmwho(), xwho()
+See also: lwho(), nmwho(), xwho()
 & OBJ()
   obj(<object>)
 
@@ -2831,7 +2848,7 @@ for an object named "Test", preferring a thing over other types.
   This function returns the amount of memory, in bytes, being used
   by the object. It can only be used by players with Search powers.
 
-  See also: playermem()
+See also: playermem()
 
 & OEMIT()
 & NSOEMIT()
@@ -2860,7 +2877,7 @@ for an object named "Test", preferring a thing over other types.
   (including side effects), while cor() stops evaluation after the
   first argument that evaluates to true.
 
-  See also: BOOLEAN VALUES, and()
+See also: BOOLEAN VALUES, and()
 & ORFLAGS()
   orflags(<object>,<string of flag characters>)
   
@@ -2919,7 +2936,7 @@ for an object named "Test", preferring a thing over other types.
   the @prompt command. nsprompt() is a wizard-only variation that
   works like @nsprompt.
  
-  See also: @prompt, @nsprompt, PROMPT_NEWLINES 
+See also: @prompt, @nsprompt, PROMPT_NEWLINES 
 & PI()
   pi()
   
@@ -2932,7 +2949,7 @@ for an object named "Test", preferring a thing over other types.
   by everything owned by the player. It can only be used by players
   with Search powers.
 
-  See also: objmem()
+See also: objmem()
 
 & PMATCH()
   pmatch(<string>)
@@ -2952,7 +2969,7 @@ for an object named "Test", preferring a thing over other types.
 
   This function returns the current @poll. 
 
-  See also: @poll, doing(), @doing 
+See also: @poll, doing(), @doing 
 & LPORTS()
 & PORTS()
   lports()
@@ -2988,7 +3005,7 @@ for an object named "Test", preferring a thing over other types.
  
   Returns <number> to the power of <exponent>.
 
-  See also: root()
+See also: root()
 & POWERS()
   powers(<object>)
   powers(<object>, <power>)
@@ -3052,7 +3069,7 @@ for an object named "Test", preferring a thing over other types.
   The '%qN' percent-substitution can also be used to access these local
   registers, where N is register <register> needed.
   
-  See "help SETQ()" for details about registers.
+  See 'HELP SETQ()' for details about registers.
 & RAND()
   rand(<num>)
   rand(<min>, <max>)
@@ -3093,13 +3110,13 @@ for an object named "Test", preferring a thing over other types.
   argument is evaluated once for each match, allowing for more complex
   transformations than is possible with straight replacement.
 
-  Example:
+  Examples:
   > say regedit(this test is the best string, (?P<char>.)est, $<char>rash)
   You say "this trash is the best string"
   > say regeditall(this test is the best string, (.)est, [capstr($1)]rash)
   You say "this Trash is the Brash string"
 
-  See also: edit(), regmatch()
+See also: edit(), regmatch()
 & REGMATCH()
 & REGMATCHI()
   (Help text from TinyMUSH 2.2.4, with permission)
@@ -3130,7 +3147,7 @@ for an object named "Test", preferring a thing over other types.
  
   See 'help regexp syntax' for an explanation of regular expressions.
 
-  See also: regrab()
+See also: regrab()
 & REMIT()
 & NSREMIT()
   remit(<object>, <message>)
@@ -3161,7 +3178,8 @@ for an object named "Test", preferring a thing over other types.
   Example:
     > say [repeat(Test, 5)]
     You say, "TestTestTestTestTest"
-  
+
+See also: space()
 & REPLACE()
   replace(<list>, <position>, <new item>[,<single-character separator>])
   
@@ -3180,7 +3198,7 @@ for an object named "Test", preferring a thing over other types.
 
   Returns a list minus its first element.
 
-  See also: first(), last()
+See also: after(), first(), last()
 & REVWORDS()
   revwords(<list of words>[,<delimiter>[, <output separator>]])
  
@@ -3189,12 +3207,14 @@ for an object named "Test", preferring a thing over other types.
   Example:
     > say revwords(foo bar baz eep)
     You say, "eep baz bar foo"
-  
+
+See also: flip()  
 & RIGHT()
   right(<string>, <length>)
 
   Returns the <length> rightmost characters from string.
 
+See also: left(), mid()
 & RJUST()
   rjust(<string>, <length>[,<fill>])
   
@@ -3212,7 +3232,8 @@ for an object named "Test", preferring a thing over other types.
     You say, "
     0---foo7
     01234567"
- 
+
+See also: align(), center(), ljust()
 & RLOC()
   rloc(<object>, <levels>) 
   
@@ -3257,20 +3278,20 @@ for an object named "Test", preferring a thing over other types.
   Returns the n-th root of <number>. The 2nd root is the square root,
   the 3rd the cube root, and so on.
 
-  Example:
+  Examples:
   > think root(27, 3)
   3
   > think power(3, 3)
   27
 
-  See also: sqrt(), power()
+See also: sqrt(), power()
 & ROUND()
   round(<number>, <places>)
  
   Rounds <number> to <places> decimal places. <places> must be between
   0 and 6.
  
-  See also: ceil(), floor(), bound(), trunc()
+See also: ceil(), floor(), bound(), trunc()
 & S()
 & S-FUNCTION
   s(string)
@@ -3308,6 +3329,7 @@ for an object named "Test", preferring a thing over other types.
   special characters; it will scramble these characters just like normal
   characters.
 
+See also: shuffle()
 & SECS()
   secs()
 
@@ -3323,7 +3345,7 @@ for an object named "Test", preferring a thing over other types.
   can make output slightly ugly, but it's a good way of preventing other
   people from doing nasty things with your objects.
 
-  See also: decompose(), escape()
+See also: decompose(), escape()
 & SET()
   set(<object>, <flag>)
   set(<object>/<attribute>, <attribute flag>)
@@ -3345,13 +3367,15 @@ for an object named "Test", preferring a thing over other types.
   elements in <list1> that aren't in <list2>. The list that is
   returned is sorted. Normally, alphabetic sorting is done. You can
   change this with the fourth argument, which is a sort type as defined
-  in help sorting. If used with exactly four arguments where the fourth
-  is not a sort type, it's treated instead as the output separator.
+  in "help sorting". If used with exactly four arguments where the
+  fourth is not a sort type, it's treated instead as the output
+  separator.
 
   Example:
     > say setdiff(foo baz gleep bar, bar moof gleep)
     You say, "baz foo"
- 
+
+See also: setinter(), setunion()
 & SETINTER()
   setinter(<list1>, <list2>[,<delimiter>[, <sort type>[,<osep>]]])
  
@@ -3359,13 +3383,15 @@ for an object named "Test", preferring a thing over other types.
   elements that are in both <list1> and <list2>. The list that is
   returned is sorted. Normally, alphabetic sorting is done. You can
   change this with the fourth argument, which is a sort type as defined
-  in help sorting. If used with exactly four arguments where the fourth
-  is not a sort type, it's treated instead as the output separator.
+  in "help sorting". If used with exactly four arguments where the
+  fourth is not a sort type, it's treated instead as the output
+  separator.
  
   Example:
     > say setinter(foo baz gleep bar, bar moof gleep)
    You say, "bar gleep"
 
+See also: setdiff(), setunion()
 & SETQ()
 & SETR()
   setq(<register>, <string>[, ... ,<regN>, <stringN>])
@@ -3390,7 +3416,7 @@ for an object named "Test", preferring a thing over other types.
   Registers set via setq() or setr() can be accessed via the r() function,
   or via the %qN percent-substitution.
 
-  See "help SETQ2" for examples of its use.
+  See 'SETQ2' for examples of its use.
 
 & SETQ2
 
@@ -3416,7 +3442,7 @@ for an object named "Test", preferring a thing over other types.
 
   yields "foobar - barfoo".
 
-  See "help SETQ3" for scoping rules of setq().
+  See 'SETQ3' for scoping rules of setq().
 
 & SETQ3
   The registers set by setq() can be used in later commands in the same
@@ -3442,16 +3468,19 @@ for an object named "Test", preferring a thing over other types.
   elements. Think of it as CAT() without words duplicated.  The list
   returned is sorted. Normally, alphabetic sorting is done. You can
   change this with the fourth argument, which is a sort type as defined
-  in help sorting. If used with exactly four arguments where the fourth
-  is not a sort type, it's treated instead as the output separator.
+  in "help sorting". If used with exactly four arguments where the
+  fourth is not a sort type, it's treated instead as the output
+  separator.
  
-  Example:
+  Examples:
     > say setunion(foo baz gleep bar, bar moof gleep)
     You say, "bar baz foo gleep moof"
     > say setunion(1.1 1.0, 1.000)
     You say, "1.0 1.000 1.1"
     > say setunion(1.1 1.0, 1.000, %b, f)
     You say, "1.0 1.1"
+
+See also: setdiff(), setinter()
 & SHA0()
   sha0(<string>)
 
@@ -3473,7 +3502,8 @@ for an object named "Test", preferring a thing over other types.
   This function shuffles the order of the items of a list, returning a
   random permutation of its elements. "[shuffle(foo bar baz gleep)]" 
   might evaluate to "baz foo gleep bar".
-  
+
+See also: scramble()
 & SIGN()
   sign(<number>)
 
@@ -3486,7 +3516,7 @@ for an object named "Test", preferring a thing over other types.
   Returns the sine of <angle>, which should be expressed in the
   given angle type, or radians by default.
 
-  See HELP CTU() for more on the angle type.
+  See 'HELP CTU()' for more on the angle type.
 & SORT()
   sort(<word1> [... <wordN>][, <sort type>[,<delimiter>[, <osep>]]])
   
@@ -3496,7 +3526,7 @@ for an object named "Test", preferring a thing over other types.
   the words are dbrefs, it will sort them in order of smallest to
   largest. Otherwise, it will perform a lexicographic sort.
 
-  The second argument is a sort type. See help sorting.
+  The second argument is a sort type. See 'help sorting'.
  
   The optional third argument gives the list's delimiter character.
   If not present, <delimiter> defaults to a space.
@@ -3525,7 +3555,7 @@ for an object named "Test", preferring a thing over other types.
   this limit is exceeded, the function will fail _silently_. List and
   function sizes should be kept reasonable.
 
-  See also: anonymous attributes, sorting, sortkey()
+See also: anonymous attributes, sorting, sortkey()
 & SORTKEY()
   sortkey([<obj>/]<attrib>, <list>[, <sort type>[,<delimiter>[, <osep>]]])
 
@@ -3546,7 +3576,7 @@ for an object named "Test", preferring a thing over other types.
     > say sortkey(key_name,#1 #2 #3)
     You say, "#2 #3 #1"
 
-  See also: anonymous attributes, sorting, sortby
+See also: anonymous attributes, sorting, sortby()
 & SORTING
   In functions where you can specify a sorting method, you can provide
   one of these sort types:
@@ -3573,7 +3603,7 @@ for an object named "Test", preferring a thing over other types.
   Whether or not the 'a' sort type is case-sensitive or not depends
   on the particular mush and its environment.
 
-  See also: sort(), sortby(), sortkey(), setunion(), setinter(), setdiff()
+See also: sort(), sortby(), sortkey(), setunion(), setinter(), setdiff()
 & SOUNDEX()
   soundex(<word>)
 
@@ -3585,9 +3615,9 @@ for an object named "Test", preferring a thing over other types.
   > think soundex(foobar)
   F160
 
-  For details of how the algorithm works, see help soundex2
+  For details of how the algorithm works, see 'help soundex2'.
 
-  See also: soundslike()
+See also: soundslike()
 & SOUNDEX2
   Here's how the soundex algorithm works:
   1. The first letter of the soundex code is the first letter of
@@ -3614,7 +3644,7 @@ for an object named "Test", preferring a thing over other types.
   soundlike(<word>, <word>)
 
   The soundslike function returns 1 if the two words have the same
-  soundex code (see help soundex() for information), which means, 
+  soundex code (see 'help soundex()' for information), which means,
   in general, if they sound alike. For example:
   
   > think soundslike(robin,robbyn)
@@ -3628,6 +3658,8 @@ for an object named "Test", preferring a thing over other types.
   Prints <number> number of spaces. Useful for times when you want to
   be able to use lots of spaces to separate things. For example,
   "a[space(5)]b  would print, "Amberyl says, "a     b"".
+
+See also: repeat()
 & SPEAK()
   speak(<speaker>, <string>[, <say string>
                   [, [<transform obj>/]<transform attr>
@@ -3785,16 +3817,17 @@ for an object named "Test", preferring a thing over other types.
 
   Given a number, return its written-out representation in words.
 
-  See also: ordinal()
+See also: ordinal()
 & ORDINAL()
   ordinal(<integer>)
 
   Given an integer, return its written-out ordinal representation in words.
 
+  Example:
   > think ordinal(1)
   first
 
-  See also: spellnum()
+See also: spellnum()
 & SPLICE()
   splice(<list1>, <list2>, <word>[,<delimiter>])
   
@@ -3808,7 +3841,8 @@ for an object named "Test", preferring a thing over other types.
   Example:
     > say [splice(foo bar baz,eek moof gleep,bar)]
     You say, "foo moof baz"
- 
+
+See also: merge()
 & MAPSQL()
   mapsql([<object>/]<attribute>, <query>[, <osep>[, <dofieldnames>]])
 
@@ -3827,8 +3861,9 @@ for an object named "Test", preferring a thing over other types.
   If <dofieldnames> evaluates to a true boolean, then the first call
   will be with row number 0 and %1-%9 will be set to the field names.
 
-  See "Help mapsql2" for examples.
-  See also: sqlescape(), sql(), @sql
+  See 'help mapsql2' for examples.
+
+See also: anonymous attributes, sqlescape(), sql(), @sql
 & MAPSQL2
 
   > @@ Field, Type, Null?, Key?, Default, Extra
@@ -3866,7 +3901,7 @@ for an object named "Test", preferring a thing over other types.
      &SEL_GETID obj = SELECT id FROM mytable WHERE name = '[sqlescape(%0)]'
      &DOIT obj = $do *: ... [setq(0,sql(u(SEL_GETID,%0),~,|))] ...
 
-  See also: sqlescape(), mapsql(), @sql
+See also: sqlescape(), mapsql(), @sql
 
 & SQLESCAPE()
   sqlescape(<string>)
@@ -3884,14 +3919,14 @@ for an object named "Test", preferring a thing over other types.
 
   You must be a WIZARD or have the Sql_Ok power to use this function.
 
-  See also: sql(), mapsql(), @sql
+See also: sql(), mapsql(), @sql
 
 & SQRT()
   sqrt(<number>)
  
   Returns the square root of <number>. <number> cannot be negative.
 
-  See also: root()
+See also: root()
 & SQUISH()
   squish(<string>[,<character>])
   
@@ -3899,7 +3934,7 @@ for an object named "Test", preferring a thing over other types.
   and condenses all inter-word <character>s to a single <character>. If no
   character is given, uses space.
   
-  Example:
+  Examples:
   
     > say [squish(  foo bar  baz blech   eek )]
     You say, "foo bar baz blech eek"
@@ -3917,14 +3952,14 @@ for an object named "Test", preferring a thing over other types.
     > say starttime()
     You say "Sat Dec  7 00:09:13 1991
 
-  See also: convtime(), restarttime(), restarts()
+See also: convtime(), restarttime(), restarts()
 & RESTARTTIME()
   restarttime()
 
   Returns a string which is the time the MUSH last rebooted. The time
   is in the same format as the TIME() function returns.
 
-  See also: convtime(), starttime()
+See also: convtime(), starttime()
 & RESTARTS()
   restarts()
 
@@ -3938,7 +3973,7 @@ for an object named "Test", preferring a thing over other types.
   Players can check the SSL status of their own connection.
   The See_All power is required to check other connections. 
 
-  See also: terminfo()
+See also: terminfo()
 & STEP()
   step([<obj>/]<attr>, <list>, <step>[,<delim>, <outsep>])
 
@@ -3958,19 +3993,21 @@ for an object named "Test", preferring a thing over other types.
   1 - 2 - 3
   4 - 5 -
 
-  See also: map(), iter(), anonymous attributes
+See also: map(), iter(), anonymous attributes
 & STDDEV()
   stddev(<number>[, ... , <numberN>])
 
   Returns the sample standard deviation of its arguments.
 
-  See also: mean(), median()
+See also: mean(), median()
 & STRCAT()
   strcat(<string1>[, ... , <stringN>])
  
   Concatenates strings together, with no space between them.
   For example, strcat(foo bar,baz blech) will return the string
   "foo barbaz blech".
+
+See also: cat()
 & STRINSERT()
   strinsert(<string>, <position>, <insert>)
 
@@ -3978,11 +4015,13 @@ for an object named "Test", preferring a thing over other types.
   in <string>. Note that the first character in a string is numbered 0,
   not 1. 
 
-  Example:
+  Examples:
   > think strinsert(barbaz, 0, foo)
   foobarbaz
   > think strinsert(Myname, 2, %b)
-  My name   
+  My name
+
+See also: strdelete()
 & STRIPACCENTS()
   stripaccents(<string>)
 
@@ -3996,6 +4035,8 @@ for an object named "Test", preferring a thing over other types.
   strlen(<string>)
 
   Returns the length of the string (The number of characters in it).
+
+See also: words()
 & STRMATCH()
   strmatch(<string>, <pattern>)
   
@@ -4016,6 +4057,8 @@ for an object named "Test", preferring a thing over other types.
   Example:
   > think strreplace(Fix teh typo, 4, 3, the)
   Fix the typo
+
+See also: delete(), strinsert()
 & SUB()
   sub(<num>, <num>)
  
@@ -4038,7 +4081,7 @@ for an object named "Test", preferring a thing over other types.
   is case-sensitive, reswitchi() is case-insensitive. The reswitchall versions
   evaluate every corresponding <list>, not just the first that matches a regexp.
 
-  See also: switch() 
+See also: switch() 
 & SWITCH()
 & SWITCHALL()
 & CASE()
@@ -4065,8 +4108,9 @@ for an object named "Test", preferring a thing over other types.
   <expr>ssions, without spaces between them, so they match similarly to
   @switch, while switch() and case() match more like @switch/first.
 
-  See HELP SWITCH WILDCARDS for more, and HELP SWITCH2 for examples
-  See also: reswitch(), if()
+  See 'HELP SWITCH WILDCARDS' for more, and see 'HELP SWITCH2' for examples.
+
+See also: reswitch(), if()
 & SWITCH2
   Examples of switch() and related functions:
     > say switch(test, *a*, foo, *b*, bar, *t*, neat, baz)
@@ -4103,13 +4147,13 @@ for an object named "Test", preferring a thing over other types.
   \ when the argument is evaluated, and then that single \ will stop
   the greater/less than check).
 
-  See also: HELP WILDCARDS
+See also: WILDCARDS
 & T()
   t(<expression>)
 
   Returns a 0 if the expression is false, and 1 otherwise. 
   The definition of truth and falsehood depends on configuration settings;
-  see help BOOLEAN VALUES for details.
+  see 'BOOLEAN VALUES' for details.
 
 & TABLE()
   table(<list>, <field width>, <line length>,<delimiter>, <osep>)
@@ -4137,7 +4181,7 @@ for an object named "Test", preferring a thing over other types.
   Returns the tangent of <angle>, which should be expressed in the
   given angle type, or radians by default.
 
-  See HELP CTU() for more on the angle type.
+  See 'HELP CTU()' for more on the angle type.
 & TEL()
   tel(<object>, <destination>[, <silent>[, <inside>]])
 
@@ -4147,7 +4191,7 @@ for an object named "Test", preferring a thing over other types.
   is an optional boolean that, if true, makes the function act like
   @tel/inside (some value for <silent> must also be specified).
 
-  See also: @tel
+See also: @tel
 & TERMINFO()
   terminfo(<player|descriptor>)
 
@@ -4179,16 +4223,16 @@ for an object named "Test", preferring a thing over other types.
 
   textentries() returns the topic names of matching entries. <entry>
   may include wildcards, in which case a list of matching topic names
-  will be return, separated by the <separator> string if one is
+  will be returned, separated by the <separator> string if one is
   provided, and space-separated otherwise.
 
-  Examples: 
+  Example: 
   > say textfile(help,tan\()
   You say, "  tan(<angle>[,<angle type>])
     Returns the tangent of <angle>, which should be expressed in the
     given angle type, or radians by default.
 
-    See HELP CTU() for more on the angle type.
+    See 'HELP CTU()' for more on the angle type.
   "
 & TIME()
 & UTCTIME()
@@ -4212,7 +4256,7 @@ for an object named "Test", preferring a thing over other types.
   on a player will always return a time, and if TZ is not a number between
   -24 and +24 inclusive, the time returned is UTC.
 
-  See also: timefmt(), timestring(), convsecs(), convtime()
+See also: timefmt(), timestring(), convsecs(), convtime()
 & ETIMEFMT()
   etimefmt(<format>, <secs>)
 
@@ -4231,7 +4275,7 @@ for an object named "Test", preferring a thing over other types.
   > think etimefmt($2mm $2ss, 500) - [timestring(500)]
    8m 20s -  8m 20s
 
-  See also: timestring(), timefmt()
+See also: timestring(), timefmt()
 & ETIMEFMT2
   etimefmt()'s escape codes are similar to timefmt()'s.
   The time is broken up into days, hours, minutes, and seconds, and
@@ -4300,7 +4344,7 @@ for an object named "Test", preferring a thing over other types.
   if the number of seconds is less than a day, hour, or minute.
   If <pad flag> is 2, all numbers will be 2 digits long.
 
-  Example:
+  Examples:
   > say [timestring(301)]
   You say, " 5m  1s"
   > say [timestring(301,1)]
@@ -4308,7 +4352,7 @@ for an object named "Test", preferring a thing over other types.
   > say [timestring(301,2)]
   You say, "00d 00h 05m 01s"
 
-  See also: stringsecs()
+See also: stringsecs()
 & STRINGSECS()
   stringsecs(<timestring>)
 
@@ -4319,7 +4363,7 @@ for an object named "Test", preferring a thing over other types.
   > say [stringsecs(5m 1s)]
   You say, "301"
 
-  See also: timestring(), etimefmt()
+See also: timestring(), etimefmt()
 & TR()
   tr(<string>, <find>, <replace>)
 
@@ -4339,7 +4383,7 @@ for an object named "Test", preferring a thing over other types.
       > say tr(uryyb, a-z, n-za-m)
        You say, "hello"
 
-  See also: MERGE()
+See also: MERGE()
 & TRIM()
 & TRIMPENN()
 & TRIMTINY()
@@ -4379,12 +4423,12 @@ for an object named "Test", preferring a thing over other types.
   also be used to return the leading numeric prefix of a string, or
   "0" if there isn't one. For example, "val(101Dalmations)"  => 101.
   
-  See also: ceil(), floor(), bound(), round()
+See also: ceil(), floor(), bound(), round()
 & TYPE()
   type(<object>)
 
   This function returns the type of an object - PLAYER, THING, EXIT,
-  or ROOM. See "help types of objects" for more.
+  or ROOM. See 'types of objects' for more.
 & U()
 & UFUN()
 & ULAMBDA()
@@ -4398,22 +4442,22 @@ for an object named "Test", preferring a thing over other types.
   do not, the attribute will be read off the object that is
   evaluating the UFUN().
   
-  <arg 0>, <arg 1>, ... are the arguments that get passed to the
-  user function as v(0), v(1), etc. (as in @trigger).  You can pass
-  up to 10 arguments (v(0) through v(9)).
+  <arg0>, <arg1>, ... are the arguments that get passed to the
+  user function as %0, %1, etc. (as in @trigger).  You can pass
+  up to 10 arguments (%0 through %9).
   
   This function is also known as U()  (alias for TinyMUSH compatibility).
 
   ulambda() also accepts anonymous attributes.
 
-  See "help UFUN2" for more.
+  See 'help UFUN2' for more.
   
 & U2
 & UFUN2
   Example:
   
-  > @va Object=$test *:"[ufun(testfun, v(0))]; @emit [v(0)]
-  > &testfun object=[strlen(v(0))] [ucstr(v(0))]
+  > @va Object=$test *:say [ufun(testfun, %0)]; @emit %0
+  > &testfun object=[strlen(%0)] [ucstr(%0)]
   > test string
   Object says, "6 STRING"
   string
@@ -4424,13 +4468,33 @@ for an object named "Test", preferring a thing over other types.
   If the evaluation order doesn't quite seem right, adding escapes
   or breaking up the expression will probably help.
 
+  See 'help UFUN3' for more.
+
+& U3
+& UFUN3
+  A user-defined function called with ufun() is always evaluated with the
+  permissions (powers and flags) of the object the function resides on.
+  An object may evaluate an attribute on any object it controls, the
+  attributes it owns on other objects, and publically accessible attributes.
+
+  Because the user-defined functions are evaluated with the permissions of
+  the object they're stored on, allowing arbitrary use of the ufun()
+  function can be insecure.
+
+  By default, the safer_ufun @config is enabled, preventing objects from
+  running code on objects more privileged than themselves. Being more
+  privileged means being higher up on the mortal/royalty/wizard hierarchy.
+  However, attributes with the 'public' flag can always be evaluated by
+  anyone. This is necessary for attributes such as 'describe', but should
+  not be used for code.
+
 & UCSTR()
   ucstr(<string>)
 
   Returns <string> with all letters converted to uppercase.
   Example: ucstr(Foo BAR baz) returns "FOO BAR BAZ"
 
-  See also: lcstr(), capstr()
+See also: lcstr(), capstr()
 & UDEFAULT()
   udefault([<obj>/]<attr>, <default case>[, <arg0>[, ... , <arg9>]])
  
@@ -4451,13 +4515,13 @@ for an object named "Test", preferring a thing over other types.
     > say udefault(me/Test,-- BOOM --,ACK)
     You say "-- BOOM --"
  
-  See also: get(), eval(), ufun(), uldefault(), default(), edefault()
+See also: get(), eval(), ufun(), uldefault(), default(), edefault()
 & ULDEFAULT()
-  uldefault([<obj>/]<attr>,<default case>[,<arg>]...)
+  uldefault([<obj>/]<attr>, <default case>[, <arg0>[, ... <arg9>]])
 
   Just like UDEFAULT(), but it preserves registers like ULOCAL().
 
-  See also: u(), udefault(), ulocal(), setq()
+See also: u(), udefault(), ulocal(), setq()
 & ULOCAL()
   ulocal([<obj>/]<attr>[, <arg0>[, ... , <arg9>]])
  
@@ -4479,10 +4543,10 @@ for an object named "Test", preferring a thing over other types.
   calls arbitrary u() functions, where global register values need to be
   preserved from accidental user clobbering.
  
-  See "help ulocal2" for examples.
+  See 'help ulocal2' for examples.
  
 & ULOCAL2
-  Example of ulocal():
+  Examples of ulocal():
     > &FRUIT me=apples bananas oranges pears
     > &SUB-FUNCTION me=[setq(0,v(FRUIT))][extract(%q0,match(%q0,%0),1)]
     > &TOP-FUNCTION me=[setq(0,are delicious!)][ulocal(SUB-FUNCTION,%0)] %q0
@@ -4499,14 +4563,14 @@ for an object named "Test", preferring a thing over other types.
   %q0, this is what was printed. In the first example, ulocal() reset the
   value of %q0 to its original "are delicious!"
  
-  See also: u(), setq(), r()
+See also: u(), setq(), r()
 
 & UNIQUE()
   unique(<list>[, <sort type>[,<sep>[, <osep>]]])
 
   unique() returns a copy of <list> with consecutive duplicate items
   removed. It does not sort the list. The optional <sort type> describes
-  what type of data is in the list; see help sorting for details. If
+  what type of data is in the list; see 'help sorting' for details. If
   no type is given, the elements are compared as strings. The optional
   third and fourth arguments are the list delimiter and output seperator.
 
@@ -4518,7 +4582,7 @@ for an object named "Test", preferring a thing over other types.
   > think unique(1|2|3|3, n, |, _)
     1_2_3
 
-  See also: setunion()
+See also: setunion()
 
 & V()
 & V-FUNCTION
@@ -4537,7 +4601,7 @@ for an object named "Test", preferring a thing over other types.
        v(!) is equivalent to %!
        v(3) is equivalent to %3
 
-  See also: SUBSTITUTIONS, get(), ATTRIBUTES
+See also: SUBSTITUTIONS, get(), ATTRIBUTES
 
 & VADD()
   vadd(<vector>, <vector>[,<delimiter>])
@@ -4737,6 +4801,8 @@ for an object named "Test", preferring a thing over other types.
   words(<list>[,<delimiter>])
 
   words() returns the number of elements in <list>.
+
+See also: strlen()
 & WRAP()
   wrap(<string>, <width>[, <first line width>[, <line separator>]])
 
@@ -4766,22 +4832,22 @@ for an object named "Test", preferring a thing over other types.
   attributes are listed _after_ child attributes, not sorted
   alphabetically.
 
-  See also: nattr(), lattr()
+See also: nattr(), lattr()
 & XGET()
   xget(<object>, <attribute>)
   
   This function is identical to get() in purpose, but a comma instead of
   a slash separates object and attribute. There is no real advantage to
-  using this instead of get(). Please see "help get()" for more details
+  using this instead of get(). Please see 'help get()' for more details
   on the use of this function.
   
 & XOR()
-  xor(<boolean value>, <boolean value>)
+  xor(<boolean value 1>, <boolean value 2>[, ... , <boolean value N>])
 
-  Takes two booleans, and returns a 1 if one, and only one of the two
-  inputs is equivalent to true(1).  See BOOLEAN VALUES.
+  Takes two or more booleans and returns a 1 if one, and only one, of
+  the inputs is equivalent to true(1).
 
-  See also: and(), or(), not(), nor()
+See also: BOOLEAN VALUES, and(), or(), not(), nor()
 & XVCON()
 & XCON()
   xcon(<object>, <start>, <count>)
@@ -4796,7 +4862,7 @@ for an object named "Test", preferring a thing over other types.
   xvcon() is identical, except it follows the restrictions of
   lvcon()
 
-  See also: ncon(), lcon(), lvcon()
+See also: ncon(), lcon(), lvcon()
 & XVEXITS()
 & XEXITS()
   xexits(<room>, <start>, <count>)
@@ -4812,7 +4878,7 @@ for an object named "Test", preferring a thing over other types.
   xvexits() is identical, except it follows the restrictions of
   lvexits()
 
-  See also: nexits(), lexits(), lvexits()
+See also: nexits(), lexits(), lvexits()
 & XVPLAYERS()
 & XPLAYERS()
   xplayers(<object>, <start>, <count>)
@@ -4827,7 +4893,7 @@ for an object named "Test", preferring a thing over other types.
   xvplayers() is identical, except it follows the restrictions of
   lvplayers()
 
-  See also: nplayers(), lplayers(), lvplayers()
+See also: nplayers(), lplayers(), lvplayers()
 & XVTHINGS()
 & XTHINGS()
   xthings(<object>, <start>, <count>)
@@ -4842,7 +4908,7 @@ for an object named "Test", preferring a thing over other types.
   xvthings() is identical, except it follows the restrictions of
   lvthings()
 
-  See also: nthings(), lthings(), lvthings()
+See also: nthings(), lthings(), lvthings()
 & XWHO()
 & XWHOID()
 & XMWHO()
@@ -4863,7 +4929,7 @@ for an object named "Test", preferring a thing over other types.
 
   xwhoid() and xmwhoid() return objids instead of dbrefs.
 
-  See also: lwho(), mwho(), nwho()
+See also: lwho(), mwho(), nwho()
 
 & ZMWHO()
   zmwho(<object>)
@@ -4875,7 +4941,7 @@ for an object named "Test", preferring a thing over other types.
   The viewer must either have see_all privileges or pass the zone
   lock of the zone to use the function.
 
-  See also: zwho()
+See also: zwho()
 
 & ZWHO()
   zwho(<object>[, <viewer>])
@@ -4889,7 +4955,7 @@ for an object named "Test", preferring a thing over other types.
   If <viewer> is given by a privileged user, zwho() returns a dbref list
   using <viewer>'s privileges.
 
-  See also: zmwho()
+See also: zmwho()
 & ZEMIT()
 & NSZEMIT()
   zemit(<zone>, <message>)
@@ -4914,7 +4980,7 @@ for an object named "Test", preferring a thing over other types.
   4. The ZMO is set VISUAL.
   5. The attribute being checked is set VISUAL.
  
-  See the help for UFUN() for more details on user-defined functions.
+  See 'help UFUN()' for more details on user-defined functions.
 & ZONE()
   zone(<object>[, <new zone>])
  
@@ -4922,4 +4988,4 @@ for an object named "Test", preferring a thing over other types.
   which defines the zone.  If the second argument is specified, the
   function tries to change the zone on the object before reporting it.
 
-  See also: ZONES
+See also: ZONES

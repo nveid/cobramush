@@ -223,7 +223,7 @@ Continued in help @config limits3
    considered a 0?
   tiny_booleans=<boolean>: Use Tiny-style boolean values where only
    non-zero numbers are true.
-  tiny_trim_func=<boolean>: Are the second and third arguments to trim()
+  tiny_trim_fun=<boolean>: Are the second and third arguments to trim()
    reversed?
   tiny_math=<boolean>: Is a string where a number is expected considered
    a 0?

@@ -115,7 +115,7 @@
         This command moves all messages in msg-list from the current
         folder to a new folder, <folder#>.
 
-  See also: @mailfilter
+See also: @mailfilter
 & @mailfilter
 & mailfilter
   The @mailfilter attribute specifies automatic filing of incoming
@@ -135,7 +135,7 @@
   Example: Filter urgent messages into folder 1
   > @mailfilter me=if(strmatch(%3,*U*),1)
 
-  See also: mail-folders
+See also: mail-folders
 & mail-admin
   
   The @mail command can also take the following switches:

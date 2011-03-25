@@ -1,3 +1,44 @@
+& ATTRIBUTE FLAGS
+  Attribute flags are set on an object's attributes using @set, or applied
+  to attributes globally using @attrib. Their names (and, when applicable,
+  the character used in examine as shorthand for the flag) include:
+
+  no_command ($)    Attribute will not be checked for '$' commands and
+                    '^' listen patterns.
+  visual (v)        Attribute can be seen by anyone via get(), eval(),
+                    ufun(), zfun(), and similar functions.
+  no_inherit (i)    Attribute will not be inherited by the children of
+                    this object.
+  no_clone (c)      Attribute will not be copied if the object is @clone'd.
+  regexp (R)        Match $-commands and ^-listens using regular expressions.
+                    See 'help regexps'.
+  case (C)          Match $-commands and ^-listens case sensitively.
+  safe (S)          Attribute may not be modified, without unsetting this flag.
+  mortal_dark (m)   Attribute cannot be seen by mortals. This flag can only
+                    be set by royalty and wizards.  "hidden" is a synonym.
+
+  Continued in 'help attribute flags2'
+& ATTRIBUTE FLAGS2
+  noname (N)        Attribute won't show name in @o-* messages.
+  nospace (s)       Attribute won't append a space in @o-* messages.
+  wizard (w)        Attribute can only be set by wizards.
+                    This flag can only be set by royalty and wizards.
+  veiled (V)        Attribute value will not be shown on default examine,
+                    but is still otherwise accessible (for spammy attribs).
+  debug (b)         Show debug output when this attribute is evaluated.
+  nearby (n)        Even if this attribute is visual, it can only be
+                    retrieved if you're co-located with the object.
+  public (p)        This attribute can be evaluated by any object, even
+                    if safer_ufun is in use. DANGEROUS! AVOID!
+  aahear (A)        ^-listens on this attribute match like @aahear
+  amhear (M)        ^-listens on this attribute match like @amhear
+
+  Continued in 'help attribute flags3'
+& ATTRIBUTE FLAGS3
+  prefixmatch       When a user attempts to set an attribute using @<attrib>,
+                    this attribute will be matched down to its unique
+                    prefixes. This flag is primarily used internally.
+  `                 This attribute is a branch. See: help ATTRIBUTE TREES
 & ATTRIBUTE TREES
 & ATTR TREES
 Attributes can be arranged in a hierarchical tree; these are called
@@ -21,7 +62,7 @@ beneath it; a leaf attribute is one that does not. Any attribute may
 act as a branch. If you try to create an unsupported leaf, branch
 attributes will be created as needed to support it.
 
-See help attribute trees2 for more information and examples.
+See 'help attribute trees2' for more information and examples.
 
 & ATTRIBUTE TREES2
 & ATTR TREES2
@@ -42,7 +83,7 @@ and displays all attributes.
 Branch attributes will be displayed with a ` in the attribute flags
 on examine. 
 
-See help attribute trees3 for more information and examples.
+See 'help attribute trees3' for more information and examples.
 
 & ATTRIBUTE TREES3
 & ATTR TREES3
@@ -67,7 +108,8 @@ They're also handy for things like character attributes:
   &CHAR`SKILLS #30 = coding:3 documentation:1 obfuscation:5
   ...
 
-See help attribute trees4 for information about @parent and attribute trees.
+See 'help attribute trees4' for information about @parent and attribute trees.
+
 & ATTRIBUTE TREES4
 & ATTR TREES4
 Attribute trees interact with @parent in several ways.

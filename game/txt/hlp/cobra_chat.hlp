@@ -43,7 +43,7 @@
   is not evaluated. This command is intended for use in writing
   extended chat systems.
 
-  See also: chat
+See also: chat
 & @channel
   @channel/list [<channel-prefix>]
   @channel/what [<channel-prefix>]
@@ -67,7 +67,9 @@
   @channel/what will show you the channel's name, access information,
   and a description of the channel's purpose.
 
-  More commands are provided in "help @channel2".  See also: chat
+  More commands are provided in "help @channel2".
+  
+See also: chat
 & @channel2
   @channel/who <channel>
   @channel/hide <channel> = <yes|no>
@@ -136,7 +138,8 @@
 
   @channel/delete removes a channel. You must own it or be Wizard.
   @channel/desc sets the channel's description, shown on @channel/what.
-    Descriptions are limited to 256 characters.
+    Descriptions are limited to 256 characters. If there are any commas
+    in the description, the whole string should be enclosed in {}'s.
   @channel/rename is used to rename a channel.
 
   See "help @channel5" for more. See also "help @clock".
@@ -322,7 +325,7 @@ specific indirect lock instead of the default one:
   With two arguments, sets the lock if you would be able to do so via
   @clock.
 
-  See also: @clock
+See also: @clock
 & CRECALL()
   crecall(<channel>[, <lines> [, <start line> [, <osep> [, <timestamps?> ]]]])
 
@@ -331,7 +334,7 @@ specific indirect lock instead of the default one:
   <osep>. If <timestamps?> is a true value, the recalled lines will
   include their timestamps; otherwise, they will not.
 
-  See also: @channel3
+See also: @channel3
 & Channel functions
   Channel functions work with the channel system.
 
