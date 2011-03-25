@@ -554,7 +554,7 @@ FUNTAB flist[] = {
   {"OOREF", fun_ooref, 0, 0, FN_REG},
   {"OWNER", fun_owner, 1, 1, FN_REG},
   {"PARENT", fun_parent, 1, 2, FN_REG},
-  {"PCREATE", fun_pcreate, 2, 2, FN_REG},
+  {"PCREATE", fun_pcreate, 1, 2, FN_REG},
   {"PEMIT", fun_pemit, 2, -2, FN_REG},
   {"PGHASPOWER", fun_pghaspower, 3, 4, FN_REG},
   {"PGPOWERS", fun_pgpowers, 2, 2, FN_REG},

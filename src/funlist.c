@@ -1431,7 +1431,7 @@ FUNCTION(fun_setunion)
 {
   char sep;
   char **a1, **a2;
-  int n1, n2, x1, x2, val, orign1, orign2;
+  int n1, n2, x1, x2, val;
   int lastx1, lastx2, found;
   char *sort_type = ALPHANUM_LIST;
   int osepl = 0;
@@ -1447,11 +1447,11 @@ FUNCTION(fun_setunion)
   a1 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   a2 = (char **) mush_malloc(MAX_SORTSIZE * sizeof(char *), "ptrarray");
   if (!a1 || !a2)
-    mush_panic("Unable to allocate memory in fun_setunion");
+    mush_panic("Unable to allocate memory in fun_diff");
 
   /* make arrays out of the lists */
-  orign1 = n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
-  orign2 = n2 = list2arr(a2, MAX_SORTSIZE, args[1], sep);
+  n1 = list2arr(a1, MAX_SORTSIZE, args[0], sep);
+  n2 = list2arr(a2, MAX_SORTSIZE, args[1], sep);
 
   if (nargs < 4) {
     osepd[0] = sep;
@@ -1475,7 +1475,6 @@ FUNCTION(fun_setunion)
     osep = args[4];
     osepl = arglens[4];
   }
-
   /* sort each array */
   do_gensort(executor, a1, NULL, n1, sort_type);
   do_gensort(executor, a2, NULL, n2, sort_type);
