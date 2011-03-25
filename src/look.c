@@ -436,7 +436,7 @@ look_simple(dbref player, dbref thing)
   PUSE;
   tag_wrap("FONT", "SIZE=+2", unparse_object_myopic(player, thing));
   PEND;
-  notify(player, pbuff);
+  notify_by(thing, player, pbuff);
   look_description(player, thing, T("You see nothing special."), "DESCRIBE",
 		   "DESCFORMAT");
   did_it(player, thing, NULL, NULL, "ODESCRIBE", NULL, "ADESCRIBE", NOTHING);

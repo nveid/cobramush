@@ -51,7 +51,7 @@ static char wspace[3 * BUFFER_LEN + NUMARGS];	/* argument return buffer */
 
 static int wild1
   (const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
-   char *RESTRICT wbuf, int cs);
+   char **RESTRICT wbuf, int cs);
 static int wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs);
 static int check_literals(const char *RESTRICT tstr, const char *RESTRICT dstr,
 			  int cs);
@@ -267,10 +267,9 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
  */
 static int
 wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
-      char *RESTRICT wbuf, int cs)
+      char **RESTRICT wbuf, int cs)
 {
   const char *datapos;
-  char *wnext;
   int argpos, numextra;
 
   while (*tstr != '*') {
@@ -282,9 +281,9 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
       if (!*dstr)
 	return 0;
 
-      global_eval_context.wnxt[arg++] = wbuf;
-      *wbuf++ = *dstr;
-      *wbuf++ = '\0';
+      global_eval_context.wnxt[arg++] = *wbuf;
+      *(*wbuf)++ = *dstr;
+      *(*wbuf)++ = '\0';
 
       /* Jump to the fast routine if we can. */
 
@@ -312,8 +311,9 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
 
   /* If at end of pattern, slurp the rest, and leave. */
   if (!tstr[1]) {
-    global_eval_context.wnxt[arg] = wbuf;
-    strcpy(wbuf, dstr);
+    global_eval_context.wnxt[arg] = *wbuf;
+    strcpy(*wbuf, dstr);
+    *wbuf += strlen(dstr) + 2;
     return 1;
   }
   /* Remember current position for filling in the '*' return. */
@@ -326,8 +326,8 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
       /* Fill in arguments if someone put another '*'
        * before a fixed string.
        */
-      global_eval_context.wnxt[argpos++] = wbuf;
-      *wbuf++ = '\0';
+      global_eval_context.wnxt[argpos++] = *wbuf;
+      *(*wbuf)++ = '\0';
 
       /* Jump to the fast routine if we can. */
       if (argpos >= NUMARGS)
@@ -335,9 +335,9 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
 
       /* Fill in any intervening '?'s */
       while (argpos < arg) {
-	global_eval_context.wnxt[argpos++] = wbuf;
-	*wbuf++ = *datapos++;
-	*wbuf++ = '\0';
+	global_eval_context.wnxt[argpos++] = *wbuf;
+	*(*wbuf)++ = *datapos++;
+	*(*wbuf)++ = '\0';
 
 	/* Jump to the fast routine if we can. */
 	if (argpos >= NUMARGS)
@@ -371,36 +371,33 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
     while (*dstr)
       dstr++;
   else {
-    wnext = wbuf;
-    wnext++;
     while (1) {
       if (EQUAL(cs, *dstr, *tstr) &&
-	  ((arg < NUMARGS) ? wild1(tstr, dstr, arg, wnext, cs)
+	  ((arg < NUMARGS) ? wild1(tstr, dstr, arg, wbuf, cs)
 	   : quick_wild_new(tstr, dstr, cs)))
 	break;
       if (!*dstr)
 	return 0;
       dstr++;
-      wnext++;
     }
   }
 
   /* Found a match!  Fill in all remaining arguments.
    * First do the '*'...
    */
-  global_eval_context.wnxt[argpos++] = wbuf;
-  strncpy(wbuf, datapos, (dstr - datapos) - numextra);
-  wbuf += (dstr - datapos) - numextra;
-  *wbuf++ = '\0';
+  global_eval_context.wnxt[argpos++] = *wbuf;
+  strncpy(*wbuf, datapos, (dstr - datapos) - numextra);
+  *wbuf += (dstr - datapos) - numextra;
+  *(*wbuf)++ = '\0';
   datapos = dstr - numextra;
 
   /* Fill in any trailing '?'s that are left. */
   while (numextra) {
     if (argpos >= NUMARGS)
       return 1;
-    global_eval_context.wnxt[argpos++] = wbuf;
-    *wbuf++ = *datapos++;
-    *wbuf++ = '\0';
+    global_eval_context.wnxt[argpos++] = *wbuf;
+    *(*wbuf)++ = *datapos++;
+    *(*wbuf)++ = '\0';
     numextra--;
   }
 
@@ -420,6 +417,8 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
 static int
 wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs)
 {
+  char *buffer = wspace;
+
   /* Do fast match. */
   while ((*s != '*') && (*s != '?')) {
     if (*s == '\\')
@@ -437,7 +436,7 @@ wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs)
     return 0;
 
   /* Do the match. */
-  return wild1(s, d, p, wspace, cs);
+  return wild1(s, d, p, &buffer, cs);
 }
 
 /** Wildcard match, possibly case-sensitive, and remember the wild data.
