@@ -910,8 +910,11 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     return NULL;
   case SAY_TOKEN:
     replacer = "SAY";
+#if 0
+    /* Messes up hooks when chat_strip_quote is yes. See bug #6677 */
     if (CHAT_STRIP_QUOTE)
       p--;			/* Since 'say' strips out the '"' */
+#endif
     break;
   case POSE_TOKEN:
     replacer = "POSE";

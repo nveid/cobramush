@@ -4133,7 +4133,7 @@ FUNCTION(fun_lwho)
   int start, count;
   int powered = !(strchr(called_as, 'M') != NULL) && Priv_Who(executor);
   int xwho = *called_as == 'X';
-  int objid = (index(called_as, 'D') != NULL);
+  int objid = (strchr(called_as, 'D') != NULL);
 
   first = 1;
   if(!xwho && nargs && args[0] && *args[0]) {
@@ -4375,7 +4375,7 @@ FUNCTION(fun_zwho)
   dbref zone, victim;
   int first;
   int powered = (strcmp(called_as, "ZMWHO") && Priv_Who(executor));
-  int objid = (index(called_as, 'D') != NULL);
+  int objid = (strchr(called_as, 'D') != NULL);
   first = 1;
 
   zone = match_thing(executor, args[0]);
