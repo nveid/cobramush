@@ -401,6 +401,12 @@ See also: DARK
   When set on a thing or room, this flag activates the ^ listen patterns on
   the object. Objects which have ^ listen patterns but are not set MONITOR
   do not check those patterns.
+
+  When using the LISTEN Attribute Tree, you must set the Root Attribute
+  !NO_COMMAND. By default this Attribute/Attribute Root has been set
+  NO_COMMAND by the system. Attributes which are set HALT or NO_COMMAND
+  will not be evaluated for purposes of the ^ listen patterns
+
 & MORTAL
   The MORTAL flag is no longer available in PennMUSH. Please see help
   changes for more information.

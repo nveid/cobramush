@@ -146,7 +146,8 @@ See also: @clone, @create, ACTION LISTS
   room of the location, as well as objects in the master room, are
   also checked for an @aconnect. If one is found, it will be executed
   when a player connects in that location or zone (or, in the case of
-  the master room, anywhere).
+  the master room, anywhere). This is only done if the room_connects
+  config option is enabled.
 
 See also: @adisconnect, ACTION LISTS
 
@@ -183,7 +184,8 @@ See also: @describe, @aidescribe, look, SUBSTITUTION, ACTION LISTS
   room of the location, as well as objects in the master room, are
   checked for an @adisconnect. If one is found, it will be executed
   when a player disconnects in that location or zone (or, in the case of
-  the master room, anywhere).
+  the master room, anywhere). This is only done if the room_connects
+  config option is enabled.
 
 See also: @aconnect, ACTION LISTS
 & @adrop
@@ -3514,6 +3516,9 @@ See also: UNFINDABLE, loc()
   exceptions as given above. If <pattern> is given, it gets rid of
   all attributes which match that pattern. Note that the restrictions
   above still apply.
+
+  When wiping an attribute that is the root of an attribute tree, all
+  attributes in that tree will also be removed.
 & @wizwall
   @wizwall[/emit] <message>
 

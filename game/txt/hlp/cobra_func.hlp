@@ -372,8 +372,8 @@ See also: before(), rest()
 & ALIGN2
   Examples:
   
-    > &line me=align(<5 10 20,\([left(xget(%0,sex),1)]\),name(%0),name(%L))
-    > th iter(lwho(),u(line,##))
+   > &line me=align(<5 10 20,\([left(xget(%0,sex),1)]\),name(%0),name(loc(%0)))
+   > th iter(lwho(),u(line,##),%b,%r)
       (M) Walker     Tree
       (F) Jane Doe   Nowhere
 
