@@ -1,4 +1,4 @@
-/* prog.c - MUSH Program and Prompting Related Code - File created 3tpritnf/11/02
+/* prog.c - MUSH Program and Prompting Related Code - File created 3/11/02
  *          Part of the CobraMUSH Server Distribution
  *
  */
