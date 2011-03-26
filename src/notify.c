@@ -919,16 +919,22 @@ notify_anything_loc(dbref speaker, na_lookup func,
     /* do @listen stuff */
     a = atr_get_noparent(target, "LISTEN");
     if (a) {
+      char match_space[BUFFER_LEN * 2];
+      int match_space_len = BUFFER_LEN * 2;
       if (!tbuf1)
 	tbuf1 = (char *) mush_malloc(BUFFER_LEN, "string");
       strcpy(tbuf1, atr_value(a));
       if (AF_Regexp(a)
-	  ? regexp_match_case(tbuf1,
+	  ? regexp_match_case_r(tbuf1,
+				(char *) notify_makestring(msgbuf, messages,
+							   NA_ASCII),
+				AF_Case(a), global_eval_context.wnxt, 10,
+				match_space, match_space_len)
+	  : wild_match_case_r(tbuf1,
 			      (char *) notify_makestring(msgbuf, messages,
-							 NA_ASCII), AF_Case(a))
-	  : wild_match_case(tbuf1,
-			    (char *) notify_makestring(msgbuf, messages,
-						       NA_ASCII), AF_Case(a))) {
+  							 NA_ASCII),
+			      AF_Case(a), global_eval_context.wnxt, 10,
+			      match_space, match_space_len)) {
 	if (eval_lock(speaker, target, Listen_Lock))
 	  if (PLAYER_AHEAR || (!IsPlayer(target))) {
 	    if (speaker != target)

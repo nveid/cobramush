@@ -1271,6 +1271,35 @@ remove_markup(const char *orig, size_t * s_len)
   return buff;
 }
 
+/** Safe version of strncpy() that always nul-terminates the
+ * destination string. The only reason it's not called
+ * safe_strncpy() is to avoid confusion with the unrelated
+ * safe_*() pennstr functions.
+ * \param dst the destination string to copy to
+ * \param src the source string to copy from
+ * \param len the maximum number of bytes to copy
+ * return dst
+ */
+char *
+mush_strncpy(char *RESTRICT dst, const char *RESTRICT src, size_t len)
+{
+  size_t n = 0;
+  char *start = dst;
+
+  if (!src || !dst || len == 0)
+    return dst;
+
+  len--;
+
+  while (*src && n < len) {
+    *dst++ = *src++;
+    n++;
+  }
+
+  *dst = '\0';
+  return start;
+}
+
 
 /** Safely append an int to a string. Returns a true value on failure.
  * This will someday take extra arguments for use with our version 

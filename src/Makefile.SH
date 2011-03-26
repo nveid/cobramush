@@ -202,11 +202,11 @@ depend: funlocal.c cmdlocal.c local.c flaglocal.c
 	makedepend -fMakefile.SH -w10 -- -I../hdrs -I.. $(CFLAGS) -- $(C_FILES) $(H_FILES)
 	perl ../utils/fixdepend.pl Makefile.SH
 
-# Requires GNU indent! 
+# Requires GNU indent 1.2 or better! 
+
 indent:
 	(set +e; for file in *.dst *.c  ../hdrs/*.h ; do echo $$file; \
-	/usr/bin/expand $$file > tmpfile; mv -f tmpfile $$file; \
-	/usr/bin/indent -npro -kr -ci2 -ss -psl -ip4 -i2 -cs -l80 -lc75 \
+	/usr/bin/indent -npro -kr -ci2 -ss -psl -ip4 -i2 -cs -l80 -lc75 -nut \
 	-T atr_err -T ATRALIAS -T DESC -T CNode -T CONF -T BQUE -T FUN \
 	-T NVAL -T i_rec -T f_rec -T USERFN_ENTRY -T PRIV -T FLAG \
 	-T FLAGENT -T FLAG_ALIAS -T tlist -T u -T stat -T tcheck -T ATTR \

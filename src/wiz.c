@@ -1761,9 +1761,9 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
     restriction = args[n + 1];
     /* A special old-timey kludge */
     if (class && !*class && restriction && *restriction) {
-      if (isdigit((unsigned char) *restriction)
-	  || ((*restriction == '#') && *(restriction + 1)
-	      && isdigit((unsigned char) *(restriction + 1)))) {
+    if (isdigit((unsigned char) *class) || ((*class == '#') && *(class + 1)
+					    && isdigit((unsigned char)
+						       *(class + 1)))) {
       size_t offset = 0;
       if (*restriction == '#')
         offset = 1;

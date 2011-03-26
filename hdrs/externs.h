@@ -534,7 +534,8 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 			   char **bp);
 
    extern char *str_escaped_chr(const char *RESTRICT string, char escape_chr);
-    extern char *replace_string
+   extern char *mush_strncpy(char *restrict, const char *, size_t);
+   extern char *replace_string
       (const char *RESTRICT old, const char *RESTRICT newbit,
        const char *RESTRICT string) __attribute_malloc__;
     extern char *replace_string2(const char *old[2], const char *newbits[2],
@@ -623,18 +624,15 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
     extern int wildcard(const char *s);
     extern int quick_wild_new(const char *RESTRICT tstr,
 			      const char *RESTRICT dstr, int cs);
-    extern int regexp_match_case(const char *RESTRICT s, const char *RESTRICT d,
-				 int cs);
+    extern int regexp_match_case_r(const char *RESTRICT s,
+				   const char *RESTRICT d, int cs, char **, int,
+				   char *, int);
     extern int quick_regexp_match(const char *RESTRICT s,
 				  const char *RESTRICT d, int cs);
-    extern int wild_match_case(const char *RESTRICT s, const char *RESTRICT d,
-			       int cs);
+    extern int wild_match_case_r(const char *RESTRICT s, const char *RESTRICT d,
+				 int cs, char **, int, char *, int);
     extern int quick_wild(const char *RESTRICT tsr, const char *RESTRICT dstr);
     extern int atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr);
-/** Default (case-sensitive) regex match */
-#define regexp_match(s,d) regexp_match_case(s,d,1)
-/** Default (case-insensitive) wildcard match */
-#define wild_match(s,d) wild_match_case(s,d,0)
 /** Default (case-insensitive) local wildcard match */
 #define local_wild_match(s,d) local_wild_match_case(s, d, 0)
 

@@ -30,6 +30,7 @@
 #include "conf.h"
 #include "case.h"
 #include "externs.h"
+#include "ansi.h"
 #include "mymalloc.h"
 #include "parse.h"
 #include "pcre.h"
@@ -46,13 +47,11 @@
 
 const unsigned char *tables = NULL;  /** Pointer to character tables */
 
-static char wspace[3 * BUFFER_LEN + NUMARGS];	/* argument return buffer */
-						/* big to match tprintf */
-
 static int wild1
   (const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
-   char **RESTRICT wbuf, int cs);
-static int wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs);
+   char **wbuf, int *len, int cs, char **ary, int max);
+static int wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs,
+		char **ary, int max, char *buffer, int len);
 static int check_literals(const char *RESTRICT tstr, const char *RESTRICT dstr,
 			  int cs);
 static char *strip_backslashes(const char *str);
@@ -267,7 +266,7 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
  */
 static int
 wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
-      char **RESTRICT wbuf, int cs)
+      char **wbuf, int *len, int cs, char **ary, int max)
 {
   const char *datapos;
   int argpos, numextra;
@@ -281,13 +280,16 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
       if (!*dstr)
 	return 0;
 
-      global_eval_context.wnxt[arg++] = *wbuf;
-      *(*wbuf)++ = *dstr;
-      *(*wbuf)++ = '\0';
+      if (*len >= 2) {
+	ary[arg++] = *wbuf;
+	*(*wbuf)++ = *dstr;
+	*(*wbuf)++ = '\0';
+	*len -= 2;
+      }
 
       /* Jump to the fast routine if we can. */
 
-      if (arg >= NUMARGS)
+      if (arg >= (int) max || *len < 2)
 	return quick_wild_new(tstr + 1, dstr + 1, cs);
       break;
     case '\\':
@@ -311,9 +313,14 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
 
   /* If at end of pattern, slurp the rest, and leave. */
   if (!tstr[1]) {
-    global_eval_context.wnxt[arg] = *wbuf;
-    strcpy(*wbuf, dstr);
-    *wbuf += strlen(dstr) + 2;
+    int tlen;
+    tlen = strlen(dstr);
+    if (tlen < *len) {
+      ary[arg] = *wbuf;
+      strcpy(*wbuf, dstr);
+      *wbuf += tlen + 2;
+      *len -= tlen + 1;
+    }
     return 1;
   }
   /* Remember current position for filling in the '*' return. */
@@ -326,21 +333,27 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
       /* Fill in arguments if someone put another '*'
        * before a fixed string.
        */
-      global_eval_context.wnxt[argpos++] = *wbuf;
-      *(*wbuf)++ = '\0';
+      if (*len >= 1) {
+	ary[argpos++] = *wbuf;
+	*(*wbuf)++ = '\0';
+	*len -= 1;
+      }
 
       /* Jump to the fast routine if we can. */
-      if (argpos >= NUMARGS)
+      if (argpos >= (int) max || *len < 2)
 	return quick_wild_new(tstr, dstr, cs);
 
       /* Fill in any intervening '?'s */
       while (argpos < arg) {
-	global_eval_context.wnxt[argpos++] = *wbuf;
-	*(*wbuf)++ = *datapos++;
-	*(*wbuf)++ = '\0';
+	if (*len >= 2) {
+	  ary[argpos++] = *wbuf;
+	  *(*wbuf)++ = *datapos++;
+	  *(*wbuf)++ = '\0';
+	  *len -= 2;
+	}
 
 	/* Jump to the fast routine if we can. */
-	if (argpos >= NUMARGS)
+	if (argpos >= (int) max || *len < 1)
 	  return quick_wild_new(tstr, dstr, cs);
       }
     }
@@ -373,7 +386,7 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
   else {
     while (1) {
       if (EQUAL(cs, *dstr, *tstr) &&
-	  ((arg < NUMARGS) ? wild1(tstr, dstr, arg, wbuf, cs)
+	  ((arg < (int) max) ? wild1(tstr, dstr, arg, wbuf, len, cs, ary, max)
 	   : quick_wild_new(tstr, dstr, cs)))
 	break;
       if (!*dstr)
@@ -385,20 +398,30 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
   /* Found a match!  Fill in all remaining arguments.
    * First do the '*'...
    */
-  global_eval_context.wnxt[argpos++] = *wbuf;
-  strncpy(*wbuf, datapos, (dstr - datapos) - numextra);
-  *wbuf += (dstr - datapos) - numextra;
-  *(*wbuf)++ = '\0';
-  datapos = dstr - numextra;
+  {
+    int datalen;
+    datalen = (dstr - datapos) - numextra;
+    if (datalen + 1 <= *len) {
+      ary[argpos++] = *wbuf;
+      strncpy(*wbuf, datapos, datalen);
+      *wbuf += datalen;
+      *(*wbuf)++ = '\0';
+      *len -= datalen + 1;
+      datapos = dstr - numextra;
+    }
+  }
 
   /* Fill in any trailing '?'s that are left. */
   while (numextra) {
-    if (argpos >= NUMARGS)
+    if (argpos >= (int) max || *len < 2)
       return 1;
-    global_eval_context.wnxt[argpos++] = *wbuf;
-    *(*wbuf)++ = *datapos++;
-    *(*wbuf)++ = '\0';
-    numextra--;
+    if (*len >= 2) {
+      ary[argpos++] = *wbuf;
+      *(*wbuf)++ = *datapos++;
+      *(*wbuf)++ = '\0';
+      *len -= 2;
+      numextra--;
+    }
   }
 
   /* It's done! */
@@ -415,11 +438,11 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
  * Side Effect: this routine modifies the 'global_eval_context.wnxt' global variable.
  */
 static int
-wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs)
+wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs,
+     char **ary, int max, char *buffer, int len)
 {
-  char *buffer = wspace;
-
-  /* Do fast match. */
+  /* Do fast match to see if pattern matches. If yes, do it again,
+     remembering this time.. */
   while ((*s != '*') && (*s != '?')) {
     if (*s == '\\')
       s++;
@@ -436,30 +459,36 @@ wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs)
     return 0;
 
   /* Do the match. */
-  return wild1(s, d, p, &buffer, cs);
+  return wild1(s, d, p, &buffer, &len, cs, ary, max);
 }
+ 
 
-/** Wildcard match, possibly case-sensitive, and remember the wild data.
- *
+/** Wildcard match, possibly case-sensitive, and remember the wild data
+ *  in matches, storing them in data.
  * This routine will cause crashes if fed NULLs instead of strings.
  *
  * \param s pattern to match against.
  * \param d string to check.
  * \param cs if 1, case-sensitive; if 0, case-insensitive.
+ * \param ary An array to store the grabs in
+ * \param max Number of elements ary can hold
+ * \param data Buffer used to hold the matches. The elements of ary
+ *    are set to pointers into this  buffer.
+ * \param len The number of bytes in data. Twice the length of d should
+ *    be enough.
  * \retval 1 d matches s.
  * \retval 0 d doesn't match s.
  */
 int
-wild_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
+wild_match_case_r(const char *RESTRICT s, const char *RESTRICT d, int cs,
+		  char **matches, int nmatches, char *data, int len)
 {
-  int j;
-  /* Clear %0-%9 and r(0) - r(9) */
-  for (j = 0; j < NUMARGS; j++)
-    global_eval_context.wnxt[j] = (char *) NULL;
-  for (j = 0; j < NUMQ; j++)
-    global_eval_context.rnxt[j] = (char *) NULL;
-  clear_namedregs(&global_eval_context.namedregsnxt);
-  return wild(s, d, 0, cs);
+  int n;
+
+  for (n = 0; n < nmatches; n++)
+    matches[n] = NULL;
+
+  return wild(s, d, 0, cs, matches, nmatches, data, len);
 }
 
 /** Regexp match, possibly case-sensitive, and remember matched subexpressions.
@@ -468,21 +497,30 @@ wild_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
  *
  * \param s regexp to match against.
  * \param d string to check.
- * \param cs if 1, case-sensitive; if 0, case-insensitive.
- * \retval 1 d matches s.
- * \retval 0 d doesn't match s.
+ * \param cs if 1, case-sensitive; if 0, case-insensitive
+ * \param matches array to store matched subexpressions in
+ * \param nmatches the size of the matches array
+ * \param data buffer space to copy matches into. The elements of
+ *   array point into here
+ * \param len The size of data
+ * \retval 1 d matches s
+ * \retval 0 d doesn't match s
  */
 int
-regexp_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
+regexp_match_case_r(const char *RESTRICT s, const char *RESTRICT val, int cs,
+		    char **matches, int nmatches, char *data, int len)
 {
-  int j;
   pcre *re;
   int i;
-  static char wtmp[NUMARGS][BUFFER_LEN];
   const char *errptr;
+  const char *d;
+  size_t delenn;
   int erroffset;
   int offsets[99];
   int subpatterns;
+
+  for (i = 0; i < nmatches; i++)
+    matches[i] = NULL;
 
   if ((re = pcre_compile(s, (cs ? 0 : PCRE_CASELESS), &errptr, &erroffset,
 			 tables)) == NULL) {
@@ -494,11 +532,12 @@ regexp_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
     return 0;
   }
   add_check("pcre");
+  d = remove_markup(val, &delenn);
   /* 
    * Now we try to match the pattern. The relevant fields will
    * automatically be filled in by this.
    */
-  if ((subpatterns = pcre_exec(re, NULL, d, strlen(d), 0, 0, offsets, 99))
+  if ((subpatterns = pcre_exec(re, NULL, d, delenn - 1, 0, 0, offsets, 99))
       < 0) {
     mush_free(re, "pcre");
     return 0;
@@ -516,18 +555,20 @@ regexp_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
    * with other languages.
    */
 
-  /* Clear %0-%9 and r(0) - r(9) */
-  for (j = 0; j < NUMARGS; j++) {
-    wtmp[j][0] = '\0';
-    global_eval_context.wnxt[j] = (char *) NULL;
-  }
-  for (j = 0; j < NUMQ; j++)
-    global_eval_context.rnxt[j] = (char *) NULL;
-  clear_namedregs(&global_eval_context.namedregsnxt);
+  for (i = 0; i < nmatches && i < subpatterns && len > 1; i++) {
+    int sublen;
+    const char *submatch;
+  
+    pcre_get_substring(d, offsets, subpatterns, (int) i, &submatch);
+    sublen = strlen(submatch);
 
-  for (i = 0; (i < 10) && (i < NUMARGS); i++) {
-    pcre_copy_substring(d, offsets, subpatterns, i, wtmp[i], BUFFER_LEN);
-    global_eval_context.wnxt[i] = wtmp[i];
+    if (sublen >= len)
+      break;
+
+    strcpy(data, submatch);
+    matches[i] = data;
+    data += sublen + 1;
+    len -= sublen + 1;
   }
 
   mush_free(re, "pcre");
@@ -549,6 +590,8 @@ int
 quick_regexp_match(const char *RESTRICT s, const char *RESTRICT d, int cs)
 {
   pcre *re;
+  const char *sptr;
+  size_t slen;
   const char *errptr;
   int erroffset;
   int offsets[99];
@@ -570,11 +613,12 @@ quick_regexp_match(const char *RESTRICT s, const char *RESTRICT d, int cs)
     return 0;
   }
   add_check("pcre");
+  sptr = remove_markup(d, &slen);
   /* 
    * Now we try to match the pattern. The relevant fields will
    * automatically be filled in by this.
    */
-  r = pcre_exec(re, NULL, d, strlen(d), 0, 0, offsets, 99);
+  r = pcre_exec(re, NULL, sptr, slen - 1, 0, 0, offsets, 99); 
 
   mush_free(re, "pcre");
 
@@ -640,9 +684,8 @@ check_literals(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
   char dbuf1[BUFFER_LEN];
   const char delims[] = "?*";
   char *sp, *dp;
-  strncpy(dbuf1, dstr, BUFFER_LEN - 1);
-  dbuf1[BUFFER_LEN - 1] = '\0';
-  strcpy(tbuf1, strip_backslashes(tstr));
+  mush_strncpy(dbuf1, dstr, BUFFER_LEN);
+  mush_strncpy(tbuf1, strip_backslashes(tstr), BUFFER_LEN);
   if (!cs) {
     upcasestr(tbuf1);
     upcasestr(dbuf1);

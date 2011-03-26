@@ -332,11 +332,11 @@ site_can_access(const char *hname, int flag, dbref who)
   for (ap = access_top; ap; ap = ap->next) {
     if (!(ap->can & ACS_SITELOCK)
 	&& ((ap->can & ACS_REGEXP)
-	    ? (regexp_match_case(ap->host, hname, 0)
-	       || (p && regexp_match_case(ap->host, p, 0))
+	    ? (quick_regexp_match(ap->host, hname, 0)
+	       || (p && quick_regexp_match(ap->host, p, 0))
 #ifdef FORCE_IPV4
-	       || regexp_match_case(ip4_to_ip6(ap->host), hname, 0)
-	       || (p && regexp_match_case(ip4_to_ip6(ap->host), p, 0))
+	       || quick_regexp_match(ip4_to_ip6(ap->host), hname, 0)
+	       || (p && quick_regexp_match(ip4_to_ip6(ap->host), p, 0))
 #endif
 	    )
 	    : (quick_wild(ap->host, hname)
@@ -402,11 +402,11 @@ site_check_access(const char *hname, dbref who, int *rulenum)
     (*rulenum)++;
     if (!(ap->can & ACS_SITELOCK)
 	&& ((ap->can & ACS_REGEXP)
-	    ? (regexp_match_case(ap->host, hname, 0)
-	       || (p && regexp_match_case(ap->host, p, 0))
+	    ? (quick_regexp_match(ap->host, hname, 0)
+	       || (p && quick_regexp_match(ap->host, p, 0))
 #ifdef FORCE_IPV4
-	       || regexp_match_case(ip4_to_ip6(ap->host), hname, 0)
-	       || (p && regexp_match_case(ip4_to_ip6(ap->host), p, 0))
+	       || quick_regexp_match(ip4_to_ip6(ap->host), hname, 0)
+	       || (p && quick_regexp_match(ip4_to_ip6(ap->host), p, 0))
 #endif
 	    )
 	    : (quick_wild(ap->host, hname)

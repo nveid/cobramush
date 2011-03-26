@@ -1890,7 +1890,8 @@ See also: first(), rest()
   Returns a space-separated list of the attribute names on the object
   that you are permitted to examine. To see the complete list, own the 
   object, have the See_All power over the object, or have the object set 
-  VISUAL in order to use this function on the object.
+  VISUAL and pass its examine lock in order to use this function on the 
+  object.
   
   If a wildcarded attribute pattern is provided, only attribute names
   matching that pattern will be returned. lattr() uses the same

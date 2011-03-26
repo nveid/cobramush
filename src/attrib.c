@@ -550,8 +550,8 @@ atr_new_add(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
 	free(t);
       }
     } else {
-      if (!AL_FLAGS(root) & AF_ROOT) 	/* Upgrading old database */
-	AL_FLAGS(root) |= AF_ROOT; 
+      if (!AL_FLAGS(root) & AF_ROOT)	/* Upgrading old database */
+	AL_FLAGS(root) |= AF_ROOT;
     }
   }
 
@@ -1165,6 +1165,8 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
   ATTR *skip[ATTRIBUTE_NAME_LIMIT / 2];
   int skipcount;
   int lock_checked = 0;
+  char match_space[BUFFER_LEN * 2];
+  int match_space_len = BUFFER_LEN * 2;
   dbref local_ooref;
 
   /* check for lots of easy ways out */
@@ -1239,7 +1241,9 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
 
     match_found = 0;
     if (AF_Regexp(ptr)) {
-      if (regexp_match_case(tbuf2 + 1, str, AF_Case(ptr))) {
+      if (regexp_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+			      global_eval_context.wnxt, 10,
+			      match_space, match_space_len)) {
         match_found = 1;
         match++;
       }
@@ -1247,7 +1251,10 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
       if (quick_wild_new(tbuf2 + 1, str, AF_Case(ptr))) {
         match_found = 1;
         match++;
-        wild_match_case(tbuf2 + 1, str, AF_Case(ptr));
+	if (!just_match)
+	  wild_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+			    global_eval_context.wnxt, 10,
+			    match_space, match_space_len);
       }
     }
     if (match_found) {
@@ -1360,7 +1367,9 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
 
       match_found = 0;
       if (AF_Regexp(ptr)) {
-        if (regexp_match_case(tbuf2 + 1, str, AF_Case(ptr))) {
+	if (regexp_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+				global_eval_context.wnxt, 10,
+				match_space, match_space_len)) {
           match_found = 1;
           match++;
         }
@@ -1368,7 +1377,10 @@ atr_comm_match(dbref thing, dbref player, int type, int end,
         if (quick_wild_new(tbuf2 + 1, str, AF_Case(ptr))) {
           match_found = 1;
           match++;
-          wild_match_case(tbuf2 + 1, str, AF_Case(ptr));
+	  if (!just_match)
+	    wild_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+			      global_eval_context.wnxt, 10,
+			      match_space, match_space_len);
         }
       }
       if (match_found) {
@@ -1440,6 +1452,8 @@ atr_comm_divmatch(dbref thing, dbref player, int type, int end,
   ATTR *skip[ATTRIBUTE_NAME_LIMIT / 2];
   int skipcount;
   int lock_checked = 0;
+  char match_space[BUFFER_LEN * 2];
+  int match_space_len = BUFFER_LEN * 2;
 
   /* check for lots of easy ways out */
   if ((type != '$' && type != '^') || !GoodObject(thing) || Halted(thing)
@@ -1513,7 +1527,9 @@ atr_comm_divmatch(dbref thing, dbref player, int type, int end,
 
     match_found = 0;
     if (AF_Regexp(ptr)) {
-      if (regexp_match_case(tbuf2 + 1, str, AF_Case(ptr))) {
+	if (regexp_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+				global_eval_context.wnxt, 10,
+				match_space, match_space_len)) {
         match_found = 1;
         match++;
       }
@@ -1521,7 +1537,10 @@ atr_comm_divmatch(dbref thing, dbref player, int type, int end,
       if (quick_wild_new(tbuf2 + 1, str, AF_Case(ptr))) {
         match_found = 1;
         match++;
-        wild_match_case(tbuf2 + 1, str, AF_Case(ptr));
+	if(!just_match)
+	  wild_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+	      global_eval_context.wnxt, 10,
+	      match_space, match_space_len);
       }
     }
     if (match_found) {
@@ -1635,7 +1654,9 @@ atr_comm_divmatch(dbref thing, dbref player, int type, int end,
 
       match_found = 0;
       if (AF_Regexp(ptr)) {
-        if (regexp_match_case(tbuf2 + 1, str, AF_Case(ptr))) {
+	if (regexp_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+				global_eval_context.wnxt, 10,
+				match_space, match_space_len)) {
           match_found = 1;
           match++;
         }
@@ -1643,8 +1664,11 @@ atr_comm_divmatch(dbref thing, dbref player, int type, int end,
         if (quick_wild_new(tbuf2 + 1, str, AF_Case(ptr))) {
           match_found = 1;
           match++;
-          wild_match_case(tbuf2 + 1, str, AF_Case(ptr));
-        }
+	  if(!just_match)
+	    wild_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+			      global_eval_context.wnxt, 10,
+			      match_space, match_space_len);
+	}
       }
       if (match_found) {
         /* Since we're still checking the lock on the child, not the
@@ -1714,6 +1738,8 @@ one_comm_match(dbref thing, dbref player, const char *atr, const char *str)
   char tbuf1[BUFFER_LEN];
   char tbuf2[BUFFER_LEN];
   char *s;
+  char match_space[BUFFER_LEN * 2];
+  int match_space_len = BUFFER_LEN * 2;
 
   /* check for lots of easy ways out */
   if (!GoodObject(thing) || Halted(thing) || NoCommand(thing))
@@ -1747,8 +1773,12 @@ one_comm_match(dbref thing, dbref player, const char *atr, const char *str)
     strcpy(tbuf2, tbuf1);
 
   if (AF_Regexp(ptr) ?
-      regexp_match_case(tbuf2 + 1, str, AF_Case(ptr)) :
-      wild_match_case(tbuf2 + 1, str, AF_Case(ptr))) {
+      regexp_match_case_r(tbuf2 + 1, str, AF_Case(ptr),
+	global_eval_context.wnxt, 10, match_space,
+	match_space_len) : wild_match_case_r(tbuf2 + 1, str,
+	  AF_Case(ptr), global_eval_context.  wnxt, 10, match_space,
+	  match_space_len))
+  {
     if (!eval_lock(player, thing, Command_Lock)
         || !eval_lock(player, thing, Use_Lock))
       return 0;

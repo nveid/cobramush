@@ -396,6 +396,10 @@ void NORETURN bailout(int sig);
 void WIN32_CDECL signal_shutdown(int sig);
 void WIN32_CDECL signal_dump(int sig);
 void reaper(int sig);
+#ifndef WIN32
+sig_atomic_t dump_error = 0;
+WAIT_TYPE dump_status = 0;
+#endif
 extern Pid_t forked_dump_pid;	/**< Process id of forking dump process */
 static void dump_users(DESC *call_by, char *match, int doing);
 static const char *time_format_1(long int dt);
@@ -409,6 +413,7 @@ static void promote_info_slave(void);
 static void query_info_slave(int fd);
 static void reap_info_slave(void);
 void kill_info_slave(void);
+sig_atomic_t slave_error = 0;
 #endif
 #endif
 void reopen_logs(void);
@@ -959,6 +964,32 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
     }
 
     process_commands();
+
+    /* Check signal handler flags */
+
+#ifndef WIN32
+    if (dump_error) {
+      if (WIFSIGNALED(dump_status)) {
+	do_rawlog(LT_ERR, T("ERROR! forking dump exited with signal %d"),
+		  WTERMSIG(dump_status));
+	flag_broadcast("ROYALTY WIZARD", 0,
+		       T("GAME: ERROR! Forking database save failed!"));
+      } else if (WIFEXITED(dump_status) && WEXITSTATUS(dump_status) == 0) {
+	time(&globals.last_dump_time);
+	if (DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
+	  flag_broadcast(0, 0, "%s", DUMP_NOFORK_COMPLETE);
+      }
+      dump_error = 0;
+      dump_status = 0;
+    }
+#if defined(INFO_SLAVE) && !defined(COMPILE_CONSOLE)
+    if (slave_error) {
+      do_rawlog(LT_ERR, T("info_slave on pid %d exited unexpectedly!"),
+		slave_error);
+      slave_error = 0;
+    }
+#endif
+#endif				/* !WIN32 */
 
     if (signal_shutdown_flag) {
       flag_broadcast(0, 0, T("GAME: Shutdown by external signal"));
@@ -3408,20 +3439,14 @@ reaper(int sig __attribute__ ((__unused__)))
       do_rawlog(LT_ERR, T("info_slave on pid %d exited!"), pid);
       info_slave_state = 0;
       info_slave_pid = -1;
+      slave_error = pid;
     } else
 #endif
 #endif
     if (forked_dump_pid > -1 && pid == forked_dump_pid) {
       /* Most failures are handled by the forked mush already */
-      if (WIFSIGNALED(my_stat)) {
-	do_rawlog(LT_ERR, T("ERROR! forking dump exited with signal %d"),
-		  WTERMSIG(my_stat));
-      } else if (WIFEXITED(my_stat) && WEXITSTATUS(my_stat) == 0) {
-	time(&globals.last_dump_time);
-	if (DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
-	  flag_broadcast(0, 0, "%s", DUMP_NOFORK_COMPLETE);
-
-      }
+      dump_error = forked_dump_pid;
+      dump_status = my_stat;
       forked_dump_pid = -1;
     }
   }
