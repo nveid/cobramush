@@ -1,5 +1,5 @@
 /* division.c - RLB 3/11/02
- *		Part of the Division system for PennMUSH
+ *	Part of the Division system for PennMUSH
  * 	   4/12/02 - RLB - Rewrite level set, much more readable now =)
  * 	   4/17/02 - RLB - Code StreamLining
  *	   1/18/04 - RLB - began work on power conversion code

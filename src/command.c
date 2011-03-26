@@ -247,10 +247,7 @@ COMLIST commands[] = {
    CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_NOGAGGED, NULL},
   {"@REJECTMOTD", NULL, cmd_rejectmotd, CMD_T_ANY, "POWER^SITE"},
   {"@RESTART", "ALL", cmd_restart, CMD_T_ANY | CMD_T_NOGAGGED, NULL},
-#ifdef RPMODE_SYS
-  {"@CRPLOG", "QUIET RESET COMBAT", cmd_rplog, CMD_T_ANY, "POWER^COMBAT"},
-#endif
-  {"@SCAN", "ROOM SELF ZONE GLOBALS", cmd_scan,
+ {"@SCAN", "ROOM SELF ZONE GLOBALS", cmd_scan,
    CMD_T_ANY | CMD_T_NOGAGGED, NULL},
   {"@SD", "LOGOUT", cmd_su, CMD_T_ANY, NULL},
   {"@SEARCH", NULL, cmd_search,

@@ -891,12 +891,7 @@ static void
 clear_room(dbref thing)
 {
   dbref first, rest;
-#ifdef RPMODE_SYS
-  /* Clear RPLOGging crapp */
-  if(has_flag_by_name(thing, "ICFUNCS", TYPE_THING))
-    rplog_shutdown_room(thing);
-#endif /* RPMODE_SYS */
-  /* give player money back */
+ /* give player money back */
   giveto(Owner(thing), ROOM_COST);
   empty_contents(thing);
   /* Remove exits */
