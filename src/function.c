@@ -342,9 +342,6 @@ FUNTAB flist[] = {
   {"CONVTIME", fun_convtime, 1, 1, FN_REG},
   {"COR", fun_cor, 2, INT_MAX, FN_NOPARSE},
   {"CREATE", fun_create, 1, 2, FN_REG},
-#ifdef RPMODE_SYS
-  {"CRPLOG", fun_crplog, 0, 1, FN_REG},
-#endif
   {"CTIME", fun_ctime, 1, 1, FN_REG},
   {"DEC", fun_dec, 1, 1, FN_REG},
   {"DECOMPOSE", fun_decompose, 1, -1, FN_REG},

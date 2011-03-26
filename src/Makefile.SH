@@ -66,7 +66,7 @@ C_FILES=access.c atr_tab.c attrib.c boolexp.c bsd.c bufferq.c \
 	funufun.c game.c help.c htab.c ident.c local.c lock.c log.c look.c \
 	malias.c match.c memcheck.c move.c mycrypt.c mymalloc.c mysocket.c \
 	myssl.c notify.c parse.c pcre.c player.c plyrlist.c \
-	predicat.c privtab.c prog.o ptab.c rob.c rplog.c services.c set.c shs.c  \
+	predicat.c privtab.c prog.o ptab.c rob.c services.c set.c shs.c  \
 	sig.c speech.c sql.c strdup.c strtree.c  strutil.c tables.c timer.c unparse.c  \
 	utils.c version.c warnings.c  wild.c wiz.c
 
@@ -93,8 +93,8 @@ COMMON_O_FILES=access.o atr_tab.o attrib.o boolexp.o bufferq.o \
 	funufun.o game.o help.o htab.o ident.o local.o lock.o log.o look.o \
 	malias.o match.o memcheck.o move.o mycrypt.o mymalloc.o mysocket.o \
 	myssl.o notify.o parse.o pcre.o player.o plyrlist.o predicat.o privtab.o \
-	prog.o   ptab.o rob.o rplog.o services.o set.o shs.o sig.o speech.o sql.o \
-	strdup.o strtree.o  strutil.o tables.o timer.o unparse.o utils.o version.o warnings.o \
+	prog.o  ptab.o rob.o services.o set.o shs.o sig.o speech.o sql.o \
+	strdup.o strtree.o strutil.o tables.o timer.o unparse.o utils.o version.o warnings.o \
 	wild.o wiz.o
 O_FILES=$(COMMON_O_FILES) bsd.o
 CONSOLE_O_FILES=$(COMMON_O_FILES) console.o
