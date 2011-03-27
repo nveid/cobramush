@@ -100,9 +100,10 @@ moveit(dbref what, dbref where, int nomovemsgs)
 	/* If the player is leaving a zone, do zone messages */
 	/* The tricky bit here is that we only care about the zone of
 	 * the outermost contents */
-	if (GoodObject(absold) && GoodObject(Zone(absold))
-	    && (Zone(absloc) != Zone(absold)))
-	  did_it_interact(what, Zone(absold), "ZLEAVE", NULL, "OZLEAVE", NULL,
+        if (GoodObject(absloc) && GoodObject(Zone(absloc)) &&
+            (!GoodObject(absold) || !GoodObject(Zone(absold)) ||
+             (Zone(absloc) != Zone(absold))))
+   did_it_interact(what, Zone(absold), "ZLEAVE", NULL, "OZLEAVE", NULL,
 			  "AZLEAVE", old, NA_INTER_SEE);
 	if (GoodObject(old) && !IsRoom(old))
 	  did_it_interact(what, old, NULL, NULL, "OXLEAVE", NULL, NULL, where,
@@ -111,20 +112,23 @@ moveit(dbref what, dbref where, int nomovemsgs)
 	  did_it_interact(what, where, NULL, NULL, "OXENTER", NULL, NULL, old,
 			  NA_INTER_SEE);
 	/* If the player is entering a new zone, do zone messages */
-	if (!GoodObject(absold)
-	    || (GoodObject(Zone(absloc)) && (Zone(absloc) != Zone(absold))))
+        if (GoodObject(absloc) && GoodObject(Zone(absloc)) &&
+            (!GoodObject(absold) || !GoodObject(Zone(absold)) ||
+             (Zone(absloc) != Zone(absold))))
 	  did_it_interact(what, Zone(absloc), "ZENTER", NULL, "OZENTER", NULL,
-			  "AZENTER", where, NA_INTER_SEE);
+	      "AZENTER", where, NA_INTER_SEE);
 	did_it_interact(what, where, "ENTER", NULL, "OENTER", T("has arrived."),
 			"AENTER", where, NA_INTER_PRESENCE);
       } else {
 	/* non-listeners only trigger the actions not the messages */
 	did_it(what, old, NULL, NULL, NULL, NULL, "ALEAVE", old);
-	if (GoodObject(absold) && GoodObject(Zone(absold))
-	    && (Zone(absloc) != Zone(absold)))
+        if (GoodObject(absold) && GoodObject(Zone(absold)) &&
+            (!GoodObject(absloc) || !GoodObject(Zone(absloc)) ||
+             (Zone(absloc) != Zone(absold))))
 	  did_it(what, Zone(absold), NULL, NULL, NULL, NULL, "AZLEAVE", old);
-	if (!GoodObject(absold)
-	    || (GoodObject(Zone(absloc)) && (Zone(absloc) != Zone(absold))))
+        if (GoodObject(absloc) && GoodObject(Zone(absloc)) &&
+            (!GoodObject(absold) || !GoodObject(Zone(absold)) ||
+             (Zone(absloc) != Zone(absold))))
 	  did_it(what, Zone(absloc), NULL, NULL, NULL, NULL, "AZENTER", where);
 	did_it(what, where, NULL, NULL, NULL, NULL, "AENTER", where);
       }
