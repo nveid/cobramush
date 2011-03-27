@@ -4589,7 +4589,7 @@ FUNCTION(fun_width)
   DESC *match;
   if (!*args[0])
     safe_str(T("#-1 FUNCTION REQUIRES ONE ARGUMENT"), buff, bp);
-  else if ((match = lookup_desc(executor, args[0])))
+  else if ((match = lookup_desc(executor, args[0])) && match->width > 0)
     safe_integer(match->width, buff, bp);
   else if (args[1])
     safe_str(args[1], buff, bp);
@@ -4602,7 +4602,7 @@ FUNCTION(fun_height)
   DESC *match;
   if (!*args[0])
     safe_str(T("#-1 FUNCTION REQUIRES ONE ARGUMENT"), buff, bp);
-  else if ((match = lookup_desc(executor, args[0])))
+  else if ((match = lookup_desc(executor, args[0])) && match->height > 0)
     safe_integer(match->height, buff, bp);
   else if (args[1])
     safe_str(args[1], buff, bp);
