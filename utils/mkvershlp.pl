@@ -21,6 +21,7 @@ my %patchlevels;
 
 my $really_started = 0;
 foreach my $file (@sources) {
+  next if $file =~ /~$/o;
   warn "Can't open $file!\n", next unless open(IN,"<$file");
   my $target = $file;
   $target =~ s/.*\.(.*)/pennv$1.hlp/;

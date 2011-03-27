@@ -55,7 +55,7 @@ static MATH *math_hash_lookup(char *);
 static NVAL angle_to_rad(NVAL angle, const char *from);
 static NVAL rad_to_angle(NVAL angle, const char *to);
 static double frac(double v, double *RESTRICT n, double *RESTRICT d,
-		   double error);
+                   double error);
 void init_math_hashtab(void);
 
 extern int format_long(long n, char *buff, char **bp, int maxlen,
@@ -1275,7 +1275,6 @@ FUNCTION(fun_fraction)
 {
   double num = 0, denom = 0;
   NVAL n;
-  int sign = 0;
 
   if (!is_number(args[0])) {
     safe_str(T(e_num), buff, bp);
@@ -1286,21 +1285,22 @@ FUNCTION(fun_fraction)
 
   if (n < 0) {
     n = fabs(n);
-    sign = 1;
+    safe_chr('-', buff, bp);
   } else if (EQ(n, 0)) {
     safe_chr('0', buff, bp);
     return;
   }
 
-  frac(n, &num, &denom, 1.0e-10);
+  if (is_good_number(n)) {
+    frac(n, &num, &denom, 1.0e-10);
 
-  if (sign)
-    safe_chr('-', buff, bp);
-
-  if (fabs(denom - 1) < 1.0e-10)
-    safe_format(buff, bp, "%.0lf", num);
-  else
-    safe_format(buff, bp, "%.0lf/%.0lf", num, denom);
+    if (fabs(denom - 1) < 1.0e-10)
+      safe_format(buff, bp, "%.0f", num);
+    else
+      safe_format(buff, bp, "%.0f/%.0f", num, denom);
+  } else {
+    safe_number(n, buff, bp);
+  }
 }
 
 FUNCTION(fun_isint)

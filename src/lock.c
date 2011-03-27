@@ -54,27 +54,27 @@
 /* If any lock_type ever contains the character '|', reading in locks
  * from the db will break.
  */
-const lock_type Basic_Lock = "Basic";	  /**< Name of basic lock */
-const lock_type Enter_Lock = "Enter";	  /**< Name of enter lock */
-const lock_type Use_Lock = "Use";	  /**< Name of use lock */
-const lock_type Zone_Lock = "Zone";	  /**< Name of zone lock */
-const lock_type Page_Lock = "Page";	  /**< Name of page lock */
+const lock_type Basic_Lock = "Basic";     /**< Name of basic lock */
+const lock_type Enter_Lock = "Enter";     /**< Name of enter lock */
+const lock_type Use_Lock = "Use";         /**< Name of use lock */
+const lock_type Zone_Lock = "Zone";       /**< Name of zone lock */
+const lock_type Page_Lock = "Page";       /**< Name of page lock */
 const lock_type Tport_Lock = "Teleport";  /**< Name of teleport lock */
-const lock_type Speech_Lock = "Speech";	  /**< Name of speech lock */
-const lock_type Listen_Lock = "Listen";	  /**< Name of listen lock */
+const lock_type Speech_Lock = "Speech";   /**< Name of speech lock */
+const lock_type Listen_Lock = "Listen";   /**< Name of listen lock */
 const lock_type Command_Lock = "Command"; /**< Name of command lock */
-const lock_type Parent_Lock = "Parent";	  /**< Name of parent lock */
-const lock_type Link_Lock = "Link";	  /**< Name of link lock */
-const lock_type Leave_Lock = "Leave";	  /**< Name of leave lock */
-const lock_type Drop_Lock = "Drop";	  /**< Name of drop lock */
-const lock_type Give_Lock = "Give";	  /**< Name of give lock */
-const lock_type Mail_Lock = "Mail";	  /**< Name of mail lock */
-const lock_type Follow_Lock = "Follow";	  /**< Name of follow lock */
+const lock_type Parent_Lock = "Parent";   /**< Name of parent lock */
+const lock_type Link_Lock = "Link";       /**< Name of link lock */
+const lock_type Leave_Lock = "Leave";     /**< Name of leave lock */
+const lock_type Drop_Lock = "Drop";       /**< Name of drop lock */
+const lock_type Give_Lock = "Give";       /**< Name of give lock */
+const lock_type Mail_Lock = "Mail";       /**< Name of mail lock */
+const lock_type Follow_Lock = "Follow";   /**< Name of follow lock */
 const lock_type Examine_Lock = "Examine"; /**< Name of examine lock */
-const lock_type Chzone_Lock = "Chzone";	  /**< Name of chzone lock */
+const lock_type Chzone_Lock = "Chzone";   /**< Name of chzone lock */
 const lock_type Forward_Lock = "Forward"; /**< Name of forward lock */
 const lock_type Control_Lock = "Control"; /**< Name of control lock */
-const lock_type Dropto_Lock = "Dropto";	  /**< Name of dropto lock */
+const lock_type Dropto_Lock = "Dropto";   /**< Name of dropto lock */
 const lock_type Destroy_Lock = "Destroy"; /**< Name of destroy lock */
 const lock_type Interact_Lock = "Interact"; /**< Name of interaction lock */
 const lock_type Take_Lock = "Take"; /**< Name of take lock */
@@ -353,17 +353,17 @@ getlockstruct(dbref thing, lock_type type)
   do {
     for (; GoodObject(p); p = Parent(p)) {
       if (count++ > 100)
-	return NULL;
+        return NULL;
       if (p == ancestor)
-	ancestor_in_chain = 1;
+        ancestor_in_chain = 1;
       ll = Locks(p);
       while (ll && L_TYPE(ll)) {
-	cmp = strcasecmp(L_TYPE(ll), type);
-	if (cmp == 0)
-	  return (p != thing && (ll->flags & LF_PRIVATE)) ? NULL : ll;
-	else if (cmp > 0)
-	  break;
-	ll = ll->next;
+        cmp = strcasecmp(L_TYPE(ll), type);
+        if (cmp == 0)
+          return (p != thing && (ll->flags & LF_PRIVATE)) ? NULL : ll;
+        else if (cmp > 0)
+          break;
+        ll = ll->next;
       }
     }
     p = ancestor;
@@ -530,9 +530,9 @@ add_lock_raw(dbref player, dbref thing, lock_type type, boolexp key, int flags)
     if (flags == -1) {
       const lock_list *l2 = get_lockproto(real_type);
       if (l2)
-	ll->flags = l2->flags;
+        ll->flags = l2->flags;
       else
-	ll->flags = 0;
+        ll->flags = 0;
     } else {
       ll->flags = flags;
     }
@@ -820,7 +820,7 @@ eval_lock(dbref player, dbref thing, lock_type ltype)
  */
 int
 eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
-	       dbref env1)
+               dbref env1)
 {
   char *myenv[10] = { NULL };
   char e0[SBUF_LEN], e1[SBUF_LEN], *ep;
@@ -863,7 +863,7 @@ eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
  */
 int
 fail_lock(dbref player, dbref thing, lock_type ltype, const char *def,
-	  dbref loc)
+          dbref loc)
 {
   const LOCKMSGINFO *lm;
   char atr[BUFFER_LEN];
@@ -999,21 +999,21 @@ check_zone_lock(dbref player, dbref zone, int noisy)
     add_lock(GOD, zone, Zone_Lock, parse_boolexp(zone, "=me", Zone_Lock), -1);
     if (noisy)
       notify_format(player,
-		    T
-		    ("Unlocked zone %s - automatically zone-locking to itself"),
-		    unparse_object(player, zone));
+                    T
+                    ("Unlocked zone %s - automatically zone-locking to itself"),
+                    unparse_object(player, zone));
   } else if (eval_lock(Location(player), zone, Zone_Lock)) {
     /* Does #0 and #2 pass it? If so, probably trivial elock */
     if (eval_lock(PLAYER_START, zone, Zone_Lock) &&
-	eval_lock(MASTER_ROOM, zone, Zone_Lock)) {
+        eval_lock(MASTER_ROOM, zone, Zone_Lock)) {
       if (noisy)
-	notify_format(player,
-		      T("Zone %s really should have a more secure zone-lock."),
-		      unparse_object(player, zone));
-    } else			/* Probably inexact zone lock */
+        notify_format(player,
+                      T("Zone %s really should have a more secure zone-lock."),
+                      unparse_object(player, zone));
+    } else                      /* Probably inexact zone lock */
       notify_format(player,
-		    T
-		    ("Warning: Zone %s may have loose zone lock. Lock zones to =player, not player"),
-		    unparse_object(player, zone));
+                    T
+                    ("Warning: Zone %s may have loose zone lock. Lock zones to =player, not player"),
+                    unparse_object(player, zone));
   }
 }

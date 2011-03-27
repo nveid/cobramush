@@ -1564,7 +1564,7 @@ See also: help flags. See help @flag2 for information on @flag/add
 
  For example:
   @function/delete ansi
-  &ansi_fun #1234=%0
+  &ansi_fun #1234=%1
   @function ansi=#1234, ansi_fun, 2, 2, noguest
 
  will create a new version of ansi() that doesn't do any

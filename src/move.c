@@ -77,9 +77,9 @@ moveit(dbref what, dbref where, int nomovemsgs)
   switch (where) {
   case NOTHING:
     Location(what) = NOTHING;
-    return;			/* NOTHING doesn't have contents */
+    return;                     /* NOTHING doesn't have contents */
   case HOME:
-    where = Home(what);		/* home */
+    where = Home(what);         /* home */
     safe_tel(what, where, nomovemsgs);
     return;
     /*NOTREACHED */
@@ -168,7 +168,7 @@ maybe_dropto(dbref loc, dbref dropto)
 {
   dbref thing;
   if (loc == dropto)
-    return;			/* bizarre special case */
+    return;                     /* bizarre special case */
   if (!IsRoom(loc))
     return;
   /* check for players */
@@ -216,14 +216,14 @@ enter_room(dbref player, dbref loc, int nomovemsgs)
   }
   if (loc == player) {
     do_rawlog(LT_ERR, T("ERROR: Attempt to move player %d into itself\n"),
-	      player);
+              player);
     deep--;
     return;
   }
   if (recursive_member(loc, player, 0)) {
     do_rawlog(LT_ERR,
-	      T("ERROR: Attempt to move player %d into carried object %d\n"),
-	      player, loc);
+              T("ERROR: Attempt to move player %d into carried object %d\n"),
+              player, loc);
     deep--;
     return;
   }
@@ -278,8 +278,8 @@ safe_tel(dbref player, dbref dest, int nomovemsgs)
      * the player.
      */
     if (!controls(player, first)
-	&& (Sticky(first)
-	    && (Home(first) != player)))
+        && (Sticky(first)
+            && (Home(first) != player)))
       enter_room(first, HOME, nomovemsgs);
     else {
       PUSH(first, Contents(player));
@@ -341,7 +341,7 @@ find_var_dest(dbref player, dbref exit_obj)
   ap = abuf;
   bp = buff;
   process_expression(buff, &bp, &ap, exit_obj, player, player,
-		     PE_DEFAULT, PT_DEFAULT, NULL);
+                     PE_DEFAULT, PT_DEFAULT, NULL);
   *bp = '\0';
   dest_room = parse_objid(buff);
   free((Malloc_t) abuf);
@@ -368,15 +368,15 @@ do_move(dbref player, const char *direction, enum move_type type)
     /* send him home */
     /* but steal all his possessions */
     if (!Mobile(player) || !GoodObject(Home(player)) ||
-	recursive_member(Home(player), player, 0)
-	|| (player == Home(player))) {
+        recursive_member(Home(player), player, 0)
+        || (player == Home(player))) {
       notify(player, T("Bad destination."));
       return;
     }
     if ((loc = Location(player)) != NOTHING && !Dark(player) && !Dark(loc)) {
       /* tell everybody else */
       notify_except(Contents(loc), player,
-		    tprintf(T("%s goes home."), Name(player)), NA_INTER_SEE);
+                    tprintf(T("%s goes home."), Name(player)), NA_INTER_SEE);
     }
     /* give the player the messages */
     notify(player, T("There's no place like home..."));
@@ -387,16 +387,16 @@ do_move(dbref player, const char *direction, enum move_type type)
     /* find the exit */
     if (type == MOVE_GLOBAL)
       exit_m =
-	match_result(player, direction, TYPE_EXIT,
-		     MAT_ENGLISH | MAT_EXIT | MAT_GLOBAL | MAT_CHECK_KEYS);
+        match_result(player, direction, TYPE_EXIT,
+                     MAT_ENGLISH | MAT_EXIT | MAT_GLOBAL | MAT_CHECK_KEYS);
     else if (type == MOVE_ZONE)
       exit_m =
-	match_result(player, direction, TYPE_EXIT,
-		     MAT_ENGLISH | MAT_EXIT | MAT_REMOTES | MAT_CHECK_KEYS);
+        match_result(player, direction, TYPE_EXIT,
+                     MAT_ENGLISH | MAT_EXIT | MAT_REMOTES | MAT_CHECK_KEYS);
     else
       exit_m =
-	match_result(player, direction, TYPE_EXIT,
-		     MAT_ENGLISH | MAT_EXIT | MAT_CHECK_KEYS);
+        match_result(player, direction, TYPE_EXIT,
+                     MAT_ENGLISH | MAT_EXIT | MAT_CHECK_KEYS);
     switch (exit_m) {
     case NOTHING:
       /* try to force the object */
@@ -502,7 +502,7 @@ do_firstexit(dbref player, const char *what)
   dbref loc;
   if ((thing =
        noisy_match_result(player, what, TYPE_EXIT,
-			  MAT_ENGLISH | MAT_EXIT)) == NOTHING)
+                          MAT_ENGLISH | MAT_EXIT)) == NOTHING)
     return;
   loc = Home(thing);
   if (!controls(player, loc)) {
@@ -659,9 +659,9 @@ do_drop(dbref player, const char *name)
   if ((loc = Location(player)) == NOTHING)
     return;
   switch (thing =
-	  match_result(player, name, TYPE_THING,
-		       MAT_POSSESSION | MAT_ABSOLUTE | MAT_CONTROL |
-		       MAT_ENGLISH)) {
+          match_result(player, name, TYPE_THING,
+                       MAT_POSSESSION | MAT_ABSOLUTE | MAT_CONTROL |
+                       MAT_ENGLISH)) {
   case NOTHING:
       notify(player, T("You don't have that!"));
     return;
@@ -686,7 +686,7 @@ do_drop(dbref player, const char *name)
       notify(thing, T("Dropped."));
       safe_tel(thing, HOME, 0);
     } else if ((Location(loc) != NOTHING) && IsRoom(loc) && !Sticky(loc)
-	       && eval_lock(thing, loc, Dropto_Lock)) {
+               && eval_lock(thing, loc, Dropto_Lock)) {
       /* location has immediate dropto */
       notify_format(thing, T("%s drops you."), Name(player));
       moveto(thing, Location(loc));
@@ -741,7 +741,7 @@ do_empty(dbref player, const char *what)
     return;
   thing =
     noisy_match_result(player, what, TYPE_THING | TYPE_PLAYER,
-		       MAT_NEAR_THINGS | MAT_ENGLISH);
+                       MAT_NEAR_THINGS | MAT_ENGLISH);
   if (!GoodObject(thing))
     return;
   thing_loc = Location(thing);
@@ -755,31 +755,31 @@ do_empty(dbref player, const char *what)
        item = first_visible(player, next)) {
     next = Next(item);
     if (IsExit(item))
-      continue;			/* No dropping exits */
+      continue;                 /* No dropping exits */
     empty_ok = 0;
     if (player == thing) {
       /* empty me: You don't need to get what's in your inventory already */
       if (eval_lock(player, item, Drop_Lock) &&
-	  (!IsRoom(thing_loc) || eval_lock(player, thing_loc, Drop_Lock)))
-	empty_ok = 1;
+          (!IsRoom(thing_loc) || eval_lock(player, thing_loc, Drop_Lock)))
+        empty_ok = 1;
     }
     /* Check that player can get stuff from thing */
     else if (controls(player, thing) ||
-	     (EnterOk(thing) && eval_lock(player, thing, Enter_Lock))) {
+             (EnterOk(thing) && eval_lock(player, thing, Enter_Lock))) {
       /* Check that player can get item */
       if (!could_doit(player, item)) {
-	/* Send failure message if set, otherwise be quiet */
-	fail_lock(player, thing, Basic_Lock, NULL, NOTHING);
-	continue;
+        /* Send failure message if set, otherwise be quiet */
+        fail_lock(player, thing, Basic_Lock, NULL, NOTHING);
+        continue;
       }
       /* Now check for dropping in the destination */
       /* Thing is in player's inventory - sufficient */
       if (thing_loc == player)
-	empty_ok = 1;
+        empty_ok = 1;
       /* Thing is in player's location - player must also be able to drop */
       else if (eval_lock(player, item, Drop_Lock) &&
-	       (!IsRoom(thing_loc) || eval_lock(player, thing_loc, Drop_Lock)))
-	empty_ok = 1;
+               (!IsRoom(thing_loc) || eval_lock(player, thing_loc, Drop_Lock)))
+        empty_ok = 1;
     }
     /* Now do the work, if we should. That includes triggering messages */
     if (empty_ok) {
@@ -863,8 +863,8 @@ do_enter(dbref player, const char *what)
     /* the object must pass the lock. Also, the thing being entered */
     /* has to be controlled, or must be enter_ok */
     if (!((EnterOk(thing) || controls(player, thing)) &&
-	  (eval_lock(player, thing, Enter_Lock))
-	)) {
+          (eval_lock(player, thing, Enter_Lock))
+        )) {
       fail_lock(player, thing, Enter_Lock, T("Permission denied."), NOTHING);
       return;
     }
@@ -911,7 +911,7 @@ int
 global_exit(dbref player, const char *direction)
 {
   return (GoodObject
-	  (match_result(player, direction, TYPE_EXIT, MAT_GLOBAL | MAT_EXIT)));
+          (match_result(player, direction, TYPE_EXIT, MAT_GLOBAL | MAT_EXIT)));
 }
 
 /** Is direction a remote exit?
@@ -924,7 +924,7 @@ int
 remote_exit(dbref player, const char *direction)
 {
   return (GoodObject
-	  (match_result(player, direction, TYPE_EXIT, MAT_REMOTES | MAT_EXIT)));
+          (match_result(player, direction, TYPE_EXIT, MAT_REMOTES | MAT_EXIT)));
 }
 
 /** Wrapper for exit movement.
@@ -998,7 +998,7 @@ do_follow(dbref player, const char *arg)
     /* Ok, are we allowed to follow them? */
     if (!eval_lock(player, leader, Follow_Lock)) {
       fail_lock(player, leader, Follow_Lock,
-		T("You're not alllowed to follow."), Location(player));
+                T("You're not alllowed to follow."), Location(player));
       return;
     }
     /* Ok, looks good */
@@ -1102,9 +1102,9 @@ do_desert(dbref player, const char *arg)
     }
     /* Are we following or leading them? */
     if (!is_following(who, player)
-	&& !is_following(player, who)) {
+        && !is_following(player, who)) {
       notify_format(player,
-		    T("%s isn't following you, nor vice versa."), Name(who));
+                    T("%s isn't following you, nor vice versa."), Name(who));
       return;
     }
     /* Ok, looks good */
@@ -1168,7 +1168,7 @@ add_follow(dbref leader, dbref follower, int noisy)
     strcpy(msg, tprintf(T("You begin following %s."), Name(leader)));
     notify_format(leader, T("%s begins following you."), Name(follower));
     did_it(follower, leader, "FOLLOW", msg, "OFOLLOW", NULL,
-	   "AFOLLOW", NOTHING);
+           "AFOLLOW", NOTHING);
   }
 }
 
@@ -1182,7 +1182,7 @@ del_follower(dbref leader, dbref follower)
   char flwr[BUFFER_LEN];
   a = atr_get_noparent(leader, "FOLLOWERS");
   if (!a)
-    return;			/* No followers, so no deletion */
+    return;                     /* No followers, so no deletion */
   /* Let's take it apart and put it back together w/o follower */
   strcpy(flwr, unparse_dbref(follower));
   strcpy(tbuf1, atr_value(a));
@@ -1198,7 +1198,7 @@ del_following(dbref follower, dbref leader)
   char ldr[BUFFER_LEN];
   a = atr_get_noparent(follower, "FOLLOWING");
   if (!a)
-    return;			/* Not following, so no deletion */
+    return;                     /* Not following, so no deletion */
   /* Let's take it apart and put it back together w/o leader */
   strcpy(ldr, unparse_dbref(leader));
   strcpy(tbuf1, atr_value(a));
@@ -1215,7 +1215,7 @@ del_follow(dbref leader, dbref follower, int noisy)
     strcpy(msg, tprintf(T("You stop following %s."), Name(leader)));
     notify_format(leader, T("%s stops following you."), Name(follower));
     did_it(follower, leader, "UNFOLLOW", msg, "OUNFOLLOW",
-	   NULL, "AUNFOLLOW", NOTHING);
+           NULL, "AUNFOLLOW", NOTHING);
   }
 }
 
@@ -1241,7 +1241,7 @@ list_followers(dbref player)
     who = parse_dbref(sp);
     if (GoodObject(who)) {
       if (!first)
-	safe_str(", ", buff, &bp);
+        safe_str(", ", buff, &bp);
       safe_str(Name(who), buff, &bp);
       first = 0;
     }
@@ -1272,7 +1272,7 @@ list_following(dbref player)
     who = parse_dbref(sp);
     if (GoodObject(who)) {
       if (!first)
-	safe_str(", ", buff, &bp);
+        safe_str(", ", buff, &bp);
       safe_str(Name(who), buff, &bp);
       first = 0;
     }
@@ -1293,7 +1293,7 @@ is_following(dbref follower, dbref leader)
    */
   a = atr_get_noparent(follower, "FOLLOWING");
   if (!a)
-    return 0;			/* Following no one */
+    return 0;                   /* Following no one */
   strcpy(tbuf1, atr_value(a));
   s = trim_space_sep(tbuf1, ' ');
   while (s) {
@@ -1317,7 +1317,7 @@ clear_followers(dbref leader, int noisy)
   dbref flwr;
   a = atr_get_noparent(leader, "FOLLOWERS");
   if (!a)
-    return;			/* No one's following me */
+    return;                     /* No one's following me */
   strcpy(tbuf1, atr_value(a));
   s = trim_space_sep(tbuf1, ' ');
   while (s) {
@@ -1326,7 +1326,7 @@ clear_followers(dbref leader, int noisy)
     if (GoodObject(flwr)) {
       del_following(flwr, leader);
       if (noisy)
-	notify_format(flwr, T("You stop following %s."), Name(leader));
+        notify_format(flwr, T("You stop following %s."), Name(leader));
     }
   }
   (void) atr_clr(leader, "FOLLOWERS", GOD);
@@ -1345,7 +1345,7 @@ clear_following(dbref follower, int noisy)
   dbref ldr;
   a = atr_get_noparent(follower, "FOLLOWING");
   if (!a)
-    return;			/* I'm not following anyone */
+    return;                     /* I'm not following anyone */
   strcpy(tbuf1, atr_value(a));
   s = trim_space_sep(tbuf1, ' ');
   while (s) {
@@ -1354,7 +1354,7 @@ clear_following(dbref follower, int noisy)
     if (GoodObject(ldr)) {
       del_follower(ldr, follower);
       if (noisy)
-	notify_format(ldr, T("%s stops following you."), Name(follower));
+        notify_format(ldr, T("%s stops following you."), Name(follower));
     }
   }
   (void) atr_clr(follower, "FOLLOWING", GOD);

@@ -92,15 +92,15 @@ password_check(dbref player, const char *password)
     /* shs encryption didn't match. Try crypt(3) */
     if (strcmp(crypt(password, "XX"), saved) != 0)
       /* Nope */
-#endif				/* HAS_CRYPT */
+#endif                          /* HAS_CRYPT */
       /* crypt() didn't work. Try plaintext, being sure to not 
        * allow unencrypted entry of encrypted password */
       if ((strcmp(saved, password) != 0)
-	  || (strlen(password) < 4)
-	  || ((password[0] == 'X') && (password[1] == 'X'))) {
-	/* Nothing worked. You lose. */
-	free(saved);
-	return 0;
+          || (strlen(password) < 4)
+          || ((password[0] == 'X') && (password[1] == 'X'))) {
+        /* Nothing worked. You lose. */
+        free(saved);
+        return 0;
       }
     /* Something worked. Change password to SHS-encrypted */
     (void) atr_add(player, pword_attr, passwd, GOD, 0);
@@ -175,8 +175,8 @@ connect_player(const char *name, const char *password, const char *host,
   }
   if (Suspect_Site(host, player) || Suspect_Site(ip, player)) {
     do_log(LT_CONN, 0, 0,
-	   T("Connection from Suspect site. Setting %s(#%d) suspect."),
-	   Name(player), player);
+           T("Connection from Suspect site. Setting %s(#%d) suspect."),
+           Name(player), player);
     set_flag_internal(player, "SUSPECT");
   }
   return player;
@@ -244,7 +244,7 @@ dbref create_guest(const char *host, const char *ip) {
  */
 dbref
 create_player(const char *name, const char *password, const char *host,
-	      const char *ip)
+              const char *ip)
 {
   dbref player;
   if (!ok_player_name(name, NOTHING, NOTHING)) {
@@ -291,7 +291,7 @@ create_player(const char *name, const char *password, const char *host,
  */
 dbref
 email_register_player(const char *name, const char *email, const char *host,
-		      const char *ip)
+                      const char *ip)
 {
   char *p;
   char passwd[BUFFER_LEN];
@@ -318,9 +318,9 @@ email_register_player(const char *name, const char *email, const char *host,
     p++;
     if (!Site_Can_Register(p)) {
       if (!Deny_Silent_Site(p, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0,
-	       T("Failed registration (bad site in email: %s) from %s"),
-	       email, host);
+        do_log(LT_CONN, 0, 0,
+               T("Failed registration (bad site in email: %s) from %s"),
+               email, host);
       }
       return NOTHING;
     }
@@ -329,9 +329,9 @@ email_register_player(const char *name, const char *email, const char *host,
     if (!Site_Can_Register(email)) {
       *p = '!';
       if (!Deny_Silent_Site(email, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0,
-	       T("Failed registration (bad site in email: %s) from %s"),
-	       email, host);
+        do_log(LT_CONN, 0, 0,
+               T("Failed registration (bad site in email: %s) from %s"),
+               email, host);
       }
       return NOTHING;
     } else
@@ -339,7 +339,7 @@ email_register_player(const char *name, const char *email, const char *host,
   } else {
     if (!Deny_Silent_Site(host, AMBIGUOUS)) {
       do_log(LT_CONN, 0, 0, T("Failed registration (bad email: %s) from %s"),
-	     email, host);
+             email, host);
     }
     return NOTHING;
   }
@@ -369,8 +369,8 @@ email_register_player(const char *name, const char *email, const char *host,
 #endif
        popen(tprintf("%s -t", SENDMAIL), "w")) == NULL) {
     do_log(LT_CONN, 0, 0,
-	   T("Failed registration of %s by %s: unable to open sendmail"),
-	   name, email);
+           T("Failed registration of %s by %s: unable to open sendmail"),
+           name, email);
     reserve_fd();
     return NOTHING;
   }
@@ -384,7 +384,7 @@ email_register_player(const char *name, const char *email, const char *host,
   fprintf(fp, T("The password is %s\n"), passwd);
   fprintf(fp, "\n");
   fprintf(fp, T("To access this character, connect to %s and type:\n"),
-	  MUDNAME);
+          MUDNAME);
   fprintf(fp, "\tconnect \"%s\" %s\n", name, passwd);
   fprintf(fp, "\n");
   pclose(fp);
@@ -399,7 +399,7 @@ email_register_player(const char *name, const char *email, const char *host,
 #else
 dbref
 email_register_player(const char *name, const char *email, const char *host,
-		      const char *ip)
+                      const char *ip)
 {
   do_log(LT_CONN, 0, 0, T("Failed registration (no sendmail) from %s"), host);
   return NOTHING;
@@ -408,12 +408,11 @@ email_register_player(const char *name, const char *email, const char *host,
 
 static dbref
 make_player(const char *name, const char *password, const char *host,
-	    const char *ip)
+            const char *ip)
 {
 
   dbref player;
   char temp[SBUF_LEN];
-  object_flag_type flags;
 
   player = new_object();
 
@@ -424,16 +423,14 @@ make_player(const char *name, const char *password, const char *host,
   Owner(player) = player;
   Parent(player) = NOTHING;
   Type(player) = TYPE_PLAYER;
-  flags = string_to_bits("FLAG", options.player_flags);
-  copy_flag_bitmask("FLAG", Flags(player), flags);
-  destroy_flag_bitmask(flags);
+  Flags(player) = string_to_bits("FLAG", options.player_flags);
   if (Suspect_Site(host, player) || Suspect_Site(ip, player))
     set_flag_internal(player, "SUSPECT");
   set_initial_warnings(player);
   /* Modtime tracks login failures */
   ModTime(player) = (time_t) 0;
   (void) atr_add(player, "XYXXY", mush_crypt(password), GOD, 0);
-  giveto(player, START_BONUS);	/* starting bonus */
+  giveto(player, START_BONUS);  /* starting bonus */
   (void) atr_add(player, "LAST", show_time(mudtime, 0), GOD, 0);
   (void) atr_add(player, "LASTSITE", host, GOD, 0);
   (void) atr_add(player, "LASTIP", ip, GOD, 0);
@@ -486,14 +483,14 @@ do_password(dbref player, dbref cause, const char *old, const char *newobj)
     sp = old;
     bp = old_eval;
     process_expression(old_eval, &bp, &sp, player, player, cause,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     old = old_eval;
 
     sp = newobj;
     bp = new_eval;
     process_expression(new_eval, &bp, &sp, player, player, cause,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     newobj = new_eval;
   }

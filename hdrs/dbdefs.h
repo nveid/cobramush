@@ -17,7 +17,7 @@
 
 extern int depth;
 
-extern dbref first_free;	/* pointer to free list */
+extern dbref first_free;        /* pointer to free list */
 
 /*-------------------------------------------------------------------------
  * Database access macros
@@ -122,24 +122,24 @@ extern dbref first_free;	/* pointer to free list */
 #define NoLeave(x)      (IS(x, TYPE_THING, "NOLEAVE"))
 #define ThingListen(x)  (IS(x, TYPE_THING, "MONITOR"))
 #define ThingInhearit(x) \
-                        (IS(x, TYPE_THING, "LISTEN_PARENT"))	/* 0x80 */
+                        (IS(x, TYPE_THING, "LISTEN_PARENT"))    /* 0x80 */
 #define ThingZTel(x)            (IS(x, TYPE_THING, "Z_TEL"))
 
 /******* Room toggles */
-#define Floating(x)     (IS(x, TYPE_ROOM, "FLOATING"))	/* 0x8 */
-#define Abode(x)        (IS(x, TYPE_ROOM, "ABODE"))	/* 0x10 */
-#define JumpOk(x)       (IS(x, TYPE_ROOM, "JUMP_OK"))	/* 0x20 */
-#define NoTel(x)        (IS(x, TYPE_ROOM, "NO_TEL"))	/* 0x40 */
-#define RoomListen(x)   (IS(x, TYPE_ROOM, "LISTENER"))	/* 0x100 */
-#define RoomZTel(x)             (IS(x, TYPE_ROOM, "Z_TEL"))	/* 0x200 */
-#define RoomInhearit(x) (IS(x, TYPE_ROOM, "LISTEN_PARENT"))	/* 0x400 */
+#define Floating(x)     (IS(x, TYPE_ROOM, "FLOATING"))  /* 0x8 */
+#define Abode(x)        (IS(x, TYPE_ROOM, "ABODE"))     /* 0x10 */
+#define JumpOk(x)       (IS(x, TYPE_ROOM, "JUMP_OK"))   /* 0x20 */
+#define NoTel(x)        (IS(x, TYPE_ROOM, "NO_TEL"))    /* 0x40 */
+#define RoomListen(x)   (IS(x, TYPE_ROOM, "LISTENER"))  /* 0x100 */
+#define RoomZTel(x)             (IS(x, TYPE_ROOM, "Z_TEL"))     /* 0x200 */
+#define RoomInhearit(x) (IS(x, TYPE_ROOM, "LISTEN_PARENT"))     /* 0x400 */
 
-#define Uninspected(x)  (IS(x, TYPE_ROOM, "UNINSPECTED"))	/* 0x1000 */
+#define Uninspected(x)  (IS(x, TYPE_ROOM, "UNINSPECTED"))       /* 0x1000 */
 
 #define ZTel(x) (ThingZTel(x) || RoomZTel(x))
 
 /******* Exit toggles */
-#define Cloudy(x)       (IS(x, TYPE_EXIT, "CLOUDY"))	/* 0x8 */
+#define Cloudy(x)       (IS(x, TYPE_EXIT, "CLOUDY"))    /* 0x8 */
 
 /* Flags anything can have */
 
@@ -330,15 +330,15 @@ extern void convert_object_powers(dbref, int); /* the code is in division.c..
  * stored in a doubly-linked list sorted by message recipient.
  */
 struct mail {
-  struct mail *next;		/**< Pointer to next message */
-  struct mail *prev;		/**< Pointer to previous message */
-  dbref to;			/**< Recipient dbref */
-  dbref from;			/**< Sender's dbref */
-  time_t from_ctime;		/**< Sender's creation time */
-  chunk_reference_t msgid;	/**< Message text, compressed */
-  time_t time;			/**< Message date/time */
-  unsigned char *subject;	/**< Message subject, compressed */
-  int read;			/**< Bitflags of message status */
+  struct mail *next;            /**< Pointer to next message */
+  struct mail *prev;            /**< Pointer to previous message */
+  dbref to;                     /**< Recipient dbref */
+  dbref from;                   /**< Sender's dbref */
+  time_t from_ctime;            /**< Sender's creation time */
+  chunk_reference_t msgid;      /**< Message text, compressed */
+  time_t time;                  /**< Message date/time */
+  unsigned char *subject;       /**< Message subject, compressed */
+  int read;                     /**< Bitflags of message status */
 };
 
 typedef struct mail MAIL;
@@ -350,4 +350,4 @@ extern const char *EOD;
   if (SW_ISSET(sw, SWITCH_SPOOF) && (controls(player, cause) || Can_Nspemit(player))) \
     player = cause;
 
-#endif				/* __DBDEFS_H */
+#endif                          /* __DBDEFS_H */

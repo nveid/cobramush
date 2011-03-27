@@ -21,20 +21,20 @@
 #define getpagesize() NBPG * CLSIZE
 #ifndef CLSIZE
 #define CLSIZE 1
-#endif				/* no CLSIZE */
-#else				/* no NBPG */
+#endif                          /* no CLSIZE */
+#else                           /* no NBPG */
 #ifdef NBPC
 #define getpagesize() NBPC
-#else				/* no NBPC either? Bummer */
+#else                           /* no NBPC either? Bummer */
 #ifdef PAGESIZE
 #define getpagesize() PAGESIZE
-#else				/* Sigh. Time for a total guess. */
+#else                           /* Sigh. Time for a total guess. */
 #define getpagesize() 1024
-#endif				/* no PAGESIZE */
-#endif				/* no NBPC */
-#endif				/* no NBPG */
-#endif				/* no EXEC_PAGESIZE */
-#endif				/* no PAGESIZE_VALUE */
-#endif				/* not HAS_GETPAGESIZE */
+#endif                          /* no PAGESIZE */
+#endif                          /* no NBPC */
+#endif                          /* no NBPG */
+#endif                          /* no EXEC_PAGESIZE */
+#endif                          /* no PAGESIZE_VALUE */
+#endif                          /* not HAS_GETPAGESIZE */
 
-#endif				/* __GETPGSIZ_H */
+#endif                          /* __GETPGSIZ_H */

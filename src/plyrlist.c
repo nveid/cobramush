@@ -188,7 +188,7 @@ delete_player(dbref player, const char *alias)
  */
 void
 reset_player_list(dbref player, const char *oldname, const char *oldalias,
-		  const char *name, const char *alias)
+                  const char *name, const char *alias)
 {
   char tbuf1[BUFFER_LEN];
   char tbuf2[BUFFER_LEN];

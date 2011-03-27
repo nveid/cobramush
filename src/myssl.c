@@ -28,7 +28,7 @@
 #define MAXHOSTNAMELEN 32
 #define LC_MESSAGES 6
 void shutdown_checkpoint(void);
-#else				/* !WIN32 */
+#else                           /* !WIN32 */
 #ifdef I_SYS_FILE
 #include <sys/file.h>
 #endif
@@ -52,7 +52,7 @@ void shutdown_checkpoint(void);
 #ifdef I_SYS_STAT
 #include <sys/stat.h>
 #endif
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */
 #include <time.h>
 #ifdef I_SYS_WAIT
 #include <sys/wait.h>
@@ -73,6 +73,7 @@ void shutdown_checkpoint(void);
 #include <openssl/err.h>
 #include <openssl/dh.h>
 #include <openssl/evp.h>
+#include <openssl/rand.h>
 
 #include "conf.h"
 #include "mysocket.h"
@@ -81,13 +82,13 @@ void shutdown_checkpoint(void);
 #include "parse.h"
 #include "confmagic.h"
 
-#define MYSSL_RB        0x1	/**< Read blocked (on read) */
-#define MYSSL_WB        0x2	/**< Write blocked (on write) */
-#define MYSSL_RBOW      0x4	/**< Read blocked (on write) */
-#define MYSSL_WBOR      0x8	/**< Write blocked (on read) */
-#define MYSSL_ACCEPT    0x10	/**< We need to call SSL_accept (again) */
-#define MYSSL_VERIFIED  0x20	/**< This is an authenticated connection */
-#define MYSSL_HANDSHAKE 0x40	/**< We need to call SSL_do_handshake */
+#define MYSSL_RB        0x1     /**< Read blocked (on read) */
+#define MYSSL_WB        0x2     /**< Write blocked (on write) */
+#define MYSSL_RBOW      0x4     /**< Read blocked (on write) */
+#define MYSSL_WBOR      0x8     /**< Write blocked (on read) */
+#define MYSSL_ACCEPT    0x10    /**< We need to call SSL_accept (again) */
+#define MYSSL_VERIFIED  0x20    /**< This is an authenticated connection */
+#define MYSSL_HANDSHAKE 0x40    /**< We need to call SSL_do_handshake */
 
 #undef MYSSL_DEBUG
 #ifdef MYSSL_DEBUG
@@ -104,6 +105,8 @@ static DH *get_dh1024(void);
 static BIO *bio_err = NULL;
 static SSL_CTX *ctx = NULL;
 
+unsigned int genrand_int32(void);
+
 /** Initialize the SSL context.
  * \return pointer to SSL context object.
  */
@@ -112,6 +115,8 @@ ssl_init(void)
 {
   SSL_METHOD *meth;
   unsigned char context[128];
+  DH *dh;
+  unsigned int reps = 1;
 
   if (!bio_err) {
     if (!SSL_library_init())
@@ -120,11 +125,23 @@ ssl_init(void)
     /* Error write context */
     bio_err = BIO_new_fp(stderr, BIO_NOCLOSE);
   }
-#ifndef HAS_DEV_URANDOM
-  /* We need to seed the RNG with RAND_seed() or RAND_egd() here.
-   * Where are we going to get an unpredictable seed?
-   */
-#endif
+
+  do_rawlog(LT_ERR, "Seeding OpenSSL random number pool.");
+  while (!RAND_status()) {
+    /* At this point, a system with /dev/urandom or a EGD file in the usual
+       places will have enough entropy. Otherwise, be lazy and use random numbers
+       until it's satisfied. */
+    unsigned int gibberish[4];
+    int n;
+
+    for (n = 0; n < 4; n++)
+      gibberish[n] = genrand_int32();
+
+    RAND_seed(gibberish, sizeof gibberish);
+
+    reps += 1;
+  }
+  do_rawlog(LT_ERR, "Seeded after %u %s.", reps, reps > 1 ? "cycles" : "cycle");
 
   /* Set up SIGPIPE handler here? */
 
@@ -164,11 +181,14 @@ ssl_init(void)
 
   SSL_CTX_set_options(ctx, SSL_OP_SINGLE_DH_USE | SSL_OP_ALL);
   SSL_CTX_set_mode(ctx,
-		   SSL_MODE_ENABLE_PARTIAL_WRITE |
-		   SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
+                   SSL_MODE_ENABLE_PARTIAL_WRITE |
+                   SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
 
   /* Set up DH callback */
+  dh = get_dh1024();
   SSL_CTX_set_tmp_dh(ctx, get_dh1024());
+  /* The above function makes a private copy of this */
+  DH_free(dh);
 
   /* Set the cipher list to the usual default list, except that
    * we'll allow anonymous diffie-hellman, too.
@@ -199,7 +219,7 @@ client_verify_callback(int preverify_ok, X509_STORE_CTX * x509_ctx)
   X509_NAME_oneline(X509_get_subject_name(err_cert), buf, 256);
   if (!preverify_ok) {
     do_log(LT_ERR, 0, 0, "verify error:num=%d:%s:depth=%d:%s\n", err,
-	   X509_verify_cert_error_string(err), depth, buf);
+           X509_verify_cert_error_string(err), depth, buf);
     if (err == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT) {
       X509_NAME_oneline(X509_get_issuer_name(x509_ctx->current_cert), buf, 256);
       do_log(LT_ERR, 0, 0, "issuer= %s\n", buf);
@@ -422,10 +442,10 @@ ssl_accept(SSL * ssl)
     /* Successful accept - report it */
     if ((peer = SSL_get_peer_certificate(ssl))) {
       if (SSL_get_verify_result(ssl) == X509_V_OK) {
-	/* The client sent a certificate which verified OK */
-	X509_NAME_oneline(X509_get_subject_name(peer), buf, 256);
-	do_log(LT_CONN, 0, 0, "SSL client certificate accepted: %s", buf);
-	state |= MYSSL_VERIFIED;
+        /* The client sent a certificate which verified OK */
+        X509_NAME_oneline(X509_get_subject_name(peer), buf, 256);
+        do_log(LT_CONN, 0, 0, "SSL client certificate accepted: %s", buf);
+        state |= MYSSL_VERIFIED;
       }
     }
   }
@@ -446,7 +466,7 @@ ssl_accept(SSL * ssl)
  */
 int
 ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
-	 char *buf, int bufsize, int *bytes_read)
+         char *buf, int bufsize, int *bytes_read)
 {
   if ((net_read_ready && !(state & MYSSL_WBOR)) ||
       (net_write_ready && (state & MYSSL_RBOW))) {
@@ -455,27 +475,27 @@ ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
       *bytes_read = SSL_read(ssl, buf, bufsize);
       switch (SSL_get_error(ssl, *bytes_read)) {
       case SSL_ERROR_NONE:
-	/* Yay */
-	return state;
+        /* Yay */
+        return state;
       case SSL_ERROR_ZERO_RETURN:
-	/* End of data on this socket */
-	return -1;
+        /* End of data on this socket */
+        return -1;
       case SSL_ERROR_WANT_READ:
-	/* More needs to be read from the underlying socket */
-	ssl_debugdump("SSL_read wants read");
-	state |= MYSSL_RB;
-	break;
+        /* More needs to be read from the underlying socket */
+        ssl_debugdump("SSL_read wants read");
+        state |= MYSSL_RB;
+        break;
       case SSL_ERROR_WANT_WRITE:
-	/* More needs to be written to the underlying socket.
-	 * This can happen during a rehandshake.
-	 */
-	ssl_debugdump("SSL_read wants write");
-	state |= MYSSL_RBOW;
-	break;
+        /* More needs to be written to the underlying socket.
+         * This can happen during a rehandshake.
+         */
+        ssl_debugdump("SSL_read wants write");
+        state |= MYSSL_RBOW;
+        break;
       default:
-	/* Should never happen */
-	ssl_errordump("Unknown ssl_read failure!");
-	return -1;
+        /* Should never happen */
+        ssl_errordump("Unknown ssl_read failure!");
+        return -1;
       }
     } while (SSL_pending(ssl) && !(state & MYSSL_RB));
   }
@@ -494,7 +514,7 @@ ssl_read(SSL * ssl, int state, int net_read_ready, int net_write_ready,
  */
 int
 ssl_write(SSL * ssl, int state, int net_read_ready, int net_write_ready,
-	  unsigned char *buf, int bufsize, int *offset)
+          unsigned char *buf, int bufsize, int *offset)
 {
   int r;
   if ((net_write_ready && bufsize) || (net_read_ready && !(state & MYSSL_WBOR))) {
@@ -586,7 +606,7 @@ ssl_read_ssl(FILE * fp, int sock)
   SSL_set_bio(ssl, bio, bio);
   return ssl;
 }
-#endif				/* BROKEN */
+#endif                          /* BROKEN */
 
 
-#endif				/* HAS_OPENSSL */
+#endif                          /* HAS_OPENSSL */

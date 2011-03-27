@@ -34,7 +34,7 @@
 #include "mymalloc.h"
 #include "confmagic.h"
 
-extern char *absp[], *obj[], *poss[], *subj[];	/* fundb.c */
+extern char *absp[], *obj[], *poss[], *subj[];  /* fundb.c */
 extern int inum, inum_limit;
 extern char *iter_rep[];
 int global_fun_invocations;
@@ -48,9 +48,9 @@ extern int iter_break;
 
 /** Structure for storing DEBUG output in a linked list */
 struct debug_info {
-  char *string;		/**< A DEBUG string */
-  Debug_Info *prev;	/**< Previous node in the linked list */
-  Debug_Info *next;	/**< Next node in the linked list */
+  char *string;         /**< A DEBUG string */
+  Debug_Info *prev;     /**< Previous node in the linked list */
+  Debug_Info *next;     /**< Next node in the linked list */
 };
 
 FUNCTION_PROTO(fun_gfun);
@@ -159,7 +159,7 @@ parse_objid(char const *str)
       time_t matchtime;
       p++;
       if (!is_strict_integer(p))
-	return NOTHING;
+        return NOTHING;
       matchtime = parse_integer(p);
       return (CreTime(it) == matchtime) ? it : NOTHING;
     } else
@@ -199,12 +199,12 @@ parse_boolean(char const *str)
       return 0;
     /* Non-zero numbers are true, zero is false */
     if (is_strict_number(str))
-      return parse_number(str) != 0;	/* avoid rounding problems */
+      return parse_number(str) != 0;    /* avoid rounding problems */
     /* Skip blanks */
     while (*str == ' ')
       str++;
     /* If there's any non-blanks left, it's true */
-    return *str != '\0';	/* force to 1 or 0 */
+    return *str != '\0';        /* force to 1 or 0 */
   }
 }
 
@@ -348,6 +348,27 @@ is_strict_number(char const *str)
   return end > str;
 }
 
+/** Is string a number that isn't inf or nan?
+ * \param num NVAL
+ * \retval 1 num is a good number.
+ * \retval 0 num is not a good number.
+ */
+int
+is_good_number(NVAL val)
+{
+  char numbuff[128];
+  char *p;
+  snprintf(numbuff, 128, "%f", val);
+  p = numbuff;
+  /* Negative? */
+  if (*p == '-')
+    p++;
+  /* Must start with a digit. */
+  if (!*p || !isdigit((unsigned char) *p))
+    return 0;
+  return 1;
+}
+
 /** Is string an integer by the strict definition?
  * A strict integer is a non-null string that passes strtol.
  * \param str string to check.
@@ -394,7 +415,7 @@ extern char active_table[UCHAR_MAX + 1];
 extern signed char qreg_indexes[UCHAR_MAX + 1];
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4761)        /* NJG: disable warning re conversion */
 #endif
 
 
@@ -450,8 +471,8 @@ extern signed char qreg_indexes[UCHAR_MAX + 1];
  */
 int
 process_expression(char *buff, char **bp, char const **str,
-		   dbref executor, dbref caller, dbref enactor,
-		   int eflags, int tflags, PE_Info * pe_info)
+                   dbref executor, dbref caller, dbref enactor,
+                   int eflags, int tflags, PE_Info * pe_info)
 {
   int debugging = 0, made_info = 0;
   char *debugstr = NULL, *sourcestr = NULL;
@@ -477,11 +498,11 @@ process_expression(char *buff, char **bp, char const **str,
        * it might never get displayed.
        */
       if (!Quiet(enactor))
-	notify(enactor, T("CPU usage exceeded."));
+        notify(enactor, T("CPU usage exceeded."));
       do_rawlog(LT_TRACE,
-		T
-		("CPU time limit exceeded. enactor=#%d executor=#%d caller=#%d code=%s"),
-		enactor, executor, caller, *str);
+                T
+                ("CPU time limit exceeded. enactor=#%d executor=#%d caller=#%d code=%s"),
+                enactor, executor, caller, *str);
     }
     return 1;
   }
@@ -498,7 +519,7 @@ process_expression(char *buff, char **bp, char const **str,
     inum_limit = inum;
     made_info = 1;
     pe_info = (PE_Info *) mush_malloc(sizeof(PE_Info),
-				      "process_expression.pe_info");
+                                      "process_expression.pe_info");
     pe_info->fun_invocations = 0;
     pe_info->fun_depth = 0;
     pe_info->nest_depth = 0;
@@ -523,7 +544,7 @@ process_expression(char *buff, char **bp, char const **str,
       realbuff = buff;
       realbp = *bp;
       buff = (char *) mush_malloc(BUFFER_LEN,
-				  "process_expression.buffer_extension");
+                                  "process_expression.buffer_extension");
       *bp = buff;
       startpos = buff;
     }
@@ -548,29 +569,29 @@ process_expression(char *buff, char **bp, char const **str,
       Debug_Info *node;
 
       debugstr = (char *) mush_malloc(BUFFER_LEN,
-				      "process_expression.debug_source");
+                                      "process_expression.debug_source");
       debugp = debugstr;
       safe_dbref(executor, debugstr, &debugp);
       safe_chr('!', debugstr, &debugp);
       for (j = 0; j <= pe_info->nest_depth; j++)
-	safe_chr(' ', debugstr, &debugp);
+        safe_chr(' ', debugstr, &debugp);
       sourcestr = debugp;
       mark = *str;
       process_expression(debugstr, &debugp, str,
-			 executor, caller, enactor,
-			 PE_NOTHING, tflags, pe_info);
+                         executor, caller, enactor,
+                         PE_NOTHING, tflags, pe_info);
       *str = mark;
       if (eflags & PE_COMPRESS_SPACES)
-	while ((debugp > sourcestr) && (debugp[-1] == ' '))
-	  debugp--;
+        while ((debugp > sourcestr) && (debugp[-1] == ' '))
+          debugp--;
       *debugp = '\0';
       node = (Debug_Info *) mush_malloc(sizeof(Debug_Info),
-					"process_expression.debug_node");
+                                        "process_expression.debug_node");
       node->string = debugstr;
       node->prev = pe_info->debug_strings;
       node->next = NULL;
       if (node->prev)
-	node->prev->next = node;
+        node->prev->next = node;
       pe_info->debug_strings = node;
       pe_info->nest_depth++;
     }
@@ -593,16 +614,16 @@ process_expression(char *buff, char **bp, char const **str,
       /* Inlined strcspn() equivalent, to save on overhead and portability */
       pos = *str;
       while (!active_table[*(unsigned char const *) *str])
-	(*str)++;
+        (*str)++;
       /* Inlined safe_str(), since the source string
        * may not be null terminated */
       len = *str - pos;
       len2 = BUFFER_LEN - 1 - (*bp - buff);
       if (len > len2)
-	len = len2;
+        len = len2;
       if (len >= 0) {
-	memcpy(*bp, pos, len);
-	*bp += len;
+        memcpy(*bp, pos, len);
+        *bp += len;
       }
     }
 
@@ -1403,21 +1424,21 @@ process_expression(char *buff, char **bp, char const **str,
       safe_chr(' ', buff, bp);
       (*str)++;
       if (eflags & PE_COMPRESS_SPACES) {
-	while (**str == ' ')
-	  (*str)++;
+        while (**str == ' ')
+          (*str)++;
       } else
-	while (**str == ' ') {
-	  safe_chr(' ', buff, bp);
-	  (*str)++;
-	}
+        while (**str == ' ') {
+          safe_chr(' ', buff, bp);
+          (*str)++;
+        }
       break;
       /* Escape charater */
     case '\\':
       if (!(eflags & PE_EVALUATE))
-	safe_chr('\\', buff, bp);
+        safe_chr('\\', buff, bp);
       (*str)++;
       if (!**str)
-	goto exit_sequence;
+        goto exit_sequence;
       /* FALL THROUGH */
       /* Basic character */
     default:
@@ -1430,51 +1451,51 @@ process_expression(char *buff, char **bp, char const **str,
 exit_sequence:
   if (eflags != PE_NOTHING) {
     if ((eflags & PE_COMPRESS_SPACES) && had_space &&
-	((*str)[-1] == ' ') && ((*bp)[-1] == ' '))
+        ((*str)[-1] == ' ') && ((*bp)[-1] == ' '))
       (*bp)--;
     if (debugging) {
       pe_info->nest_depth--;
       **bp = '\0';
       if (strcmp(sourcestr, startpos)) {
-	static char dbuf[BUFFER_LEN];
-	char *dbp;
-	if (pe_info->debug_strings) {
-	  while (pe_info->debug_strings->prev)
-	    pe_info->debug_strings = pe_info->debug_strings->prev;
-	  while (pe_info->debug_strings->next) {
-	    dbp = dbuf;
-	    dbuf[0] = '\0';
-	    safe_format(dbuf, &dbp, "%s :", pe_info->debug_strings->string);
-	    *dbp = '\0';
-	    if (Connected(Owner(executor)))
-	      raw_notify(Owner(executor), dbuf);
-	    notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
-			NA_NOLISTEN | NA_NOPREFIX);
-	    pe_info->debug_strings = pe_info->debug_strings->next;
-	    mush_free((Malloc_t) pe_info->debug_strings->prev,
-		      "process_expression.debug_node");
-	  }
-	  mush_free((Malloc_t) pe_info->debug_strings,
-		    "process_expression.debug_node");
-	  pe_info->debug_strings = NULL;
-	}
-	dbp = dbuf;
-	dbuf[0] = '\0';
-	safe_format(dbuf, &dbp, "%s => %s", debugstr, startpos);
-	*dbp = '\0';
-	if (Connected(Owner(executor)))
-	  raw_notify(Owner(executor), dbuf);
-	notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
-		    NA_NOLISTEN | NA_NOPREFIX);
+        static char dbuf[BUFFER_LEN];
+        char *dbp;
+        if (pe_info->debug_strings) {
+          while (pe_info->debug_strings->prev)
+            pe_info->debug_strings = pe_info->debug_strings->prev;
+          while (pe_info->debug_strings->next) {
+            dbp = dbuf;
+            dbuf[0] = '\0';
+            safe_format(dbuf, &dbp, "%s :", pe_info->debug_strings->string);
+            *dbp = '\0';
+            if (Connected(Owner(executor)))
+              raw_notify(Owner(executor), dbuf);
+            notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
+                        NA_NOLISTEN | NA_NOPREFIX);
+            pe_info->debug_strings = pe_info->debug_strings->next;
+            mush_free((Malloc_t) pe_info->debug_strings->prev,
+                      "process_expression.debug_node");
+          }
+          mush_free((Malloc_t) pe_info->debug_strings,
+                    "process_expression.debug_node");
+          pe_info->debug_strings = NULL;
+        }
+        dbp = dbuf;
+        dbuf[0] = '\0';
+        safe_format(dbuf, &dbp, "%s => %s", debugstr, startpos);
+        *dbp = '\0';
+        if (Connected(Owner(executor)))
+          raw_notify(Owner(executor), dbuf);
+        notify_list(executor, executor, "DEBUGFORWARDLIST", dbuf,
+                    NA_NOLISTEN | NA_NOPREFIX);
       } else {
-	Debug_Info *node;
-	node = pe_info->debug_strings;
-	if (node) {
-	  pe_info->debug_strings = node->prev;
-	  if (node->prev)
-	    node->prev->next = NULL;
-	  mush_free((Malloc_t) node, "process_expression.debug_node");
-	}
+        Debug_Info *node;
+        node = pe_info->debug_strings;
+        if (node) {
+          pe_info->debug_strings = node->prev;
+          if (node->prev)
+            node->prev->next = NULL;
+          mush_free((Malloc_t) node, "process_expression.debug_node");
+        }
       }
       mush_free((Malloc_t) debugstr, "process_expression.debug_source");
     }
@@ -1497,5 +1518,5 @@ exit_sequence:
 }
 
 #ifdef WIN32
-#pragma warning( default : 4761)	/* NJG: enable warning re conversion */
+#pragma warning( default : 4761)        /* NJG: enable warning re conversion */
 #endif

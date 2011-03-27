@@ -51,9 +51,9 @@ static int wild1
   (const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
    char **wbuf, int *len, int cs, char **ary, int max);
 static int wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs,
-		char **ary, int max, char *buffer, int len);
+                char **ary, int max, char *buffer, int len);
 static int check_literals(const char *RESTRICT tstr, const char *RESTRICT dstr,
-			  int cs);
+                          int cs);
 static char *strip_backslashes(const char *str);
 
 /** Do a wildcard match, without remembering the wild data.
@@ -96,7 +96,7 @@ quick_wild_new(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
        * end of data.
        */
       if (!*dstr)
-	return 0;
+        return 0;
       break;
     case '\\':
       /* Escape character.  Move up, and force literal
@@ -109,9 +109,9 @@ quick_wild_new(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
        * If matching end of data, return true.
        */
       if (NOTEQUAL(cs, *dstr, *tstr))
-	return 0;
+        return 0;
       if (!*dstr)
-	return 1;
+        return 1;
     }
     tstr++;
     dstr++;
@@ -128,7 +128,7 @@ quick_wild_new(const char *RESTRICT tstr, const char *RESTRICT dstr, int cs)
   while ((*tstr == '?') || (*tstr == '*')) {
     if (*tstr == '?') {
       if (!*dstr)
-	return 0;
+        return 0;
       dstr++;
     }
     tstr++;
@@ -179,14 +179,14 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
        * end of data.
        */
       if (!*dstr || *dstr == '`')
-	return 0;
+        return 0;
       break;
     case '`':
       /* Delimiter match.  Special handling if at end of pattern. */
       if (*dstr != '`')
-	return 0;
+        return 0;
       if (!tstr[1])
-	return !strchr(dstr + 1, '`');
+        return !strchr(dstr + 1, '`');
       break;
     case '\\':
       /* Escape character.  Move up, and force literal
@@ -199,9 +199,9 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
        * If matching end of data, return true.
        */
       if (NOTEQUAL(0, *dstr, *tstr))
-	return 0;
+        return 0;
       if (!*dstr)
-	return 1;
+        return 1;
     }
     tstr++;
     dstr++;
@@ -215,7 +215,7 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
   while (starcount < 2 && ((*tstr == '?') || (*tstr == '*'))) {
     if (*tstr == '?') {
       if (!*dstr || *dstr == '`')
-	return 0;
+        return 0;
       dstr++;
       starcount = 0;
     } else
@@ -235,7 +235,7 @@ atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr)
     /* Scan for possible matches. */
     while (*dstr) {
       if (*dstr != '`' && atr_wild(tstr + 1, dstr + 1))
-	return 1;
+        return 1;
       dstr++;
     }
   } else {
@@ -278,19 +278,19 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
        * end of data.
        */
       if (!*dstr)
-	return 0;
+        return 0;
 
       if (*len >= 2) {
-	ary[arg++] = *wbuf;
-	*(*wbuf)++ = *dstr;
-	*(*wbuf)++ = '\0';
-	*len -= 2;
+        ary[arg++] = *wbuf;
+        *(*wbuf)++ = *dstr;
+        *(*wbuf)++ = '\0';
+        *len -= 2;
       }
 
       /* Jump to the fast routine if we can. */
 
       if (arg >= (int) max || *len < 2)
-	return quick_wild_new(tstr + 1, dstr + 1, cs);
+        return quick_wild_new(tstr + 1, dstr + 1, cs);
       break;
     case '\\':
       /* Escape character.  Move up, and force literal
@@ -303,9 +303,9 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
        * If matching end of data, return true.
        */
       if (NOTEQUAL(cs, *dstr, *tstr))
-	return 0;
+        return 0;
       if (!*dstr)
-	return 1;
+        return 1;
     }
     tstr++;
     dstr++;
@@ -334,27 +334,27 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
        * before a fixed string.
        */
       if (*len >= 1) {
-	ary[argpos++] = *wbuf;
-	*(*wbuf)++ = '\0';
-	*len -= 1;
+        ary[argpos++] = *wbuf;
+        *(*wbuf)++ = '\0';
+        *len -= 1;
       }
 
       /* Jump to the fast routine if we can. */
       if (argpos >= (int) max || *len < 2)
-	return quick_wild_new(tstr, dstr, cs);
+        return quick_wild_new(tstr, dstr, cs);
 
       /* Fill in any intervening '?'s */
       while (argpos < arg) {
-	if (*len >= 2) {
-	  ary[argpos++] = *wbuf;
-	  *(*wbuf)++ = *datapos++;
-	  *(*wbuf)++ = '\0';
-	  *len -= 2;
-	}
+        if (*len >= 2) {
+          ary[argpos++] = *wbuf;
+          *(*wbuf)++ = *datapos++;
+          *(*wbuf)++ = '\0';
+          *len -= 2;
+        }
 
-	/* Jump to the fast routine if we can. */
-	if (argpos >= (int) max || *len < 1)
-	  return quick_wild_new(tstr, dstr, cs);
+        /* Jump to the fast routine if we can. */
+        if (argpos >= (int) max || *len < 1)
+          return quick_wild_new(tstr, dstr, cs);
       }
     }
     /* Skip over the '*' for now... */
@@ -365,7 +365,7 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
     numextra = 0;
     while (*tstr == '?') {
       if (!*dstr)
-	return 0;
+        return 0;
       tstr++;
       dstr++;
       arg++;
@@ -386,11 +386,11 @@ wild1(const char *RESTRICT tstr, const char *RESTRICT dstr, int arg,
   else {
     while (1) {
       if (EQUAL(cs, *dstr, *tstr) &&
-	  ((arg < (int) max) ? wild1(tstr, dstr, arg, wbuf, len, cs, ary, max)
-	   : quick_wild_new(tstr, dstr, cs)))
-	break;
+          ((arg < (int) max) ? wild1(tstr, dstr, arg, wbuf, len, cs, ary, max)
+           : quick_wild_new(tstr, dstr, cs)))
+        break;
       if (!*dstr)
-	return 0;
+        return 0;
       dstr++;
     }
   }
@@ -481,7 +481,7 @@ wild(const char *RESTRICT s, const char *RESTRICT d, int p, int cs,
  */
 int
 wild_match_case_r(const char *RESTRICT s, const char *RESTRICT d, int cs,
-		  char **matches, int nmatches, char *data, int len)
+                  char **matches, int nmatches, char *data, int len)
 {
   int n;
 
@@ -508,7 +508,7 @@ wild_match_case_r(const char *RESTRICT s, const char *RESTRICT d, int cs,
  */
 int
 regexp_match_case_r(const char *RESTRICT s, const char *RESTRICT val, int cs,
-		    char **matches, int nmatches, char *data, int len)
+                    char **matches, int nmatches, char *data, int len)
 {
   pcre *re;
   int i;
@@ -523,7 +523,7 @@ regexp_match_case_r(const char *RESTRICT s, const char *RESTRICT val, int cs,
     matches[i] = NULL;
 
   if ((re = pcre_compile(s, (cs ? 0 : PCRE_CASELESS), &errptr, &erroffset,
-			 tables)) == NULL) {
+                         tables)) == NULL) {
     /*
      * This is a matching error. We have an error message in
      * errptr that we can ignore, since we're doing
@@ -557,18 +557,15 @@ regexp_match_case_r(const char *RESTRICT s, const char *RESTRICT val, int cs,
 
   for (i = 0; i < nmatches && i < subpatterns && len > 1; i++) {
     int sublen;
-    const char *submatch;
   
-    pcre_get_substring(d, offsets, subpatterns, (int) i, &submatch);
-    sublen = strlen(submatch);
+    sublen = pcre_copy_substring(d, offsets, subpatterns, (int) i, data, len);
 
-    if (sublen >= len)
+    if (sublen < 0)
       break;
 
-    strcpy(data, submatch);
     matches[i] = data;
-    data += sublen + 1;
-    len -= sublen + 1;
+    data += sublen + 2;
+    len -= sublen + 2;
   }
 
   mush_free(re, "pcre");
@@ -596,10 +593,10 @@ quick_regexp_match(const char *RESTRICT s, const char *RESTRICT d, int cs)
   int erroffset;
   int offsets[99];
   int r;
-  int flags = 0;		/* There's a PCRE_NO_AUTO_CAPTURE flag to turn all raw
-				   ()'s into (?:)'s, which would be nice to use,
-				   except that people might use backreferences in
-				   their patterns. Argh. */
+  int flags = 0;                /* There's a PCRE_NO_AUTO_CAPTURE flag to turn all raw
+                                   ()'s into (?:)'s, which would be nice to use,
+                                   except that people might use backreferences in
+                                   their patterns. Argh. */
 
   if (!cs)
     flags |= PCRE_CASELESS;
@@ -643,15 +640,15 @@ local_wild_match_case(const char *RESTRICT s, const char *RESTRICT d, int cs)
     case '>':
       s++;
       if (is_number(s) && is_number(d))
-	return (parse_number(s) < parse_number(d));
+        return (parse_number(s) < parse_number(d));
       else
-	return (strcoll(s, d) < 0);
+        return (strcoll(s, d) < 0);
     case '<':
       s++;
       if (is_number(s) && is_number(d))
-	return (parse_number(s) > parse_number(d));
+        return (parse_number(s) > parse_number(d));
       else
-	return (strcoll(s, d) > 0);
+        return (strcoll(s, d) > 0);
     default:
       return quick_wild_new(s, d, cs);
     }

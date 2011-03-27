@@ -116,46 +116,46 @@
  * Thing flags
  */
 
-#define THING_DEST_OK   0x8	/* can be destroyed by anyone */
-#define THING_PUPPET    0x10	/* echoes to its owner */
-#define THING_LISTEN    0x20	/* checks for ^ patterns */
-#define THING_NOLEAVE   0x40	/* Can't be left */
-#define THING_INHEARIT  0x80	/* checks parent chain for ^ patterns */
-#define THING_Z_TEL     0x100	/* If set on ZMO players may only @tel 
-				   within the zone */
+#define THING_DEST_OK   0x8     /* can be destroyed by anyone */
+#define THING_PUPPET    0x10    /* echoes to its owner */
+#define THING_LISTEN    0x20    /* checks for ^ patterns */
+#define THING_NOLEAVE   0x40    /* Can't be left */
+#define THING_INHEARIT  0x80    /* checks parent chain for ^ patterns */
+#define THING_Z_TEL     0x100   /* If set on ZMO players may only @tel 
+                                   within the zone */
 
 /*--------------------------------------------------------------------------
  * Room flags
  */
 
-#define ROOM_FLOATING   0x8	/* room is not linked to rest of
-				 * MUSH. Don't blather about it.
-				 */
-#define ROOM_ABODE      0x10	/* players may link themselves here */
-#define ROOM_JUMP_OK    0x20	/* anyone may @teleport to here */
-#define ROOM_NO_TEL     0x40	/* mortals cannot @tel from here */
-#define ROOM_TEMPLE     0x80	/* objects dropped here are sacrificed
-				 * (destroyed) and player gets money.
-				 * Now used only for conversion.
-				 */
-#define ROOM_LISTEN    0x100	/* checks for ^ patterns */
-#define ROOM_Z_TEL     0x200	/* If set on a room, players may
-				 * only @tel to another room in the
-				 * same zone 
-				 */
-#define ROOM_INHEARIT  0x400	/* checks parent chain for ^ patterns */
+#define ROOM_FLOATING   0x8     /* room is not linked to rest of
+                                 * MUSH. Don't blather about it.
+                                 */
+#define ROOM_ABODE      0x10    /* players may link themselves here */
+#define ROOM_JUMP_OK    0x20    /* anyone may @teleport to here */
+#define ROOM_NO_TEL     0x40    /* mortals cannot @tel from here */
+#define ROOM_TEMPLE     0x80    /* objects dropped here are sacrificed
+                                 * (destroyed) and player gets money.
+                                 * Now used only for conversion.
+                                 */
+#define ROOM_LISTEN    0x100    /* checks for ^ patterns */
+#define ROOM_Z_TEL     0x200    /* If set on a room, players may
+                                 * only @tel to another room in the
+                                 * same zone 
+                                 */
+#define ROOM_INHEARIT  0x400    /* checks parent chain for ^ patterns */
 
-#define ROOM_UNINSPECT 0x1000	/* Not inspected */
+#define ROOM_UNINSPECT 0x1000   /* Not inspected */
 
 
 /*--------------------------------------------------------------------------
  * Exit flags
  */
 
-#define EXIT_CLOUDY     0x8	/* Looking through a cloudy transparent
-				 * exit shows the room's desc, not contents.
-				 * Looking through a cloudy !trans exit,
-				 * shows the room's contents, not desc
-				 */
+#define EXIT_CLOUDY     0x8     /* Looking through a cloudy transparent
+                                 * exit shows the room's desc, not contents.
+                                 * Looking through a cloudy !trans exit,
+                                 * shows the room's contents, not desc
+                                 */
 
-#endif				/* __OLDFLAGS_H */
+#endif                          /* __OLDFLAGS_H */

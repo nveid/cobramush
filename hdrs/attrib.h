@@ -53,10 +53,10 @@ extern void do_attribute_lock(dbref player, char *name, char *lock, switch_mask 
 typedef enum {
   AE_OKAY = 0, /**< Success */
   AE_ERROR = -1, /**< general failure */
-  AE_SAFE = -2,	/**< attempt to overwrite a safe attribute */
+  AE_SAFE = -2, /**< attempt to overwrite a safe attribute */
   AE_BADNAME = -3, /**< invalid name */
   AE_TOOMANY = -4, /**< too many attribs */
-  AE_TREE = -5,	/**< unable to delete/create entire tree */
+  AE_TREE = -5, /**< unable to delete/create entire tree */
   AE_NOTFOUND = -6 /** No such attribute */
 } atr_err;
  
@@ -173,4 +173,4 @@ safe_atr_value(ATTR *atr)
 /** Null alias */
 #define OPAE_NULL       -3
 
-#endif				/* __ATTRIB_H */
+#endif                          /* __ATTRIB_H */

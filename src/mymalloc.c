@@ -19,6 +19,4 @@
 #include "csrimalloc.c"
 #elif (MALLOC_PACKAGE == 2)
 #include "csrimalloc.c"
-#elif (MALLOC_PACKAGE == 5)
-#include "gmalloc.c"
 #endif

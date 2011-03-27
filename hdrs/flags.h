@@ -16,12 +16,12 @@ typedef struct flag_info FLAG;
  * available for setting on objects in the game.
  */
 struct flag_info {
-  const char *name;	/**< Name of the flag */
-  char letter;		/**< Flag character, which may be nul */
-  int type;		/**< Bitflags of object types this flag applies to */
-  int bitpos;		/**< Bit position assigned to this flag for now */
-  int perms;		/**< Bitflags of who can set this flag */
-  int negate_perms;	/**< Bitflags of who can clear this flag */
+  const char *name;     /**< Name of the flag */
+  char letter;          /**< Flag character, which may be nul */
+  int type;             /**< Bitflags of object types this flag applies to */
+  int bitpos;           /**< Bit position assigned to this flag for now */
+  int perms;            /**< Bitflags of who can set this flag */
+  int negate_perms;     /**< Bitflags of who can clear this flag */
 };
 
 typedef struct flag_alias FLAG_ALIAS;
@@ -30,8 +30,8 @@ typedef struct flag_alias FLAG_ALIAS;
  * A simple structure that associates an alias with a canonical flag name.
  */
 struct flag_alias {
-  const char *alias;		/**< The alias name */
-  const char *realname;		/**< The real name of the flag */
+  const char *alias;            /**< The alias name */
+  const char *realname;         /**< The real name of the flag */
 };
 
 typedef struct flagspace FLAGSPACE;
@@ -142,8 +142,18 @@ extern void decompile_flags(dbref player, dbref thing, const char *name);
 #define F_MDARK         0x1000	/* admin/God can see this flag */
 #define F_ODARK         0x2000	/* owner/admin/God can see this flag */
 #define F_DISABLED      0x4000	/* flag can't be used */
-/* RESERVED		0x8000 */
+#define F_LOG		0x8000
 #define F_SELF		0x10000	/* can set on self, regardless of the above */
+
+/* Flags can be in the flaglist multiple times, thanks to aliases. Keep
+ *    a reference count of how many times, and free memory when it goes to 0. */
+#define F_REF_MASK      0xFF000000 /**< Mask to get the reference count */
+#define F_REF_NOT       0x00FFFFFF /**< Everything but */
+#define FLAG_REF(r)     (((r) & F_REF_MASK) >> 30)
+#define ZERO_FLAG_REF(r) ((r) & F_REF_NOT)
+#define INCR_FLAG_REF(r) (ZERO_FLAG_REF((r)) | (((r) & F_REF_MASK) + (1 << 30)))
+#define DECR_FLAG_REF(r) (ZERO_FLAG_REF((r)) | (((r) & F_REF_MASK) - (1 << 30)))
+
 
 
 /* we don't use these anymore.. but kept aroudn for DB conversion */

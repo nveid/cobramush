@@ -69,4 +69,4 @@
 void NORETURN WIN32_CDECL Win32_Exit(int exit_code);
 #endif
 
-#endif				/* __COMPILE_H */
+#endif                          /* __COMPILE_H */

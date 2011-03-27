@@ -88,9 +88,9 @@
  */
 #define SPILLOVER_THRESHOLD     0
 /* #define SPILLOVER_THRESHOLD  (MAX_OUTPUT / 2) */
-#define COMMAND_TIME_MSEC 1000	/* time slice length in milliseconds */
-#define COMMAND_BURST_SIZE 100	/* commands allowed per user in a burst */
-#define COMMANDS_PER_TIME 1	/* commands per time slice after burst */
+#define COMMAND_TIME_MSEC 1000  /* time slice length in milliseconds */
+#define COMMAND_BURST_SIZE 100  /* commands allowed per user in a burst */
+#define COMMANDS_PER_TIME 1     /* commands per time slice after burst */
 
 
 /* Set this somewhere near the recursion limit */

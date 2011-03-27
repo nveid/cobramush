@@ -154,7 +154,7 @@ do_name(dbref player, const char *name, char *newname)
     if (!AreQuiet(player, thing))
       notify(player, T("Name set."));
     real_did_it(player, thing, NULL, NULL, "ONAME", NULL, "ANAME", NOTHING,
-		myenv, NA_INTER_PRESENCE);
+                myenv, NA_INTER_PRESENCE);
     mush_free(myenv[0], "string");
     mush_free(myenv[1], "string");
   }
@@ -224,9 +224,9 @@ do_chown(dbref player, const char *name, const char *newobj, int preserve)
     if (!can_pay_fees(newowner, Pennies(thing))) {
       /* not enough money or quota */
       if (newowner != player)
-	notify(player,
-	       T
-	       ("That player doesn't have enough money or quota to receive that object."));
+        notify(player,
+               T
+               ("That player doesn't have enough money or quota to receive that object."));
       return;
     }
     /* Credit the current owner */
@@ -348,7 +348,7 @@ do_chzone(dbref player, char const *name, char const *newobj, int noisy)
     zone = NOTHING;
   else {
     if ((zone = noisy_match_result(player, newobj, NOTYPE, MAT_EVERYTHING))
-	== NOTHING)
+        == NOTHING)
       return 0;
   }
 
@@ -468,10 +468,10 @@ af_helper(dbref player, dbref thing, dbref parent __attribute__ ((__unused__)),
    * There is one special case - the resetting of the SAFE flag.
    */
   if (!(Can_Write_Attr(player, thing, AL_ATTR(atr)) ||
-	((af->clrf & AF_SAFE) &&
-	 Can_Write_Attr_Ignore_Safe(player, thing, AL_ATTR(atr))))) {
+        ((af->clrf & AF_SAFE) &&
+         Can_Write_Attr_Ignore_Safe(player, thing, AL_ATTR(atr))))) {
     notify_format(player, T("You cannot change that flag on %s/%s"),
-		  Name(thing), AL_NAME(atr));
+                  Name(thing), AL_NAME(atr));
     return 0;
   }
 
@@ -480,13 +480,13 @@ af_helper(dbref player, dbref thing, dbref parent __attribute__ ((__unused__)),
     AL_FLAGS(atr) &= ~af->clrf;
     if (!AreQuiet(player, thing))
       notify_format(player, T("%s/%s - %s reset."), Name(thing), AL_NAME(atr),
-		    af->clrflags);
+                    af->clrflags);
   }
   if (af->setf) {
     AL_FLAGS(atr) |= af->setf;
     if (!AreQuiet(player, thing))
       notify_format(player, T("%s/%s - %s set."), Name(thing), AL_NAME(atr),
-		    af->setflags);
+                    af->setflags);
   }
 
   return 1;
@@ -499,8 +499,8 @@ copy_attrib_flags(dbref player, dbref target, ATTR *atr, int flags)
     return;
   if (!Can_Write_Attr(player, target, AL_ATTR(atr))) {
     notify_format(player,
-		  T("You cannot set attrib flags on %s/%s"), Name(target),
-		  AL_NAME(atr));
+                  T("You cannot set attrib flags on %s/%s"), Name(target),
+                  AL_NAME(atr));
     return;
   }
   AL_FLAGS(atr) = flags;
@@ -514,7 +514,7 @@ copy_attrib_flags(dbref player, dbref target, ATTR *atr, int flags)
  */
 void
 do_attrib_flags(dbref player, const char *obj, const char *atrname,
-		const char *flag)
+                const char *flag)
 {
   struct af_args af;
   dbref thing;
@@ -672,32 +672,32 @@ do_cpattr(dbref player, char *oldpair, char **newpair, int move, int noflagcopy)
       strcpy(tbuf1, newpair[i]);
       q = strchr(tbuf1, '/');
       if (!q || !*q) {
-	q = (char *) AL_NAME(a);
+        q = (char *) AL_NAME(a);
       } else {
-	*q++ = '\0';
+        *q++ = '\0';
       }
       newobj = noisy_match_result(player, tbuf1, NOTYPE, MAT_EVERYTHING);
       if (GoodObject(newobj) &&
-	  ((newobj != oldobj) || strcasecmp(AL_NAME(a), q)) &&
-	  do_set_atr(newobj, q, text, player, 1))
-	copies++;
+          ((newobj != oldobj) || strcasecmp(AL_NAME(a), q)) &&
+          do_set_atr(newobj, q, text, player, 1))
+        copies++;
       /* copy the attribute flags too */
       if (!noflagcopy)
-	copy_attrib_flags(player, newobj,
-			  atr_get_noparent(newobj, strupper(q)), a->flags);
+        copy_attrib_flags(player, newobj,
+                          atr_get_noparent(newobj, strupper(q)), a->flags);
 
     }
   }
 
-  free((Malloc_t) text);	/* safe_uncompress malloc()s memory */
+  free((Malloc_t) text);        /* safe_uncompress malloc()s memory */
   if (copies) {
     notify_format(player, T("Attribute %s (%d copies)"),
-		  (move ? "moved" : "copied"), copies);
+                  (move ? "moved" : "copied"), copies);
     if (move)
       do_set_atr(oldobj, AL_NAME(a), NULL, player, 1);
   } else {
     notify_format(player, T("Unable to %s attribute."),
-		  (move ? "move" : "copy"));
+                  (move ? "move" : "copy"));
   }
   return;
 }
@@ -712,9 +712,9 @@ struct gedit_args {
 
 static int
 gedit_helper(dbref player, dbref thing,
-	     dbref parent __attribute__ ((__unused__)),
-	     char const *pattern
-	     __attribute__ ((__unused__)), ATTR *a, void *args)
+             dbref parent __attribute__ ((__unused__)),
+             char const *pattern
+             __attribute__ ((__unused__)), ATTR *a, void *args)
 {
   int ansi_long_flag = 0;
   const char *r;
@@ -734,7 +734,7 @@ gedit_helper(dbref player, dbref thing,
   tbufp = tbuf1;
   tbufap = tbuf_ansi;
 
-  if (!a) {			/* Shouldn't ever happen, but better safe than sorry */
+  if (!a) {                     /* Shouldn't ever happen, but better safe than sorry */
     notify(player, T("No such attribute, try set instead."));
     return 0;
   }
@@ -742,7 +742,7 @@ gedit_helper(dbref player, dbref thing,
     notify(player, T("You need to control an attribute to edit it."));
     return 0;
   }
-  s = (char *) atr_value(a);	/* warning: pointer to static buffer */
+  s = (char *) atr_value(a);    /* warning: pointer to static buffer */
 
   if (vlen == 1 && *val == '$') {
     /* append */
@@ -750,7 +750,7 @@ gedit_helper(dbref player, dbref thing,
     safe_str(r, tbuf1, &tbufp);
 
     if (safe_format(tbuf_ansi, &tbufap, "%s%s%s%s", s, ANSI_HILITE, r,
-		    ANSI_NORMAL))
+                    ANSI_NORMAL))
       ansi_long_flag = 1;
   } else if (vlen == 1 && *val == '^') {
     /* prepend */
@@ -758,7 +758,7 @@ gedit_helper(dbref player, dbref thing,
     safe_str(s, tbuf1, &tbufp);
 
     if (safe_format(tbuf_ansi, &tbufap, "%s%s%s%s", ANSI_HILITE, r, ANSI_NORMAL,
-		    s))
+                    s))
       ansi_long_flag = 1;
   } else if (!*val) {
     /* insert replacement string between every character */
@@ -771,27 +771,27 @@ gedit_helper(dbref player, dbref thing,
     /* Add one at the start */
     if (!safe_strl(r, rlen, tbuf1, &tbufp)) {
       if (gargs->target != EDIT_FIRST) {
-	for (last = 0; last < haystack->len; last++) {
-	  /* Add the next character */
-	  if (safe_ansi_string(haystack, last, 1, tbuf1, &tbufp)) {
-	    too_long = 1;
-	    break;
-	  }
-	  if (!ansi_long_flag) {
-	    if (safe_ansi_string(haystack, last, 1, tbuf_ansi, &tbufap))
-	      ansi_long_flag = 1;
-	  }
-	  /* Copy in r */
-	  if (safe_strl(r, rlen, tbuf1, &tbufp)) {
-	    too_long = 1;
-	    break;
-	  }
-	  if (!ansi_long_flag) {
-	    if (safe_format(tbuf_ansi, &tbufap, "%s%s%s", ANSI_HILITE, r,
-			    ANSI_NORMAL))
-	      ansi_long_flag = 1;
-	  }
-	}
+        for (last = 0; last < haystack->len; last++) {
+          /* Add the next character */
+          if (safe_ansi_string(haystack, last, 1, tbuf1, &tbufp)) {
+            too_long = 1;
+            break;
+          }
+          if (!ansi_long_flag) {
+            if (safe_ansi_string(haystack, last, 1, tbuf_ansi, &tbufap))
+              ansi_long_flag = 1;
+          }
+          /* Copy in r */
+          if (safe_strl(r, rlen, tbuf1, &tbufp)) {
+            too_long = 1;
+            break;
+          }
+          if (!ansi_long_flag) {
+            if (safe_format(tbuf_ansi, &tbufap, "%s%s%s", ANSI_HILITE, r,
+                            ANSI_NORMAL))
+              ansi_long_flag = 1;
+          }
+        }
       }
     }
     free_ansi_string(haystack);
@@ -805,37 +805,37 @@ gedit_helper(dbref player, dbref thing,
     haystack = parse_ansi_string(s);
 
     while (last < haystack->len
-	   && (p = strstr(haystack->text + last, val)) != NULL) {
+           && (p = strstr(haystack->text + last, val)) != NULL) {
       if (safe_ansi_string(haystack, last, p - (haystack->text + last),
-			   tbuf1, &tbufp)) {
-	too_long = 1;
-	break;
+                           tbuf1, &tbufp)) {
+        too_long = 1;
+        break;
       }
       if (!ansi_long_flag) {
-	if (safe_ansi_string(haystack, last, p - (haystack->text + last),
-			     tbuf_ansi, &tbufap))
-	  ansi_long_flag = 1;
+        if (safe_ansi_string(haystack, last, p - (haystack->text + last),
+                             tbuf_ansi, &tbufap))
+          ansi_long_flag = 1;
       }
 
       /* Copy in r */
       if (safe_strl(r, rlen, tbuf1, &tbufp)) {
-	too_long = 1;
-	break;
+        too_long = 1;
+        break;
       }
       if (!ansi_long_flag) {
-	if (safe_format(tbuf_ansi, &tbufap, "%s%s%s", ANSI_HILITE, r,
-			ANSI_NORMAL))
-	  ansi_long_flag = 1;
+        if (safe_format(tbuf_ansi, &tbufap, "%s%s%s", ANSI_HILITE, r,
+                        ANSI_NORMAL))
+          ansi_long_flag = 1;
       }
       last = p - haystack->text + vlen;
       if (gargs->target == EDIT_FIRST)
-	break;
+        break;
     }
     if (last < haystack->len && !too_long) {
       safe_ansi_string(haystack, last, haystack->len, tbuf1, &tbufp);
       if (!ansi_long_flag) {
-	if (safe_ansi_string(haystack, last, haystack->len, tbuf_ansi, &tbufap))
-	  ansi_long_flag = 1;
+        if (safe_ansi_string(haystack, last, haystack->len, tbuf_ansi, &tbufap))
+          ansi_long_flag = 1;
       }
     }
     free_ansi_string(haystack);
@@ -982,7 +982,7 @@ do_use(dbref player, const char *what)
 
   if ((thing =
        noisy_match_result(player, what, TYPE_THING,
-			  MAT_NEAR_THINGS)) != NOTHING) {
+                          MAT_NEAR_THINGS)) != NOTHING) {
     if (!eval_lock(player, thing, Use_Lock)) {
       fail_lock(player, thing, Use_Lock, T("Permission denied."), NOTHING);
       return;
@@ -1013,7 +1013,7 @@ do_parent(dbref player, char *name, char *parent_name)
   if (!parent_name || !*parent_name || !strcasecmp(parent_name, "none"))
     parent = NOTHING;
   else if ((parent = noisy_match_result(player, parent_name, NOTYPE,
-					MAT_EVERYTHING)) == NOTHING)
+                                        MAT_EVERYTHING)) == NOTHING)
     return;
 
   /* do control check */
@@ -1055,10 +1055,10 @@ do_parent(dbref player, char *name, char *parent_name)
 
   if (parent != NOTHING) {
     for (i = 0, check = Parent(parent);
-	 (i < MAX_PARENTS) && (check != NOTHING); i++, check = Parent(check)) {
+         (i < MAX_PARENTS) && (check != NOTHING); i++, check = Parent(check)) {
       if (check == thing) {
-	notify(player, T("You are not allowed to be your own ancestor!"));
-	return;
+        notify(player, T("You are not allowed to be your own ancestor!"));
+        return;
       }
     }
     if (i >= MAX_PARENTS) {

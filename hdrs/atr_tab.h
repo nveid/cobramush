@@ -258,4 +258,4 @@ ATTR attr[] = {
   {NULL, 0, NULL_CHUNK_REFERENCE, 0, TRUE_BOOLEXP, TRUE_BOOLEXP, 0, NULL}
 };
 
-#endif				/* __ATR_TAB_H */
+#endif                          /* __ATR_TAB_H */

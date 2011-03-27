@@ -172,7 +172,6 @@ src/funstr.c
 src/funtime.c
 src/funufun.c
 src/game.c
-src/gmalloc.c
 src/help.c
 src/htab.c
 src/ident.c

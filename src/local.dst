@@ -53,9 +53,9 @@ local_configs()
    * but just config_string for strings.
    */
   add_config("use_example", cf_bool, &config_example, sizeof config_example,
-	     "cosmetic");
+             "cosmetic");
   add_config("some_string", cf_str, config_string, sizeof config_string,
-	     "cosmetic");
+             "cosmetic");
 #endif
 }
 
@@ -114,8 +114,8 @@ local_timer(void)
  */
 void
 local_connect(dbref player __attribute__ ((__unused__)),
-	      int isnew __attribute__ ((__unused__)),
-	      int num __attribute__ ((__unused__)))
+              int isnew __attribute__ ((__unused__)),
+              int num __attribute__ ((__unused__)))
 {
 }
 
@@ -124,7 +124,7 @@ local_connect(dbref player __attribute__ ((__unused__)),
  */
 void
 local_disconnect(dbref player __attribute__ ((__unused__)),
-		 int num __attribute__ ((__unused__)))
+                 int num __attribute__ ((__unused__)))
 {
 }
 
@@ -166,7 +166,7 @@ local_data_create(dbref object __attribute__ ((__unused__)))
 
 void
 local_data_clone(dbref clone __attribute__ ((__unused__)),
-		 dbref source __attribute__ ((__unused__)))
+                 dbref source __attribute__ ((__unused__)))
 {
 }
 
@@ -191,8 +191,8 @@ local_data_free(dbref object __attribute__ ((__unused__)))
  */
 int
 local_can_interact_first(dbref from __attribute__ ((__unused__)),
-			 dbref to __attribute__ ((__unused__)), int type
-			 __attribute__ ((__unused__)))
+                         dbref to __attribute__ ((__unused__)), int type
+                         __attribute__ ((__unused__)))
 {
 
   return NOTHING;
@@ -201,8 +201,8 @@ local_can_interact_first(dbref from __attribute__ ((__unused__)),
 /* This one is called *after* most standard interaction checks. */
 int
 local_can_interact_last(dbref from __attribute__ ((__unused__)),
-			dbref to __attribute__ ((__unused__)), int type
-			__attribute__ ((__unused__)))
+                        dbref to __attribute__ ((__unused__)), int type
+                        __attribute__ ((__unused__)))
 {
   /* from is where the message is coming from, in theory. It makes sense
    * for sound, but think of it as light rays for visiblity or matching. 
@@ -256,10 +256,10 @@ local_can_interact_last(dbref from __attribute__ ((__unused__)),
 
   /* Splits the universe in half, half FOO and half not. */
   return (has_flag_by_name(to, "FOO", NOTYPE) ==
-	  has_flag_by_name(from, "FOO", NOTYPE));
+          has_flag_by_name(from, "FOO", NOTYPE));
 
 
-#endif				/* NEVER */
+#endif                          /* NEVER */
 
   /* You want to return NOTHING if you haven't made up your mind */
   return NOTHING;

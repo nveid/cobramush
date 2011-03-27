@@ -85,7 +85,7 @@ extern char *scan_list(dbref player, char *command);
 #ifdef WIN32
 /* From timer.c */
 extern void init_timer(void);
-#endif				/* WIN32 */
+#endif                          /* WIN32 */
 
 /* From attrib.c */
 extern dbref atr_on_obj;
@@ -239,7 +239,7 @@ extern void div_parse_que(dbref division, const char *command, dbref called_divi
 extern int queue_attribute_base
   (dbref executor, const char *atrname, dbref enactor, int noparent);
 extern ATTR *queue_attribute_getatr(dbref executor, const char *atrname,
-				    int noparent);
+                                    int noparent);
 extern int queue_attribute_useatr(dbref executor, ATTR *a, dbref enactor);
 
 /** Queue the code in an attribute, including parent objects */
@@ -247,7 +247,7 @@ extern int queue_attribute_useatr(dbref executor, ATTR *a, dbref enactor);
 /** Queue the code in an attribute, excluding parent objects */
 #define queue_attribute_noparent(a,b,c) queue_attribute_base(a,b,c,1)
 extern void dequeue_semaphores(dbref thing, char const *aname, int count,
-			       int all, int drain);
+                               int all, int drain);
 extern void shutdown_queues(void);
 extern void do_hourly(void);
 
@@ -263,10 +263,10 @@ extern const char *get_namedreg(HASHTAB *, const char *);
 extern dbref do_dig(dbref player, const char *name, char **argv, int tport);
 extern dbref do_create(dbref player, char *name, int cost);
 extern dbref do_real_open(dbref player, const char *direction,
-			  const char *linkto, dbref pseudo);
+                          const char *linkto, dbref pseudo);
 extern void do_open(dbref player, const char *direction, char **links);
 extern void do_link(dbref player, const char *name, const char *room_name,
-		    int preserve);
+                    int preserve);
 extern void do_unlink(dbref player, const char *name);
 extern dbref do_clone(dbref player, char *name, char *newname, int preserve);
 extern void copy_zone(dbref executor, dbref zmo);
@@ -329,9 +329,9 @@ extern dbref lookup_player(const char *name);
 extern dbref lookup_player_name(const char *name);
 /* from player.c */
 extern dbref create_player(const char *name, const char *password,
-			   const char *host, const char *ip);
+                           const char *host, const char *ip);
 extern dbref connect_player(const char *name, const char *password,
-			    const char *host, const char *ip, char *errbuf);
+                            const char *host, const char *ip, char *errbuf);
 extern void check_last(dbref player, const char *host, const char *ip);
 extern void check_lastfailed(dbref player, const char *host);
 
@@ -339,6 +339,7 @@ extern void check_lastfailed(dbref player, const char *host);
 extern int is_number(const char *str);
 extern int is_strict_number(const char *str);
 extern int is_strict_integer(const char *str);
+int is_good_number(double);
 
 /* From plyrlist.c */
 void clear_players(void);
@@ -346,7 +347,7 @@ void add_player(dbref player);
 void add_player_alias(dbref player, const char *alias);
 void delete_player(dbref player, const char *alias);
 void reset_player_list(dbref player, const char *oldname, const char *oldalias,
-		       const char *name, const char *alias);
+                       const char *name, const char *alias);
 
 /* From predicat.c */
 extern int pay_quota(dbref, int);
@@ -396,14 +397,14 @@ dbref first_visible(dbref player, dbref thing);
 
 /* From set.c */
 extern void chown_object(dbref player, dbref thing, dbref newowner,
-			 int preserve);
+                         int preserve);
 
 /* From speech.c */
 const char *spname(dbref thing);
 extern void notify_except(dbref first, dbref exception, const char *msg,
-			  int flags);
+                          int flags);
 extern void notify_except2(dbref first, dbref exc1, dbref exc2,
-			   const char *msg, int flags);
+                           const char *msg, int flags);
 /* Return thing/PREFIX + msg */
 extern void make_prefixstr(dbref thing, const char *msg, char *tbuf1);
 extern int filter_found(dbref thing, const char *msg, int flag);
@@ -442,7 +443,7 @@ extern void s_Pennies(dbref thing, int amount);
 extern char *split_token(char **sp, char sep);
 extern char *chopstr(const char *str, size_t lim);
 extern int string_prefix(const char *RESTRICT string,
-			 const char *RESTRICT prefix);
+                         const char *RESTRICT prefix);
 extern const char *string_match(const char *src, const char *sub);
 extern char *strupper(const char *s);
 extern char *strlower(const char *s);
@@ -472,9 +473,9 @@ strdup(const char *s)
 
 /** A string, with ansi attributes broken out from the text */
     typedef struct {
-      char text[BUFFER_LEN];	/**< Text of the string */
-      char *codes[BUFFER_LEN];	/**< Ansi codes associated with each char of text */
-      size_t len;	/**< Length of text */
+      char text[BUFFER_LEN];    /**< Text of the string */
+      char *codes[BUFFER_LEN];  /**< Ansi codes associated with each char of text */
+      size_t len;       /**< Length of text */
     } ansi_string;
 
 
@@ -539,24 +540,24 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
       (const char *RESTRICT old, const char *RESTRICT newbit,
        const char *RESTRICT string) __attribute_malloc__;
     extern char *replace_string2(const char *old[2], const char *newbits[2],
-				 const char *RESTRICT string)
+                                 const char *RESTRICT string)
  __attribute_malloc__;
-    extern const char *standard_tokens[2];	/* ## and #@ */
+    extern const char *standard_tokens[2];      /* ## and #@ */
     extern char *trim_space_sep(char *str, char sep);
     extern int do_wordcount(char *str, char sep);
     extern char *remove_word(char *list, char *word, char sep);
     extern char *next_in_list(const char **head);
     extern void safe_itemizer(int cur_num, int done, const char *delim,
-			      const char *conjoin, const char *space,
-			      char *buff, char **bp);
+                              const char *conjoin, const char *space,
+                              char *buff, char **bp);
     extern char *show_time(time_t t, int utc);
     extern char *show_tm(struct tm *t);
 
 
 /** This structure associates html entities and base ascii representations */
     typedef struct {
-      const char *base;		/**< Base ascii representation */
-      const char *entity;	/**< HTML entity */
+      const char *base;         /**< Base ascii representation */
+      const char *entity;       /**< HTML entity */
     } accent_info;
 
     extern accent_info accent_table[];
@@ -578,9 +579,9 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 
 /* From utils.c */
     extern void parse_attrib(dbref player, char *str, dbref *thing,
-			     ATTR **attrib);
+                             ATTR **attrib);
     extern void parse_anon_attrib(dbref player, char *str, dbref *thing,
-				  ATTR **attrib);
+                                  ATTR **attrib);
     extern void free_anon_attrib(ATTR *attrib);
     typedef struct _ufun_attrib {
       dbref thing;
@@ -589,16 +590,16 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
       char *errmess;
     } ufun_attrib;
     extern int fetch_ufun_attrib(char *attrname, dbref executor,
-				 ufun_attrib * ufun, int accept_lambda);
+                                 ufun_attrib * ufun, int accept_lambda);
     extern int call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc,
-			 char *ret, dbref executor, dbref enactor,
-			 PE_Info * pe_info);
+                         char *ret, dbref executor, dbref enactor,
+                         PE_Info * pe_info);
     extern int member(dbref thing, dbref list);
     extern int recursive_member(dbref disallow, dbref from, int count);
     extern dbref remove_first(dbref first, dbref what);
     extern dbref reverse(dbref list);
     extern Malloc_t mush_malloc(size_t size,
-				const char *check) __attribute_malloc__;
+                                const char *check) __attribute_malloc__;
     extern void mush_free(Malloc_t RESTRICT ptr, const char *RESTRICT check);
     extern long get_random_long(long low, long high);
     extern char *fullalias(dbref it);
@@ -620,17 +621,17 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 
 /* From wild.c */
     extern int local_wild_match_case(const char *RESTRICT s,
-				     const char *RESTRICT d, int cs);
+                                     const char *RESTRICT d, int cs);
     extern int wildcard(const char *s);
     extern int quick_wild_new(const char *RESTRICT tstr,
-			      const char *RESTRICT dstr, int cs);
+                              const char *RESTRICT dstr, int cs);
     extern int regexp_match_case_r(const char *RESTRICT s,
-				   const char *RESTRICT d, int cs, char **, int,
-				   char *, int);
+                                   const char *RESTRICT d, int cs, char **, int,
+                                   char *, int);
     extern int quick_regexp_match(const char *RESTRICT s,
-				  const char *RESTRICT d, int cs);
+                                  const char *RESTRICT d, int cs);
     extern int wild_match_case_r(const char *RESTRICT s, const char *RESTRICT d,
-				 int cs, char **, int, char *, int);
+                                 int cs, char **, int, char *, int);
     extern int quick_wild(const char *RESTRICT tsr, const char *RESTRICT dstr);
     extern int atr_wild(const char *RESTRICT tstr, const char *RESTRICT dstr);
 /** Default (case-insensitive) local wildcard match */
@@ -714,7 +715,7 @@ extern int safe_ansi_string2(ansi_string *as, size_t start, size_t len, char *bu
 
 /* funlist.c */
     void do_gensort(dbref player, char *keys[], char *strs[], int n,
-		    char *sort_type);
+                    char *sort_type);
 
 /* sig.c */
     /** Type definition for signal handlers */

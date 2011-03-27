@@ -235,7 +235,7 @@
 #include "confmagic.h"
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* disable warning re conversion */
+#pragma warning( disable : 4761)        /* disable warning re conversion */
 #endif
 
 /* A whole bunch of debugging #defines. */
@@ -262,10 +262,10 @@
 /* debug... */
 #ifdef CHUNK_DEBUG
 #define ASSERT(x) assert(x)
-#else				/* CHUNK_DEBUG */
-static int ignore;	/**< Used to shut up compiler warnings when not asserting */
+#else                           /* CHUNK_DEBUG */
+static int ignore;      /**< Used to shut up compiler warnings when not asserting */
 #define ASSERT(x) ignore++
-#endif				/* CHUNK_DEBUG */
+#endif                          /* CHUNK_DEBUG */
 
 /*
  * Sizes, limits, etc.
@@ -528,26 +528,26 @@ static int ignore;	/**< Used to shut up compiler warnings when not asserting */
  * the rest of the 64K bytes of the region contain chunks.
  */
 typedef struct region_header {
-  u_int_16 region_id;		/**< will be INVALID_REGION_ID if not in use */
-  u_int_16 first_free;		/**< offset of 1st free chunk */
-  struct region_header *prev;	/**< linked list prev for LRU cache */
-  struct region_header *next;	/**< linked list next for LRU cache */
+  u_int_16 region_id;           /**< will be INVALID_REGION_ID if not in use */
+  u_int_16 first_free;          /**< offset of 1st free chunk */
+  struct region_header *prev;   /**< linked list prev for LRU cache */
+  struct region_header *next;   /**< linked list next for LRU cache */
 } RegionHeader;
 
 #define FIRST_CHUNK_OFFSET_IN_REGION sizeof(RegionHeader)
 
 /** In-memory (never paged) region info.  */
 typedef struct region {
-  u_int_16 used_count;		/**< number of used chunks */
-  u_int_16 free_count;		/**< number of free chunks */
-  u_int_16 free_bytes;		/**< number of free bytes (with headers) */
-  u_int_16 largest_free_chunk;	/**< largest single free chunk */
-  unsigned int total_derefs;	/**< total of all used chunk derefs */
-  unsigned int period_last_touched;	/**< "this" period, for deref counts;
+  u_int_16 used_count;          /**< number of used chunks */
+  u_int_16 free_count;          /**< number of free chunks */
+  u_int_16 free_bytes;          /**< number of free bytes (with headers) */
+  u_int_16 largest_free_chunk;  /**< largest single free chunk */
+  unsigned int total_derefs;    /**< total of all used chunk derefs */
+  unsigned int period_last_touched;     /**< "this" period, for deref counts;
                                            we don't page in regions to update
                                            counts on period change! */
-  RegionHeader *in_memory;	/**< cache entry; NULL if paged out */
-  u_int_16 oddballs[NUM_ODDBALLS];	/**< chunk offsets with odd derefs */
+  RegionHeader *in_memory;      /**< cache entry; NULL if paged out */
+  u_int_16 oddballs[NUM_ODDBALLS];      /**< chunk offsets with odd derefs */
 } Region;
 
 #define RegionDerefs(region) \
@@ -585,44 +585,44 @@ static u_int_32 curr_period;
 /*
  * Info about all regions
  */
-static u_int_32 region_count;	/**< regions in use */
-static u_int_32 region_array_len;	/**< length of regions array */
-static Region *regions;		/**< regions array, realloced as (rarely) needed */
+static u_int_32 region_count;   /**< regions in use */
+static u_int_32 region_array_len;       /**< length of regions array */
+static Region *regions;         /**< regions array, realloced as (rarely) needed */
 
 /*
  * regions presently in memory
  */
-static u_int_32 cached_region_count;	/**< number of regions in cache */
-static RegionHeader *cache_head;	/**< most recently used region */
-static RegionHeader *cache_tail;	/**< least recently used region */
+static u_int_32 cached_region_count;    /**< number of regions in cache */
+static RegionHeader *cache_head;        /**< most recently used region */
+static RegionHeader *cache_tail;        /**< least recently used region */
 
 /*
  * statistics
  */
-static int stat_used_short_count;	/**< How many short chunks? */
-static int stat_used_short_bytes;	/**< How much space in short chunks? */
-static int stat_used_medium_count;	/**< How many medium chunks? */
-static int stat_used_medium_bytes;	/**< How much space in medium chunks? */
-static int stat_used_long_count;	/**< How many long chunks? */
-static int stat_used_long_bytes;	/**< How much space in long chunks? */
-static int stat_deref_count;		/**< Dereferences this period */
-static int stat_deref_maxxed;		/**< Number of chunks with max derefs */
+static int stat_used_short_count;       /**< How many short chunks? */
+static int stat_used_short_bytes;       /**< How much space in short chunks? */
+static int stat_used_medium_count;      /**< How many medium chunks? */
+static int stat_used_medium_bytes;      /**< How much space in medium chunks? */
+static int stat_used_long_count;        /**< How many long chunks? */
+static int stat_used_long_bytes;        /**< How much space in long chunks? */
+static int stat_deref_count;            /**< Dereferences this period */
+static int stat_deref_maxxed;           /**< Number of chunks with max derefs */
 /** histogram for average derefs of regions being paged in/out */
 static int stat_paging_histogram[CHUNK_DEREF_MAX + 1];
-static int stat_page_out;		/**< Number of page-outs */
-static int stat_page_in;		/**< Number of page-ins */
-static int stat_migrate_slide;		/**< Number of slide migrations */
-static int stat_migrate_move;		/**< Number of move migrations */
-static int stat_migrate_away;		/**< Number of chunk evictions */
-static int stat_create;			/**< Number of chunk creations */
-static int stat_delete;			/**< Number of chunk deletions */
+static int stat_page_out;               /**< Number of page-outs */
+static int stat_page_in;                /**< Number of page-ins */
+static int stat_migrate_slide;          /**< Number of slide migrations */
+static int stat_migrate_move;           /**< Number of move migrations */
+static int stat_migrate_away;           /**< Number of chunk evictions */
+static int stat_create;                 /**< Number of chunk creations */
+static int stat_delete;                 /**< Number of chunk deletions */
 
 
 
 /*
  * migration globals that are used for holding relevant data...
  */
-static int m_count;		/**< The used length for the arrays. */
+static int m_count;             /**< The used length for the arrays. */
 static chunk_reference_t **m_references; /**< The passed-in references array. */
 
 #ifdef CHUNK_PARANOID
@@ -659,7 +659,7 @@ debug_log(char const *format, ...)
   rolling_pos = (rolling_pos + 1) % ROLLING_LOG_SIZE;
 #else
   if (format)
-    return;			/* shut up the compiler warning */
+    return;                     /* shut up the compiler warning */
 #endif
 }
 
@@ -714,11 +714,11 @@ debug_dump_region(u_int_16 region, FILE * fp)
   rhp = rp->in_memory;
 
   fprintf(fp, "region: id:%04x period:%-8x deref:%-8x (%-2x per chunk)\n",
-	  region, rp->period_last_touched, rp->total_derefs,
-	  RegionDerefs(region));
+          region, rp->period_last_touched, rp->total_derefs,
+          RegionDerefs(region));
   fprintf(fp, "        #used:%-4x #free:%-4x fbytes:%-4x hole:%-4x ",
-	  rp->used_count, rp->free_count, rp->free_bytes,
-	  rp->largest_free_chunk);
+          rp->used_count, rp->free_count, rp->free_bytes,
+          rp->largest_free_chunk);
   if (rhp)
     fprintf(fp, "first:%-4x h_id:%-4x\n", rhp->first_free, rhp->region_id);
   else
@@ -727,25 +727,25 @@ debug_dump_region(u_int_16 region, FILE * fp)
 
   if (rhp) {
     for (offset = FIRST_CHUNK_OFFSET_IN_REGION;
-	 offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
+         offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
       fprintf(fp, "chunk:%c%4s %-6s off:%04x full:%04x ",
-	      migratable(region, offset) ? '*' : ' ',
-	      ChunkIsFree(region, offset) ? "FREE" : "",
-	      ChunkIsShort(region, offset) ? "SHORT" :
-	      (ChunkIsMedium(region, offset) ? "MEDIUM" : "LONG"),
-	      offset, ChunkFullLen(region, offset));
+              migratable(region, offset) ? '*' : ' ',
+              ChunkIsFree(region, offset) ? "FREE" : "",
+              ChunkIsShort(region, offset) ? "SHORT" :
+              (ChunkIsMedium(region, offset) ? "MEDIUM" : "LONG"),
+              offset, ChunkFullLen(region, offset));
       if (ChunkIsFree(region, offset)) {
-	fprintf(fp, "next:%04x\n", ChunkNextFree(region, offset));
+        fprintf(fp, "next:%04x\n", ChunkNextFree(region, offset));
       } else {
-	fprintf(fp, "doff:%04x len:%04x ",
-		ChunkDataPtr(region, offset) - (unsigned char *) rhp,
-		ChunkLen(region, offset));
-	count = ChunkDerefs(region, offset);
-	if (count == 0xFF) {
-	  fprintf(fp, "deref:many\n");
-	} else {
-	  fprintf(fp, "deref:%04x\n", count);
-	}
+        fprintf(fp, "doff:%04x len:%04x ",
+                ChunkDataPtr(region, offset) - (unsigned char *) rhp,
+                ChunkLen(region, offset));
+        count = ChunkDerefs(region, offset);
+        if (count == 0xFF) {
+          fprintf(fp, "deref:many\n");
+        } else {
+          fprintf(fp, "deref:%04x\n", count);
+        }
       }
     }
   }
@@ -767,7 +767,7 @@ verify_used_chunk(u_int_16 region, u_int_16 offset)
        pos < REGION_SIZE; pos += ChunkFullLen(region, pos)) {
     if (pos == offset) {
       if (ChunkIsFree(region, pos))
-	mush_panic("Invalid reference to free chunk as used");
+        mush_panic("Invalid reference to free chunk as used");
       return;
     }
   }
@@ -800,7 +800,7 @@ region_is_valid(u_int_16 region)
 
   if (region >= region_count) {
     do_rawlog(LT_ERR, "region 0x%04x is not valid: region_count is 0x%04x",
-	      region, region_count);
+              region, region_count);
     return 0;
   }
   result = 1;
@@ -808,21 +808,21 @@ region_is_valid(u_int_16 region)
   rp = regions + region;
   if (rp->used_count > REGION_SIZE / MIN_REMNANT_LEN) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: chunk count is ludicrous: 0x%04x",
-	      region, rp->used_count);
+              "region 0x%04x is not valid: chunk count is ludicrous: 0x%04x",
+              region, rp->used_count);
     result = 0;
   }
   if (rp->free_count > REGION_SIZE / MIN_REMNANT_LEN) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: free count is ludicrous: 0x%04x",
-	      region, rp->free_count);
+              "region 0x%04x is not valid: free count is ludicrous: 0x%04x",
+              region, rp->free_count);
     result = 0;
   }
   if (rp->largest_free_chunk > rp->free_bytes) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: largest free chunk > free bytes:"
-	      " 0x%04x > 0x%04x",
-	      region, rp->largest_free_chunk, rp->free_bytes);
+              "region 0x%04x is not valid: largest free chunk > free bytes:"
+              " 0x%04x > 0x%04x",
+              region, rp->largest_free_chunk, rp->free_bytes);
     result = 0;
   }
   if (!rp->in_memory)
@@ -832,7 +832,7 @@ region_is_valid(u_int_16 region)
 
   if (rhp->region_id != region) {
     do_rawlog(LT_ERR, "region 0x%04x is not valid: region in cache is 0x%04x",
-	      region, rhp->region_id);
+              region, rhp->region_id);
     result = 0;
   }
   dump = 0;
@@ -847,8 +847,8 @@ region_is_valid(u_int_16 region)
        offset < REGION_SIZE; offset += len) {
     if (was_free && ChunkIsFree(region, offset)) {
       do_rawlog(LT_ERR,
-		"region 0x%04x is not valid: uncoalesced free chunk:"
-		" 0x%04x (see map)", region, offset);
+                "region 0x%04x is not valid: uncoalesced free chunk:"
+                " 0x%04x (see map)", region, offset);
       result = 0;
       dump = 1;
     }
@@ -858,80 +858,80 @@ region_is_valid(u_int_16 region)
       free_count++;
       free_bytes += len;
       if (largest_free < len)
-	largest_free = len;
+        largest_free = len;
       if (next_free != offset) {
-	do_rawlog(LT_ERR,
-		  "region 0x%04x is not valid: free chain broken:"
-		  " 0x%04x, expecting 0x%04x (see map)",
-		  region, offset, next_free);
-	result = 0;
-	dump = 1;
+        do_rawlog(LT_ERR,
+                  "region 0x%04x is not valid: free chain broken:"
+                  " 0x%04x, expecting 0x%04x (see map)",
+                  region, offset, next_free);
+        result = 0;
+        dump = 1;
       }
       next_free = ChunkNextFree(region, offset);
     } else {
       used_count++;
       total_derefs += ChunkDerefs(region, offset);
       if (ChunkIsMedium(region, offset) &&
-	  ChunkLen(region, offset) <= MAX_SHORT_CHUNK_LEN) {
-	do_rawlog(LT_ERR,
-		  "region 0x%04x is not valid: medium chunk too small:"
-		  " 0x%04x (see map)", region, offset);
-	result = 0;
-	dump = 1;
+          ChunkLen(region, offset) <= MAX_SHORT_CHUNK_LEN) {
+        do_rawlog(LT_ERR,
+                  "region 0x%04x is not valid: medium chunk too small:"
+                  " 0x%04x (see map)", region, offset);
+        result = 0;
+        dump = 1;
       }
       if (ChunkIsLong(region, offset) &&
-	  ChunkLen(region, offset) <= MAX_MEDIUM_CHUNK_LEN) {
-	do_rawlog(LT_ERR,
-		  "region 0x%04x is not valid: long chunk too small:"
-		  " 0x%04x (see map)", region, offset);
-	result = 0;
-	dump = 1;
+          ChunkLen(region, offset) <= MAX_MEDIUM_CHUNK_LEN) {
+        do_rawlog(LT_ERR,
+                  "region 0x%04x is not valid: long chunk too small:"
+                  " 0x%04x (see map)", region, offset);
+        result = 0;
+        dump = 1;
       }
     }
   }
   if (offset != REGION_SIZE) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: last chunk past bounds (see map)",
-	      region);
+              "region 0x%04x is not valid: last chunk past bounds (see map)",
+              region);
     result = 0;
   }
   if (next_free != 0) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: free chain unterminated:"
-	      " expecting 0x%04x (see map)", region, next_free);
+              "region 0x%04x is not valid: free chain unterminated:"
+              " expecting 0x%04x (see map)", region, next_free);
     result = 0;
     dump = 1;
   }
   if (rp->used_count != used_count) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: used count is wrong:"
-	      " 0x%04x should be 0x%04x", region, rp->used_count, used_count);
+              "region 0x%04x is not valid: used count is wrong:"
+              " 0x%04x should be 0x%04x", region, rp->used_count, used_count);
     result = 0;
   }
   if (rp->total_derefs != total_derefs) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: total derefs is wrong:"
-	      " 0x%04x should be 0x%04x",
-	      region, rp->total_derefs, total_derefs);
+              "region 0x%04x is not valid: total derefs is wrong:"
+              " 0x%04x should be 0x%04x",
+              region, rp->total_derefs, total_derefs);
     result = 0;
   }
   if (rp->free_count != free_count) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: free count is wrong:"
-	      " 0x%04x should be 0x%04x", region, rp->free_count, free_count);
+              "region 0x%04x is not valid: free count is wrong:"
+              " 0x%04x should be 0x%04x", region, rp->free_count, free_count);
     result = 0;
   }
   if (rp->free_bytes != free_bytes) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: free bytes is wrong:"
-	      " 0x%04x should be 0x%04x", region, rp->free_bytes, free_bytes);
+              "region 0x%04x is not valid: free bytes is wrong:"
+              " 0x%04x should be 0x%04x", region, rp->free_bytes, free_bytes);
     result = 0;
   }
   if (rp->largest_free_chunk != largest_free) {
     do_rawlog(LT_ERR,
-	      "region 0x%04x is not valid: largest free is wrong:"
-	      " 0x%04x should be 0x%04x",
-	      region, rp->largest_free_chunk, largest_free);
+              "region 0x%04x is not valid: largest free is wrong:"
+              " 0x%04x should be 0x%04x",
+              region, rp->largest_free_chunk, largest_free);
     result = 0;
   }
   if (dump) {
@@ -955,8 +955,8 @@ region_is_valid(u_int_16 region)
  */
 static void
 write_used_chunk(u_int_16 region, u_int_16 offset, u_int_16 full_len,
-		 unsigned char const *data, u_int_16 data_len,
-		 unsigned char derefs)
+                 unsigned char const *data, u_int_16 data_len,
+                 unsigned char derefs)
 {
   unsigned char *cptr = ChunkPointer(region, offset);
   if (full_len <= MAX_SHORT_CHUNK_LEN + CHUNK_SHORT_DATA_OFFSET) {
@@ -991,7 +991,7 @@ write_used_chunk(u_int_16 region, u_int_16 offset, u_int_16 full_len,
  */
 static void
 write_free_chunk(u_int_16 region, u_int_16 offset, u_int_16 full_len,
-		 u_int_16 next)
+                 u_int_16 next)
 {
   unsigned char *cptr = ChunkPointer(region, offset);
   if (full_len <= MAX_SHORT_CHUNK_LEN + CHUNK_SHORT_DATA_OFFSET) {
@@ -1176,9 +1176,9 @@ split_hole(u_int_16 region, u_int_16 offset, u_int_16 full_len, int align)
     else {
       u_int_16 hole;
       for (hole = rp->in_memory->first_free;
-	   hole; hole = ChunkNextFree(region, hole))
-	if (ChunkNextFree(region, hole) == offset)
-	  break;
+           hole; hole = ChunkNextFree(region, hole))
+        if (ChunkNextFree(region, hole) == offset)
+          break;
       ASSERT(hole);
       write_next_free(region, hole, ChunkNextFree(region, offset));
     }
@@ -1197,15 +1197,15 @@ split_hole(u_int_16 region, u_int_16 offset, u_int_16 full_len, int align)
   if (align == 1) {
     rp->free_bytes -= full_len;
     write_free_chunk(region, offset + full_len,
-		     hole_len - full_len, ChunkNextFree(region, offset));
+                     hole_len - full_len, ChunkNextFree(region, offset));
     if (rp->in_memory->first_free == offset)
       rp->in_memory->first_free += full_len;
     else {
       u_int_16 hole;
       for (hole = rp->in_memory->first_free;
-	   hole; hole = ChunkNextFree(region, hole))
-	if (ChunkNextFree(region, hole) == offset)
-	  break;
+           hole; hole = ChunkNextFree(region, hole))
+        if (ChunkNextFree(region, hole) == offset)
+          break;
       ASSERT(hole);
       write_next_free(region, hole, offset + full_len);
     }
@@ -1215,7 +1215,7 @@ split_hole(u_int_16 region, u_int_16 offset, u_int_16 full_len, int align)
   } else {
     rp->free_bytes -= full_len;
     write_free_chunk(region, offset,
-		     hole_len - full_len, ChunkNextFree(region, offset));
+                     hole_len - full_len, ChunkNextFree(region, offset));
     if (rp->largest_free_chunk == hole_len)
       rp->largest_free_chunk = largest_hole(region);
     return offset + hole_len - full_len;
@@ -1273,7 +1273,7 @@ read_cache_region(fd_type fd, RegionHeader * rhp, u_int_16 region)
       remaining -= done;
       pos += done;
       if (!remaining)
-	return;
+        return;
     }
 #ifndef WIN32
     if (done == -1 && errno == EAGAIN)
@@ -1338,7 +1338,7 @@ write_cache_region(fd_type fd, RegionHeader * rhp, u_int_16 region)
       remaining -= done;
       pos += done;
       if (!remaining)
-	return;
+        return;
     }
 #ifndef WIN32
     if (done == -1 && errno == EAGAIN)
@@ -1415,7 +1415,7 @@ find_available_cache_region(void)
   find_oddballs(rhp->region_id);
 #ifdef DEBUG_CHUNK_PAGING
   do_rawlog(LT_TRACE, "CHUNK: Paging out region %04x (offset %08x)",
-	    rhp->region_id, (unsigned) file_offset);
+            rhp->region_id, (unsigned) file_offset);
 #endif
   write_cache_region(swap_fd, rhp, rhp->region_id);
   /* keep statistics */
@@ -1457,7 +1457,7 @@ bring_in_region(u_int_16 region)
   /* page it in */
 #ifdef DEBUG_CHUNK_PAGING
   do_rawlog(LT_TRACE, "CHUNK: Paging in region %04x (offset %08x)",
-	    region, (unsigned) file_offset);
+            region, (unsigned) file_offset);
 #endif
   read_cache_region(swap_fd, rhp, region);
   /* link the region to its cache entry */
@@ -1474,17 +1474,17 @@ bring_in_region(u_int_16 region)
     if (shift > 8) {
       rp->total_derefs = 0;
       for (offset = FIRST_CHUNK_OFFSET_IN_REGION;
-	   offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
-	ChunkDerefs(region, offset) = 0;
+           offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
+        ChunkDerefs(region, offset) = 0;
       }
     } else {
       rp->total_derefs = 0;
       for (offset = FIRST_CHUNK_OFFSET_IN_REGION;
-	   offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
-	if (ChunkIsFree(region, offset))
-	  continue;
-	ChunkDerefs(region, offset) >>= shift;
-	rp->total_derefs += ChunkDerefs(region, offset);
+           offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
+        if (ChunkIsFree(region, offset))
+          continue;
+        ChunkDerefs(region, offset) >>= shift;
+        rp->total_derefs += ChunkDerefs(region, offset);
       }
     }
     rp->period_last_touched = curr_period;
@@ -1519,7 +1519,7 @@ create_region(void)
 #endif
       regions = (Region *) realloc(regions, region_array_len * sizeof(Region));
       if (!regions)
-	mush_panic("chunk: region array realloc failure");
+        mush_panic("chunk: region array realloc failure");
     }
     region = region_count;
     region_count++;
@@ -1537,7 +1537,7 @@ create_region(void)
   regions[region].in_memory->region_id = region;
   regions[region].in_memory->first_free = FIRST_CHUNK_OFFSET_IN_REGION;
   write_free_chunk(region, FIRST_CHUNK_OFFSET_IN_REGION,
-		   regions[region].free_bytes, 0);
+                   regions[region].free_bytes, 0);
 
   touch_cache_region(regions[region].in_memory);
   return region;
@@ -1570,12 +1570,12 @@ find_oddballs(u_int_16 region)
     j = NUM_ODDBALLS;
     while (j--) {
       if (!rp->oddballs[j])
-	continue;
+        continue;
       d2 = abs(mean - ChunkDerefs(region, rp->oddballs[j]));
       if (d1 < d2)
-	break;
+        break;
       if (j < NUM_ODDBALLS - 1)
-	rp->oddballs[j + 1] = rp->oddballs[j];
+        rp->oddballs[j + 1] = rp->oddballs[j];
     }
     j++;
     if (j >= NUM_ODDBALLS)
@@ -1610,8 +1610,8 @@ find_best_region(u_int_16 full_len, int derefs, u_int_16 old_region)
     rp = regions + region;
     free_bytes += rp->free_bytes;
     if (!FitsInSpace(full_len, rp->largest_free_chunk) &&
-	!(rp->free_count == 2 &&
-	  rp->free_bytes - rp->largest_free_chunk == full_len))
+        !(rp->free_count == 2 &&
+          rp->free_bytes - rp->largest_free_chunk == full_len))
       continue;
 
     if (region == old_region)
@@ -1637,8 +1637,8 @@ find_best_region(u_int_16 full_len, int derefs, u_int_16 old_region)
 #endif
     best_region = create_region();
   } else if (best_score > (1 << LONLINESS_LIMIT) + IN_MEMORY_BIAS &&
-	     (free_bytes * 100 / (REGION_CAPACITY * region_count)) <
-	     FREE_PERCENT_LIMIT) {
+             (free_bytes * 100 / (REGION_CAPACITY * region_count)) <
+             FREE_PERCENT_LIMIT) {
 #ifdef DEBUG_CHUNK_REGION_CREATE
     do_rawlog(LT_TRACE, "find_best_region chose to create region %04x", region);
 #endif
@@ -1655,7 +1655,7 @@ find_best_region(u_int_16 full_len, int derefs, u_int_16 old_region)
  */
 static u_int_16
 find_best_offset(u_int_16 full_len, u_int_16 region,
-		 u_int_16 old_region, u_int_16 old_offset)
+                 u_int_16 old_region, u_int_16 old_offset)
 {
   u_int_16 fits, offset;
 
@@ -1666,9 +1666,9 @@ find_best_offset(u_int_16 full_len, u_int_16 region,
        offset = ChunkNextFree(region, offset)) {
     if (region == old_region) {
       if (offset > old_offset)
-	break;
+        break;
       if (offset + ChunkFullLen(region, offset) == old_offset)
-	return fits ? fits : offset;
+        return fits ? fits : offset;
     }
     if (ChunkFullLen(region, offset) == full_len)
       return offset;
@@ -1757,49 +1757,49 @@ chunk_statistics(dbref player)
     stat_used_medium_count * CHUNK_MEDIUM_DATA_OFFSET +
     stat_used_long_count * CHUNK_LONG_DATA_OFFSET;
   STAT_OUT(tprintf
-	   ("Chunks:    %10d allocated (%10d bytes, %10d (%2d%%) overhead)",
-	    used_count, used_bytes, overhead,
-	    used_bytes ? overhead * 100 / used_bytes : 0));
+           ("Chunks:    %10d allocated (%10d bytes, %10d (%2d%%) overhead)",
+            used_count, used_bytes, overhead,
+            used_bytes ? overhead * 100 / used_bytes : 0));
   overhead = stat_used_short_count * CHUNK_SHORT_DATA_OFFSET;
   STAT_OUT(tprintf
-	   ("             %10d short     (%10d bytes, %10d (%2d%%) overhead)",
-	    stat_used_short_count, stat_used_short_bytes, overhead,
-	    stat_used_short_bytes ? overhead * 100 /
-	    stat_used_short_bytes : 0));
+           ("             %10d short     (%10d bytes, %10d (%2d%%) overhead)",
+            stat_used_short_count, stat_used_short_bytes, overhead,
+            stat_used_short_bytes ? overhead * 100 /
+            stat_used_short_bytes : 0));
   overhead = stat_used_medium_count * CHUNK_MEDIUM_DATA_OFFSET;
   STAT_OUT(tprintf
-	   ("             %10d medium    (%10d bytes, %10d (%2d%%) overhead)",
-	    stat_used_medium_count, stat_used_medium_bytes, overhead,
-	    stat_used_medium_bytes ? overhead * 100 /
-	    stat_used_medium_bytes : 0));
+           ("             %10d medium    (%10d bytes, %10d (%2d%%) overhead)",
+            stat_used_medium_count, stat_used_medium_bytes, overhead,
+            stat_used_medium_bytes ? overhead * 100 /
+            stat_used_medium_bytes : 0));
   overhead = stat_used_long_count * CHUNK_LONG_DATA_OFFSET;
   STAT_OUT(tprintf
-	   ("             %10d long      (%10d bytes, %10d (%2d%%) overhead)",
-	    stat_used_long_count, stat_used_long_bytes, overhead,
-	    stat_used_long_bytes ? overhead * 100 / stat_used_long_bytes : 0));
+           ("             %10d long      (%10d bytes, %10d (%2d%%) overhead)",
+            stat_used_long_count, stat_used_long_bytes, overhead,
+            stat_used_long_bytes ? overhead * 100 / stat_used_long_bytes : 0));
   STAT_OUT(tprintf
-	   ("           %10d free      (%10d bytes, %10d (%2d%%) fragmented)",
-	    free_count, free_bytes, free_bytes - free_large,
-	    free_bytes ? (free_bytes - free_large) * 100 / free_bytes : 0));
+           ("           %10d free      (%10d bytes, %10d (%2d%%) fragmented)",
+            free_count, free_bytes, free_bytes - free_large,
+            free_bytes ? (free_bytes - free_large) * 100 / free_bytes : 0));
   overhead = region_count * REGION_SIZE + region_array_len * sizeof(Region);
   STAT_OUT(tprintf("Storage:   %10d total (%2d%% saturation)",
-		   overhead, used_bytes * 100 / overhead));
+                   overhead, used_bytes * 100 / overhead));
   STAT_OUT(tprintf("Regions:   %10d total, %8d cached",
-		   region_count, cached_region_count));
+                   region_count, cached_region_count));
   STAT_OUT(tprintf("Paging:    %10d out, %10d in",
-		   stat_page_out, stat_page_in));
+                   stat_page_out, stat_page_in));
   STAT_OUT(" ");
   STAT_OUT(tprintf("Period:    %10d (%10d accesses so far, %10d chunks at max)",
-		   curr_period, stat_deref_count, stat_deref_maxxed));
+                   curr_period, stat_deref_count, stat_deref_maxxed));
   STAT_OUT(tprintf("Activity:  %10d creates, %10d deletes this period",
-		   stat_create, stat_delete));
+                   stat_create, stat_delete));
   STAT_OUT(tprintf("Migration: %10d moves this period",
-		   stat_migrate_slide + stat_migrate_move));
+                   stat_migrate_slide + stat_migrate_move));
   STAT_OUT(tprintf("             %10d slide    %10d move",
-		   stat_migrate_slide, stat_migrate_move));
+                   stat_migrate_slide, stat_migrate_move));
   STAT_OUT(tprintf("             %10d in region%10d out of region",
-		   stat_migrate_slide + stat_migrate_move - stat_migrate_away,
-		   stat_migrate_away));
+                   stat_migrate_slide + stat_migrate_move - stat_migrate_away,
+                   stat_migrate_away));
 }
 
 /** Show just the page counts.
@@ -1810,7 +1810,7 @@ chunk_page_stats(dbref player)
 {
   const char *s;
   STAT_OUT(tprintf("Paging:    %10d out, %10d in",
-		   stat_page_out, stat_page_in));
+                   stat_page_out, stat_page_in));
 }
 
 /** Display the per-region stats.
@@ -1827,11 +1827,11 @@ chunk_region_statistics(dbref player)
   }
   for (rid = 0; rid < region_count; rid++) {
     STAT_OUT(tprintf
-	     ("region:%4d  #used:%5d  #free:%5d  "
-	      "fbytes:%04x  largest:%04x  deref:%3d",
-	      rid, regions[rid].used_count, regions[rid].free_count,
-	      regions[rid].free_bytes, regions[rid].largest_free_chunk,
-	      RegionDerefs(rid)));
+             ("region:%4d  #used:%5d  #free:%5d  "
+              "fbytes:%04x  largest:%04x  deref:%3d",
+              rid, regions[rid].used_count, regions[rid].free_count,
+              regions[rid].free_bytes, regions[rid].largest_free_chunk,
+              RegionDerefs(rid)));
   }
 }
 
@@ -1892,19 +1892,19 @@ chunk_histogram(dbref player, int const *histogram, char const *legend)
     if (k > max) {
       sprintf(num, "(%d)", k);
       if (j < 32) {
-	if (j < pen)
-	  ante = 18;
-	else
-	  ante = 19;
-	memcpy(buffer[ante] + j + 1, num, strlen(num));
-	pen = j + strlen(num) + 1;
+        if (j < pen)
+          ante = 18;
+        else
+          ante = 19;
+        memcpy(buffer[ante] + j + 1, num, strlen(num));
+        pen = j + strlen(num) + 1;
       } else {
-	if (j - (int) strlen(num) < pen)
-	  ante = 18;
-	else
-	  ante = 19;
-	memcpy(buffer[ante] + j - strlen(num), num, strlen(num));
-	pen = j;
+        if (j - (int) strlen(num) < pen)
+          ante = 18;
+        else
+          ante = 19;
+        memcpy(buffer[ante] + j - strlen(num), num, strlen(num));
+        pen = j;
       }
     }
   }
@@ -1938,7 +1938,7 @@ migrate_sort(void)
     t = m_references[j];
     for (k = j; k--;) {
       if (m_references[k][0] < t[0])
-	break;
+        break;
       m_references[k + 1] = m_references[k];
     }
     m_references[k + 1] = t;
@@ -1957,7 +1957,7 @@ migrate_slide(u_int_16 region, u_int_16 offset, int which)
   u_int_16 o_len, len, next, other, prev, o_off, o_oth;
 
   debug_log("migrate_slide %d (%08x) to %04x%04x",
-	    which, m_references[which][0], region, offset);
+            which, m_references[which][0], region, offset);
 
   bring_in_region(region);
 
@@ -1972,7 +1972,7 @@ migrate_slide(u_int_16 region, u_int_16 offset, int which)
     memmove(ChunkPointer(region, offset), ChunkPointer(region, other), o_len);
 #ifdef DEBUG_CHUNK_MIGRATE
     do_rawlog(LT_TRACE, "CHUNK: Sliding chunk %08x to %04x%04x",
-	      m_references[which][0], region, offset);
+              m_references[which][0], region, offset);
 #endif
     m_references[which][0] = ChunkReference(region, offset);
     other = offset + o_len;
@@ -1981,7 +1981,7 @@ migrate_slide(u_int_16 region, u_int_16 offset, int which)
     memmove(ChunkPointer(region, prev), ChunkPointer(region, other), o_len);
 #ifdef DEBUG_CHUNK_MIGRATE
     do_rawlog(LT_TRACE, "CHUNK: Sliding chunk %08x to %04x%04x",
-	      m_references[which][0], region, prev);
+              m_references[which][0], region, prev);
 #endif
     m_references[which][0] = ChunkReference(region, prev);
   }
@@ -2003,7 +2003,7 @@ migrate_slide(u_int_16 region, u_int_16 offset, int which)
   if (!region_is_valid(region)) {
     do_rawlog(LT_TRACE, "Invalid region after migrate_slide!");
     do_rawlog(LT_TRACE, "Was moving %04x%04x to %04x%04x (became %08x)...",
-	      region, o_oth, region, o_off, m_references[which][0]);
+              region, o_oth, region, o_off, m_references[which][0]);
     do_rawlog(LT_TRACE, "Chunk length %04x into hole length %04x", o_len, len);
     debug_dump_region(region, tracelog_fp);
     dump_debug_log(tracelog_fp);
@@ -2026,7 +2026,7 @@ migrate_move(u_int_16 region, u_int_16 offset, int which, int align)
   Region *srp;
 
   debug_log("migrate_move %d (%08x) to %04x%04x, alignment %d",
-	    which, m_references[which][0], region, offset, align);
+            which, m_references[which][0], region, offset, align);
 
   s_reg = ChunkReferenceToRegion(m_references[which][0]);
   s_off = ChunkReferenceToOffset(m_references[which][0]);
@@ -2050,7 +2050,7 @@ migrate_move(u_int_16 region, u_int_16 offset, int which, int align)
   if (!FitsInSpace(s_len, ChunkFullLen(region, offset))) {
     dump_debug_log(tracelog_fp);
     mush_panicf("Trying to migrate into too small a hole: %04x into %04x!",
-		s_len, length);
+                s_len, length);
   }
 #endif
 
@@ -2059,7 +2059,7 @@ migrate_move(u_int_16 region, u_int_16 offset, int which, int align)
   memcpy(ChunkPointer(region, offset), ChunkPointer(s_reg, s_off), s_len);
 #ifdef DEBUG_CHUNK_MIGRATE
   do_rawlog(LT_TRACE, "CHUNK: moving chunk %08x to %04x%04x",
-	    m_references[which][0], region, offset);
+            m_references[which][0], region, offset);
 #endif
   m_references[which][0] = ChunkReference(region, offset);
   rp->total_derefs += ChunkDerefs(region, offset);
@@ -2071,9 +2071,9 @@ migrate_move(u_int_16 region, u_int_16 offset, int which, int align)
   if (!region_is_valid(region)) {
     do_rawlog(LT_TRACE, "Invalid region after migrate_move!");
     do_rawlog(LT_TRACE, "Was moving %04x%04x to %04x%04x (became %04x%04x)...",
-	      s_reg, s_off, region, o_off, region, offset);
+              s_reg, s_off, region, o_off, region, offset);
     do_rawlog(LT_TRACE, "Chunk length %04x into hole length %04x, alignment %d",
-	      s_len, length, align);
+              s_len, length, align);
     debug_dump_region(region, tracelog_fp);
     mush_panic("Invalid region after migrate_move!");
   }
@@ -2100,9 +2100,9 @@ migrate_region(u_int_16 region)
       best_region = find_best_region(length, derefs, region);
       best_offset = find_best_offset(length, best_region, region, offset);
       if (best_offset)
-	migrate_move(best_region, best_offset, j, 1);
+        migrate_move(best_region, best_offset, j, 1);
       if (best_region != region)
-	stat_migrate_away++;
+        stat_migrate_away++;
     }
   }
   migrate_sort();
@@ -2184,7 +2184,7 @@ chunk_delete(chunk_reference_t reference)
  */
 u_int_16
 chunk_fetch(chunk_reference_t reference,
-	    unsigned char *buffer, u_int_16 buffer_len)
+            unsigned char *buffer, u_int_16 buffer_len)
 {
   u_int_16 region, offset, len;
   region = ChunkReferenceToRegion(reference);
@@ -2274,24 +2274,24 @@ chunk_migration(int count, chunk_reference_t ** references)
     /* Make sure we have something to migrate, in the region. */
     for (k = 0; k < m_count; k++)
       if (ChunkReferenceToRegion(m_references[k][0]) == region)
-	break;
+        break;
     if (k >= m_count)
       continue;
 
     if (!regions[region].in_memory) {
       /* If not in memory, see if we've got an oddball. */
       while (k < m_count) {
-	if (ChunkReferenceToRegion(m_references[k][0]) != region)
-	  break;
-	offset = ChunkReferenceToOffset(m_references[k][0]);
-	for (l = 0; l < NUM_ODDBALLS; l++) {
-	  if (regions[region].oddballs[l] == offset) {
-	    /* Yup, have an oddball... that's worth bringing it in. */
-	    bring_in_region(region);
-	    goto do_migrate;
-	  }
-	}
-	k++;
+        if (ChunkReferenceToRegion(m_references[k][0]) != region)
+          break;
+        offset = ChunkReferenceToOffset(m_references[k][0]);
+        for (l = 0; l < NUM_ODDBALLS; l++) {
+          if (regions[region].oddballs[l] == offset) {
+            /* Yup, have an oddball... that's worth bringing it in. */
+            bring_in_region(region);
+            goto do_migrate;
+          }
+        }
+        k++;
       }
     } else {
     do_migrate:
@@ -2336,7 +2336,7 @@ chunk_init(void)
 
 #ifdef WIN32
   swap_fd = CreateFile(CHUNK_SWAP_FILE, GENERIC_READ | GENERIC_WRITE,
-		       0, NULL, CREATE_ALWAYS, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+                       0, NULL, CREATE_ALWAYS, FILE_FLAG_DELETE_ON_CLOSE, NULL);
   if (swap_fd == INVALID_HANDLE_VALUE)
     mush_panicf("Cannot open swap file: %d", GetLastError());
 #else
@@ -2380,15 +2380,15 @@ chunk_stats(dbref player, enum chunk_stats_type which)
     break;
   case CSTATS_REGIONG:
     chunk_histogram(player, chunk_regionhist(),
-		    "Chart number of regions (y) vs. references (x)");
+                    "Chart number of regions (y) vs. references (x)");
     break;
   case CSTATS_PAGINGG:
     chunk_histogram(player, stat_paging_histogram,
-		    "Chart pages in/out (y) vs. references (x)");
+                    "Chart pages in/out (y) vs. references (x)");
     break;
   case CSTATS_FREESPACEG:
     chunk_histogram(player, chunk_freehist(),
-		    "Chart region free space (y) vs. references (x)");
+                    "Chart region free space (y) vs. references (x)");
     break;
   case CSTATS_REGION:
     chunk_region_statistics(player);
@@ -2438,17 +2438,17 @@ chunk_new_period(void)
     if (shift > 8) {
       rp->total_derefs = 0;
       for (offset = FIRST_CHUNK_OFFSET_IN_REGION;
-	   offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
-	ChunkDerefs(region, offset) = 0;
+           offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
+        ChunkDerefs(region, offset) = 0;
       }
     } else {
       rp->total_derefs = 0;
       for (offset = FIRST_CHUNK_OFFSET_IN_REGION;
-	   offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
-	if (ChunkIsFree(region, offset))
-	  continue;
-	ChunkDerefs(region, offset) >>= shift;
-	rp->total_derefs += ChunkDerefs(region, offset);
+           offset < REGION_SIZE; offset += ChunkFullLen(region, offset)) {
+        if (ChunkIsFree(region, offset))
+          continue;
+        ChunkDerefs(region, offset) >>= shift;
+        rp->total_derefs += ChunkDerefs(region, offset);
       }
     }
     rp->period_last_touched = curr_period;
@@ -2536,4 +2536,4 @@ chunk_fork_done(void)
   unlink(child_filename);
   swap_fd_child = -1;
 }
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */

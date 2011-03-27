@@ -29,8 +29,8 @@ static int hash_val(register const char *k, int mask);
 
 /* This hash function adapted from http://burtleburtle.net/bob/hash/evahash.html */
 
-typedef unsigned long int u4;	/**< unsigned 4-byte type */
-typedef unsigned char u1;	/**< unsigned 1-byte type */
+typedef unsigned long int u4;   /**< unsigned 4-byte type */
+typedef unsigned char u1;       /**< unsigned 1-byte type */
 
 /* The mixing step */
 #define mix(a,b,c) \
@@ -50,14 +50,14 @@ typedef unsigned char u1;	/**< unsigned 1-byte type */
 static int
 hash_val(register const char *k, int mask)
 {
-  register u4 a, b, c;		/* the internal state */
-  u4 len, length;		/* how many key bytes still need mixing */
-  static u4 initval = 5432;	/* the previous hash, or an arbitrary value */
+  register u4 a, b, c;          /* the internal state */
+  u4 len, length;               /* how many key bytes still need mixing */
+  static u4 initval = 5432;     /* the previous hash, or an arbitrary value */
 
   /* Set up the internal state */
   length = len = strlen(k);
-  a = b = 0x9e3779b9;		/* the golden ratio; an arbitrary value */
-  c = initval;			/* variable initialization of internal state */
+  a = b = 0x9e3779b9;           /* the golden ratio; an arbitrary value */
+  c = initval;                  /* variable initialization of internal state */
 
    /*---------------------------------------- handle most of the key */
   while (len >= 12) {
@@ -71,7 +71,7 @@ hash_val(register const char *k, int mask)
 
    /*------------------------------------- handle the last 11 bytes */
   c = c + length;
-  switch (len) {		/* all the case statements fall through */
+  switch (len) {                /* all the case statements fall through */
   case 11:
     c = c + ((u4) k[10] << 24);
   case 10:
@@ -103,7 +103,7 @@ hash_val(register const char *k, int mask)
 }
 
 
-#else				/* NEW_HASH_FUN */
+#else                           /* NEW_HASH_FUN */
 /** Compute a hash value for mask-style hashing.
  * Given a null key, return 0. Otherwise, add up the numeric value
  * of all the characters and return the sum modulo the size of the
@@ -124,7 +124,7 @@ hash_val(const char *key, int hashmask)
     hash = (hash << 5) + hash + *sp;
   return (hash & hashmask);
 }
-#endif				/* NEW_HASH_FUN */
+#endif                          /* NEW_HASH_FUN */
 
 /* ----------------------------------------------------------------------
  * hash_getmask: Get hash mask for mask-style hashing.
@@ -261,15 +261,15 @@ hash_resize(HASHTAB *htab, int size)
       nent = hent->next;
       hval = hash_val(hent->key, mask);
       for (curr = newarr[hval], old = NULL; curr; old = curr, curr = curr->next) {
-	if (strcmp(curr->key, hent->key) > 0)
-	  break;
+        if (strcmp(curr->key, hent->key) > 0)
+          break;
       }
       if (old) {
-	old->next = hent;
-	hent->next = curr;
+        old->next = hent;
+        hent->next = curr;
       } else {
-	hent->next = newarr[hval];
-	newarr[hval] = hent;
+        hent->next = newarr[hval];
+        newarr[hval] = hent;
       }
       hent = nent;
     }
@@ -312,7 +312,7 @@ hash_new(HASHTAB *htab, const char *key)
   for (curr = old->next; curr; old = curr, curr = curr->next) {
     /* Comparison will never be 0 because hash_add checks to see
        if the entry is already present. */
-    if (strcmp(key, curr->key) < 0) {	/* Insert before curr */
+    if (strcmp(key, curr->key) < 0) {   /* Insert before curr */
       old->next = hptr;
       hptr->next = curr;
       return hptr;
@@ -336,7 +336,7 @@ hash_new(HASHTAB *htab, const char *key)
  */
 int
 hash_add(HASHTAB *htab, const char *key, void *hashdata,
-	 int extra_size __attribute__ ((__unused__)))
+         int extra_size __attribute__ ((__unused__)))
 {
   HASHENT *hptr;
 
@@ -527,7 +527,7 @@ void
 hash_stats_header(dbref player)
 {
   notify_format(player,
-		"Table      Buckets Entries LChain  ECh  1Ch  2Ch  3Ch 4+Ch  AvgCh ~Memory");
+                "Table      Buckets Entries LChain  ECh  1Ch  2Ch  3Ch 4+Ch  AvgCh ~Memory");
 }
 
 /** Display stats on a hashtable.
@@ -572,8 +572,8 @@ hash_stats(dbref player, HASHTAB *htab, const char *hname)
     totchains += lengths[n];
 
   notify_format(player,
-		"%-10s %7d %7d %6d %4d %4d %4d %4d %4d %6.3f %7u", hname,
-		htab->hashsize, htab->entries, longest, lengths[0], lengths[1],
-		lengths[2], lengths[3], lengths[4],
-		totchains > 0 ? chainlens / totchains : 0.0, bytes);
+                "%-10s %7d %7d %6d %4d %4d %4d %4d %4d %6.3f %7u", hname,
+                htab->hashsize, htab->entries, longest, lengths[0], lengths[1],
+                lengths[2], lengths[3], lengths[4],
+                totchains > 0 ? chainlens / totchains : 0.0, bytes);
 }

@@ -101,7 +101,7 @@ main(int argc, char *argv[])
   int port;
   int fd;
   union sockaddr_u local, remote;
-  static char buf[BUFFER_LEN];	/* overkill */
+  static char buf[BUFFER_LEN];  /* overkill */
   char *bp;
   int len, size;
   IDENT *ident_result;
@@ -132,10 +132,10 @@ main(int argc, char *argv[])
     use_dns = 1;
 
 #ifdef HAS_SOCKETPAIR
-  mush = port;			/* We inherit open file descriptions and sockets from parent */
+  mush = port;                  /* We inherit open file descriptions and sockets from parent */
 #else
   mush = make_socket_conn("127.0.0.1", NULL, 0, port, NULL);
-  if (mush == -1) {		/* Couldn't connect */
+  if (mush == -1) {             /* Couldn't connect */
     fprintf(stderr, "Couldn't connect to mush!\n");
     return EXIT_FAILURE;
   }
@@ -182,13 +182,13 @@ main(int argc, char *argv[])
 
     bp = buf;
     if (getnameinfo(&remote.addr, rlen, host, sizeof host, NULL, 0,
-		    NI_NUMERICHOST | NI_NUMERICSERV) != 0)
+                    NI_NUMERICHOST | NI_NUMERICSERV) != 0)
       safe_str("An error occured", buf, &bp);
     else
       safe_str(host, buf, &bp);
     safe_chr('^', buf, &bp);
     if (getnameinfo(&local.addr, llen, NULL, 0, lport, sizeof lport,
-		    NI_NUMERICHOST | NI_NUMERICSERV) != 0)
+                    NI_NUMERICHOST | NI_NUMERICSERV) != 0)
       safe_str("An error occured", buf, &bp);
     else
       safe_str(lport, buf, &bp);
@@ -197,20 +197,20 @@ main(int argc, char *argv[])
     if (use_ident > 0) {
       timeout = use_ident;
       ident_result =
-	ident_query(&local.addr, llen, &remote.addr, rlen, &timeout);
+        ident_query(&local.addr, llen, &remote.addr, rlen, &timeout);
       if (ident_result && ident_result->identifier) {
-	safe_str(ident_result->identifier, buf, &bp);
-	safe_chr('@', buf, &bp);
+        safe_str(ident_result->identifier, buf, &bp);
+        safe_chr('@', buf, &bp);
       }
       if (ident_result)
-	ident_free(ident_result);
+        ident_free(ident_result);
     }
     if (use_dns) {
       if (getnameinfo(&remote.addr, rlen, host, sizeof host, NULL, 0,
-		      NI_NUMERICSERV) != 0) {
-	safe_str("An error occured", buf, &bp);
+                      NI_NUMERICSERV) != 0) {
+        safe_str("An error occured", buf, &bp);
       } else {
-	safe_str(host, buf, &bp);
+        safe_str(host, buf, &bp);
       }
     } else
       safe_str(host, buf, &bp);

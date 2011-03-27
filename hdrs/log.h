@@ -7,7 +7,7 @@
 #define LT_WIZ    2
 #define LT_CONN   3
 #define LT_TRACE  4
-#define LT_RPAGE  5		/* Obsolete */
+#define LT_RPAGE  5             /* Obsolete */
 #define LT_CHECK  6
 #define LT_HUH    7
 
@@ -26,10 +26,10 @@ extern void do_logwipe(dbref player, int logtype, char *str);
 #define LA_CMD  0
 #define LA_PE   1
 #define LA_LOCK 2
-#define ACTIVITY_LOG_SIZE 3	/* In BUFFER_LEN-size lines */
+#define ACTIVITY_LOG_SIZE 3     /* In BUFFER_LEN-size lines */
 extern void log_activity(int type, dbref player, const char *action);
 extern void notify_activity(dbref player, int num_lines, int dump);
 extern const char *last_activity(void);
 extern int last_activity_type(void);
 
-#endif				/* LOG_H */
+#endif                          /* LOG_H */

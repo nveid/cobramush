@@ -31,7 +31,7 @@
 #include "confmagic.h"
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4761)        /* NJG: disable warning re conversion */
 #endif
 
 extern FUN flist[];
@@ -267,9 +267,9 @@ FUNCTION(fun_die)
   if (show_all) {
     for (count = 0; count < n; count++) {
       if (first)
-	first = 0;
+        first = 0;
       else
-	safe_chr(' ', buff, bp);
+        safe_chr(' ', buff, bp);
       safe_uinteger(get_random_long(1, die), buff, bp);
     }
   } else {
@@ -305,7 +305,7 @@ FUNCTION(fun_switch)
   dp = mstr;
   sp = args[0];
   process_expression(mstr, &dp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   *dp = '\0';
 
   /* try matching, return match immediately when found */
@@ -314,30 +314,30 @@ FUNCTION(fun_switch)
     dp = pstr;
     sp = args[j];
     process_expression(pstr, &dp, &sp, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     *dp = '\0';
 
     if ((!exact)
-	? local_wild_match(pstr, mstr)
-	: (strcmp(pstr, mstr) == 0)) {
+        ? local_wild_match(pstr, mstr)
+        : (strcmp(pstr, mstr) == 0)) {
       /* If there's a #$ in a switch's action-part, replace it with
        * the value of the conditional (mstr) before evaluating it.
        */
       if (!exact)
-	tbuf1 = replace_string("#$", mstr, args[j + 1]);
+        tbuf1 = replace_string("#$", mstr, args[j + 1]);
       else
-	tbuf1 = args[j + 1];
+        tbuf1 = args[j + 1];
 
       sp = tbuf1;
 
       per = process_expression(buff, bp, &sp,
-			       executor, caller, enactor,
-			       PE_DEFAULT, PT_DEFAULT, pe_info);
+                               executor, caller, enactor,
+                               PE_DEFAULT, PT_DEFAULT, pe_info);
       if (!exact)
-	mush_free((Malloc_t) tbuf1, "replace_string.buff");
+        mush_free((Malloc_t) tbuf1, "replace_string.buff");
       found = 1;
       if (per || first)
-	return;
+        return;
     }
   }
 
@@ -349,7 +349,7 @@ FUNCTION(fun_switch)
     } else
       sp = args[nargs - 1];
     process_expression(buff, bp, &sp, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     if (!exact)
       mush_free((Malloc_t) tbuf1, "replace_string.buff");
   }
@@ -375,7 +375,7 @@ FUNCTION(fun_reswitch)
   dp = mstr;
   sp = args[0];
   process_expression(mstr, &dp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   *dp = '\0';
 
   /* try matching, return match immediately when found */
@@ -384,7 +384,7 @@ FUNCTION(fun_reswitch)
     dp = pstr;
     sp = args[j];
     process_expression(pstr, &dp, &sp, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     *dp = '\0';
 
     if (quick_regexp_match(pstr, mstr, cs)) {
@@ -396,12 +396,12 @@ FUNCTION(fun_reswitch)
       sp = tbuf1;
 
       per = process_expression(buff, bp, &sp,
-			       executor, caller, enactor,
-			       PE_DEFAULT, PT_DEFAULT, pe_info);
+                               executor, caller, enactor,
+                               PE_DEFAULT, PT_DEFAULT, pe_info);
       mush_free((Malloc_t) tbuf1, "replace_string.buff");
       found = 1;
       if (per || first)
-	return;
+        return;
     }
   }
 
@@ -410,7 +410,7 @@ FUNCTION(fun_reswitch)
     tbuf1 = replace_string("#$", mstr, args[nargs - 1]);
     sp = tbuf1;
     process_expression(buff, bp, &sp, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
     mush_free((Malloc_t) tbuf1, "replace_string.buff");
   }
 }
@@ -424,16 +424,16 @@ FUNCTION(fun_if)
   tp = tbuf;
   sp = args[0];
   process_expression(tbuf, &tp, &sp, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   *tp = '\0';
   if (parse_boolean(tbuf)) {
     sp = args[1];
     process_expression(buff, bp, &sp, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
   } else if (nargs > 2) {
     sp = args[2];
     process_expression(buff, bp, &sp, executor, caller, enactor,
-		       PE_DEFAULT, PT_DEFAULT, pe_info);
+                       PE_DEFAULT, PT_DEFAULT, pe_info);
   }
 }
 
@@ -541,7 +541,7 @@ FUNCTION(fun_soundex)
   if (!args[0] || !*args[0] || !isalpha((unsigned char) *args[0])
       || strchr(args[0], ' ')) {
     safe_str(T("#-1 FUNCTION (SOUNDEX) REQUIRES A SINGLE WORD ARGUMENT"), buff,
-	     bp);
+             bp);
     return;
   }
   safe_str(soundex(args[0]), buff, bp);
@@ -560,7 +560,7 @@ FUNCTION(fun_soundlike)
       || !isalpha((unsigned char) *args[1]) || strchr(args[0], ' ')
       || strchr(args[1], ' ')) {
     safe_str(T("#-1 FUNCTION (SOUNDLIKE) REQUIRES TWO ONE-WORD ARGUMENTS"),
-	     buff, bp);
+             buff, bp);
     return;
   }
   /* soundex uses a static buffer, so we need to save it */
@@ -699,7 +699,7 @@ do_whichof(char *args[], int nargs, enum whichof_t flag, char *buff, char **bp,
 FUNCTION(fun_firstof)
 {
   do_whichof(args, nargs, DO_FIRSTOF, buff, bp, executor,
-	     caller, enactor, pe_info);
+             caller, enactor, pe_info);
 }
 
 
@@ -707,7 +707,7 @@ FUNCTION(fun_firstof)
 FUNCTION(fun_allof)
 {
   do_whichof(args, nargs, DO_ALLOF, buff, bp, executor,
-	     caller, enactor, pe_info);
+             caller, enactor, pe_info);
 }
 
 /* Signal Shit */

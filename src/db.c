@@ -168,22 +168,22 @@ db_grow(dbref newtop)
       /* make the initial one */
       db_size = (db_init) ? db_init : DB_INITIAL_SIZE;
       while (db_top > db_size)
-	db_size *= 2;
+        db_size *= 2;
       if ((db = (struct object *)
-	   malloc(db_size * sizeof(struct object))) == NULL) {
-	do_rawlog(LT_ERR, "ERROR: out of memory while creating database!");
-	abort();
+           malloc(db_size * sizeof(struct object))) == NULL) {
+        do_rawlog(LT_ERR, "ERROR: out of memory while creating database!");
+        abort();
       }
     }
     /* maybe grow it */
     if (db_top > db_size) {
       /* make sure it's big enough */
       while (db_top > db_size)
-	db_size *= 2;
+        db_size *= 2;
       if ((newdb = (struct object *)
-	   realloc(db, db_size * sizeof(struct object))) == NULL) {
-	do_rawlog(LT_ERR, "ERROR: out of memory while extending database!");
-	abort();
+           realloc(db, db_size * sizeof(struct object))) == NULL) {
+        do_rawlog(LT_ERR, "ERROR: out of memory while extending database!");
+        abort();
       }
       db = newdb;
     }
@@ -327,15 +327,15 @@ db_read_labeled_string(FILE * f, char **label, char **value)
     c = getc(f);
     while (isspace(c)) {
       if (c == '\n')
-	dbline++;
+        dbline++;
       c = getc(f);
     }
     if (c == '#') {
       while ((c = getc(f)) != '\n' && c != EOF) {
-	/* nothing */
+        /* nothing */
       }
       if (c == '\n')
-	dbline++;
+        dbline++;
     }
   } while (c != EOF && isspace(c));
 
@@ -348,10 +348,10 @@ db_read_labeled_string(FILE * f, char **label, char **value)
 
   p = lbuf;
   do {
-    if (c != '_' && c != '-' && c != '!' && c != '.' && c != '>' && c != '<' && c != '#' &&	/* these really should only be first time */
-	!isalnum(c)) {
+    if (c != '_' && c != '-' && c != '!' && c != '.' && c != '>' && c != '<' && c != '#' &&     /* these really should only be first time */
+        !isalnum(c)) {
       do_rawlog(LT_ERR, "DB: Illegal character '%c'(%d) in label, line %d",
-		c, c, dbline);
+                c, c, dbline);
       longjmp(db_err, 1);
     }
     safe_chr(c, lbuf, &p);
@@ -371,7 +371,7 @@ db_read_labeled_string(FILE * f, char **label, char **value)
       do_rawlog(LT_ERR, T("DB: Unexpected EOF at line %d"), dbline);
     else
       do_rawlog(LT_ERR, T("DB: Missing value for '%s' at line %d"), lbuf,
-		dbline);
+                dbline);
     longjmp(db_err, 1);
   }
 
@@ -385,37 +385,37 @@ db_read_labeled_string(FILE * f, char **label, char **value)
     for (;;) {
       c = getc(f);
       if (c == '"')
-	break;
+        break;
       if (c == '\\')
-	c = getc(f);
+        c = getc(f);
       if (c == EOF) {
-	do_rawlog(LT_ERR, "DB: Unclosed quoted string starting on line %d",
-		  sline);
-	longjmp(db_err, 1);
+        do_rawlog(LT_ERR, "DB: Unclosed quoted string starting on line %d",
+                  sline);
+        longjmp(db_err, 1);
       }
       if (c == '\0')
-	do_rawlog(LT_ERR,
-		  "DB: warning: null in quoted string, remainder lost, line %d",
-		  dbline);
+        do_rawlog(LT_ERR,
+                  "DB: warning: null in quoted string, remainder lost, line %d",
+                  dbline);
       if (c == '\n')
-	dbline++;
+        dbline++;
       safe_chr(c, vbuf, &p);
     }
     do {
       c = getc(f);
       if (c != EOF && !isspace(c)) {
-	do_rawlog(LT_ERR, "DB: Garbage after quoted string, line %d", dbline);
-	longjmp(db_err, 1);
+        do_rawlog(LT_ERR, "DB: Garbage after quoted string, line %d", dbline);
+        longjmp(db_err, 1);
       }
     } while (c != '\n' && c != EOF);
   } else {
     /* non-quoted value */
     do {
       if (c != '_' && c != '-' && c != '!' && c != '.' &&
-	  c != '#' && !isalnum(c) && !isspace(c)) {
-	do_rawlog(LT_ERR, "DB: Illegal character '%c'(%d) in value, line %d",
-		  c, c, dbline);
-	longjmp(db_err, 1);
+          c != '#' && !isalnum(c) && !isspace(c)) {
+        do_rawlog(LT_ERR, "DB: Illegal character '%c'(%d) in value, line %d",
+                  c, c, dbline);
+        longjmp(db_err, 1);
       }
       safe_chr(c, vbuf, &p);
       c = getc(f);
@@ -450,8 +450,8 @@ db_read_this_labeled_string(FILE * f, const char *label, char **value)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
 }
@@ -473,8 +473,8 @@ db_read_this_labeled_number(FILE * f, const char *label, int *value)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
 
@@ -551,8 +551,8 @@ db_read_this_labeled_dbref(FILE * f, const char *label, dbref *val)
 
   if (strcmp(readlabel, label)) {
     do_rawlog(LT_ERR,
-	      T("DB: error: Got label '%s', expected label '%s' at line %d"),
-	      readlabel, label, dbline);
+              T("DB: error: Got label '%s', expected label '%s' at line %d"),
+              readlabel, label, dbline);
     longjmp(db_err, 1);
   }
   *val = qparse_dbref(readvalue);
@@ -848,8 +848,8 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
     strcpy(name, AL_NAME(list));
     for (p = name; *p; p++) {
       if (!isprint((unsigned char) *p) || isspace((unsigned char) *p)) {
-	*p = '!';
-	fixmemdb = err = 1;
+        *p = '!';
+        fixmemdb = err = 1;
       }
     }
     if (err) {
@@ -857,17 +857,17 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
        * number to the end. Give up if we can't find one < 10000
        */
       if (atr_get_noparent(i, name)) {
-	count = 0;
-	do {
-	  name[BUFFER_LEN - 6] = '\0';
-	  sprintf(tbuf1, "%s%d", name, count);
-	  count++;
-	} while (count < 10000 && atr_get_noparent(i, tbuf1));
-	strcpy(name, tbuf1);
+        count = 0;
+        do {
+          name[BUFFER_LEN - 6] = '\0';
+          sprintf(tbuf1, "%s%d", name, count);
+          count++;
+        } while (count < 10000 && atr_get_noparent(i, tbuf1));
+        strcpy(name, tbuf1);
       }
       do_rawlog(LT_CHECK,
-		T(" * Bad attribute name on #%d. Changing name to %s.\n"),
-		i, name);
+                T(" * Bad attribute name on #%d. Changing name to %s.\n"),
+                i, name);
       err = 0;
     }
     /* check the owner */
@@ -892,18 +892,18 @@ db_paranoid_write_object(FILE * f, dbref i, int flag)
     lastp = '\0';
     for (p = tbuf1; *p; p++) {
       if (!isprint((unsigned char) *p)) {
-	if (!isspace((unsigned char) *p)) {
-	  *p = '!';
-	  err = 1;
-	}
+        if (!isspace((unsigned char) *p)) {
+          *p = '!';
+          err = 1;
+        }
       }
       lastp = *p;
     }
     if (err) {
       fixmemdb = 1;
       do_rawlog(LT_CHECK,
-		T(" * Bad text in attribute %s on #%d. Changed to:\n"), name,
-		i);
+                T(" * Bad text in attribute %s on #%d. Changed to:\n"), name,
+                i);
       do_rawlog(LT_CHECK, "%s\n", tbuf1);
     }
     db_write_labeled_string(f, "  value", tbuf1);
@@ -1036,11 +1036,11 @@ getstring_noalloc(FILE * f)
   } else if (c != '"') {
     for (;;) {
       if ((c == '\0') || (c == EOF) ||
-	  ((c == '\n') && ((p == buf) || (p[-1] != '\r')))) {
-	*p = '\0';
-	if (c == '\n')
-	  dbline++;
-	return buf;
+          ((c == '\n') && ((p == buf) || (p[-1] != '\r')))) {
+        *p = '\0';
+        if (c == '\n')
+          dbline++;
+        return buf;
       }
       safe_chr(c, buf, &p);
       c = fgetc(f);
@@ -1049,24 +1049,24 @@ getstring_noalloc(FILE * f)
     for (;;) {
       c = fgetc(f);
       if (c == '"') {
-	/* It's a closing quote if it's followed by \r or \n */
-	c = fgetc(f);
-	if (c == '\r') {
-	  /* Get a possible \n, too */
-	  if ((c = fgetc(f)) != '\n')
-	    ungetc(c, f);
-	  else
-	    dbline++;
-	} else if (c != '\n')
-	  ungetc(c, f);
-	*p = '\0';
-	return buf;
+        /* It's a closing quote if it's followed by \r or \n */
+        c = fgetc(f);
+        if (c == '\r') {
+          /* Get a possible \n, too */
+          if ((c = fgetc(f)) != '\n')
+            ungetc(c, f);
+          else
+            dbline++;
+        } else if (c != '\n')
+          ungetc(c, f);
+        *p = '\0';
+        return buf;
       } else if (c == '\\') {
-	c = fgetc(f);
+        c = fgetc(f);
       }
       if ((c == '\0') || (c == EOF)) {
-	*p = '\0';
-	return buf;
+        *p = '\0';
+        return buf;
       }
       safe_chr(c, buf, &p);
     }
@@ -1143,9 +1143,9 @@ get_new_locks(dbref i, FILE * f, int c)
 
   if (found != count)
     do_rawlog(LT_ERR,
-	      T
-	      ("WARNING: Actual lock count (%d) different from expected count (%d)."),
-	      found, count);
+              T
+              ("WARNING: Actual lock count (%d) different from expected count (%d)."),
+              found, count);
 
 }
 
@@ -1175,7 +1175,7 @@ getlocks(dbref i, FILE * f)
       do_rawlog(LT_ERR, T("ERROR: Invalid lock format on object #%d"), i);
       return;
     }
-    b = getboolexp(f, buf);	/* Which will clobber a '\n' */
+    b = getboolexp(f, buf);     /* Which will clobber a '\n' */
     if (b == TRUE_BOOLEXP) {
       /* getboolexp() would already have complained. */
       return;
@@ -1275,22 +1275,22 @@ get_list(FILE * f, dbref i)
   tbuf1[0] = '\0';
   while (1)
     switch (c = getc(f)) {
-    case ']':			/* new style attribs, read name then value */
+    case ']':                  /* new style attribs, read name then value */
       /* Using getstring_noalloc here will cause problems with attribute
          names starting with ". This is probably a better fix than just
          disallowing " in attribute names. */
       fgets(tbuf1, BUFFER_LEN + 150, f);
       if (!(p = strchr(tbuf1, '^'))) {
-	do_rawlog(LT_ERR, T("ERROR: Bad format on new attributes. object #%d"),
-		  i);
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: Bad format on new attributes. object #%d"),
+                  i);
+        return -1;
       }
       *p++ = '\0';
       if (!(q = strchr(p, '^'))) {
-	do_rawlog(LT_ERR,
-		  T("ERROR: Bad format on new attribute %s. object #%d"),
-		  tbuf1, i);
-	return -1;
+        do_rawlog(LT_ERR,
+                  T("ERROR: Bad format on new attribute %s. object #%d"),
+                  tbuf1, i);
+        return -1;
       }
       *q++ = '\0';
       flags = atoi(q);
@@ -1320,31 +1320,31 @@ get_list(FILE * f, dbref i)
        * attributes (which, if not built-in attrs, have a flag val of 0.)
        */
       break;
-    case '>':			/* old style attribs, die noisily */
+    case '>':                  /* old style attribs, die noisily */
       do_rawlog(LT_ERR, T("ERROR: old-style attribute format in object %d"), i);
       return -1;
       break;
-    case '<':			/* end of list */
+    case '<':                  /* end of list */
       if ('\n' != getc(f)) {
-	do_rawlog(LT_ERR, T("ERROR: no line feed after < on object %d"), i);
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: no line feed after < on object %d"), i);
+        return -1;
       }
       return count;
     default:
       if (c == EOF) {
-	do_rawlog(LT_ERR, T("ERROR: Unexpected EOF on file."));
-	return -1;
+        do_rawlog(LT_ERR, T("ERROR: Unexpected EOF on file."));
+        return -1;
       }
       do_rawlog(LT_ERR,
-		T
-		("ERROR: Bad character %c (%d) in attribute list on object %d"),
-		c, c, i);
+                T
+                ("ERROR: Bad character %c (%d) in attribute list on object %d"),
+                c, c, i);
       do_rawlog(LT_ERR,
-		T("  (expecting ], >, or < as first character of the line.)"));
+                T("  (expecting ], >, or < as first character of the line.)"));
       if (*tbuf1)
-	do_rawlog(LT_ERR, T("  Last attribute read was: %s"), tbuf1);
+        do_rawlog(LT_ERR, T("  Last attribute read was: %s"), tbuf1);
       else
-	do_rawlog(LT_ERR, T("  No attributes had been read yet."));
+        do_rawlog(LT_ERR, T("  No attributes had been read yet."));
       return -1;
     }
 }
@@ -2060,6 +2060,8 @@ db_read(FILE * f)
 static void
 init_objdata_htab(int size, void (*free_data) (void *))
 {
+  if (size < 128)
+    size = 128;
   hash_init(&htab_objdata, size, 4, free_data);
   hashinit(&htab_objdata_keys, 8, 32);
 }

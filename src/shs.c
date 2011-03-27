@@ -29,10 +29,10 @@
 
 /* The SHS f() functions */
 
-#define f1(x, y, z) ( (x & y) | (~x & z) )	/* rounds 0-19 */
-#define f2(x, y, z) ( x ^ y ^ z )	/* rounds 20-39 */
-#define f3(x, y, z) ( (x & y) | (x & z) | (y & z) )	/* rounds 40-59 */
-#define f4(x, y, z) ( x ^ y ^ z )	/* rounds 60-79 */
+#define f1(x, y, z) ( (x & y) | (~x & z) )      /* rounds 0-19 */
+#define f2(x, y, z) ( x ^ y ^ z )       /* rounds 20-39 */
+#define f3(x, y, z) ( (x & y) | (x & z) | (y & z) )     /* rounds 40-59 */
+#define f4(x, y, z) ( x ^ y ^ z )       /* rounds 60-79 */
 
 /* The SHS mysterious constants */
 
@@ -108,7 +108,7 @@
 LONG h0, h1, h2, h3, h4;
 LONG A, B, C, D, E;
 
-#endif				/* DOXYGEN_SHOULD_SKIP_THIS */
+#endif                          /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /* Initialise the SHS values */
 
@@ -314,7 +314,7 @@ shsTransform(SHS_INFO *shsInfo)
   shsInfo->digest[3] += D;
   shsInfo->digest[4] += E;
 
-}				/* end of shsTransform */
+}                               /* end of shsTransform */
 
 static void byteReverse(LONG * buffer, int byteCount);
 static void
@@ -329,7 +329,7 @@ byteReverse(LONG * buffer, int byteCount)
     value = (buffer[count] << 16) | (buffer[count] >> 16);
     buffer[count] = ((value & 0xFF00FF00L) >> 8) | ((value & 0x00FF00FFL) << 8);
   }
-}				/* end of byteReverse */
+}                               /* end of byteReverse */
 
 
 /** Update SHS for a block of data. This code assumes that the buffer
@@ -346,7 +346,7 @@ shsUpdate(SHS_INFO *shsInfo, const BYTE * buffer, int count)
   /* Update bitcount */
 
   if ((shsInfo->countLo + ((LONG) count << 3)) < shsInfo->countLo)
-    shsInfo->countHi++;		/* Carry from low to high bitcount */
+    shsInfo->countHi++;         /* Carry from low to high bitcount */
 
   shsInfo->countLo += ((LONG) count << 3);
   shsInfo->countHi += ((LONG) count >> 29);
@@ -360,7 +360,7 @@ shsUpdate(SHS_INFO *shsInfo, const BYTE * buffer, int count)
     shsTransform(shsInfo);
     buffer += SHS_BLOCKSIZE;
     count -= SHS_BLOCKSIZE;
-  }				/* end of looping processing each chunk */
+  }                             /* end of looping processing each chunk */
 
   /* Handle any remaining bytes of data. This should only happen once on the final lot of data */
 
@@ -421,4 +421,4 @@ shsFinal(SHS_INFO *shsInfo)
     byteReverse(shsInfo->data, SHS_DIGESTSIZE);
 }
 
-#endif				/* HAS_OPENSSL */
+#endif                          /* HAS_OPENSSL */

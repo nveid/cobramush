@@ -256,7 +256,7 @@ do_buy(dbref player, char *item, char *from, int price)
   int affordable;
   int costcount, ci;
   int count, i;
-  int low, high;		/* lower bound, upper bound of cost */
+  int low, high;                /* lower bound, upper bound of cost */
   ATTR *a;
 
   if (!GoodObject(Location(player)))
@@ -268,8 +268,8 @@ do_buy(dbref player, char *item, char *from, int price)
 
   if (from != NULL && *from) {
     switch (vendor =
-	    match_result(player, from, TYPE_PLAYER,
-			 MAT_NEAR_THINGS | MAT_ENGLISH)) {
+            match_result(player, from, TYPE_PLAYER,
+                         MAT_NEAR_THINGS | MAT_ENGLISH)) {
     case NOTHING:
       notify(player, T("Buy from whom?"));
       return;
@@ -317,77 +317,77 @@ do_buy(dbref player, char *item, char *from, int price)
       continue;
     for (i = 0; i < count; i++) {
       if (!strncasecmp(finditem, r[i], len)) {
-	/* Check cost */
-	cost = r[i] + len;
-	if (!*cost)
-	  continue;
-	costcount = list2arr(c, BUFFER_LEN / 2, cost, ',');
-	for (ci = 0; ci < costcount; ci++) {
-	  cost = c[ci];
-	  /* Formats:
-	   * 10,2000+,10-100
-	   */
-	  if ((plus = strchr(cost, '-'))) {
-	    *(plus++) = '\0';
-	    if (!is_strict_integer(cost))
-	      continue;
-	    if (!is_strict_integer(plus))
-	      continue;
-	    low = parse_integer(cost);
-	    high = parse_integer(plus);
-	    if (price < 0) {
-	      boughtit = low;
-	    } else if (price >= low && price <= high) {
-	      boughtit = price;
-	    }
-	  } else if ((plus = strchr(cost, '+'))) {
-	    *(plus++) = '\0';
-	    if (!is_strict_integer(cost))
-	      continue;
-	    low = parse_integer(cost);
-	    if (price < 0) {
-	      boughtit = low;
-	    } else if (price > low) {
-	      boughtit = price;
-	    }
-	  } else if (is_strict_integer(cost)) {
-	    low = parse_integer(cost);
-	    if (price < 0) {
-	      boughtit = low;
-	    } else if (low == price) {
-	      boughtit = price;
-	    }
-	  } else {
-	    continue;
-	  }
-	  if (boughtit >= 0) {
-	    if (!payfor(player, boughtit)) {
-	      affordable = 0;
-	      boughtit = 0;
-	      continue;
-	    }
-	    bp = strchr(finditem, ':');
-	    if (bp)
-	      *bp = '\0';
-	    for (bp = finditem; *bp; bp++)
-	      *bp = DOWNCASE(*bp);
-	    bp = buff;
-	    safe_format(buff, &bp, "You buy a %s from %s.",
-			finditem, Name(vendor));
-	    *bp = '\0';
-	    bp = obuff;
-	    safe_format(obuff, &bp, "buys a %s from %s.",
-			finditem, Name(vendor));
-	    buy_env[0] = finditem;
-	    buy_env[1] = buycost;
-	    bp = buycost;
-	    safe_integer(boughtit, buycost, &bp);
-	    *bp = '\0';
-	    real_did_it(player, vendor, "BUY", buff, "OBUY", obuff, "ABUY",
-			NOTHING, buy_env, NA_INTER_SEE);
-	    return;
-	  }
-	}
+        /* Check cost */
+        cost = r[i] + len;
+        if (!*cost)
+          continue;
+        costcount = list2arr(c, BUFFER_LEN / 2, cost, ',');
+        for (ci = 0; ci < costcount; ci++) {
+          cost = c[ci];
+          /* Formats:
+           * 10,2000+,10-100
+           */
+          if ((plus = strchr(cost, '-'))) {
+            *(plus++) = '\0';
+            if (!is_strict_integer(cost))
+              continue;
+            if (!is_strict_integer(plus))
+              continue;
+            low = parse_integer(cost);
+            high = parse_integer(plus);
+            if (price < 0) {
+              boughtit = low;
+            } else if (price >= low && price <= high) {
+              boughtit = price;
+            }
+          } else if ((plus = strchr(cost, '+'))) {
+            *(plus++) = '\0';
+            if (!is_strict_integer(cost))
+              continue;
+            low = parse_integer(cost);
+            if (price < 0) {
+              boughtit = low;
+            } else if (price > low) {
+              boughtit = price;
+            }
+          } else if (is_strict_integer(cost)) {
+            low = parse_integer(cost);
+            if (price < 0) {
+              boughtit = low;
+            } else if (low == price) {
+              boughtit = price;
+            }
+          } else {
+            continue;
+          }
+          if (boughtit >= 0) {
+            if (!payfor(player, boughtit)) {
+              affordable = 0;
+              boughtit = 0;
+              continue;
+            }
+            bp = strchr(finditem, ':');
+            if (bp)
+              *bp = '\0';
+            for (bp = finditem; *bp; bp++)
+              *bp = DOWNCASE(*bp);
+            bp = buff;
+            safe_format(buff, &bp, "You buy a %s from %s.",
+                        finditem, Name(vendor));
+            *bp = '\0';
+            bp = obuff;
+            safe_format(obuff, &bp, "buys a %s from %s.",
+                        finditem, Name(vendor));
+            buy_env[0] = finditem;
+            buy_env[1] = buycost;
+            bp = buycost;
+            safe_integer(boughtit, buycost, &bp);
+            *bp = '\0';
+            real_did_it(player, vendor, "BUY", buff, "OBUY", obuff, "ABUY",
+                        NOTHING, buy_env, NA_INTER_SEE);
+            return;
+          }
+        }
       }
     }
   } while (!from && ((vendor = Next(vendor)) != NOTHING));
@@ -397,7 +397,7 @@ do_buy(dbref player, char *item, char *from, int price)
       notify(player, T("I can't find that item with that price here."));
     } else {
       notify_format(player, T("%s isn't selling that item for that price"),
-		    Name(vendor));
+                    Name(vendor));
     }
   } else if (affordable) {
     if (!from) {

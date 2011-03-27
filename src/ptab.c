@@ -20,8 +20,8 @@ static int WIN32_CDECL ptab_cmp(const void *, const void *);
 
 /** A ptab entry. */
 typedef struct ptab_entry {
-  void *data;			/**< pointer to data */
-  char key[BUFFER_LEN];		/**< the index key */
+  void *data;                   /**< pointer to data */
+  char key[BUFFER_LEN];         /**< the index key */
 } ptab_entry;
 
 /** The memory usage of a ptab entry, not including data. */
@@ -72,16 +72,16 @@ ptab_find(PTAB *tab, const char *key)
   if (!tab || !key || !*key || tab->state)
     return NULL;
 
-  if (tab->len < 10) {		/* Just do a linear search for small tables */
+  if (tab->len < 10) {          /* Just do a linear search for small tables */
     for (nun = 0; nun < tab->len; nun++) {
       if (string_prefix(tab->tab[nun]->key, key)) {
-	if (nun + 1 < tab->len && string_prefix(tab->tab[nun + 1]->key, key))
-	  return NULL;
-	else
-	  return tab->tab[nun]->data;
+        if (nun + 1 < tab->len && string_prefix(tab->tab[nun + 1]->key, key))
+          return NULL;
+        else
+          return tab->tab[nun]->data;
       }
     }
-  } else {			/* Binary search of the index */
+  } else {                      /* Binary search of the index */
     int left = 0;
     int cmp;
     int right = tab->len - 1;
@@ -90,44 +90,44 @@ ptab_find(PTAB *tab, const char *key)
       nun = (left + right) / 2;
 
       if (left > right)
-	break;
+        break;
 
       cmp = strcasecmp(key, tab->tab[nun]->key);
 
       if (cmp == 0) {
-	return tab->tab[nun]->data;
+        return tab->tab[nun]->data;
       } else if (cmp < 0) {
-	int mem;
-	/* We need to catch the first unique prefix */
-	if (string_prefix(tab->tab[nun]->key, key)) {
-	  for (mem = nun - 1; mem >= 0; mem--) {
-	    if (string_prefix(tab->tab[mem]->key, key)) {
-	      if (strcasecmp(tab->tab[mem]->key, key) == 0)
-		return tab->tab[mem]->data;
-	    } else
-	      break;
-	  }
-	  /* Non-unique prefix */
-	  if (mem != nun - 1)
-	    return NULL;
-	  for (mem = nun + 1; mem < tab->len; mem++) {
-	    if (string_prefix(tab->tab[mem]->key, key)) {
-	      if (strcasecmp(tab->tab[mem]->key, key) == 0)
-		return tab->tab[mem]->data;
-	    } else
-	      break;
-	  }
-	  if (mem != nun + 1)
-	    return NULL;
-	  return tab->tab[nun]->data;
-	}
-	if (left == right)
-	  break;
-	right = nun - 1;
-      } else {			/* cmp > 0 */
-	if (left == right)
-	  break;
-	left = nun + 1;
+        int mem;
+        /* We need to catch the first unique prefix */
+        if (string_prefix(tab->tab[nun]->key, key)) {
+          for (mem = nun - 1; mem >= 0; mem--) {
+            if (string_prefix(tab->tab[mem]->key, key)) {
+              if (strcasecmp(tab->tab[mem]->key, key) == 0)
+                return tab->tab[mem]->data;
+            } else
+              break;
+          }
+          /* Non-unique prefix */
+          if (mem != nun - 1)
+            return NULL;
+          for (mem = nun + 1; mem < tab->len; mem++) {
+            if (string_prefix(tab->tab[mem]->key, key)) {
+              if (strcasecmp(tab->tab[mem]->key, key) == 0)
+                return tab->tab[mem]->data;
+            } else
+              break;
+          }
+          if (mem != nun + 1)
+            return NULL;
+          return tab->tab[nun]->data;
+        }
+        if (left == right)
+          break;
+        right = nun - 1;
+      } else {                  /* cmp > 0 */
+        if (left == right)
+          break;
+        left = nun + 1;
       }
     }
   }
@@ -160,16 +160,16 @@ ptab_find_exact_nun(PTAB *tab, const char *key)
   if (!tab || !key || tab->state)
     return -1;
 
-  if (tab->len < 10) {		/* Just do a linear search for small tables */
+  if (tab->len < 10) {          /* Just do a linear search for small tables */
     int cmp;
     for (nun = 0; nun < tab->len; nun++) {
       cmp = strcasecmp(tab->tab[nun]->key, key);
       if (cmp == 0)
-	return nun;
+        return nun;
       else if (cmp > 0)
-	return -1;
+        return -1;
     }
-  } else {			/* Binary search of the index */
+  } else {                      /* Binary search of the index */
     int left = 0;
     int cmp;
     int right = tab->len - 1;
@@ -178,18 +178,18 @@ ptab_find_exact_nun(PTAB *tab, const char *key)
       nun = (left + right) / 2;
 
       if (left > right)
-	break;
+        break;
 
       cmp = strcasecmp(key, tab->tab[nun]->key);
 
       if (cmp == 0)
-	return nun;
+        return nun;
       if (left == right)
-	break;
+        break;
       if (cmp < 0)
-	right = nun - 1;
-      else			/* cmp > 0 */
-	left = nun + 1;
+        right = nun - 1;
+      else                      /* cmp > 0 */
+        left = nun + 1;
     }
   }
   return -1;
@@ -360,5 +360,5 @@ ptab_stats(dbref player, PTAB *tab, const char *pname)
     mem += PTAB_SIZE + strlen(tab->tab[nun]->key) + 1;
 
   notify_format(player, "%-10s %7d %14.3f %39d", pname, tab->len, log(tab->len),
-		mem);
+                mem);
 }

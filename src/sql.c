@@ -94,11 +94,11 @@ sql_init(void)
       mysql_struct = mysql_init(NULL);
 
       if (!mysql_real_connect
-	  (mysql_struct, SQL_HOST, SQL_USER, SQL_PASS, SQL_DB, 3306, 0, 0)) {
-	do_rawlog(LT_ERR, "Failed mysql connection: %s\n",
-		  mysql_error(mysql_struct));
-	sql_shutdown();
-	sleep(1);
+          (mysql_struct, SQL_HOST, SQL_USER, SQL_PASS, SQL_DB, 3306, 0, 0)) {
+        do_rawlog(LT_ERR, "Failed mysql connection: %s\n",
+                  mysql_error(mysql_struct));
+        sql_shutdown();
+        sleep(1);
       }
       retries--;
     }
@@ -249,7 +249,7 @@ FUNCTION(fun_mapsql)
     for (i = 0; (i < numfields) && (i < 9); i++) {
 	wenv[i + 1] = row_p[i];
       if (!wenv[i + 1])
-	wenv[i + 1] = (char *) "";
+        wenv[i + 1] = (char *) "";
     }
     /* Now call the ufun. */
     if (call_ufun(&ufun, wenv, i + 1, rbuff, executor, enactor, pe_info))
@@ -312,12 +312,12 @@ FUNCTION(fun_sql)
     }
     for (i = 0; i < numfields; i++) {
       if (i > 0) {
-	if (safe_str(fieldsep, buff, bp))
-	  goto finished;
+        if (safe_str(fieldsep, buff, bp))
+          goto finished;
       }
       if (row_p[i] && *row_p[i])
-	if (safe_str(row_p[i], buff, bp))
-	  goto finished;	/* We filled the buffer, best stop */
+        if (safe_str(row_p[i], buff, bp))
+          goto finished;        /* We filled the buffer, best stop */
     }
   }
 finished:
@@ -385,9 +385,9 @@ COMMAND (cmd_sql) {
     rownum++;
     if (numfields > 0) {
       for (i = 0; i < numfields; i++) {
-	cell = row_p[i];
-	notify_format(player, "Row %d, Field %s: %s",
-		      rownum, fields[i].name, (cell && *cell) ? cell : "NULL");
+        cell = row_p[i];
+        notify_format(player, "Row %d, Field %s: %s",
+                      rownum, fields[i].name, (cell && *cell) ? cell : "NULL");
       }
     } else
       notify_format(player, "Row %d: NULL", rownum);

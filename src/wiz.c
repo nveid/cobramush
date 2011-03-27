@@ -83,9 +83,9 @@ int tport_dest_ok(dbref player, dbref victim, dbref dest);
 int tport_control_ok(dbref player, dbref victim, dbref loc);
 static int mem_usage(dbref thing);
 static int raw_search(dbref player, const char *owner, int nargs,
-		      const char **args, dbref **result, PE_Info * pe_info);
+                      const char **args, dbref **result, PE_Info * pe_info);
 static int fill_search_spec(dbref player, const char *owner, int nargs,
-			    const char **args, struct search_spec *spec);
+                            const char **args, struct search_spec *spec);
 
 #ifdef INFO_SLAVE
 void kill_info_slave(void);
@@ -121,11 +121,11 @@ do_pcreate(dbref creator, const char *player_name, const char *player_password)
   }
   if (player == AMBIGUOUS) {
     notify_format(creator, T("Failure creating '%s' (bad password)"),
-		  player_name);
+                  player_name);
     return NOTHING;
   }
   notify_format(creator, T("New player '%s' (#%d) created with password '%s'"),
-		player_name, player, player_password);
+                player_name, player, player_password);
   do_log(LT_WIZ, creator, player, T("Player creation"));
   return player;
 }
@@ -1407,12 +1407,12 @@ FUNCTION(fun_quota)
     return;
   }
   /* count up all owned objects */
-  owned = -1;			/* a player is never included in his own
-				 * quota */
+  owned = -1;                   /* a player is never included in his own
+                                 * quota */
   for (thing = 0; thing < db_top; thing++) {
     if (Owner(thing) == who)
       if (!IsGarbage(thing))
-	++owned;
+        ++owned;
   }
 
   safe_integer(owned + get_current_quota(who), buff, bp);
@@ -1431,7 +1431,7 @@ FUNCTION(fun_quota)
  */
 void
 do_sitelock(dbref player, const char *site, const char *opts, const char *who,
-	    enum sitelock_type type)
+            enum sitelock_type type)
 {
 
   if (opts && *opts) {
@@ -1447,11 +1447,11 @@ do_sitelock(dbref player, const char *site, const char *opts, const char *who,
       notify(player, T("No valid options found."));
       return;
     }
-    if (who && *who) {		/* Specify a character */
+    if (who && *who) {          /* Specify a character */
       whod = lookup_player(who);
       if (!GoodObject(whod)) {
-	notify(player, T("Who do you want to lock?"));
-	return;
+        notify(player, T("Who do you want to lock?"));
+        return;
       }
     }
 
@@ -1459,11 +1459,11 @@ do_sitelock(dbref player, const char *site, const char *opts, const char *who,
     write_access_file();
     if (whod != AMBIGUOUS) {
       notify_format(player,
-		    T("Site %s access options for %s(%s) set to %s"),
-		    site, Name(whod), unparse_dbref(whod), opts);
+                    T("Site %s access options for %s(%s) set to %s"),
+                    site, Name(whod), unparse_dbref(whod), opts);
       do_log(LT_WIZ, player, NOTHING,
-	     T("*** SITELOCK *** %s for %s(%s) --> %s"), site,
-	     Name(whod), unparse_dbref(whod), opts);
+             T("*** SITELOCK *** %s for %s(%s) --> %s"), site,
+             Name(whod), unparse_dbref(whod), opts);
     } else {
       notify_format(player, T("Site %s access options set to %s"), site, opts);
       do_log(LT_WIZ, player, NOTHING, "*** SITELOCK *** %s --> %s", site, opts);
@@ -1491,27 +1491,27 @@ do_sitelock(dbref player, const char *site, const char *opts, const char *who,
       do_log(LT_WIZ, player, NOTHING, "*** SITELOCK *** %s", site);
       break;
     case SITELOCK_CHECK:{
-	struct access *ap;
-	char tbuf[BUFFER_LEN], *bp;
-	int rulenum;
-	if (!site || !*site) {
-	  do_list_access(player);
-	  return;
-	}
-	ap = site_check_access(site, AMBIGUOUS, &rulenum);
-	bp = tbuf;
-	format_access(ap, rulenum, AMBIGUOUS, tbuf, &bp);
-	*bp = '\0';
-	notify(player, tbuf);
-	break;
+        struct access *ap;
+        char tbuf[BUFFER_LEN], *bp;
+        int rulenum;
+        if (!site || !*site) {
+          do_list_access(player);
+          return;
+        }
+        ap = site_check_access(site, AMBIGUOUS, &rulenum);
+        bp = tbuf;
+        format_access(ap, rulenum, AMBIGUOUS, tbuf, &bp);
+        *bp = '\0';
+        notify(player, tbuf);
+        break;
       }
     case SITELOCK_REMOVE:{
-	int n;
-	n = remove_access_sitelock(site);
-	if (n > 0)
-	  write_access_file();
-	notify_format(player, T("%d sitelocks removed."), n);
-	break;
+        int n;
+        n = remove_access_sitelock(site);
+        if (n > 0)
+          write_access_file();
+        notify_format(player, T("%d sitelocks removed."), n);
+        break;
       }
     }
   }
@@ -1644,8 +1644,8 @@ mem_usage(dbref thing)
   int k;
   ATTR *m;
   lock_list *l;
-  k = sizeof(struct object);	/* overhead */
-  k += strlen(Name(thing)) + 1;	/* The name */
+  k = sizeof(struct object);    /* overhead */
+  k += strlen(Name(thing)) + 1; /* The name */
   for (m = List(thing); m; m = AL_NEXT(m)) {
     k += sizeof(ATTR);
     if (AL_STR(m) && *AL_STR(m))
@@ -1741,7 +1741,7 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
   strcpy(spec->name, "");
   spec->low = 0;
   spec->high = db_top - 1;
-  spec->start = 1;		/* 1-indexed */
+  spec->start = 1;              /* 1-indexed */
   spec->count = 0;
 
   /* set limits on who we search */
@@ -1978,7 +1978,7 @@ fill_search_spec(dbref player, const char *owner, int nargs, const char **args,
 /* Does the actual searching */
 static int
 raw_search(dbref player, const char *owner, int nargs, const char **args,
-	   dbref **result, PE_Info * pe_info)
+           dbref **result, PE_Info * pe_info)
 {
   size_t result_size;
   size_t nresults = 0;
@@ -1989,7 +1989,7 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
   /* make sure player has money to do the search */
   if (!payfor(player, FIND_COST)) {
     notify_format(player, T("Searches cost %d %s."), FIND_COST,
-		  ((FIND_COST == 1) ? MONEY : MONIES));
+                  ((FIND_COST == 1) ? MONEY : MONIES));
     return -1;
   }
 
@@ -2056,11 +2056,11 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
       ebuf2 = ebuf1;
       bp = tbuf1;
       process_expression(tbuf1, &bp, &ebuf2, player, player, player,
-			 PE_DEFAULT, PT_DEFAULT, pe_info);
+                         PE_DEFAULT, PT_DEFAULT, pe_info);
       mush_free((Malloc_t) ebuf1, "replace_string.buff");
       *bp = '\0';
       if (!parse_boolean(tbuf1))
-	continue;
+        continue;
     }
 
     /* Only include the matching dbrefs from start to start+count */
@@ -2076,9 +2076,9 @@ raw_search(dbref player, const char *owner, int nargs, const char **args,
       dbref *newresults;
       result_size *= 2;
       newresults =
-	(dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
+        (dbref *) realloc((Malloc_t) *result, sizeof(dbref) * result_size);
       if (!newresults)
-	mush_panic(T("Couldn't reallocate memory in search!"));
+        mush_panic(T("Couldn't reallocate memory in search!"));
       *result = newresults;
     }
 

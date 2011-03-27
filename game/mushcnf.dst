@@ -224,10 +224,11 @@ idle_time	30m
 # been no activity for a few minutes; they tend to assume the web is
 # the internet, and don't deal well with persistant connections like
 # mushes use. This option will make the server automatically send a
-# 'Are you still there?' query every few minutes to keep the
+# TCP-level 'Are you still there?' query every few minutes to keep the
 # connection active.
-# NOTE: This doesn't work on all OSes, but does on the most popular
-# ones for mush hosting such as linux.
+# NOTE: This doesn't work on all OSes, but does some of the most popular
+# ones for mush hosting such as linux. Other options include the KEEPALIVE
+# flag and the IDLE command.
 keepalive_timeout 5m
 
 # Should there be a limit on the number of logins the MUSH

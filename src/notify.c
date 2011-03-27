@@ -20,7 +20,7 @@
 #include <windows.h>
 #include <winsock.h>
 #include <io.h>
-#else				/* !WIN32 */
+#else                           /* !WIN32 */
 #ifdef I_SYS_FILE
 #include <sys/file.h>
 #endif
@@ -43,7 +43,7 @@
 #ifdef I_SYS_STAT
 #include <sys/stat.h>
 #endif
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */
 #include <time.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -213,35 +213,35 @@ fillstate(int state[6], const unsigned char **f)
     p++;
     while (*p && *p != 'm') {
       if ((*p > '9') || (*p < '0')) {
-	/* Nada */
+        /* Nada */
       } else if (!(*(p + 1)) || (*(p + 1) == 'm') || (*(p + 1) == ';')) {
-	/* ShortCode */ ;
-	switch (*p) {
-	case '0':
-	  for (i = 0; i < 6; i++)
-	    state[i] = 0;
-	  break;
-	case '1':
-	  state[TA_BOLD] = 1;
-	  break;
-	case '7':
-	  state[TA_REV] = 1;
-	  break;
-	case '5':
-	  state[TA_BLINK] = 1;
-	  break;
-	case '4':
-	  state[TA_ULINE] = 1;
-	  break;
-	}
+        /* ShortCode */ ;
+        switch (*p) {
+        case '0':
+          for (i = 0; i < 6; i++)
+            state[i] = 0;
+          break;
+        case '1':
+          state[TA_BOLD] = 1;
+          break;
+        case '7':
+          state[TA_REV] = 1;
+          break;
+        case '5':
+          state[TA_BLINK] = 1;
+          break;
+        case '4':
+          state[TA_ULINE] = 1;
+          break;
+        }
       } else {
-	n = (*p - '0') * 10;
-	p++;
-	n += (*p - '0');
-	if ((n >= 30) && (n <= 37))
-	  state[TA_FGC] = n - 29;
-	else if ((n >= 40) && (n <= 47))
-	  state[TA_BGC] = n - 39;
+        n = (*p - '0') * 10;
+        p++;
+        n += (*p - '0');
+        if ((n >= 30) && (n <= 37))
+          state[TA_FGC] = n - 29;
+        else if ((n >= 40) && (n <= 47))
+          state[TA_BGC] = n - 39;
       }
       p++;
     }
@@ -349,18 +349,18 @@ notify_makestring(const char *message, struct notify_strings messages[],
     while (*p) {
       switch (*p) {
       case TAG_START:
-	while (*p && *p != TAG_END)
-	  p++;
-	break;
+        while (*p && *p != TAG_END)
+          p++;
+        break;
       case '\r':
       case BEEP_CHAR:
-	break;
+        break;
       case ESC_CHAR:
-	while (*p && *p != 'm')
-	  p++;
-	break;
+        while (*p && *p != 'm')
+          p++;
+        break;
       default:
-	safe_chr(*p, t, &o);
+        safe_chr(*p, t, &o);
       }
       p++;
     }
@@ -378,31 +378,31 @@ notify_makestring(const char *message, struct notify_strings messages[],
     while (*p) {
       switch (*p) {
       case IAC:
-	if (type == NA_TPASCII)
-	  safe_str("\xFF\xFF", t, &o);
-	else if (strip)
-	  safe_str(accent_table[IAC].base, t, &o);
-	else
-	  safe_chr((char) IAC, t, &o);
-	break;
+        if (type == NA_TPASCII)
+          safe_strl("\xFF\xFF", 2, t, &o);
+        else if (strip)
+          safe_str(accent_table[IAC].base, t, &o);
+        else
+          safe_chr((char) IAC, t, &o);
+        break;
       case TAG_START:
-	while (*p && *p != TAG_END)
-	  p++;
-	break;
+        while (*p && *p != TAG_END)
+          p++;
+        break;
       case ESC_CHAR:
-	while (*p && *p != 'm')
-	  p++;
-	break;
+        while (*p && *p != 'm')
+          p++;
+        break;
       case '\r':
-	break;
+        break;
       case '\n':
-	safe_str("\r\n", t, &o);
-	break;
+        safe_strl("\r\n", 2, t, &o);
+        break;
       default:
-	if (strip && accent_table[(unsigned char) *p].base)
-	  safe_str(accent_table[(unsigned char) *p].base, t, &o);
-	else
-	  safe_chr(*p, t, &o);
+        if (strip && accent_table[(unsigned char) *p].base)
+          safe_str(accent_table[(unsigned char) *p].base, t, &o);
+        else
+          safe_chr(*p, t, &o);
       }
       p++;
     }
@@ -428,83 +428,83 @@ notify_makestring(const char *message, struct notify_strings messages[],
     while (*p) {
       switch ((unsigned char) *p) {
       case IAC:
-	if (changed) {
-	  changed = 0;
-	  ansi_change_state(t, &o, color, state, newstate);
-	}
-	if (type == NA_TANSI || type == NA_TCOLOR)
-	  safe_str("\xFF\xFF", t, &o);
-	else if (strip && accent_table[IAC].base)
-	  safe_str(accent_table[IAC].base, t, &o);
-	else
-	  safe_chr((char) IAC, t, &o);
-	break;
+        if (changed) {
+          changed = 0;
+          ansi_change_state(t, &o, color, state, newstate);
+        }
+        if (type == NA_TANSI || type == NA_TCOLOR)
+          safe_str("\xFF\xFF", t, &o);
+        else if (strip && accent_table[IAC].base)
+          safe_str(accent_table[IAC].base, t, &o);
+        else
+          safe_chr((char) IAC, t, &o);
+        break;
       case TAG_START:
-	if (pueblo) {
-	  safe_chr('<', t, &o);
-	  p++;
-	  while ((*p) && (*p != TAG_END)) {
-	    safe_chr(*p, t, &o);
-	    p++;
-	  }
-	  safe_chr('>', t, &o);
-	} else {
-	  /* Non-pueblo */
-	  while (*p && *p != TAG_END)
-	    p++;
-	}
-	break;
+        if (pueblo) {
+          safe_chr('<', t, &o);
+          p++;
+          while ((*p) && (*p != TAG_END)) {
+            safe_chr(*p, t, &o);
+            p++;
+          }
+          safe_chr('>', t, &o);
+        } else {
+          /* Non-pueblo */
+          while (*p && *p != TAG_END)
+            p++;
+        }
+        break;
       case TAG_END:
-	/* Should never be seen alone */
-	break;
+        /* Should never be seen alone */
+        break;
       case '\r':
-	break;
+        break;
       case ESC_CHAR:
-	fillstate(newstate, &p);
-	changed = 1;
-	break;
+        fillstate(newstate, &p);
+        changed = 1;
+        break;
       default:
-	if (changed) {
-	  changed = 0;
-	  ansi_change_state(t, &o, color, state, newstate);
-	}
-	if (pueblo) {
-	  if (strip) {
-	    /* Even if we're NOACCENTS, we must still translate a few things */
-	    switch ((unsigned char) *p) {
-	    case '\n':
-	    case '&':
-	    case '<':
-	    case '>':
-	    case '"':
-	      safe_str(accent_table[(unsigned char) *p].entity, t, &o);
-	      break;
-	    default:
-	      if (accent_table[(unsigned char) *p].base)
-		safe_str(accent_table[(unsigned char) *p].base, t, &o);
-	      else
-		safe_chr(*p, t, &o);
-	      break;
-	    }
-	  } else if (accent_table[(unsigned char) *p].entity)
-	    safe_str(accent_table[(unsigned char) *p].entity, t, &o);
-	  else
-	    safe_chr(*p, t, &o);
-	} else {
-	  /* Non-pueblo */
-	  if ((unsigned char) *p == '\n')
-	    safe_str("\r\n", t, &o);
-	  else if (strip && accent_table[(unsigned char) *p].base)
-	    safe_str(accent_table[(unsigned char) *p].base, t, &o);
-	  else
-	    safe_chr(*p, t, &o);
-	}
+        if (changed) {
+          changed = 0;
+          ansi_change_state(t, &o, color, state, newstate);
+        }
+        if (pueblo) {
+          if (strip) {
+            /* Even if we're NOACCENTS, we must still translate a few things */
+            switch ((unsigned char) *p) {
+            case '\n':
+            case '&':
+            case '<':
+            case '>':
+            case '"':
+              safe_str(accent_table[(unsigned char) *p].entity, t, &o);
+              break;
+            default:
+              if (accent_table[(unsigned char) *p].base)
+                safe_str(accent_table[(unsigned char) *p].base, t, &o);
+              else
+                safe_chr(*p, t, &o);
+              break;
+            }
+          } else if (accent_table[(unsigned char) *p].entity)
+            safe_str(accent_table[(unsigned char) *p].entity, t, &o);
+          else
+            safe_chr(*p, t, &o);
+        } else {
+          /* Non-pueblo */
+          if ((unsigned char) *p == '\n')
+            safe_str("\r\n", t, &o);
+          else if (strip && accent_table[(unsigned char) *p].base)
+            safe_str(accent_table[(unsigned char) *p].base, t, &o);
+          else
+            safe_chr(*p, t, &o);
+        }
       }
       p++;
     }
     if (state[TA_BOLD] || state[TA_REV] ||
-	state[TA_BLINK] || state[TA_ULINE] ||
-	(color && (state[TA_FGC] || state[TA_BGC])))
+        state[TA_BLINK] || state[TA_ULINE] ||
+        (color && (state[TA_FGC] || state[TA_BGC])))
       safe_str(ANSI_NORMAL, t, &o);
 
     break;
@@ -661,7 +661,7 @@ na_exceptN(dbref current, void *data)
     check = 0;
     for (i = 2; i < dbrefs[0] + 2; i++)
       if (current == dbrefs[i])
-	check = 1;
+        check = 1;
   } while (check);
   return current;
 }
@@ -693,14 +693,14 @@ notify_type(DESC *d)
   } else if (ShowAnsi(d->player)) {
     if (ShowAnsiColor(d->player)) {
       if (strip)
-	poutput = NA_NCOLOR;
+        poutput = NA_NCOLOR;
       else
-	poutput = (d->conn_flags & CONN_TELNET) ? NA_TCOLOR : NA_COLOR;
+        poutput = (d->conn_flags & CONN_TELNET) ? NA_TCOLOR : NA_COLOR;
     } else {
       if (strip)
-	poutput = NA_NANSI;
+        poutput = NA_NANSI;
       else
-	poutput = (d->conn_flags & CONN_TELNET) ? NA_TANSI : NA_ANSI;
+        poutput = (d->conn_flags & CONN_TELNET) ? NA_TANSI : NA_ANSI;
     }
   } else {
     if (strip)
@@ -726,9 +726,9 @@ notify_type(DESC *d)
  */
 void
 notify_anything_loc(dbref speaker, na_lookup func,
-		    void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
-						  int), int flags,
-		    const char *message, dbref loc)
+                    void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
+                                                  int), int flags,
+                    const char *message, dbref loc)
 {
   dbref target;
   dbref passalong[3];
@@ -1031,9 +1031,9 @@ notify_anything_loc(dbref speaker, na_lookup func,
  */
 void
 notify_anything(dbref speaker, na_lookup func,
-		void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
-					      int), int flags,
-		const char *message)
+                void *fdata, char *(*nsfunc) (dbref, na_lookup func, void *,
+                                              int), int flags,
+                const char *message)
 {
   dbref loc;
 
@@ -1089,9 +1089,9 @@ notify_format(dbref player, const char *fmt, ...)
  */
 void WIN32_CDECL
 notify_anything_format(dbref speaker, na_lookup func,
-		       void *fdata, char *(*nsfunc) (dbref, na_lookup func,
-						     void *, int), int flags,
-		       const char *fmt, ...)
+                       void *fdata, char *(*nsfunc) (dbref, na_lookup func,
+                                                     void *, int), int flags,
+                       const char *fmt, ...)
 {
 #ifdef HAS_VSNPRINTF
   char buff[BUFFER_LEN];
@@ -1122,7 +1122,7 @@ notify_anything_format(dbref speaker, na_lookup func,
  */
 void
 notify_list(dbref speaker, dbref thing, const char *atr, const char *msg,
-	    int flags)
+            int flags)
 {
   char *fwdstr, *orig, *curr;
   char tbuf1[BUFFER_LEN], *bp;
@@ -1142,9 +1142,9 @@ notify_list(dbref speaker, dbref thing, const char *atr, const char *msg,
     make_prefixstr(thing, msg, tbuf1);
     if (!(flags & NA_SPOOF)) {
       if (Nospoof(thing))
-	nsflags |= NA_NOSPOOF;
+        nsflags |= NA_NOSPOOF;
       if (Paranoid(thing))
-	nsflags |= NA_PARANOID;
+        nsflags |= NA_PARANOID;
     }
   } else {
     safe_str(msg, tbuf1, &bp);
@@ -1239,7 +1239,7 @@ safe_tag_cancel(char const *a_tag, char *buf, char **bp)
  */
 int
 safe_tag_wrap(char const *a_tag, char const *params, char const *data,
-	      char *buf, char **bp, dbref player)
+              char *buf, char **bp, dbref player)
 {
   int result = 0;
   char *save = buf;
@@ -1378,7 +1378,7 @@ flush_queue(struct text_queue *q, int n)
     q->head = p->nxt;
 #ifdef DEBUG
     do_rawlog(LT_ERR, "free_text_block(0x%x) at 1.", p);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
     free_text_block(p);
   }
   p =
@@ -1403,7 +1403,7 @@ ssl_flush_queue(struct text_queue *q)
       q->head->nxt = p->nxt;
 #ifdef DEBUG
       do_rawlog(LT_ERR, "free_text_block(0x%x) at 1.", p);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
       free_text_block(p);
     }
   }
@@ -1482,13 +1482,13 @@ queue_newwrite(DESC *d, const unsigned char *b, int n)
     if (space < 0) {
 #ifdef HAS_OPENSSL
       if (d->ssl) {
-	/* Now we have a problem, as SSL works in blocks and you can't
-	 * just partially flush stuff.
-	 */
-	d->output_size = ssl_flush_queue(&d->output);
+        /* Now we have a problem, as SSL works in blocks and you can't
+         * just partially flush stuff.
+         */
+        d->output_size = ssl_flush_queue(&d->output);
       } else
 #endif
-	d->output_size -= flush_queue(&d->output, -space);
+        d->output_size -= flush_queue(&d->output, -space);
     }
   }
   add_to_queue(&d->output, b, n);
@@ -1561,7 +1561,7 @@ freeqs(DESC *d)
     next = cur->nxt;
 #ifdef DEBUG
     do_rawlog(LT_ERR, "free_text_block(0x%x) at 3.", cur);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
     free_text_block(cur);
     cur = next;
   }
@@ -1573,7 +1573,7 @@ freeqs(DESC *d)
     next = cur->nxt;
 #ifdef DEBUG
     do_rawlog(LT_ERR, "free_text_block(0x%x) at 4.", cur);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
     free_text_block(cur);
     cur = next;
   }
@@ -1596,7 +1596,7 @@ freeqs(DESC *d)
  *       */
 char *
 ns_esnotify(dbref speaker, na_lookup func __attribute__ ((__unused__)),
-	    void *fdata __attribute__ ((__unused__)), int para)
+            void *fdata __attribute__ ((__unused__)), int para)
 {
   char *dest, *bp;
   bp = dest = mush_malloc(BUFFER_LEN, "string");
@@ -1608,7 +1608,7 @@ ns_esnotify(dbref speaker, na_lookup func __attribute__ ((__unused__)),
       safe_format(dest, &bp, "[%s(#%d)] ", Name(speaker), speaker);
     else
       safe_format(dest, &bp, "[%s(#%d)'s %s(#%d)] ", Name(Owner(speaker)),
-		  Owner(speaker), Name(speaker), speaker);
+                  Owner(speaker), Name(speaker), speaker);
   } else
     safe_format(dest, &bp, "[%s:] ", spname(speaker));
   *bp = '\0';

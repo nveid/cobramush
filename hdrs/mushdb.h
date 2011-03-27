@@ -236,4 +236,4 @@ int unfindable(dbref);
 /* Available: 0x08 - 0x8000 */
 #define RDBF_SU_EXIT_PATH	0x00010000
 
-#endif				/* __DB_H */
+#endif                          /* __DB_H */

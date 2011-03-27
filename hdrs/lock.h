@@ -22,11 +22,11 @@
  * An object's locks are represented as a linked list of these structures.
  */
 struct lock_list {
-  lock_type type;		/**< Type of lock */
-  boolexp key;		/**< Lock value ("key") */
-  dbref creator;		/**< Dbref of lock creator */
-  int flags;			/**< Lock flags */
-  struct lock_list *next;	/**< Pointer to next lock in object's list */
+  lock_type type;               /**< Type of lock */
+  boolexp key;          /**< Lock value ("key") */
+  dbref creator;                /**< Dbref of lock creator */
+  int flags;                    /**< Lock flags */
+  struct lock_list *next;       /**< Pointer to next lock in object's list */
 };
 
 /* Our table of lock types, attributes, and default flags */
@@ -57,16 +57,16 @@ lock_type match_lock(lock_type type);
 const lock_list *get_lockproto(lock_type type);
 int add_lock(dbref player, dbref thing, lock_type type, boolexp key, int flags);
 int add_lock_raw(dbref player, dbref thing, lock_type type,
-		 boolexp key, int flags);
+                 boolexp key, int flags);
 void free_locks(lock_list *ll);
 int eval_lock(dbref player, dbref thing, lock_type ltype);
 int eval_lock_with(dbref player, dbref thing, lock_type ltype, dbref env0,
-		   dbref env1);
+                   dbref env1);
 int fail_lock(dbref player, dbref thing, lock_type ltype, const char *def,
-	      dbref loc);
+              dbref loc);
 void do_unlock(dbref player, const char *name, lock_type type);
 void do_lock(dbref player, const char *name, const char *keyname,
-	     lock_type type);
+             lock_type type);
 void init_locks(void);
 void clone_locks(dbref player, dbref orig, dbref clone);
 void do_lset(dbref player, char *what, char *flags);

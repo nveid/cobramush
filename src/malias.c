@@ -33,7 +33,7 @@
  * \endverbatim
  */
 
-#define MA_INC 3	/**< How many maliases we malloc at a time */
+#define MA_INC 3        /**< How many maliases we malloc at a time */
 #include "config.h"
 #include "copyrite.h"
 
@@ -66,7 +66,7 @@
 
 
 int ma_size = 0;   /**< Number of maliases */
-int ma_top = 0;	   /**< Top of alias array */
+int ma_top = 0;    /**< Top of alias array */
 struct mail_alias *malias; /**< Pointer to linked list of aliases */
 
 /** Privilege table for maliases. */
@@ -144,8 +144,8 @@ do_malias_create(dbref player, char *alias, char *tolist)
   }
   if (*alias != MALIAS_TOKEN) {
     notify_format(player,
-		  T("MAIL: All Mail aliases must begin with '%c'."),
-		  MALIAS_TOKEN);
+                  T("MAIL: All Mail aliases must begin with '%c'."),
+                  MALIAS_TOKEN);
     return;
   }
   good = "`$_-.'";
@@ -158,8 +158,8 @@ do_malias_create(dbref player, char *alias, char *tolist)
       return;
     }
   }
-  m = get_malias(GOD, alias);	/* GOD can see all aliases */
-  if (m) {			/* Ensures no duplicates!  */
+  m = get_malias(GOD, alias);   /* GOD can see all aliases */
+  if (m) {                      /* Ensures no duplicates!  */
     notify_format(player, T("MAIL: Mail Alias '%s' already exists."), alias);
     return;
   }
@@ -167,12 +167,12 @@ do_malias_create(dbref player, char *alias, char *tolist)
     ma_size = MA_INC;
     malias =
       (struct mail_alias *) mush_malloc(sizeof(struct mail_alias) *
-					ma_size, "malias_list");
+                                        ma_size, "malias_list");
   } else if (ma_top >= ma_size) {
     ma_size += MA_INC;
     m =
       (struct mail_alias *) mush_malloc(sizeof(struct mail_alias) *
-					(ma_size), "malias_list");
+                                        (ma_size), "malias_list");
     memcpy(m, malias, sizeof(struct mail_alias) * ma_top);
     mush_free((Malloc_t) malias, "malias_list");
     malias = m;
@@ -189,13 +189,13 @@ do_malias_create(dbref player, char *alias, char *tolist)
     tail = head;
     while (*tail && (*tail != ' ')) {
       if (*tail == '"') {
-	head++;
-	tail++;
-	while (*tail && (*tail != '"'))
-	  tail++;
+        head++;
+        tail++;
+        while (*tail && (*tail != '"'))
+          tail++;
       }
       if (*tail)
-	tail++;
+        tail++;
     }
     tail--;
     if (*tail != '"')
@@ -349,7 +349,7 @@ do_malias_desc(dbref player, char *alias, char *desc)
     return;
   } else if (MailAdmin(player, m->owner) || (player == m->owner)) {
     if (m->desc)
-      free(m->desc);		/* No need to update MEM_CHECK records here */
+      free(m->desc);            /* No need to update MEM_CHECK records here */
     m->desc = compress(desc);
     notify(player, T("MAIL: Description changed."));
   } else
@@ -381,8 +381,8 @@ do_malias_chown(dbref player, char *alias, char *owner)
       return;
     } else {
       if ((no = lookup_player(owner)) == NOTHING) {
-	notify(player, T("MAIL: I cannot find that player."));
-	return;
+        notify(player, T("MAIL: I cannot find that player."));
+        return;
       }
       m->owner = no;
       notify(player, T("MAIL: Owner changed for alias."));
@@ -411,8 +411,8 @@ do_malias_rename(dbref player, char *alias, char *newname)
   }
   if (*newname != MALIAS_TOKEN) {
     notify_format(player,
-		  T("MAIL: Bad alias. Aliases must start with '%c'."),
-		  MALIAS_TOKEN);
+                  T("MAIL: Bad alias. Aliases must start with '%c'."),
+                  MALIAS_TOKEN);
     return;
   }
   if (get_malias(GOD, newname) != NULL) {
@@ -424,7 +424,7 @@ do_malias_rename(dbref player, char *alias, char *newname)
     return;
   }
 
-  free(m->name);		/* No need to update MEM_CHECK records here. */
+  free(m->name);                /* No need to update MEM_CHECK records here. */
   m->name = strdup(newname + 1);
 
   notify(player, T("MAIL: Mail Alias renamed."));
@@ -446,8 +446,8 @@ do_malias_destroy(dbref player, char *alias)
   m = get_malias(player, alias);
   if (!m) {
     notify(player,
-	   T
-	   ("MAIL: Not a valid alias. Remember to prefix the alias name with *."));
+           T
+           ("MAIL: Not a valid alias. Remember to prefix the alias name with *."));
     return;
   }
   if (MailAdmin(player, m->owner) || (m->owner == player)) {
@@ -486,9 +486,9 @@ do_malias_set(dbref player, char *alias, char *tolist)
   m = get_malias(player, alias);
   if (!m) {
     notify_format(player,
-		  T
-		  ("MAIL: Not a valid alias. Remember to prefix the alias name with %c."),
-		  MALIAS_TOKEN);
+                  T
+                  ("MAIL: Not a valid alias. Remember to prefix the alias name with %c."),
+                  MALIAS_TOKEN);
     return;
   }
   if (!tolist || !*tolist) {
@@ -510,13 +510,13 @@ do_malias_set(dbref player, char *alias, char *tolist)
     tail = head;
     while (*tail && (*tail != ' ')) {
       if (*tail == '"') {
-	head++;
-	tail++;
-	while (*tail && (*tail != '"'))
-	  tail++;
+        head++;
+        tail++;
+        while (*tail && (*tail != '"'))
+          tail++;
       }
       if (*tail)
-	tail++;
+        tail++;
     }
     tail--;
     if (*tail != '"')
@@ -585,14 +585,14 @@ do_malias_all(dbref player)
     return;
   }
   notify(player,
-	 "Num   Name       Description                              Owner       Count");
+         "Num   Name       Description                              Owner       Count");
 
   for (i = 0; i < ma_top; i++) {
     m = &malias[i];
     notify_format(player, "#%-4d %c%-10.10s %-40.40s %-11.11s (%3d)",
-		  i, MALIAS_TOKEN, m->name,
-		  uncompress((unsigned char *) m->desc),
-		  Name(m->owner), m->size);
+                  i, MALIAS_TOKEN, m->name,
+                  uncompress((unsigned char *) m->desc),
+                  Name(m->owner), m->size);
   }
 
   notify(player, T("***** End of Mail Aliases *****"));
@@ -614,7 +614,7 @@ do_malias_stats(dbref player)
     notify(player, T("MAIL: Permission denied."));
   else {
     notify_format(player,
-		  T("MAIL: Number of mail aliases defined: %d"), ma_top);
+                  T("MAIL: Number of mail aliases defined: %d"), ma_top);
     notify_format(player, T("MAIL: Allocated slots %d"), ma_size);
   }
 }
@@ -635,15 +635,15 @@ do_malias_nuke(dbref player)
     notify(player, T("MAIL: Only god can do that!"));
     return;
   }
-  if (ma_size) {		/* aliases defined ? */
+  if (ma_size) {                /* aliases defined ? */
     for (i = 0; i < ma_top; i++) {
       m = &malias[i];
       if (m->name)
-	mush_free(m->name, "malias_name");
+        mush_free(m->name, "malias_name");
       if (m->desc)
-	mush_free(m->desc, "malias_desc");
+        mush_free(m->desc, "malias_desc");
       if (m->members)
-	mush_free((Malloc_t) m->members, "malias_members");
+        mush_free((Malloc_t) m->members, "malias_members");
     }
     mush_free((Malloc_t) malias, "malias_list");
   }
@@ -678,8 +678,8 @@ do_malias_privs(dbref player, char *alias, char *privs, int type)
   p = type ? &m->mflags : &m->nflags;
   *p = string_to_privs(malias_priv_table, privs, 0);
   notify_format(player,
-		T("MAIL: Permission to see/use alias '%s' changed to %s"),
-		alias, privs_to_string(malias_priv_table, *p));
+                T("MAIL: Permission to see/use alias '%s' changed to %s"),
+                alias, privs_to_string(malias_priv_table, *p));
 }
 
 
@@ -720,13 +720,13 @@ do_malias_add(dbref player, char *alias, char *tolist)
     tail = head;
     while (*tail && (*tail != ' ')) {
       if (*tail == '"') {
-	head++;
-	tail++;
-	while (*tail && (*tail != '"'))
-	  tail++;
+        head++;
+        tail++;
+        while (*tail && (*tail != '"'))
+          tail++;
       }
       if (*tail)
-	tail++;
+        tail++;
     }
     tail--;
     if (*tail != '"')
@@ -746,14 +746,14 @@ do_malias_add(dbref player, char *alias, char *tolist)
       notify_format(player, T("MAIL: No such player '%s'."), head);
     } else {
       if (ismember(m, target)) {
-	notify_format(player,
-		      T("MAIL: player '%s' exists already in alias %s."),
-		      head, alias);
+        notify_format(player,
+                      T("MAIL: player '%s' exists already in alias %s."),
+                      head, alias);
       } else {
-	buff = unparse_object(player, target);
-	notify_format(player, T("MAIL: %s added to alias %s"), buff, alias);
-	alist[i] = target;
-	i++;
+        buff = unparse_object(player, target);
+        notify_format(player, T("MAIL: %s added to alias %s"), buff, alias);
+        alist[i] = target;
+        i++;
       }
     }
     /*
@@ -826,13 +826,13 @@ do_malias_remove(dbref player, char *alias, char *tolist)
     tail = head;
     while (*tail && (*tail != ' ')) {
       if (*tail == '"') {
-	head++;
-	tail++;
-	while (*tail && (*tail != '"'))
-	  tail++;
+        head++;
+        tail++;
+        while (*tail && (*tail != '"'))
+          tail++;
       }
       if (*tail)
-	tail++;
+        tail++;
     }
     tail--;
     if (*tail != '"')
@@ -852,12 +852,12 @@ do_malias_remove(dbref player, char *alias, char *tolist)
       notify_format(player, T("MAIL: No such player '%s'."), head);
     } else {
       if (!(i = ismember(m, target))) {
-	notify_format(player, T("MAIL: player '%s' is not in alias %s."),
-		      head, alias);
+        notify_format(player, T("MAIL: player '%s' is not in alias %s."),
+                      head, alias);
       } else {
-	buff = unparse_object(player, target);
-	m->members[i - 1] = m->members[--m->size];
-	notify_format(player, T("MAIL: %s removed from alias %s"), buff, alias);
+        buff = unparse_object(player, target);
+        m->members[i - 1] = m->members[--m->size];
+        notify_format(player, T("MAIL: %s removed from alias %s"), buff, alias);
       }
     }
     /*
@@ -925,7 +925,7 @@ ismember(struct mail_alias *m, dbref player)
   int i;
   for (i = 0; i < m->size; i++) {
     if (player == m->members[i])
-      return (i + 1);		/* To avoid entry "0" */
+      return (i + 1);           /* To avoid entry "0" */
   }
   return 0;
 }
@@ -1005,7 +1005,7 @@ load_malias(FILE * fp)
   if (ma_top > 0)
     malias =
       (struct mail_alias *) mush_malloc(sizeof(struct mail_alias) *
-					ma_size, "malias_list");
+                                        ma_size, "malias_list");
   else
     malias = NULL;
 
@@ -1023,9 +1023,9 @@ load_malias(FILE * fp)
 
     if (m->size > 0) {
       m->members =
-	(dbref *) mush_malloc(m->size * sizeof(dbref), "malias_members");
+        (dbref *) mush_malloc(m->size * sizeof(dbref), "malias_members");
       for (j = 0; j < m->size; j++) {
-	m->members[j] = getref(fp);
+        m->members[j] = getref(fp);
       }
     } else {
       m->members = NULL;

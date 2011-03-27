@@ -2,14 +2,16 @@
 & contact
 PennMUSH is developed by a team of developers whose names are
 listed in 'help changes'.  Suggestions, comments, and bug reports are
-welcome:
+welcome.
 
-Report bugs at:               pennmush-bugs@pennmush.org
-Comments/suggestions to:      pennmush-developers@pennmush.org
+The main PennMUSH web page is at http://www.pennmush.org
+
+Report bugs and make suggestions at:  http://dev.pennmush.org
+
+The PennMUSH community page is at http://community.pennmush.org
 
 For information about downloading PennMUSH, see 'help download'.
 For information about changes in versions of the code, see 'help changes'.
-
 & download
 The latest version of this MUSH code is available at
 http://download.pennmush.org/Source.  It will be called something like
@@ -22,7 +24,7 @@ Also on that site is the MUSH manual, in /Manuals. It should be called
 mushman.2.008.tar.Z or something similar; you should attempt to get at
 least version 2.007.  Also on that site is Javelin's Guide for PennMUSH
 Gods, in /pub/PennMUSH/Guide. A better way to read it is on the Web at
-http://www.pennmush.org/~alansz/guide.html
+http://javelin.pennmush.org/~alansz/guide.html
 
 & i18n
 & internationalization
@@ -44,6 +46,8 @@ Internationalization support in PennMUSH includes:
 
 Most of these features get enabled by setting an appropriate environment
 variable in the PennMUSH restart script.
+
+Unicode is not currently supported.
 
 & copyright
 & copyrite

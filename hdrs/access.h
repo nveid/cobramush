@@ -49,13 +49,13 @@ void write_access_file(void);
 int site_can_access(const char *hname, int flag, dbref who);
 struct access *site_check_access(const char *hname, dbref who, int *rulenum);
 int format_access(struct access *ap, int rulenum,
-		  dbref who
-		  __attribute__ ((__unused__)), char *buff, char **bp);
+                  dbref who
+                  __attribute__ ((__unused__)), char *buff, char **bp);
 int add_access_sitelock(dbref player, const char *host, dbref who, int can,
-			int cant);
+                        int cant);
 int remove_access_sitelock(const char *pattern);
 void do_list_access(dbref player);
 int parse_access_options
   (const char *opts, dbref *who, int *can, int *cant, dbref player);
 
-#endif				/* __ACCESS_H */
+#endif                          /* __ACCESS_H */

@@ -21,7 +21,7 @@
 #include "log.h"
 #include "confmagic.h"
 
-extern char confname[BUFFER_LEN];	/* From bsd.c */
+extern char confname[BUFFER_LEN];       /* From bsd.c */
 
 /* This is bad, but only for WIN32, which is bad anyway... */
 #define EMBEDDED_MKINDX

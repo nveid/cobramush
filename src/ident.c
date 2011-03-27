@@ -49,7 +49,7 @@
 #include <arpa/inet.h>
 #endif
 #include <netdb.h>
-#endif				/* WIN32 */
+#endif                          /* WIN32 */
 
 #ifdef I_UNISTD
 #include <unistd.h>
@@ -67,19 +67,19 @@
 
 /** Structure to track an ident connection. */
 typedef struct {
-  int fd;		/**< file descriptor to read from. */
-  char buf[IDBUFSIZE];	/**< buffer to hold ident data. */
+  int fd;               /**< file descriptor to read from. */
+  char buf[IDBUFSIZE];  /**< buffer to hold ident data. */
 } ident_t;
 
 
 static ident_t *id_open(struct sockaddr *faddr,
-			socklen_t flen,
-			struct sockaddr *laddr, socklen_t llen, int *timeout);
+                        socklen_t flen,
+                        struct sockaddr *laddr, socklen_t llen, int *timeout);
 
 static int id_query(ident_t * id,
-		    struct sockaddr *laddr,
-		    socklen_t llen,
-		    struct sockaddr *faddr, socklen_t flen, int *timeout);
+                    struct sockaddr *laddr,
+                    socklen_t llen,
+                    struct sockaddr *faddr, socklen_t flen, int *timeout);
 
 static int id_close(ident_t * id);
 
@@ -117,7 +117,7 @@ ident_lookup(int fd, int *timeout)
  */
 IDENT *
 ident_query(struct sockaddr *laddr, socklen_t llen,
-	    struct sockaddr *raddr, socklen_t rlen, int *timeout)
+            struct sockaddr *raddr, socklen_t rlen, int *timeout)
 {
   int res;
   ident_t *id;
@@ -159,7 +159,7 @@ ident_query(struct sockaddr *laddr, socklen_t llen,
   }
   id_close(id);
 
-  return ident;			/* At last! */
+  return ident;                 /* At last! */
 }
 
 /** Perform an ident lookup and return the remote identifier as a
@@ -209,7 +209,7 @@ ident_free(IDENT *id)
 
 static ident_t *
 id_open(struct sockaddr *faddr, socklen_t flen,
-	struct sockaddr *laddr, socklen_t llen, int *timeout)
+        struct sockaddr *laddr, socklen_t llen, int *timeout)
 {
   ident_t *id;
   char host[NI_MAXHOST];
@@ -227,7 +227,7 @@ id_open(struct sockaddr *faddr, socklen_t flen,
   memset(id, 0, sizeof(ident_t));
 
   if (getnameinfo(faddr, flen, host, sizeof(host), NULL, 0,
-		  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
+                  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
     free(id);
     return 0;
   }
@@ -237,14 +237,14 @@ id_open(struct sockaddr *faddr, socklen_t flen,
   memcpy(&myinterface, laddr, llen);
   if (myinterface.addr.sa_family == AF_INET)
     ((struct sockaddr_in *) &myinterface.addr)->sin_port = 0;
-#ifdef HAS_IPV6			/* Bleah, I wanted to avoid stuff like this */
+#ifdef HAS_IPV6                 /* Bleah, I wanted to avoid stuff like this */
   else if (myinterface.addr.sa_family == AF_INET6)
     ((struct sockaddr_in6 *) &myinterface.addr)->sin6_port = 0;
 #endif
 
   id->fd = make_socket_conn(host, &myinterface.addr, llen, IDPORT, timeout);
 
-  if (id->fd < 0)		/* Couldn't connect to an ident server */
+  if (id->fd < 0)               /* Couldn't connect to an ident server */
     goto ERROR_BRANCH;
 
   if (timeout) {
@@ -285,7 +285,7 @@ id_open(struct sockaddr *faddr, socklen_t flen,
 
 ERROR_BRANCH:
 #ifndef WIN32
-  tmperrno = errno;		/* Save, so close() won't erase it */
+  tmperrno = errno;             /* Save, so close() won't erase it */
 #endif
   closesocket(id->fd);
   free(id);
@@ -320,7 +320,7 @@ id_close(ident_t * id)
 
 static int
 id_query(ident_t * id, struct sockaddr *laddr, socklen_t llen,
-	 struct sockaddr *faddr, socklen_t flen, int *timeout)
+         struct sockaddr *faddr, socklen_t flen, int *timeout)
 {
   int res;
   char buf[80];
@@ -329,10 +329,10 @@ id_query(ident_t * id, struct sockaddr *laddr, socklen_t llen,
   struct timeval to;
 
   getnameinfo(laddr, llen, NULL, 0, port, sizeof(port),
-	      NI_NUMERICHOST | NI_NUMERICSERV);
+              NI_NUMERICHOST | NI_NUMERICSERV);
   sprintf(buf, "%s , ", port);
   getnameinfo(faddr, flen, NULL, 0, port, sizeof(port),
-	      NI_NUMERICHOST | NI_NUMERICSERV);
+              NI_NUMERICHOST | NI_NUMERICSERV);
   strncat(buf, port, sizeof(buf));
   strncat(buf, "\r\n", sizeof(buf));
 
@@ -458,7 +458,7 @@ id_parse(ident_t * id, int *timeout, IDENT **ident)
     }
   }
   while (pos < sizeof(id->buf) &&
-	 (res = recv(id->fd, id->buf + pos, 1, 0)) == 1 && id->buf[pos] != '\n')
+         (res = recv(id->fd, id->buf + pos, 1, 0)) == 1 && id->buf[pos] != '\n')
     pos++;
   if (res < 0)
     return -1;
@@ -509,7 +509,7 @@ id_parse(ident_t * id, int *timeout, IDENT **ident)
     if (c == ',') {
       cp = xstrtok(NULL, ":", &c);
       if (!cp)
-	return -2;
+        return -2;
 
       tmp_charset = cp;
 
@@ -517,7 +517,7 @@ id_parse(ident_t * id, int *timeout, IDENT **ident)
 
       /* We have even more subfields - ignore them */
       if (c == ',')
-	xstrtok(NULL, ":", &c);
+        xstrtok(NULL, ":", &c);
     }
     if (tmp_charset && strcmp(tmp_charset, "OCTET") == 0)
       cp = xstrtok(NULL, NULL, &c);

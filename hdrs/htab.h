@@ -24,14 +24,14 @@ typedef struct hashtable HASHTAB;
 /** A hash table.
  */
 struct hashtable {
-  int hashsize;			/**< Size of hash table */
-  int mask;			/**< Mask for entries in table */
-  int entries;			/**< Number of entries stored */
-  HASHENT **buckets;		/**< Pointer to pointer to entries */
-  int last_hval;		/**< State for hashfirst & hashnext. */
-  HASHENT *last_entry;		/**< State for hashfirst & hashnext. */
-  int entry_size;		/**< Size of each entry */
-  void (*free_data) (void *);	/**< Function to call on data when deleting
+  int hashsize;                 /**< Size of hash table */
+  int mask;                     /**< Mask for entries in table */
+  int entries;                  /**< Number of entries stored */
+  HASHENT **buckets;            /**< Pointer to pointer to entries */
+  int last_hval;                /**< State for hashfirst & hashnext. */
+  HASHENT *last_entry;          /**< State for hashfirst & hashnext. */
+  int entry_size;               /**< Size of each entry */
+  void (*free_data) (void *);   /**< Function to call on data when deleting
                                    a entry. */
 };
 

@@ -55,8 +55,8 @@ crunch_code(char *code)
   while (*in) {
     while (*in == ESC_CHAR) {
       while (*in && *in != 'm')
-	in++;
-      in++;			/* skip 'm' */
+        in++;
+      in++;                     /* skip 'm' */
     }
     if ((*in >= 32) && (*in <= 126)) {
       *out++ = *in;

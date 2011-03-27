@@ -48,10 +48,10 @@ typedef int dbref;
 typedef long int warn_type;
 
 /* special dbref's */
-#define NOTHING (-1)		/* null dbref */
-#define AMBIGUOUS (-2)		/* multiple possibilities, for matchers */
-#define HOME (-3)		/* virtual room, represents mover's home */
-#define ANY_OWNER (-2)		/* For lstats and @stat */
+#define NOTHING (-1)            /* null dbref */
+#define AMBIGUOUS (-2)          /* multiple possibilities, for matchers */
+#define HOME (-3)               /* virtual room, represents mover's home */
+#define ANY_OWNER (-2)          /* For lstats and @stat */
 
 
 #define INTERACT_SEE 0x1
@@ -77,12 +77,12 @@ typedef struct debug_info Debug_Info;
  * this struct unless you _really_ want to get your hands dirty.
  */
 struct pe_info {
-  int fun_invocations;		/**< Invocation count */
-  int fun_depth;		/**< Recursion count */
-  int nest_depth;		/**< Depth of function nesting, for DEBUG */
-  int call_depth;		/**< Function call counter */
-  Debug_Info *debug_strings;	/**< DEBUG infromation */
-  int arg_count;		/**< Number of arguments passed to function */
+  int fun_invocations;          /**< Invocation count */
+  int fun_depth;                /**< Recursion count */
+  int nest_depth;               /**< Depth of function nesting, for DEBUG */
+  int call_depth;               /**< Function call counter */
+  Debug_Info *debug_strings;    /**< DEBUG infromation */
+  int arg_count;                /**< Number of arguments passed to function */
 };
 
 /* new attribute foo */
@@ -105,16 +105,16 @@ typedef struct su_exit_path_t {
 /** A text block
  */
 struct text_block {
-  int nchars;			/**< Number of characters in the block */
-  struct text_block *nxt;	/**< Pointer to next block in queue */
-  unsigned char *start;		/**< Start of text */
-  unsigned char *buf;		/**< Current position in text */
+  int nchars;                   /**< Number of characters in the block */
+  struct text_block *nxt;       /**< Pointer to next block in queue */
+  unsigned char *start;         /**< Start of text */
+  unsigned char *buf;           /**< Current position in text */
 };
 /** A queue of text blocks.
  */
 struct text_queue {
-  struct text_block *head;	/**< Pointer to the head of the queue */
-  struct text_block **tail;	/**< Pointer to pointer to tail of the queue */
+  struct text_block *head;      /**< Pointer to the head of the queue */
+  struct text_block **tail;     /**< Pointer to pointer to tail of the queue */
 };
 
 

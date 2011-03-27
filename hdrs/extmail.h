@@ -45,12 +45,12 @@ typedef unsigned int mail_flag;
  * messages. Messages can be selected in several ways.
  */
 struct mail_selector {
-  int low;		/**< Minimum message number */
-  int high;		/**< Maximum message number */
-  mail_flag flags;	/**< Message flags */
-  dbref player;		/**< Message sender's dbref */
-  int days;		/**< Target message age in days */
-  int day_comp;		/**< Direction of comparison to target age */
+  int low;              /**< Minimum message number */
+  int high;             /**< Maximum message number */
+  mail_flag flags;      /**< Message flags */
+  dbref player;         /**< Message sender's dbref */
+  int days;             /**< Target message age in days */
+  int day_comp;         /**< Direction of comparison to target age */
 };
 
 typedef int folder_array[MAX_FOLDERS + 1];
@@ -105,4 +105,4 @@ extern struct mail *desc_mail(dbref player);
 extern void desc_mail_set(dbref player, struct mail *mp);
 extern void desc_mail_clear(void);
 
-#endif				/* _EXTMAIL_H */
+#endif                          /* _EXTMAIL_H */

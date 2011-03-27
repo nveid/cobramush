@@ -103,10 +103,10 @@ look_exits(dbref player, dbref loc, const char *exit_name)
     bp = arg;
     DOLIST(thing, Exits(loc)) {
       if (((Light(loc) || Light(thing)) || !(Dark(loc) || Dark(thing)))
-	  && can_interact(thing, player, INTERACT_SEE)) {
-	if (bp != arg)
-	  safe_chr(' ', arg, &bp);
-	safe_dbref(thing, arg, &bp);
+          && can_interact(thing, player, INTERACT_SEE)) {
+        if (bp != arg)
+          safe_chr(' ', arg, &bp);
+        safe_dbref(thing, arg, &bp);
       }
     }
     *bp = '\0';
@@ -140,23 +140,23 @@ look_exits(dbref player, dbref loc, const char *exit_name)
     for (thing = Exits(loc); thing != NOTHING; thing = Next(thing)) {
       total_count++;
       if (!Transparented(loc) || Opaque(thing))
-	exit_count++;
+        exit_count++;
     }
   } else if (Dark(loc)) {
     for (thing = Exits(loc); thing != NOTHING; thing = Next(thing)) {
       if (Light(thing) && can_interact(thing, player, INTERACT_SEE)) {
-	total_count++;
-	if (!Transparented(loc) || Opaque(thing))
-	  exit_count++;
+        total_count++;
+        if (!Transparented(loc) || Opaque(thing))
+          exit_count++;
       }
     }
   } else {
     for (thing = Exits(loc); thing != NOTHING; thing = Next(thing)) {
       if ((Light(thing) || !DarkLegal(thing)) &&
-	  can_interact(thing, player, INTERACT_SEE)) {
-	total_count++;
-	if (!Transparented(loc) || Opaque(thing))
-	  exit_count++;
+          can_interact(thing, player, INTERACT_SEE)) {
+        total_count++;
+        if (!Transparented(loc) || Opaque(thing))
+          exit_count++;
       }
     }
   }
@@ -436,7 +436,7 @@ look_simple(dbref player, dbref thing)
   PEND;
   notify_by(thing, player, pbuff);
   look_description(player, thing, T("You see nothing special."), "DESCRIBE",
-		   "DESCFORMAT");
+                   "DESCFORMAT");
   did_it(player, thing, NULL, NULL, "ODESCRIBE", NULL, "ADESCRIBE", NOTHING);
   if (IsExit(thing) && Transparented(thing)) {
     if (Cloudy(thing))
@@ -488,9 +488,9 @@ look_room(dbref player, dbref loc, enum look_type style)
     if (SUPPORT_PUEBLO && style == LOOK_AUTO) {
       a = atr_get(loc, "VRML_URL");
       if (a) {
-	tag(tprintf("IMG XCH_GRAPH=LOAD HREF=\"%s\"", atr_value(a)));
+        tag(tprintf("IMG XCH_GRAPH=LOAD HREF=\"%s\"", atr_value(a)));
       } else {
-	tag("IMG XCH_GRAPH=HIDE");
+        tag("IMG XCH_GRAPH=HIDE");
       }
     }
     tag("HR");
@@ -501,25 +501,25 @@ look_room(dbref player, dbref loc, enum look_type style)
   if (!IsRoom(loc)) {
     if (style != LOOK_AUTO || !Terse(player)) {
       if (atr_get(loc, "IDESCRIBE")) {
-	look_description(player, loc, NULL, "IDESCRIBE", "IDESCFORMAT");
-	did_it(player, loc, NULL, NULL, "OIDESCRIBE", NULL,
-	       "AIDESCRIBE", NOTHING);
+        look_description(player, loc, NULL, "IDESCRIBE", "IDESCFORMAT");
+        did_it(player, loc, NULL, NULL, "OIDESCRIBE", NULL,
+               "AIDESCRIBE", NOTHING);
       } else if (atr_get(loc, "IDESCFORMAT")) {
-	look_description(player, loc, NULL, "DESCRIBE", "IDESCFORMAT");
+        look_description(player, loc, NULL, "DESCRIBE", "IDESCFORMAT");
       } else
-	look_description(player, loc, NULL, "DESCRIBE", "DESCFORMAT");
+        look_description(player, loc, NULL, "DESCRIBE", "DESCFORMAT");
     }
   }
   /* tell him the description */
   else {
     if (style == LOOK_NORMAL || style == LOOK_AUTO) {
       if (style == LOOK_NORMAL || !Terse(player)) {
-	look_description(player, loc, NULL, "DESCRIBE", "DESCFORMAT");
-	did_it(player, loc, NULL, NULL, "ODESCRIBE", NULL,
-	       "ADESCRIBE", NOTHING);
+        look_description(player, loc, NULL, "DESCRIBE", "DESCFORMAT");
+        did_it(player, loc, NULL, NULL, "ODESCRIBE", NULL,
+               "ADESCRIBE", NOTHING);
       } else
-	did_it(player, loc, NULL, NULL, "ODESCRIBE", NULL, "ADESCRIBE",
-	       NOTHING);
+        did_it(player, loc, NULL, NULL, "ODESCRIBE", NULL, "ADESCRIBE",
+               NOTHING);
     } else if (style != LOOK_CLOUDY)
       look_description(player, loc, NULL, "DESCRIBE", "DESCFORMAT");
   }
@@ -527,12 +527,12 @@ look_room(dbref player, dbref loc, enum look_type style)
   if (IsRoom(loc) && (style == LOOK_NORMAL || style == LOOK_AUTO)) {
     if (style == LOOK_AUTO && Terse(player)) {
       if (could_doit(player, loc))
-	did_it(player, loc, NULL, NULL, "OSUCCESS", NULL, "ASUCCESS", NOTHING);
+        did_it(player, loc, NULL, NULL, "OSUCCESS", NULL, "ASUCCESS", NOTHING);
       else
-	did_it(player, loc, NULL, NULL, "OFAILURE", NULL, "AFAILURE", NOTHING);
+        did_it(player, loc, NULL, NULL, "OFAILURE", NULL, "AFAILURE", NOTHING);
     } else if (could_doit(player, loc))
       did_it(player, loc, "SUCCESS", NULL, "OSUCCESS", NULL, "ASUCCESS",
-	     NOTHING);
+             NOTHING);
     else
       fail_lock(player, loc, Basic_Lock, NULL, NOTHING);
   }
@@ -546,7 +546,7 @@ look_room(dbref player, dbref loc, enum look_type style)
 
 static void
 look_description(dbref player, dbref thing, const char *def,
-		 const char *descname, const char *descformatname)
+                 const char *descname, const char *descformatname)
 {
   /* Show thing's description to player, obeying DESCFORMAT if set */
   ATTR *a, *f;
@@ -567,7 +567,7 @@ look_description(dbref player, dbref thing, const char *def,
     ap = asave;
     bp = buff;
     process_expression(buff, &bp, &ap, thing, player, player,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     free((Malloc_t) asave);
   }
@@ -580,7 +580,7 @@ look_description(dbref player, dbref thing, const char *def,
     ap = asave;
     fbp = fbuff;
     process_expression(fbuff, &fbp, &ap, thing, player, player,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *fbp = '\0';
     free((Malloc_t) asave);
     notify_by(thing, player, fbuff);
@@ -604,7 +604,7 @@ do_look_around(dbref player)
   dbref loc;
   if ((loc = Location(player)) == NOTHING)
     return;
-  look_room(player, loc, LOOK_AUTO);	/* auto-look. Obey TERSE. */
+  look_room(player, loc, LOOK_AUTO);    /* auto-look. Obey TERSE. */
 }
 
 /** Look at something.
@@ -621,7 +621,7 @@ do_look_at(dbref player, const char *name, int key)
   if (!GoodObject(Location(player)))
     return;
 
-  if (key) {			/* look outside */
+  if (key) {                    /* look outside */
     /* can't see through opaque objects */
     if (IsRoom(Location(player)) || Opaque(Location(player))) {
       notify(player, T("You can't see through that."));
@@ -639,7 +639,7 @@ do_look_at(dbref player, const char *name, int key)
     }
     thing =
       match_result(loc, name, NOTYPE,
-		   MAT_PLAYER | MAT_REMOTE_CONTENTS | MAT_EXIT | MAT_REMOTES);
+                   MAT_PLAYER | MAT_REMOTE_CONTENTS | MAT_EXIT | MAT_REMOTES);
     if (thing == NOTHING) {
       notify(player, T("I don't see that here."));
       return;
@@ -647,7 +647,7 @@ do_look_at(dbref player, const char *name, int key)
       notify(player, T("I don't know which one you mean."));
       return;
     }
-  } else {			/* regular look */
+  } else {                      /* regular look */
     if (*name == '\0') {
         look_room(player, Location(player), LOOK_NORMAL);
       return;
@@ -758,8 +758,8 @@ do_examine(dbref player, const char *name, enum exam_type flag, int all)
     /* look it up */
 
     if ((thing =
-	 noisy_match_result(player, real_name, NOTYPE,
-			    MAT_EVERYTHING)) == NOTHING)
+         noisy_match_result(player, real_name, NOTYPE,
+                            MAT_EVERYTHING)) == NOTHING)
       return;
   }
 
@@ -884,11 +884,11 @@ do_examine(dbref player, const char *name, enum exam_type flag, int all)
       if(IsDivision(content) && IsDivision(thing))
 	continue;
       if (!listed) {
-	listed = 1;
-	if (IsPlayer(thing))
-	  notify(player, T("Carrying:"));
-	else
-	  notify(player, T("Contents:"));
+        listed = 1;
+        if (IsPlayer(thing))
+          notify(player, T("Carrying:"));
+        else
+          notify(player, T("Contents:"));
       }
       notify(player, object_header(player, content));
     }
@@ -966,8 +966,8 @@ do_examine(dbref player, const char *name, enum exam_type flag, int all)
       break;
     default:
       notify_format(player,
-		    T("Destination: %s"),
-		    object_header(player, Destination(thing)));
+                    T("Destination: %s"),
+                    object_header(player, Destination(thing)));
       break;
     }
     break;
@@ -1031,10 +1031,10 @@ do_inventory(dbref player)
     bp2 = arg2;
     DOLIST(thing, Contents(player)) {
       if (bp != arg)
-	safe_chr(' ', arg, &bp);
+        safe_chr(' ', arg, &bp);
       safe_dbref(thing, arg, &bp);
       if (bp2 != arg2)
-	safe_chr('|', arg2, &bp2);
+        safe_chr('|', arg2, &bp2);
       safe_str(unparse_object_myopic(player, thing), arg2, &bp2);
     }
     *bp = '\0';
@@ -1087,7 +1087,7 @@ do_find(dbref player, const char *name, char *argv[])
 
   if (!payfor(player, FIND_COST)) {
     notify_format(player, T("Finds cost %d %s."), FIND_COST,
-		  ((FIND_COST == 1) ? MONEY : MONIES));
+                  ((FIND_COST == 1) ? MONEY : MONIES));
     return;
   }
   /* determinte range */
@@ -1114,7 +1114,7 @@ do_find(dbref player, const char *name, char *argv[])
 
   for (i = bot; i < top; i++) {
     if (!IsGarbage(i) && !IsExit(i) && controls(player, i) &&
-	(!*name || string_match(Name(i), name))) {
+        (!*name || string_match(Name(i), name))) {
       notify(player, object_header(player, i));
       count++;
     }
@@ -1163,47 +1163,47 @@ do_sweep(dbref player, const char *arg1)
     if (connect_flag) {
       /* only worry about puppet and players who's owner's are connected */
       if (Connected(here) || (Puppet(here) && Connected(Owner(here)))) {
-	if (IsPlayer(here)) {
-	  notify_format(player, T("%s is listening."), Name(here));
-	} else {
-	  notify_format(player, T("%s [owner: %s] is listening."),
-			Name(here), Name(Owner(here)));
-	}
+        if (IsPlayer(here)) {
+          notify_format(player, T("%s is listening."), Name(here));
+        } else {
+          notify_format(player, T("%s [owner: %s] is listening."),
+                        Name(here), Name(Owner(here)));
+        }
       }
     } else {
       if (Hearer(here) || Listener(here)) {
-	if (Connected(here))
-	  notify_format(player, T("%s (this room) [speech]. (connected)"),
-			Name(here));
-	else
-	  notify_format(player, T("%s (this room) [speech]."), Name(here));
+        if (Connected(here))
+          notify_format(player, T("%s (this room) [speech]. (connected)"),
+                        Name(here));
+        else
+          notify_format(player, T("%s (this room) [speech]."), Name(here));
       }
       if (Commer(here))
-	notify_format(player, T("%s (this room) [commands]."), Name(here));
+        notify_format(player, T("%s (this room) [commands]."), Name(here));
       if (Audible(here))
-	notify_format(player, T("%s (this room) [broadcasting]."), Name(here));
+        notify_format(player, T("%s (this room) [broadcasting]."), Name(here));
     }
 
     for (here = Contents(here); here != NOTHING; here = Next(here)) {
       if (connect_flag) {
-	/* only worry about puppet and players who's owner's are connected */
-	if (Connected(here) || (Puppet(here) && Connected(Owner(here)))) {
-	  if (IsPlayer(here)) {
-	    notify_format(player, T("%s is listening."), Name(here));
-	  } else {
-	    notify_format(player, T("%s [owner: %s] is listening."),
-			  Name(here), Name(Owner(here)));
-	  }
-	}
+        /* only worry about puppet and players who's owner's are connected */
+        if (Connected(here) || (Puppet(here) && Connected(Owner(here)))) {
+          if (IsPlayer(here)) {
+            notify_format(player, T("%s is listening."), Name(here));
+          } else {
+            notify_format(player, T("%s [owner: %s] is listening."),
+                          Name(here), Name(Owner(here)));
+          }
+        }
       } else {
-	if (Hearer(here) || Listener(here)) {
-	  if (Connected(here))
-	    notify_format(player, "%s [speech]. (connected)", Name(here));
-	  else
-	    notify_format(player, "%s [speech].", Name(here));
-	}
-	if (Commer(here))
-	  notify_format(player, "%s [commands].", Name(here));
+        if (Hearer(here) || Listener(here)) {
+          if (Connected(here))
+            notify_format(player, "%s [speech]. (connected)", Name(here));
+          else
+            notify_format(player, "%s [speech].", Name(here));
+        }
+        if (Commer(here))
+          notify_format(player, "%s [commands].", Name(here));
       }
     }
   }
@@ -1212,12 +1212,12 @@ do_sweep(dbref player, const char *arg1)
     if (Audible(Location(player))) {
       /* listening exits only work if the room is AUDIBLE */
       for (here = Exits(Location(player)); here != NOTHING; here = Next(here)) {
-	if (Audible(here)) {
-	  strcpy(tbuf1, Name(here));
-	  for (p = tbuf1; *p && (*p != ';'); p++) ;
-	  *p = '\0';
-	  notify_format(player, "%s [broadcasting].", tbuf1);
-	}
+        if (Audible(here)) {
+          strcpy(tbuf1, Name(here));
+          for (p = tbuf1; *p && (*p != ';'); p++) ;
+          *p = '\0';
+          notify_format(player, "%s [broadcasting].", tbuf1);
+        }
       }
     }
   }
@@ -1226,24 +1226,24 @@ do_sweep(dbref player, const char *arg1)
 
     for (here = Contents(player); here != NOTHING; here = Next(here)) {
       if (connect_flag) {
-	/* only worry about puppet and players who's owner's are connected */
-	if (Connected(here) || (Puppet(here) && Connected(Owner(here)))) {
-	  if (IsPlayer(here)) {
-	    notify_format(player, T("%s is listening."), Name(here));
-	  } else {
-	    notify_format(player, T("%s [owner: %s] is listening."),
-			  Name(here), Name(Owner(here)));
-	  }
-	}
+        /* only worry about puppet and players who's owner's are connected */
+        if (Connected(here) || (Puppet(here) && Connected(Owner(here)))) {
+          if (IsPlayer(here)) {
+            notify_format(player, T("%s is listening."), Name(here));
+          } else {
+            notify_format(player, T("%s [owner: %s] is listening."),
+                          Name(here), Name(Owner(here)));
+          }
+        }
       } else {
-	if (Hearer(here) || Listener(here)) {
-	  if (Connected(here))
-	    notify_format(player, "%s [speech]. (connected)", Name(here));
-	  else
-	    notify_format(player, "%s [speech].", Name(here));
-	}
-	if (Commer(here))
-	  notify_format(player, "%s [commands].", Name(here));
+        if (Hearer(here) || Listener(here)) {
+          if (Connected(here))
+            notify_format(player, "%s [speech]. (connected)", Name(here));
+          else
+            notify_format(player, "%s [speech].", Name(here));
+        }
+        if (Commer(here))
+          notify_format(player, "%s [commands].", Name(here));
       }
     }
   }
@@ -1297,8 +1297,8 @@ do_entrances(dbref player, const char *where, char *argv[], enum ent_type val)
 {
   dbref place;
   dbref counter;
-  int exc, tc, pc, rc;		/* how many we've found */
-  int exd, td, pd, rd;		/* what we're looking for */
+  int exc, tc, pc, rc;          /* how many we've found */
+  int exd, td, pd, rd;          /* what we're looking for */
   int bot = 0;
   int top = db_top;
 
@@ -1309,7 +1309,7 @@ do_entrances(dbref player, const char *where, char *argv[], enum ent_type val)
       return;
   } else {
     if ((place = noisy_match_result(player, where, NOTYPE, MAT_EVERYTHING))
-	== NOTHING)
+        == NOTHING)
       return;
   }
 
@@ -1319,7 +1319,7 @@ do_entrances(dbref player, const char *where, char *argv[], enum ent_type val)
   }
   if (!payfor(player, FIND_COST)) {
     notify_format(player, T("You don't have enough %d %s to do that."),
-		  FIND_COST, ((FIND_COST == 1) ? MONEY : MONIES));
+                  FIND_COST, ((FIND_COST == 1) ? MONEY : MONIES));
     return;
   }
   /* figure out what we're looking for */
@@ -1358,39 +1358,39 @@ do_entrances(dbref player, const char *where, char *argv[], enum ent_type val)
     if (controls(player, place) || controls(player, counter)) {
       switch (Typeof(counter)) {
       case TYPE_EXIT:
-	if (exd) {
-	  if (Location(counter) == place) {
-	    notify_format(player,
-			  "%s(#%d) [from: %s(#%d)]", Name(counter),
-			  counter, Name(Source(counter)), Source(counter));
-	    exc++;
-	  }
-	}
-	break;
+        if (exd) {
+          if (Location(counter) == place) {
+            notify_format(player,
+                          "%s(#%d) [from: %s(#%d)]", Name(counter),
+                          counter, Name(Source(counter)), Source(counter));
+            exc++;
+          }
+        }
+        break;
       case TYPE_ROOM:
-	if (rd) {
-	  if (Location(counter) == place) {
-	    notify_format(player, "%s(#%d) [dropto]", Name(counter), counter);
-	    rc++;
-	  }
-	}
-	break;
+        if (rd) {
+          if (Location(counter) == place) {
+            notify_format(player, "%s(#%d) [dropto]", Name(counter), counter);
+            rc++;
+          }
+        }
+        break;
       case TYPE_THING:
-	if (td) {
-	  if (Home(counter) == place) {
-	    notify_format(player, "%s(#%d) [home]", Name(counter), counter);
-	    tc++;
-	  }
-	}
-	break;
+        if (td) {
+          if (Home(counter) == place) {
+            notify_format(player, "%s(#%d) [home]", Name(counter), counter);
+            tc++;
+          }
+        }
+        break;
       case TYPE_PLAYER:
-	if (pd) {
-	  if (Home(counter) == place) {
-	    notify_format(player, "%s(#%d) [home]", Name(counter), counter);
-	    pc++;
-	  }
-	}
-	break;
+        if (pd) {
+          if (Home(counter) == place) {
+            notify_format(player, "%s(#%d) [home]", Name(counter), counter);
+            pc++;
+          }
+        }
+        break;
       }
     }
   }
@@ -1401,17 +1401,17 @@ do_entrances(dbref player, const char *where, char *argv[], enum ent_type val)
   } else {
     notify(player, T("----------  Entrances Done  ----------"));
     notify_format(player,
-		  "Totals: Rooms...%d  Exits...%d  Objects...%d  Players...%d",
-		  rc, exc, tc, pc);
+                  "Totals: Rooms...%d  Exits...%d  Objects...%d  Players...%d",
+                  rc, exc, tc, pc);
     return;
   }
 }
 
 /** Store arguments for decompile_helper() */
 struct dh_args {
-  char const *prefix;	/**< Decompile/tf prefix */
-  char const *name;	/**< Decompile object name */
-  int skipdef;		/**< Skip default flags on attributes if true */
+  char const *prefix;   /**< Decompile/tf prefix */
+  char const *name;     /**< Decompile object name */
+  int skipdef;          /**< Skip default flags on attributes if true */
 };
 
 extern char escaped_chars[UCHAR_MAX + 1];
@@ -1426,24 +1426,24 @@ insert_spaces(int count, int dospace, char *buff, char **bp)
       safe_str(")]", buff, bp);
     } else if (count == 1) {
       if (dospace) {
-	safe_str("%b", buff, bp);
+        safe_str("%b", buff, bp);
       } else {
-	safe_chr(' ', buff, bp);
+        safe_chr(' ', buff, bp);
       }
     } else {
       /* Take care of the final %b */
       count--;
       if (dospace) {
-	safe_str("%b", buff, bp);
-	count--;
+        safe_str("%b", buff, bp);
+        count--;
       }
       while (count) {
-	safe_chr(' ', buff, bp);
-	count--;
-	if (count) {
-	  count--;
-	  safe_str("%b", buff, bp);
-	}
+        safe_chr(' ', buff, bp);
+        count--;
+        if (count) {
+          count--;
+          safe_str("%b", buff, bp);
+        }
       }
       safe_str("%b", buff, bp);
     }
@@ -1708,7 +1708,7 @@ decompile_helper(dbref player, dbref thing __attribute__ ((__unused__)),
       /* Are we different? If so, do as usual */
       unsigned int npmflags = AL_FLAGS(ptr) & (~AF_PREFIXMATCH);
       if (AL_FLAGS(atr) != AL_FLAGS(ptr) && AL_FLAGS(atr) != npmflags)
-	privs = privs_to_string(attr_privs_view, AL_FLAGS(atr));
+        privs = privs_to_string(attr_privs_view, AL_FLAGS(atr));
     } else {
       privs = privs_to_string(attr_privs_view, AL_FLAGS(atr));
     }
@@ -1728,7 +1728,7 @@ decompile_helper(dbref player, dbref thing __attribute__ ((__unused__)),
  */
 void
 decompile_atrs(dbref player, dbref thing, const char *name, const char *pattern,
-	       const char *prefix, int skipdef)
+               const char *prefix, int skipdef)
 {
   struct dh_args dh;
   dh.prefix = prefix;
@@ -1785,7 +1785,7 @@ decompile_locks(dbref player, dbref thing, const char *name, int skipdef)
  */
 void
 do_decompile(dbref player, const char *name, const char *prefix,
-	     enum dec_type dbflag, int skipdef)
+             enum dec_type dbflag, int skipdef)
 {
   dbref thing;
   const char *object = NULL;
@@ -1820,9 +1820,9 @@ do_decompile(dbref player, const char *name, const char *prefix,
       break;
     default:
       if (IsRoom(thing))
-	decompile_atrs(player, thing, "here", attrib, prefix, skipdef);
+        decompile_atrs(player, thing, "here", attrib, prefix, skipdef);
       else
-	decompile_atrs(player, thing, Name(thing), attrib, prefix, skipdef);
+        decompile_atrs(player, thing, Name(thing), attrib, prefix, skipdef);
       break;
     }
     return;
@@ -1866,7 +1866,7 @@ do_decompile(dbref player, const char *name, const char *prefix,
     } else {
       object = shortname(thing);
       if (dbflag != DEC_ATTR)
-	notify_format(player, "%s@open %s", prefix, Name(thing));
+        notify_format(player, "%s@open %s", prefix, Name(thing));
     }
     break;
   case TYPE_DIVISION:
@@ -1883,17 +1883,17 @@ do_decompile(dbref player, const char *name, const char *prefix,
   if (dbflag != DEC_ATTR) {
     if (Mobile(thing)) {
       if (GoodObject(Home(thing)))
-	notify_format(player, "%s@link %s = #%d", prefix, object, Home(thing));
+        notify_format(player, "%s@link %s = #%d", prefix, object, Home(thing));
       else if (Home(thing) == HOME)
-	notify_format(player, "%s@link %s = HOME", prefix, object);
+        notify_format(player, "%s@link %s = HOME", prefix, object);
     } else {
       if (GoodObject(Destination(thing)))
-	notify_format(player, "%s@link %s = #%d", prefix, object,
-		      Destination(thing));
+        notify_format(player, "%s@link %s = #%d", prefix, object,
+                      Destination(thing));
       else if (Destination(thing) == AMBIGUOUS)
-	notify_format(player, "%s@link %s = VARIABLE", prefix, object);
+        notify_format(player, "%s@link %s = VARIABLE", prefix, object);
       else if (Destination(thing) == HOME)
-	notify_format(player, "%s@link %s = HOME", prefix, object);
+        notify_format(player, "%s@link %s = HOME", prefix, object);
     }
 
     if (GoodObject(Zone(thing)))

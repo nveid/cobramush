@@ -10,8 +10,8 @@
  *
  */
 typedef struct {
-  long pos;			/**< Position of topic in help file, in bytes */
-  char topic[TOPIC_NAME_LEN + 1];	/**< name of topic of help entry */
+  long pos;                     /**< Position of topic in help file, in bytes */
+  char topic[TOPIC_NAME_LEN + 1];       /**< name of topic of help entry */
 } help_indx;
 
 /** A help command.
@@ -19,11 +19,11 @@ typedef struct {
  * file and an in-memory index.
  */
 typedef struct {
-  char *command;	/**< The name of the help command */
-  char *file;		/**< The file of help text */
-  int admin;		/**< Is this an admin-only help command? */
-  help_indx *indx;	/**< An array of help index entries */
-  size_t entries;	/**< Number of entries in the help file */
+  char *command;        /**< The name of the help command */
+  char *file;           /**< The file of help text */
+  int admin;            /**< Is this an admin-only help command? */
+  help_indx *indx;      /**< An array of help index entries */
+  size_t entries;       /**< Number of entries in the help file */
 } help_file;
 
 
@@ -31,4 +31,4 @@ extern void init_help_files(void);
 extern void add_help_file
   (const char *command_name, const char *filename, int admin);
 extern void help_reindex(dbref player);
-#endif				/* __HELP_H */
+#endif                          /* __HELP_H */

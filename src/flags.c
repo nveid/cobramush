@@ -141,6 +141,7 @@ FLAG flag_table[] = {
   {"CLOUDY", 'x', TYPE_EXIT, EXIT_CLOUDY, F_ANY, F_ANY},
   {"GOING_TWICE", '\0', NOTYPE, GOING_TWICE, F_INTERNAL | F_DARK,
    F_INTERNAL | F_DARK},
+  {"KEEPALIVE", 'k', TYPE_PLAYER, 0, F_ANY, F_ANY},
   {NULL, '\0', 0, 0, 0, 0}
 };
 
@@ -300,10 +301,20 @@ new_flag(void)
 static void
 clear_all_flags(FLAGSPACE * n)
 {
+  FLAG *f;
+
+  for (f = ptab_firstentry(n->tab); f; f = ptab_nextentry(n->tab)) {
+    f->perms = DECR_FLAG_REF(f->perms);
+    if (FLAG_REF(f->perms) == 0) {
+      mush_free((void *) f->name, "flag.name");
+      mush_free(f, "flag");
+    }
+  }
+
   ptab_free(n->tab);
   /* Finally, the flags array */
   if (n->flags)
-    free(n->flags);
+    mush_free(n->flags, "flagspace.flags");
   n->flags = NULL;
   n->flagbits = 0;
 }
@@ -334,8 +345,15 @@ flag_add(FLAGSPACE * n, const char *name, FLAG *f)
    * We could improve this algorithm to use the next available
    * slot after deletions, too, but this will do for now.
    */
+
+  /* Can't have more than 255 references to the same flag */
+  if (FLAG_REF(f->perms) == 0xFFU)
+    return;
+
   if (f->bitpos < 0)
     f->bitpos = n->flagbits;
+
+  f->perms = INCR_FLAG_REF(f->perms);
 
   /* Insert the flag in the ptab by the given name (maybe an alias) */
   ptab_start_inserts(n->tab);
@@ -355,16 +373,15 @@ flag_add(FLAGSPACE * n, const char *name, FLAG *f)
     if (f->bitpos >= n->flagbits) {
       /* Oops, we need a bigger array */
       if (n->flagbits == 0)
-	n->flags = (FLAG **) malloc(sizeof(FLAG *));
+        n->flags = mush_malloc(sizeof(FLAG *), "flagspace.flags");
       else {
-	n->flags =
-	  (FLAG **) realloc(n->flags, (f->bitpos + 1) * sizeof(FLAG *));
-	if (!n->flags)
-	  mush_panic("Unable to reallocate flags array!\n");
+        n->flags = realloc(n->flags, (f->bitpos + 1) * sizeof(FLAG *));
+        if (!n->flags)
+          mush_panic("Unable to reallocate flags array!\n");
       }
       /* Make sure the new space is full of NULLs */
       for (i = n->flagbits; i <= f->bitpos; i++)
-	n->flags[i] = NULL;
+        n->flags[i] = NULL;
     }
     /* Put the canonical flag in the flags array */
     n->flags[f->bitpos] = f;
@@ -406,7 +423,7 @@ flag_read_oldstyle(FILE * in)
   c = mush_strdup(getstring_noalloc(in), "flag name");
   if (!strcmp(c, "FLAG ALIASES")) {
     mush_free(c, "flag name");
-    return NULL;		/* We're done */
+    return NULL;                /* We're done */
   }
   f = new_flag();
   f->name = c;
@@ -506,7 +523,7 @@ flag_read(FILE * in)
       f->type = ALLTYPES;
   }
   db_read_this_labeled_string(in, "perms", &tmp);
-  f->perms = string_to_privs(flag_privs, tmp, 0);
+  f->perms = F_REF_NOT & string_to_privs(flag_privs, tmp, 0);
   db_read_this_labeled_string(in, "negate_perms", &tmp);
   f->negate_perms = string_to_privs(flag_privs, tmp, 0);
   return f;
@@ -649,7 +666,7 @@ flag_write(FILE * out, FLAG *f, const char *name)
  db_write_labeled_string(out, "  letter", tprintf("%c", f->letter));
  db_write_labeled_string(out, "  type", f->type == ALLTYPES ? "ANY"  :privs_to_string(type_privs, f->type));
  db_write_labeled_string(out, "  perms",
-                        privs_to_string(flag_privs, f->perms));
+                        privs_to_string(flag_privs, F_REF_NOT & f->perms));
  db_write_labeled_string(out, "  negate_perms",
                         privs_to_string(flag_privs, f->negate_perms));
 }
@@ -763,7 +780,7 @@ init_flag_table(const char *ns)
       flag_add(n, a->alias, f);
     else
       do_rawlog(LT_ERR,
-		T("FLAG INIT: flag alias %s matches no known flag."), a->alias);
+                T("FLAG INIT: flag alias %s matches no known flag."), a->alias);
   }
   flag_add_additional();
 
@@ -787,6 +804,7 @@ flag_add_additional(void)
 	   F_PRIVILEGE | F_SELF);
   add_flag("ZCLONE_OK", '\0', TYPE_THING, F_PRIVILEGE, F_PRIVILEGE);
   add_flag("WEIRDSITE", '\0', TYPE_PLAYER, F_GOD | F_DARK, F_GOD | F_DARK);
+  add_flag("KEEPALIVE", 'k', TYPE_PLAYER, F_ANY, F_ANY);
   add_flag("MISTRUST", 'm', TYPE_THING | TYPE_EXIT | TYPE_ROOM, F_PRIVILEGE,
 	   F_PRIVILEGE);
   add_flag("ORPHAN", 'i', NOTYPE, F_ANY, F_ANY);
@@ -1114,7 +1132,7 @@ has_any_bits(const char *ns, object_flag_type source, object_flag_type bitmask)
  */
 const char *
 bits_to_string(const char *ns, object_flag_type bitmask, dbref privs,
-	       dbref thing)
+               dbref thing)
 {
   FLAG *f;
   FLAGSPACE *n;
@@ -1128,11 +1146,11 @@ bits_to_string(const char *ns, object_flag_type bitmask, dbref privs,
   for (i = 0; i < n->flagbits; i++) {
     if ((f = n->flags[i])) {
       if (has_bit(bitmask, f->bitpos) &&
-	  (!GoodObject(thing) || Can_See_Flag(privs, thing, f))) {
-	if (!first)
-	  safe_chr(' ', buf, &bp);
-	safe_str(f->name, buf, &bp);
-	first = 0;
+          (!GoodObject(thing) || Can_See_Flag(privs, thing, f))) {
+        if (!first)
+          safe_chr(' ', buf, &bp);
+        safe_str(f->name, buf, &bp);
+        first = 0;
       }
     }
   }
@@ -1161,7 +1179,7 @@ string_to_bits(const char *ns, const char *str)
     return bitmask;
   }
   if (!str)
-    return bitmask;		/* We're done, then */
+    return bitmask;             /* We're done, then */
   copy = mush_strdup(str, "flagstring");
   s = trim_space_sep(copy, ' ');
   while (s) {
@@ -1409,7 +1427,7 @@ twiddle_flag_internal(const char *ns, dbref thing, const char *flag, int negate)
  */
 void
 set_flag(dbref player, dbref thing, const char *flag, int negate,
-	 int hear, int listener)
+         int hear, int listener)
 {
   FLAG *f;
   char tbuf1[BUFFER_LEN];
@@ -1610,13 +1628,13 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
     /* notify the area if something stops listening, but only if it
        wasn't listening before */
     if (!IsPlayer(thing) && (hear || listener) &&
-	!Hearer(thing) && !Listener(thing)) {
+        !Hearer(thing) && !Listener(thing)) {
       tp = tbuf1;
       safe_format(tbuf1, &tp, T("%s is no longer listening."), Name(thing));
       *tp = '\0';
       if (GoodObject(Location(thing)))
-	notify_except(Contents(Location(thing)), NOTHING, tbuf1,
-		      NA_INTER_PRESENCE);
+        notify_except(Contents(Location(thing)), NOTHING, tbuf1,
+                      NA_INTER_PRESENCE);
       notify_except(Contents(thing), NOTHING, tbuf1, 0);
     }
     if (IsRoom(thing) && is_flag(f, "MONITOR") && !hear && !Listener(thing)) {
@@ -1628,25 +1646,25 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
     if (is_flag(f, "AUDIBLE")) {
       switch (Typeof(thing)) {
       case TYPE_EXIT:
-	if (Audible(Source(thing))) {
-	  tp = tbuf1;
-	  safe_format(tbuf1, &tp, T("Exit %s is no longer broadcasting."),
-		      Name(thing));
-	  *tp = '\0';
-	  notify_except(Contents(Source(thing)), NOTHING, tbuf1, 0);
-	}
-	break;
+        if (Audible(Source(thing))) {
+          tp = tbuf1;
+          safe_format(tbuf1, &tp, T("Exit %s is no longer broadcasting."),
+                      Name(thing));
+          *tp = '\0';
+          notify_except(Contents(Source(thing)), NOTHING, tbuf1, 0);
+        }
+        break;
       case TYPE_ROOM:
-	notify_except(Contents(thing), NOTHING,
-		      T("Audible exits in this room have been deactivated."),
-		      0);
-	break;
+        notify_except(Contents(thing), NOTHING,
+                      T("Audible exits in this room have been deactivated."),
+                      0);
+        break;
       case TYPE_THING:
       case TYPE_PLAYER:
-	notify_except(Contents(thing), thing,
-		      T("This room is no longer broadcasting."), 0);
-	notify(thing, T("Your contents can no longer be heard from outside."));
-	break;
+        notify_except(Contents(thing), thing,
+                      T("This room is no longer broadcasting."), 0);
+        notify(thing, T("Your contents can no longer be heard from outside."));
+        break;
       }
     }
     if (is_flag(f, "QUIET") || (!AreQuiet(player, thing))) {
@@ -1682,13 +1700,13 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
       hide_player(thing, 1);
     /* notify area if something starts listening */
     if (!IsPlayer(thing) &&
-	(is_flag(f, "PUPPET") || is_flag(f, "MONITOR")) && !hear && !listener) {
+        (is_flag(f, "PUPPET") || is_flag(f, "MONITOR")) && !hear && !listener) {
       tp = tbuf1;
       safe_format(tbuf1, &tp, T("%s is now listening."), Name(thing));
       *tp = '\0';
       if (GoodObject(Location(thing)))
-	notify_except(Contents(Location(thing)), NOTHING, tbuf1,
-		      NA_INTER_PRESENCE);
+        notify_except(Contents(Location(thing)), NOTHING, tbuf1,
+                      NA_INTER_PRESENCE);
       notify_except(Contents(thing), NOTHING, tbuf1, 0);
     }
     if (IsRoom(thing) && is_flag(f, "MONITOR") && !hear && !listener) {
@@ -1701,24 +1719,24 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
     if (is_flag(f, "AUDIBLE")) {
       switch (Typeof(thing)) {
       case TYPE_EXIT:
-	if (Audible(Source(thing))) {
-	  tp = tbuf1;
-	  safe_format(tbuf1, &tp, T("Exit %s is now broadcasting."),
-		      Name(thing));
-	  *tp = '\0';
-	  notify_except(Contents(Source(thing)), NOTHING, tbuf1, 0);
-	}
-	break;
+        if (Audible(Source(thing))) {
+          tp = tbuf1;
+          safe_format(tbuf1, &tp, T("Exit %s is now broadcasting."),
+                      Name(thing));
+          *tp = '\0';
+          notify_except(Contents(Source(thing)), NOTHING, tbuf1, 0);
+        }
+        break;
       case TYPE_ROOM:
-	notify_except(Contents(thing), NOTHING,
-		      T("Audible exits in this room have been activated."), 0);
-	break;
+        notify_except(Contents(thing), NOTHING,
+                      T("Audible exits in this room have been activated."), 0);
+        break;
       case TYPE_PLAYER:
       case TYPE_THING:
-	notify_except(Contents(thing), thing,
-		      T("This room is now broadcasting."), 0);
-	notify(thing, T("Your contents can now be heard from outside."));
-	break;
+        notify_except(Contents(thing), thing,
+                      T("This room is now broadcasting."), 0);
+        notify(thing, T("Your contents can now be heard from outside."));
+        break;
       }
     }
     if (is_flag(f, "QUIET") || (!AreQuiet(player, thing))) {
@@ -1748,7 +1766,7 @@ set_flag(dbref player, dbref thing, const char *flag, int negate,
  */
 int
 flaglist_check(const char *ns, dbref player, dbref it, const char *fstr,
-	       int type)
+               int type)
 {
   char *s;
   FLAG *fp;
@@ -1771,58 +1789,67 @@ flaglist_check(const char *ns, dbref player, dbref it, const char *fstr,
       negate = 1;
       s++;
     } else {
-      negate = 0;		/* It's important to clear this at appropriate times;
-				 * else !Dc means (!D && !c), instead of (!D && c). */
+      negate = 0;               /* It's important to clear this at appropriate times;
+                                 * else !Dc means (!D && !c), instead of (!D && c). */
     }
     if (!*s)
       /* We got a '!' that wasn't followed by a letter.
        * Fail the check. */
       return (type == 1) ? 0 : ret;
     /* Find the flag. */
-    if ((fp = letter_to_flagptr(n, *s, Typeof(it))) == NULL) {
-      /* Maybe *s is a type specifier (P, T, E, R). These aren't really
-       * flags, but we grandfather them in to preserve old code
-       */
-      if ((*s == 'T') || (*s == 'R') || (*s == 'E') || (*s == 'P')) {
-	temp = (*s == 'T') ? (Typeof(it) == TYPE_THING) :
-	  ((*s == 'R') ? (Typeof(it) == TYPE_ROOM) :
-	   ((*s == 'E') ? (Typeof(it) == TYPE_EXIT) :
-	    (Typeof(it) == TYPE_PLAYER)));
-	if ((type == 1) && ((negate && temp) || (!negate && !temp)))
-	  return 0;
-	else if ((type == 0) && ((!negate && temp) || (negate && !temp)))
-	  ret |= 1;
+    fp = letter_to_flagptr(n, *s, Typeof(it));
+    if (!fp) {
+      if (n->tab == &ptab_flag) {
+        /* Maybe *s is a type specifier (P, T, E, R). These aren't really
+         * flags, but we grandfather them in to preserve old code
+         */
+        if ((*s == 'T') || (*s == 'R') || (*s == 'E') || (*s == 'P')) {
+          temp = (*s == 'T') ? (Typeof(it) == TYPE_THING) :
+            ((*s == 'R') ? (Typeof(it) == TYPE_ROOM) :
+             ((*s == 'E') ? (Typeof(it) == TYPE_EXIT) :
+              (Typeof(it) == TYPE_PLAYER)));
+          if ((type == 1) && ((negate && temp) || (!negate && !temp)))
+            return 0;
+          else if ((type == 0) && ((!negate && temp) || (negate && !temp)))
+            ret |= 1;
+        } else {
+          /* Either we got a '!' that wasn't followed by a letter, or
+           * we couldn't find that flag. For AND, since we've failed
+           * a check, we can return false. Otherwise we just go on.
+           */
+          if (type == 1)
+            return 0;
+          else
+            continue;
+        }
       } else {
-	/* Either we got a '!' that wasn't followed by a letter, or
-	 * we couldn't find that flag. For AND, since we've failed
-	 * a check, we can return false. Otherwise we just go on.
-	 */
-	if (type == 1)
-	  return 0;
-	else
-	  continue;
+        if (type == 1)
+          return 0;
+        else
+          continue;
       }
     } else {
       /* does the object have this flag? */
       temp = (has_flag(it, fp) && Can_See_Flag(player, it, fp));
       if ((type == 1) && ((negate && temp) || (!negate && !temp))) {
-	/* Too bad there's no NXOR function...
-	 * At this point we've either got a flag and we don't want
-	 * it, or we don't have a flag and we want it. Since it's
-	 * AND, we return false.
-	 */
-	return 0;
+        /* Too bad there's no NXOR function...
+         * At this point we've either got a flag and we don't want
+         * it, or we don't have a flag and we want it. Since it's
+         * AND, we return false.
+         */
+        return 0;
       } else if ((type == 0) && ((!negate && temp) || (negate && !temp))) {
-	/* We've found something we want, in an OR. We OR a
-	 * true with the current value.
-	 */
-	ret |= 1;
+        /* We've found something we want, in an OR. We OR a
+         * true with the current value.
+         */
+        ret |= 1;
       }
       /* Otherwise, we don't need to do anything. */
     }
   }
   return ret;
 }
+
 
 /** Check if an object has one or all of a list of flag names.
  * This function is used by orlflags and andlflags to check to see
@@ -1838,7 +1865,7 @@ flaglist_check(const char *ns, dbref player, dbref it, const char *fstr,
  */
 int
 flaglist_check_long(const char *ns, dbref player, dbref it, const char *fstr,
-		    int type)
+                    int type)
 {
   char *s, *copy, *sp;
   FLAG *fp;
@@ -1863,14 +1890,14 @@ flaglist_check_long(const char *ns, dbref player, dbref it, const char *fstr,
       negate = 1;
       s++;
     } else {
-      negate = 0;		/* It's important to clear this at appropriate times;
-				 * else !D c means (!D && !c), instead of (!D && c). */
+      negate = 0;               /* It's important to clear this at appropriate times;
+                                 * else !D c means (!D && !c), instead of (!D && c). */
     }
     if (!*s) {
       /* We got a '!' that wasn't followed by a string.
        * Fail the check. */
       if (type == 1)
-	ret = 0;
+        ret = 0;
       break;
     }
     /* Find the flag. */
@@ -1880,10 +1907,10 @@ flaglist_check_long(const char *ns, dbref player, dbref it, const char *fstr,
        * a check, we can return false. Otherwise we just go on.
        */
       if (type == 1) {
-	ret = 0;
-	break;
+        ret = 0;
+        break;
       } else
-	continue;
+        continue;
     } else {
       /* does the object have this flag? There's a special case
        * here, as we want (for consistency with flaglist_check)
@@ -2031,7 +2058,7 @@ do_flag_info(const char *ns, dbref player, const char *name)
   notify_format(player, "  Type(s): %s", f->type == ALLTYPES ? "ANY" : privs_to_string(type_privs, f->type));
   notify_format(player, "    Perms: %s", privs_to_string(flag_privs, f->perms));
   notify_format(player, "ResetPrms: %s",
-		privs_to_string(flag_privs, f->negate_perms));
+                privs_to_string(flag_privs, f->negate_perms));
 }
 
 /** Change the permissions on a flag. 
@@ -2082,8 +2109,8 @@ do_flag_restrict(dbref player, const char *name, char *args_right[])
     } else {
       negate_perms = string_to_privs(flag_privs, args_right[2], 0);
       if ((!negate_perms) || (negate_perms & (F_INTERNAL | F_DISABLED))) {
-	notify(player, T("I don't understand those permissions."));
-	return;
+        notify(player, T("I don't understand those permissions."));
+        return;
       }
     }
   } else {
@@ -2128,7 +2155,7 @@ do_flag_type(const char *ns, dbref player, const char *name, char *type_string)
   }
   if (!type_string || !*type_string) {
     notify_format(player, T("What type do you want to make that %s?"),
-		  strlower(ns));
+                  strlower(ns));
     return;
   }
   if (!strcasecmp(type_string, "any")) {
@@ -2349,12 +2376,17 @@ alias_flag_generic(const char *ns, const char *name, const char *alias)
 
   f = match_flag_ns(n, name);
   if (!f) {
-    return 0;			/* no such flag 'name' */
+    return 0;                   /* no such flag 'name' */
   }
 
   if (ptab_find_exact(n->tab, strupper(alias))) {
-    return 0;			/* a flag called 'alias' already exists */
+    return 0;                   /* a flag called 'alias' already exists */
   }
+
+  if (FLAG_REF(f->perms) == 0xFFU)
+    return 0;                   /* Too many copies already */
+
+  f->perms = INCR_FLAG_REF(f->perms);
 
   ptab_start_inserts(n->tab);
   ptab_insert(n->tab, strupper(alias), f);
@@ -2481,10 +2513,10 @@ do_flag_delete(dbref player, const char *name)
     tmpf = ptab_firstentry_new(n->tab, flagname);
     while (tmpf) {
       if (!strcmp(tmpf->name, f->name) &&
-	  strcmp(n->flags[f->bitpos]->name, flagname)) {
-	ptab_delete(n->tab, flagname);
-	got_one = 1;
-	break;
+          strcmp(n->flags[f->bitpos]->name, flagname)) {
+        ptab_delete(n->tab, flagname);
+        got_one = 1;
+        break;
       }
       tmpf = ptab_nextentry_new(n->tab, flagname);
     }
@@ -2545,10 +2577,10 @@ list_aliases(FLAGSPACE * n, FLAG *given)
   f = ptab_firstentry_new(n->tab, flagname);
   while (f) {
     if (!strcmp(given->name, f->name) &&
-	strcmp(n->flags[f->bitpos]->name, flagname)) {
+        strcmp(n->flags[f->bitpos]->name, flagname)) {
       /* This is an alias! */
       if (!first)
-	safe_chr(' ', buf, &bp);
+        safe_chr(' ', buf, &bp);
       first = 0;
       safe_str(flagname, buf, &bp);
     }
@@ -2584,7 +2616,7 @@ list_all_flags(const char *ns, const char *name, dbref privs, int which)
   for (i = 0; i < n->flagbits; i++) {
     if ((f = n->flags[i]) && !(f->perms & disallowed)) {
       if (!name || !*name || quick_wild(name, f->name))
-	ptrs[numptrs++] = (char *) f->name;
+        ptrs[numptrs++] = (char *) f->name;
     }
   }
   do_gensort(privs, ptrs, NULL, numptrs, ALPHANUM_LIST);
@@ -2593,25 +2625,25 @@ list_all_flags(const char *ns, const char *name, dbref privs, int which)
     switch (which) {
     case 0x3:
       if (i)
-	safe_strl(", ", 2, buf, &bp);
+        safe_strl(", ", 2, buf, &bp);
       safe_str(ptrs[i], buf, &bp);
       f = match_flag_ns(n, ptrs[i]);
       if (!f)
-	break;
+        break;
       if (f->letter != '\0')
-	safe_format(buf, &bp, " (%c)", f->letter);
+        safe_format(buf, &bp, " (%c)", f->letter);
       if (f->perms & F_DISABLED)
-	safe_str(T(" (disabled)"), buf, &bp);
+        safe_str(T(" (disabled)"), buf, &bp);
       break;
     case 0x2:
       if (i)
-	safe_chr(' ', buf, &bp);
+        safe_chr(' ', buf, &bp);
       safe_str(ptrs[i], buf, &bp);
       break;
     case 0x1:
       f = match_flag_ns(n, ptrs[i]);
       if (f && (f->letter != '\0'))
-	safe_chr(f->letter, buf, &bp);
+        safe_chr(f->letter, buf, &bp);
       break;
     }
   }

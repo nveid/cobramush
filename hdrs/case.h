@@ -10,4 +10,4 @@
 #define DOWNCASE(x) (isupper((unsigned char)x) ? tolower((unsigned char)x) : (x))
 #define UPCASE(x)   (islower((unsigned char)x) ? toupper((unsigned char)x) : (x))
 #endif
-#endif				/* CASE_H */
+#endif                          /* CASE_H */

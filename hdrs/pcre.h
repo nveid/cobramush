@@ -94,7 +94,7 @@ extern "C" {
 #define PCRE_ERROR_NOMEMORY        (-6)
 #define PCRE_ERROR_NOSUBSTRING     (-7)
 #define PCRE_ERROR_MATCHLIMIT      (-8)
-#define PCRE_ERROR_CALLOUT         (-9)	/* Never used by PCRE itself */
+#define PCRE_ERROR_CALLOUT         (-9) /* Never used by PCRE itself */
 #define PCRE_ERROR_BADUTF8        (-10)
 #define PCRE_ERROR_BADUTF8_OFFSET (-11)
 #define PCRE_ERROR_PARTIAL        (-12)
@@ -114,7 +114,7 @@ extern "C" {
 #define PCRE_INFO_CAPTURECOUNT       2
 #define PCRE_INFO_BACKREFMAX         3
 #define PCRE_INFO_FIRSTBYTE          4
-#define PCRE_INFO_FIRSTCHAR          4	/* For backwards compatibility */
+#define PCRE_INFO_FIRSTCHAR          4  /* For backwards compatibility */
 #define PCRE_INFO_FIRSTTABLE         5
 #define PCRE_INFO_LASTLITERAL        6
 #define PCRE_INFO_NAMEENTRYSIZE      7
@@ -140,18 +140,18 @@ extern "C" {
 
 /* Types */
 
-  struct real_pcre;		/* declaration; the definition is private  */
+  struct real_pcre;             /* declaration; the definition is private  */
   typedef struct real_pcre pcre;
 
 /* The structure for passing additional data to pcre_exec(). This is defined in
 such as way as to be extensible. */
 
   typedef struct pcre_extra {
-    unsigned long int flags;	/* Bits for which fields are set */
-    void *study_data;		/* Opaque data from pcre_study() */
-    unsigned long int match_limit;	/* Maximum number of calls to match() */
-    void *callout_data;		/* Data passed back in callouts */
-    const unsigned char *tables;	/* Pointer to character tables */
+    unsigned long int flags;    /* Bits for which fields are set */
+    void *study_data;           /* Opaque data from pcre_study() */
+    unsigned long int match_limit;      /* Maximum number of calls to match() */
+    void *callout_data;         /* Data passed back in callouts */
+    const unsigned char *tables;        /* Pointer to character tables */
   } pcre_extra;
 
 /* The structure for passing out data via the pcre_callout_function. We use a
@@ -160,20 +160,20 @@ without changing the API of the function, thereby allowing old clients to work
 without modification. */
 
   typedef struct pcre_callout_block {
-    int version;		/* Identifies version of block */
+    int version;                /* Identifies version of block */
     /* ------------------------ Version 0 ------------------------------- */
-    int callout_number;		/* Number compiled into pattern */
-    int *offset_vector;		/* The offset vector */
-    const char *subject;	/* The subject being matched */
-    int subject_length;		/* The length of the subject */
-    int start_match;		/* Offset to start of this match attempt */
-    int current_position;	/* Where we currently are in the subject */
-    int capture_top;		/* Max current capture */
-    int capture_last;		/* Most recently closed capture */
-    void *callout_data;		/* Data passed in with the call */
+    int callout_number;         /* Number compiled into pattern */
+    int *offset_vector;         /* The offset vector */
+    const char *subject;        /* The subject being matched */
+    int subject_length;         /* The length of the subject */
+    int start_match;            /* Offset to start of this match attempt */
+    int current_position;       /* Where we currently are in the subject */
+    int capture_top;            /* Max current capture */
+    int capture_last;           /* Most recently closed capture */
+    void *callout_data;         /* Data passed in with the call */
     /* ------------------- Added for Version 1 -------------------------- */
-    int pattern_position;	/* Offset to next item in the pattern */
-    int next_item_length;	/* Length of next item in the pattern */
+    int pattern_position;       /* Offset to next item in the pattern */
+    int next_item_length;       /* Length of next item in the pattern */
     /* ------------------------------------------------------------------ */
   } pcre_callout_block;
 
@@ -181,23 +181,23 @@ without modification. */
 /* Exported PCRE functions */
 
   extern pcre *pcre_compile(const char *, int, const char **,
-			    int *, const unsigned char *);
+                            int *, const unsigned char *);
   extern int pcre_copy_substring(const char *, int *, int, int, char *, int);
   int pcre_get_substring(const char *, int *, int, int, const char **);
   extern int pcre_exec(const pcre *, const pcre_extra *,
-		       const char *, int, int, int, int *, int);
+                       const char *, int, int, int, int *, int);
   extern const unsigned char *pcre_maketables(void);
   extern pcre_extra *pcre_study(const pcre *, int, const char **);
   extern int pcre_fullinfo(const pcre * argument_re,
-			   const pcre_extra * extra_data, int what,
-			   void *where);
+                           const pcre_extra * extra_data, int what,
+                           void *where);
   extern int pcre_get_stringnumber(const pcre * code, const char *stringname);
   extern int
    pcre_copy_named_substring(const pcre * code, const char *subject,
-			     int *ovector, int stringcount,
-			     const char *stringname, char *buffer, int size);
+                             int *ovector, int stringcount,
+                             const char *stringname, char *buffer, int size);
 
 #ifdef __cplusplus
-}				/* extern "C" */
+}                               /* extern "C" */
 #endif
-#endif				/* End of pcre.h */
+#endif                          /* End of pcre.h */

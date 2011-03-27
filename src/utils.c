@@ -30,7 +30,7 @@
 #endif
 #ifdef WIN32
 #include <wtypes.h>
-#include <winbase.h>		/* For GetCurrentProcessId() */
+#include <winbase.h>            /* For GetCurrentProcessId() */
 #endif
 #include "conf.h"
 
@@ -48,7 +48,7 @@
 
 dbref find_entrance(dbref door);
 void initialize_mt(void);
-static unsigned long genrand_int32(void);
+unsigned int genrand_int32(void);
 static void init_genrand(unsigned long);
 static void init_by_array(unsigned long *, int);
 extern int local_can_interact_first(dbref from, dbref to, int type);
@@ -81,7 +81,7 @@ mush_malloc(size_t size, const char *check)
  */
 void
 mush_free(Malloc_t RESTRICT ptr, const char *RESTRICT check
-	  __attribute__ ((__unused__)))
+          __attribute__ ((__unused__)))
 {
   del_check(check);
   free(ptr);
@@ -142,9 +142,10 @@ parse_anon_attrib(dbref player, char *str, dbref *thing, ATTR **attrib)
     } else {
       *attrib = mush_malloc(sizeof(ATTR), "anon_attr");
       AL_CREATOR(*attrib) = player;
-      AL_NAME(*attrib) = strdup("#lambda");
+      AL_NAME(*attrib) = mush_strdup("#lambda", "anon_attr.lambda");
       t = compress(str);
       (*attrib)->data = chunk_create(t, (u_int_16) u_strlen(t), 0);
+      free(t);
       AL_RLock(*attrib) = AL_WLock(*attrib) = TRUE_BOOLEXP;
       AL_FLAGS(*attrib) = AF_ANON;
       AL_NEXT(*attrib) = NULL;
@@ -162,7 +163,7 @@ void
 free_anon_attrib(ATTR *attrib)
 {
   if (attrib && (AL_FLAGS(attrib) & AF_ANON)) {
-    free((char *) AL_NAME(attrib));
+    mush_free((void *) AL_NAME(attrib), "anon_attr.lambda");
     chunk_delete(attrib->data);
     mush_free(attrib, "anon_attr");
   }
@@ -300,7 +301,7 @@ call_ufun(ufun_attrib * ufun, char **wenv_args, int wenv_argc, char *ret,
 
   ap = ufun->contents;
   pe_ret = process_expression(ret, &rp, &ap, ufun->thing, executor,
-			      enactor, ufun->pe_flags, PT_DEFAULT, pe_info);
+                              enactor, ufun->pe_flags, PT_DEFAULT, pe_info);
   *rp = '\0';
 
   /* Restore the old wenv */
@@ -334,9 +335,9 @@ find_entrance(dbref door)
     if (IsRoom(room)) {
       thing = Exits(room);
       while (thing != NOTHING) {
-	if (thing == door)
-	  return room;
-	thing = Next(thing);
+        if (thing == door)
+          return room;
+        thing = Next(thing);
       }
     }
   return NOTHING;
@@ -359,8 +360,8 @@ remove_first(dbref first, dbref what)
     /* have to find it */
     DOLIST(prev, first) {
       if (Next(prev) == what) {
-	Next(prev) = Next(what);
-	return first;
+        Next(prev) = Next(what);
+        return first;
       }
     }
     return first;
@@ -486,7 +487,7 @@ initialize_mt(void)
     close(fd);
     if (r <= 0) {
       do_rawlog(LT_ERR,
-		"Couldn't read from /dev/urandom! Resorting to normal seeding method.");
+                "Couldn't read from /dev/urandom! Resorting to normal seeding method.");
     } else {
       do_rawlog(LT_ERR, "Seeded RNG from /dev/urandom");
       init_by_array(buf, r / sizeof(unsigned long));
@@ -494,7 +495,7 @@ initialize_mt(void)
     }
   } else
     do_rawlog(LT_ERR,
-	      "Couldn't open /dev/urandom to seed random number generator. Resorting to normal seeding method.");
+              "Couldn't open /dev/urandom to seed random number generator. Resorting to normal seeding method.");
 
 #endif
   /* Default seeder. Pick a seed that's fairly random */
@@ -524,12 +525,12 @@ initialize_mt(void)
 
 /* Period parameters */
 #define M 397  /**< PRNG constant */
-#define MATRIX_A 0x9908b0dfUL	/**< PRNG constant vector a */
-#define UPPER_MASK 0x80000000UL	/**< PRNG most significant w-r bits */
-#define LOWER_MASK 0x7fffffffUL	/**< PRNG least significant r bits */
+#define MATRIX_A 0x9908b0dfUL   /**< PRNG constant vector a */
+#define UPPER_MASK 0x80000000UL /**< PRNG most significant w-r bits */
+#define LOWER_MASK 0x7fffffffUL /**< PRNG least significant r bits */
 
-static unsigned long mt[N];	/* the array for the state vector  */
-static int mti = N + 1;		/* mti==N+1 means mt[N] is not initialized */
+static unsigned long mt[N];     /* the array for the state vector  */
+static int mti = N + 1;         /* mti==N+1 means mt[N] is not initialized */
 
 /** initializes mt[N] with a seed.
  * \param a seed value.
@@ -563,8 +564,8 @@ init_by_array(unsigned long init_key[], int key_length)
   k = (N > key_length ? N : key_length);
   for (; k; k--) {
     mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1664525UL))
-      + init_key[j] + j;	/* non linear */
-    mt[i] &= 0xffffffffUL;	/* for WORDSIZE > 32 machines */
+      + init_key[j] + j;        /* non linear */
+    mt[i] &= 0xffffffffUL;      /* for WORDSIZE > 32 machines */
     i++;
     j++;
     if (i >= N) {
@@ -576,8 +577,8 @@ init_by_array(unsigned long init_key[], int key_length)
   }
   for (k = N - 1; k; k--) {
     mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1566083941UL))
-      - i;			/* non linear */
-    mt[i] &= 0xffffffffUL;	/* for WORDSIZE > 32 machines */
+      - i;                      /* non linear */
+    mt[i] &= 0xffffffffUL;      /* for WORDSIZE > 32 machines */
     i++;
     if (i >= N) {
       mt[0] = mt[N - 1];
@@ -585,22 +586,22 @@ init_by_array(unsigned long init_key[], int key_length)
     }
   }
 
-  mt[0] = 0x80000000UL;		/* MSB is 1; assuring non-zero initial array */
+  mt[0] = 0x80000000UL;         /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0,0xffffffff]-interval */
-static unsigned long
+unsigned int
 genrand_int32(void)
 {
   unsigned long y;
   static unsigned long mag01[2] = { 0x0UL, MATRIX_A };
   /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
-  if (mti >= N) {		/* generate N words at one time */
+  if (mti >= N) {               /* generate N words at one time */
     int kk;
 
-    if (mti == N + 1)		/* if init_genrand() has not been called, */
-      init_genrand(5489UL);	/* a default initial seed is used */
+    if (mti == N + 1)           /* if init_genrand() has not been called, */
+      init_genrand(5489UL);     /* a default initial seed is used */
 
     for (kk = 0; kk < N - M; kk++) {
       y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
@@ -688,8 +689,10 @@ fullalias(dbref it)
   static char n[BUFFER_LEN];  /* STATIC */
   ATTR *a = atr_get_noparent(it, "ALIAS");
 
-  if (!a)
-    return '\0';
+  if (!a) {
+    n[0] = '\0';
+    return n;
+  }
 
   strncpy(n, atr_value(a), BUFFER_LEN - 1);
   n[BUFFER_LEN - 1] = '\0';
@@ -709,8 +712,10 @@ shortalias(dbref it)
   char *s;
 
   s = fullalias(it);
-  if (!(s && *s))
-    return '\0';
+  if (!(s && *s)) {
+    n[0] = '\0';
+    return n;
+  }
 
   strncpy(n, s, BUFFER_LEN - 1);
   n[BUFFER_LEN - 1] = '\0';
@@ -728,7 +733,7 @@ shortalias(dbref it)
 char *
 shortname(dbref it)
 {
-  static char n[BUFFER_LEN];	/* STATIC */
+  static char n[BUFFER_LEN];    /* STATIC */
   char *s;
 
   strncpy(n, Name(it), BUFFER_LEN - 1);

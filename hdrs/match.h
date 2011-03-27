@@ -58,4 +58,4 @@ extern dbref match_controlled(dbref player, const char *name);
 #define match_thing(player,name) \
   noisy_match_result((player), (name), NOTYPE, MAT_EVERYTHING)
 
-#endif				/* __MATCH_H */
+#endif                          /* __MATCH_H */

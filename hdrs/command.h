@@ -166,8 +166,8 @@ typedef struct switch_value SWITCH_VALUE;
  * associates switch names with switch numbers
  */
 struct switch_value {
-  const char *name;	/**< Name of the switch */
-  int value;		/**< Number of the switch */
+  const char *name;     /**< Name of the switch */
+  int value;            /**< Number of the switch */
 };
 
 typedef struct com_sort_struc COMSORTSTRUC;
@@ -177,8 +177,8 @@ typedef struct com_sort_struc COMSORTSTRUC;
  * to command data.
  */
 struct com_sort_struc {
-  struct com_sort_struc *next;	/**< Pointer to next in list */
-  COMMAND_INFO *cmd;		/**< Command data */
+  struct com_sort_struc *next;  /**< Pointer to next in list */
+  COMMAND_INFO *cmd;            /**< Command data */
 };
 
 /** Permissions for commands.
@@ -186,8 +186,8 @@ struct com_sort_struc {
  * (e.g. "player") with the appropriate bitmask
  */
 struct command_perms_t {
-  const char *name;	/**< Permission name */
-  unsigned int type;	/**< Bitmask for this permission */
+  const char *name;     /**< Permission name */
+  unsigned int type;    /**< Bitmask for this permission */
 };
 
 #define SWITCH_NONE 0
@@ -226,4 +226,4 @@ extern void do_command_delete(dbref player, char *name);
 extern void generic_command_failure(dbref player, dbref cause, char *string, int fromport);
 extern int command_lock(const char *command, const char *lock);
 
-#endif				/* __COMMAND_H */
+#endif                          /* __COMMAND_H */

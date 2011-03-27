@@ -5,20 +5,6 @@
 #ifndef _MYMALLOC_H
 #define _MYMALLOC_H
 
-#ifdef WIN32
-#undef malloc
-#undef calloc
-#undef realloc
-#undef free
-#endif
-
-/* If you're using gmalloc on some linux kernels, and have trouble
- * with the compile, consider uncommenting this line: */
-/*#undef I_MALLOC */
-#ifdef I_MALLOC
-#include <malloc.h>
-#endif
-
 #include "options.h"
 
 #if (MALLOC_PACKAGE == 1)
@@ -32,4 +18,4 @@
 #include "csrimalloc.h"
 #endif
 
-#endif				/* _MYMALLOC_H */
+#endif                          /* _MYMALLOC_H */

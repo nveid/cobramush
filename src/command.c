@@ -422,7 +422,7 @@ switch_find(COMMAND_INFO *cmd, char *sw)
   if (!cmd) {
     while (sw_val->name) {
       if (strcmp(sw_val->name, sw) == 0)
-	return sw_val->value;
+        return sw_val->value;
       sw_val++;
     }
     return 0;
@@ -910,7 +910,7 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
 #if 0
     /* Messes up hooks when chat_strip_quote is yes. See bug #6677 */
     if (CHAT_STRIP_QUOTE)
-      p--;			/* Since 'say' strips out the '"' */
+      p--;                      /* Since 'say' strips out the '"' */
 #endif
     break;
   case POSE_TOKEN:
@@ -992,14 +992,14 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
     } else {
       c = command;
       while ((*c) && (*c != '/'))
-	c++;
+        c++;
       b = *c;
       *c = '\0';
       cmd = command_find(command);
       *c = b;
       /* Is this for internal use? If so, players can't use it! */
       if (cmd && (cmd->type & CMD_T_INTERNAL))
-	cmd = NULL;
+        cmd = NULL;
     }
   }
 
@@ -1065,21 +1065,21 @@ command_parse(dbref player, dbref cause, dbref realcause, char *string, int from
       t = swtch;
       c++;
       while ((*c) && (*c != ' ') && (*c != '/'))
-	*t++ = *c++;
+        *t++ = *c++;
       *t = '\0';
       switchnum = switch_find(cmd, upcasestr(swtch));
       if (!switchnum) {
-	if (cmd->type & CMD_T_SWITCHES) {
-	  if (*swp)
-	    strcat(swp, " ");
-	  strcat(swp, swtch);
-	} else {
-	  if (se == switch_err)
-	    safe_format(switch_err, &se,
-			T("%s doesn't know switch %s."), cmd->name, swtch);
-	}
+        if (cmd->type & CMD_T_SWITCHES) {
+          if (*swp)
+            strcat(swp, " ");
+          strcat(swp, swtch);
+        } else {
+          if (se == switch_err)
+            safe_format(switch_err, &se,
+                        T("%s doesn't know switch %s."), cmd->name, swtch);
+        }
       } else {
-	SW_SET(sw, switchnum);
+        SW_SET(sw, switchnum);
       }
     }
   }
@@ -1574,12 +1574,12 @@ COMMAND (cmd_command) {
 
     if (SW_ISSET(sw, SWITCH_RESTRICT)) {
       if (!arg_right || !arg_right[0]) {
-	notify(player, T("How do you want to restrict the command?"));
-	return;
+        notify(player, T("How do you want to restrict the command?"));
+        return;
       }
 
       if (!restrict_command(arg_left, arg_right))
-	notify(player, T("Restrict attempt failed."));
+        notify(player, T("Restrict attempt failed."));
     }
 
     if ((command->func == cmd_command) && (command->type & CMD_T_DISABLED)) {
@@ -1654,13 +1654,13 @@ COMMAND (cmd_command) {
       buff[0] = '\0';
       bp = buff;
       if (command->type & CMD_T_RS_ARGS) {
-	if (command->type & CMD_T_RS_SPACE)
-	  strccat(buff, &bp, "Space-Args");
-	else
-	  strccat(buff, &bp, "Args");
+        if (command->type & CMD_T_RS_SPACE)
+          strccat(buff, &bp, "Space-Args");
+        else
+          strccat(buff, &bp, "Args");
       }
       if (command->type & CMD_T_RS_NOPARSE)
-	strccat(buff, &bp, "Noparse");
+        strccat(buff, &bp, "Noparse");
       *bp = '\0';
       notify_format(player, "Rightside    : %s", buff);
     } else {
@@ -1830,7 +1830,7 @@ has_hook(struct hook_data *hook)
  */
 int
 run_hook(dbref player, dbref cause, struct hook_data *hook, char *saveregs[],
-	 int save)
+         int save)
 {
   ATTR *atr;
   char *code;
@@ -1858,7 +1858,7 @@ run_hook(dbref player, dbref cause, struct hook_data *hook, char *saveregs[],
   bp = buff;
 
   process_expression(buff, &bp, &cp, hook->obj, cause, player, PE_DEFAULT,
-		     PT_DEFAULT, NULL);
+                     PT_DEFAULT, NULL);
   *bp = '\0';
 
   if (save)
@@ -1882,7 +1882,7 @@ run_hook(dbref player, dbref cause, struct hook_data *hook, char *saveregs[],
  */
 void
 do_hook(dbref player, char *command, char *obj, char *attrname,
-	enum hook_type flag)
+        enum hook_type flag)
 {
   COMMAND_INFO *cmd;
   struct hook_data *h;
@@ -1953,15 +1953,15 @@ do_hook_list(dbref player, char *command)
   if (Site(player)) {
     if (GoodObject(cmd->hooks.before.obj))
       notify_format(player, "@hook/before: #%d/%s",
-		    cmd->hooks.before.obj, cmd->hooks.before.attrname);
+                    cmd->hooks.before.obj, cmd->hooks.before.attrname);
     if (GoodObject(cmd->hooks.after.obj))
       notify_format(player, "@hook/after: #%d/%s", cmd->hooks.after.obj,
-		    cmd->hooks.after.attrname);
+                    cmd->hooks.after.attrname);
     if (GoodObject(cmd->hooks.ignore.obj))
       notify_format(player, "@hook/ignore: #%d/%s",
-		    cmd->hooks.ignore.obj, cmd->hooks.ignore.attrname);
+                    cmd->hooks.ignore.obj, cmd->hooks.ignore.attrname);
     if (GoodObject(cmd->hooks.override.obj))
       notify_format(player, "@hook/override: #%d/%s",
-		    cmd->hooks.override.obj, cmd->hooks.override.attrname);
+                    cmd->hooks.override.obj, cmd->hooks.override.attrname);
   }
 }

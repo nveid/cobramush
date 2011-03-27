@@ -116,7 +116,7 @@ unparse_room(dbref player, dbref loc)
  ***/
 const char *
 real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
-	     int use_nameaccent)
+             int use_nameaccent)
 {
   static char buf[BUFFER_LEN], *bp;
   static char tbuf1[BUFFER_LEN];
@@ -124,7 +124,7 @@ real_unparse(dbref player, dbref loc, int obey_myopic, int use_nameformat,
 
   couldunparse = 0;
   if (!(GoodObject(loc) || (loc == NOTHING) || (loc == AMBIGUOUS) ||
-	(loc == HOME)))
+        (loc == HOME)))
     return T("*NOTHING*");
   switch (loc) {
   case NOTHING:
@@ -217,7 +217,7 @@ nameformat(dbref player, dbref loc, char *tbuf1, char *defname)
     sp = save = safe_atr_value(a);
     bp = tbuf1;
     process_expression(tbuf1, &bp, &sp, loc, player, player,
-		       PE_DEFAULT, PT_DEFAULT, NULL);
+                       PE_DEFAULT, PT_DEFAULT, NULL);
     *bp = '\0';
     free((Malloc_t) save);
     for (j = 0; j < 10; j++) {
@@ -287,7 +287,7 @@ unparse_uinteger(unsigned long num)
 char *
 unparse_number(NVAL num)
 {
-  static char str[100];		/* Should be large enough for even the HUGE floats */
+  static char str[100];         /* Should be large enough for even the HUGE floats */
   char *p;
   sprintf(str, "%.*f", FLOAT_PRECISION, num);
 

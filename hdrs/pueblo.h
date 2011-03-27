@@ -34,7 +34,7 @@
 int safe_tag(char const *a_tag, char *buf, char **bp);
 int safe_tag_cancel(char const *a_tag, char *buf, char **bp);
 int safe_tag_wrap(char const *a_tag, char const *params,
-		  char const *data, char *buf, char **bp, dbref player);
+                  char const *data, char *buf, char **bp, dbref player);
 
 /* Please STAY SANE when modifying. 
  * Making this something like 'x' and 'y' is a BAD IDEA 

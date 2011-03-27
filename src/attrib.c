@@ -44,7 +44,7 @@ extern PRIV attr_privs_view[];
 dbref atr_on_obj = NOTHING;
 
 static int real_atr_clr(dbref thinking, char const *atr, dbref player,
-			int we_are_wiping);
+                        int we_are_wiping);
 
 
 dbref global_parent_depth[] = { 0, 0 };
@@ -376,7 +376,7 @@ atrflag_to_string(int mask)
  */
 static int
 can_create_attr(dbref player, dbref obj, char const *atr_name,
-		unsigned int flags)
+                unsigned int flags)
 {
   char *p;
   ATTR tmpatr, *atr;
@@ -1916,7 +1916,7 @@ do_set_atr(dbref thing, const char *RESTRICT atr, const char *RESTRICT s,
   was_listener = Listener(thing);
   res =
       s ? atr_add(thing, name, s, player,
-                  (flags & 0x02) ? AF_NOPROG : 0)
+                  (flags & 0x02) ? AF_NOPROG : AF_EMPTY_FLAGS)
       : atr_clr(thing, name, player);
   switch (res) {
   case AE_SAFE:
@@ -2377,10 +2377,10 @@ atr_clear_children(dbref player, dbref thing, ATTR *root)
        sub && string_prefix(AL_NAME(sub), AL_NAME(root)); sub = next) {
     if (AL_FLAGS(sub) & AF_ROOT) {
       if (!atr_clear_children(player, thing, sub)) {
-	skipped++;
-	next = AL_NEXT(sub);
-	prev = sub;
-	continue;
+        skipped++;
+        next = AL_NEXT(sub);
+        prev = sub;
+        continue;
       }
     }
 

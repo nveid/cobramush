@@ -29,7 +29,7 @@
 
 
 #ifdef WIN32
-#pragma warning( disable : 4761)	/* NJG: disable warning re conversion */
+#pragma warning( disable : 4761)        /* NJG: disable warning re conversion */
 #endif
 
 HASHTAB htab_tag;  /**< Hash table of safe html tags */
@@ -81,10 +81,10 @@ get_gender(dbref player)
   }
 }
 
-char *subj[4];	/**< Subjective pronouns */
-char *poss[4];	/**< Possessive pronouns */
-char *obj[4];	/**< Objective pronouns */
-char *absp[4];	/**< Absolute possessive pronouns */
+char *subj[4];  /**< Subjective pronouns */
+char *poss[4];  /**< Possessive pronouns */
+char *obj[4];   /**< Objective pronouns */
+char *absp[4];  /**< Absolute possessive pronouns */
 
 /** Macro to set a pronoun entry based on whether we're translating or not */
 #define SET_PRONOUN(p,v,u)  p = strdup((translate) ? (v) : (u))
@@ -491,7 +491,7 @@ FUNCTION(fun_comp)
   }
 
   switch (type) {
-  case 'A':			/* Case-sensitive lexicographic */
+  case 'A':                    /* Case-sensitive lexicographic */
     {
       char left[BUFFER_LEN], right[BUFFER_LEN], *l, *r;
       size_t llen, rlen;
@@ -500,10 +500,10 @@ FUNCTION(fun_comp)
       r = remove_markup(args[1], &rlen);
       memcpy(right, r, rlen);
       safe_integer(comp_gencomp(executor, left, right, ALPHANUM_LIST), buff,
-		   bp);
+                   bp);
       return;
     }
-  case 'I':			/* Case-insensitive lexicographic */
+  case 'I':                    /* Case-insensitive lexicographic */
     {
       char left[BUFFER_LEN], right[BUFFER_LEN], *l, *r;
       size_t llen, rlen;
@@ -512,16 +512,16 @@ FUNCTION(fun_comp)
       r = remove_markup(args[1], &rlen);
       memcpy(right, r, rlen);
       safe_integer(comp_gencomp(executor, left, right, INSENS_ALPHANUM_LIST),
-		   buff, bp);
+                   buff, bp);
       return;
     }
-  case 'N':			/* Integers */
+  case 'N':                    /* Integers */
     if (!is_strict_integer(args[0]) || !is_strict_integer(args[1])) {
       safe_str(T(e_ints), buff, bp);
       return;
     }
     safe_integer(comp_gencomp(executor, args[0], args[1], NUMERIC_LIST), buff,
-		 bp);
+                 bp);
     return;
   case 'F':
     if (!is_strict_number(args[0]) || !is_strict_number(args[1])) {
@@ -529,7 +529,7 @@ FUNCTION(fun_comp)
       return;
     }
     safe_integer(comp_gencomp(executor, args[0], args[1], FLOAT_LIST), buff,
-		 bp);
+                 bp);
     return;
   case 'D':
     {
@@ -537,11 +537,11 @@ FUNCTION(fun_comp)
       a = parse_objid(args[0]);
       b = parse_objid(args[1]);
       if (a == NOTHING || b == NOTHING) {
-	safe_str(T("#-1 INVALID DBREF"), buff, bp);
-	return;
+        safe_str(T("#-1 INVALID DBREF"), buff, bp);
+        return;
       }
       safe_integer(comp_gencomp(executor, args[0], args[1], DBREF_LIST), buff,
-		   bp);
+                   bp);
       return;
     }
   default:
@@ -581,9 +581,9 @@ FUNCTION(fun_lpos)
   for (n = 0; n < len; n++)
     if (pos[n] == c) {
       if (first)
-	first = 0;
+        first = 0;
       else
-	safe_chr(' ', buff, bp);
+        safe_chr(' ', buff, bp);
       safe_integer(n, buff, bp);
     }
 }
@@ -693,19 +693,19 @@ FUNCTION(fun_tr)
     if (*(c + 1) && *(c + 1) == '-' && *(c + 2)) {
       dest = (unsigned char) *(c + 2);
       if (!goodchr(dest)) {
-	safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
-	return;
+        safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
+        return;
       }
       if (dest > cur) {
-	for (; cur <= dest; cur++) {
-	  if (goodchr(cur))
-	    safe_chr(cur, instr, &ip);
-	}
+        for (; cur <= dest; cur++) {
+          if (goodchr(cur))
+            safe_chr(cur, instr, &ip);
+        }
       } else {
-	for (; cur >= dest; cur--) {
-	  if (goodchr(cur))
-	    safe_chr(cur, instr, &ip);
-	}
+        for (; cur >= dest; cur--) {
+          if (goodchr(cur))
+            safe_chr(cur, instr, &ip);
+        }
       }
       c += 3;
     } else {
@@ -731,19 +731,19 @@ FUNCTION(fun_tr)
     if (*(c + 1) && *(c + 1) == '-' && *(c + 2)) {
       dest = (unsigned char) *(c + 2);
       if (!goodchr(dest)) {
-	safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
-	return;
+        safe_str(T("#-1 TR CANNOT ACCEPT NONPRINTING CHARS"), buff, bp);
+        return;
       }
       if (dest > cur) {
-	for (; cur <= dest; cur++) {
-	  if (goodchr(cur))
-	    safe_chr(cur, outstr, &op);
-	}
+        for (; cur <= dest; cur++) {
+          if (goodchr(cur))
+            safe_chr(cur, outstr, &op);
+        }
       } else {
-	for (; cur >= dest; cur--) {
-	  if (goodchr(cur))
-	    safe_chr(cur, outstr, &op);
-	}
+        for (; cur >= dest; cur--) {
+          if (goodchr(cur))
+            safe_chr(cur, outstr, &op);
+        }
       }
       c += 3;
     } else {
@@ -850,7 +850,7 @@ FUNCTION(fun_repeat)
   while (times) {
     if (times & 1) {
       if (safe_strl(args[0], arglens[0], buff, bp) != 0)
-	break;
+        break;
     }
     safe_str(args[0], args[0], &ap);
     *ap = '\0';
@@ -1114,7 +1114,7 @@ FUNCTION(fun_foreach)
     *cbuf = *lp++;
     ap = asave;
     if (process_expression(buff, bp, &ap, thing, executor, enactor,
-			   PE_DEFAULT, PT_DEFAULT, pe_info))
+                           PE_DEFAULT, PT_DEFAULT, pe_info))
       break;
     if (*bp == oldbp && pe_info->fun_invocations == funccount)
       break;
@@ -1170,7 +1170,7 @@ FUNCTION(fun_escape)
     safe_chr('\\', buff, bp);
     for (s = (unsigned char *) args[0]; *s; s++) {
       if ((s != (unsigned char *) args[0]) && escaped_chars[*s])
-	safe_chr('\\', buff, bp);
+        safe_chr('\\', buff, bp);
       safe_chr(*s, buff, bp);
     }
   }
@@ -1276,14 +1276,14 @@ FUNCTION(fun_squish)
     tp--;
   tp[1] = '\0';
 
-  for (tp = args[0]; *tp == sep; tp++)	/* skip leading spaces */
+  for (tp = args[0]; *tp == sep; tp++)  /* skip leading spaces */
     ;
 
   while (*tp) {
     safe_chr(*tp, buff, bp);
     if (*tp == sep)
       while (*tp == sep)
-	tp++;
+        tp++;
     else
       tp++;
   }
@@ -1372,7 +1372,7 @@ FUNCTION(fun_ord)
   m = remove_markup(args[0], &len);
   what = (unsigned char) *m;
 
-  if (len != 2)			/* len includes trailing nul */
+  if (len != 2)                 /* len includes trailing nul */
     safe_str(T("#-1 FUNCTION (ORD) EXPECTS ONE CHARACTER"), buff, bp);
   else if(isprint(what) || what == '\n')
     safe_integer((unsigned char) *m, buff, bp);
@@ -1438,8 +1438,8 @@ FUNCTION(fun_tag)
     safe_strl(args[0], arglens[0], buff, bp);
     for (i = 1; i < nargs; i++) {
       if (ok_tag_attribute(executor, args[i])) {
-	safe_chr(' ', buff, bp);
-	safe_strl(args[i], arglens[i], buff, bp);
+        safe_chr(' ', buff, bp);
+        safe_strl(args[i], arglens[i], buff, bp);
       }
     }
     safe_chr(TAG_END, buff, bp);
@@ -1468,30 +1468,30 @@ FUNCTION(fun_tagwrap)
   }
 }
 
-#define COL_FLASH       (1)	/**< ANSI flash attribute bit */
-#define COL_HILITE      (2)	/**< ANSI hilite attribute bit */
-#define COL_INVERT      (4)	/**< ANSI inverse attribute bit */
-#define COL_UNDERSCORE  (8)	/**< ANSI underscore attribute bit */
+#define COL_FLASH       (1)     /**< ANSI flash attribute bit */
+#define COL_HILITE      (2)     /**< ANSI hilite attribute bit */
+#define COL_INVERT      (4)     /**< ANSI inverse attribute bit */
+#define COL_UNDERSCORE  (8)     /**< ANSI underscore attribute bit */
 
-#define VAL_FLASH       (5)	/**< ANSI flag attribute value */
-#define VAL_HILITE      (1)	/**< ANSI hilite attribute value */
-#define VAL_INVERT      (7)	/**< ANSI inverse attribute value */
-#define VAL_UNDERSCORE  (4)	/**< ANSI underscore attribute value */
+#define VAL_FLASH       (5)     /**< ANSI flag attribute value */
+#define VAL_HILITE      (1)     /**< ANSI hilite attribute value */
+#define VAL_INVERT      (7)     /**< ANSI inverse attribute value */
+#define VAL_UNDERSCORE  (4)     /**< ANSI underscore attribute value */
 
-#define COL_BLACK       (30)	/**< ANSI color black */
-#define COL_RED         (31)	/**< ANSI color red */
-#define COL_GREEN       (32)	/**< ANSI color green */
-#define COL_YELLOW      (33)	/**< ANSI color yellow */
-#define COL_BLUE        (34)	/**< ANSI color blue */
-#define COL_MAGENTA     (35)	/**< ANSI color magenta */
-#define COL_CYAN        (36)	/**< ANSI color cyan */
-#define COL_WHITE       (37)	/**< ANSI color white */
+#define COL_BLACK       (30)    /**< ANSI color black */
+#define COL_RED         (31)    /**< ANSI color red */
+#define COL_GREEN       (32)    /**< ANSI color green */
+#define COL_YELLOW      (33)    /**< ANSI color yellow */
+#define COL_BLUE        (34)    /**< ANSI color blue */
+#define COL_MAGENTA     (35)    /**< ANSI color magenta */
+#define COL_CYAN        (36)    /**< ANSI color cyan */
+#define COL_WHITE       (37)    /**< ANSI color white */
 
 /** The ansi attributes associated with a character. */
 typedef struct {
-  char flags;		/**< Ansi text attributes */
-  char fore;		/**< Ansi foreground color */
-  char back;		/**< Ansi background color */
+  char flags;           /**< Ansi text attributes */
+  char fore;            /**< Ansi foreground color */
+  char back;            /**< Ansi background color */
 } ansi_data;
 
 static void dump_ansi_codes(ansi_data * ad, char *buff, char **bp);
@@ -1577,7 +1577,7 @@ FUNCTION(fun_ansi)
   tbp = tbuff;
   arg0 = args[0];
   process_expression(tbuff, &tbp, &arg0, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
   *tbp = '\0';
 
   sp[1] = sp[0];
@@ -1585,81 +1585,81 @@ FUNCTION(fun_ansi)
 
   for (tbp = tbuff; *tbp; tbp++) {
     switch (*tbp) {
-    case 'n':			/* normal */
+    case 'n':                  /* normal */
       sp->flags = 0;
       sp->fore = 0;
       sp->back = 0;
       break;
-    case 'f':			/* flash */
+    case 'f':                  /* flash */
       sp->flags |= COL_FLASH;
       break;
-    case 'h':			/* hilite */
+    case 'h':                  /* hilite */
       sp->flags |= COL_HILITE;
       break;
-    case 'i':			/* inverse */
+    case 'i':                  /* inverse */
       sp->flags |= COL_INVERT;
       break;
-    case 'u':			/* underscore */
+    case 'u':                  /* underscore */
       sp->flags |= COL_UNDERSCORE;
       break;
-    case 'F':			/* flash */
+    case 'F':                  /* flash */
       sp->flags &= ~COL_FLASH;
       break;
-    case 'H':			/* hilite */
+    case 'H':                  /* hilite */
       sp->flags &= ~COL_HILITE;
       break;
-    case 'I':			/* inverse */
+    case 'I':                  /* inverse */
       sp->flags &= ~COL_INVERT;
       break;
-    case 'U':			/* underscore */
+    case 'U':                  /* underscore */
       sp->flags &= ~COL_UNDERSCORE;
       break;
-    case 'b':			/* blue fg */
+    case 'b':                  /* blue fg */
       sp->fore = COL_BLUE;
       break;
-    case 'c':			/* cyan fg */
+    case 'c':                  /* cyan fg */
       sp->fore = COL_CYAN;
       break;
-    case 'g':			/* green fg */
+    case 'g':                  /* green fg */
       sp->fore = COL_GREEN;
       break;
-    case 'm':			/* magenta fg */
+    case 'm':                  /* magenta fg */
       sp->fore = COL_MAGENTA;
       break;
-    case 'r':			/* red fg */
+    case 'r':                  /* red fg */
       sp->fore = COL_RED;
       break;
-    case 'w':			/* white fg */
+    case 'w':                  /* white fg */
       sp->fore = COL_WHITE;
       break;
-    case 'x':			/* black fg */
+    case 'x':                  /* black fg */
       sp->fore = COL_BLACK;
       break;
-    case 'y':			/* yellow fg */
+    case 'y':                  /* yellow fg */
       sp->fore = COL_YELLOW;
       break;
-    case 'B':			/* blue bg */
+    case 'B':                  /* blue bg */
       sp->back = COL_BLUE;
       break;
-    case 'C':			/* cyan bg */
+    case 'C':                  /* cyan bg */
       sp->back = COL_CYAN;
       break;
-    case 'G':			/* green bg */
+    case 'G':                  /* green bg */
       sp->back = COL_GREEN;
       break;
-    case 'M':			/* magenta bg */
+    case 'M':                  /* magenta bg */
       sp->back = COL_MAGENTA;
       break;
-    case 'R':			/* red bg */
+    case 'R':                  /* red bg */
       sp->back = COL_RED;
       break;
-    case 'W':			/* white bg */
+    case 'W':                  /* white bg */
       sp->back = COL_WHITE;
       break;
-    case 'X':			/* black bg */
+    case 'X':                  /* black bg */
       sp->back = COL_BLACK;
       break;
-    case 'Y':			/* yellow bg */
+    case 'Y':                  /* yellow bg */
       sp->back = COL_YELLOW;
       break;
     }
@@ -1669,7 +1669,7 @@ FUNCTION(fun_ansi)
 
   arg1 = args[1];
   process_expression(buff, bp, &arg1, executor, caller, enactor,
-		     PE_DEFAULT, PT_DEFAULT, pe_info);
+                     PE_DEFAULT, PT_DEFAULT, pe_info);
 
   dump_ansi_codes(--sp, buff, bp);
 
@@ -1702,8 +1702,8 @@ FUNCTION(fun_edit)
   for (i = 1; i < nargs - 1; i += 2) {
 
     postp = postbuf;
-    f = args[i];		/* find this */
-    r = args[i + 1];		/* replace it with this */
+    f = args[i];                /* find this */
+    r = args[i + 1];            /* replace it with this */
     flen = arglens[i];
     rlen = arglens[i + 1];
 
@@ -1724,21 +1724,21 @@ FUNCTION(fun_edit)
       size_t last;
       safe_strl(r, rlen, postbuf, &postp);
       for (last = 0; last < prebuf->len; last++) {
-	safe_ansi_string(prebuf, last, 1, postbuf, &postp);
-	safe_strl(r, rlen, postbuf, &postp);
+        safe_ansi_string(prebuf, last, 1, postbuf, &postp);
+        safe_strl(r, rlen, postbuf, &postp);
       }
     } else {
       char *p;
       size_t last = 0;
 
       while (last < prebuf->len && (p = strstr(prebuf->text + last, f)) != NULL) {
-	safe_ansi_string(prebuf, last, p - (prebuf->text + last),
-			 postbuf, &postp);
-	safe_strl(r, rlen, postbuf, &postp);
-	last = p - prebuf->text + flen;
+        safe_ansi_string(prebuf, last, p - (prebuf->text + last),
+                         postbuf, &postp);
+        safe_strl(r, rlen, postbuf, &postp);
+        last = p - prebuf->text + flen;
       }
       if (last < prebuf->len)
-	safe_ansi_string(prebuf, last, prebuf->len, postbuf, &postp);
+        safe_ansi_string(prebuf, last, prebuf->len, postbuf, &postp);
     }
     *postp = '\0';
     free_ansi_string(prebuf);
@@ -1756,7 +1756,7 @@ FUNCTION(fun_brackets)
   int rbrack, lbrack, rbrace, lbrace, lcurl, rcurl;
 
   lcurl = rcurl = rbrack = lbrack = rbrace = lbrace = 0;
-  str = args[0];		/* The string to count the brackets in */
+  str = args[0];                /* The string to count the brackets in */
   while (*str) {
     switch (*str) {
     case '[':
@@ -1783,7 +1783,7 @@ FUNCTION(fun_brackets)
     str++;
   }
   safe_format(buff, bp, "%d %d %d %d %d %d", lbrack, rbrack,
-	      lbrace, rbrace, lcurl, rcurl);
+              lbrace, rbrace, lcurl, rcurl);
 }
 
 
@@ -1803,7 +1803,7 @@ wraplen(char *str, int maxlen)
      */
     while (i < length) {
       if ((str[i] == '\n') || (str[i] == '\r'))
-	return i;
+        return i;
       i++;
     }
     return length;
@@ -1852,9 +1852,9 @@ FUNCTION(fun_wrap)
  *  args[3]  =  output delimiter (btwn lines)
  */
 
-  char *pstr;			/* start of string */
+  char *pstr;                   /* start of string */
   ansi_string *as;
-  const char *pend;		/* end of string */
+  const char *pend;             /* end of string */
   int linewidth, width1st, width;
   int linenr = 0;
   const char *linesep;
@@ -1897,13 +1897,13 @@ FUNCTION(fun_wrap)
       /* word doesn't fit on one line, so cut it */
       safe_ansi_string2(as, pstr - as->text, ansiwidth - 1, buff, bp);
       safe_chr('-', buff, bp);
-      pstr += ansiwidth - 1;	/* move to start of next line */
+      pstr += ansiwidth - 1;    /* move to start of next line */
     } else {
       /* normal line */
       safe_ansi_string2(as, pstr - as->text, ansilen, buff, bp);
       if (pstr[ansilen] == '\r')
-	++ansilen;
-      pstr += ansilen + 1;	/* move to start of next line */
+        ++ansilen;
+      pstr += ansilen + 1;      /* move to start of next line */
     }
   }
   free_ansi_string(as);
@@ -1918,10 +1918,10 @@ FUNCTION(fun_wrap)
 
 static int
 align_one_line(char *buff, char **bp, int ncols,
-	       int cols[MAX_COLS], int calign[MAX_COLS], char *ptrs[MAX_COLS],
-	       ansi_string *as[MAX_COLS],
-	       int linenum, char *fieldsep, int fslen,
-	       char *linesep, int lslen, char filler)
+               int cols[MAX_COLS], int calign[MAX_COLS], char *ptrs[MAX_COLS],
+               ansi_string *as[MAX_COLS],
+               int linenum, char *fieldsep, int fslen,
+               char *linesep, int lslen, char filler)
 {
   static char line[BUFFER_LEN];
   static char segment[BUFFER_LEN];
@@ -1940,13 +1940,13 @@ align_one_line(char *buff, char **bp, int ncols,
   for (i = 0; i < ncols; i++) {
     if (!ptrs[i] || !*ptrs[i]) {
       if (calign[i] & AL_REPEAT) {
-	ptrs[i] = as[i]->text;
+        ptrs[i] = as[i]->text;
       } else {
-	lp += cols[i];
-	if (i < (ncols - 1) && fslen)
-	  safe_str(fieldsep, line, &lp);
-	cols_done++;
-	continue;
+        lp += cols[i];
+        if (i < (ncols - 1) && fslen)
+          safe_str(fieldsep, line, &lp);
+        cols_done++;
+        continue;
       }
     }
     if (calign[i] & AL_REPEAT) {
@@ -1954,24 +1954,24 @@ align_one_line(char *buff, char **bp, int ncols,
     }
     for (len = 0, ptr = ptrs[i], lastspace = NULL; len < cols[i]; ptr++, len++) {
       if ((!*ptr) || (*ptr == '\n'))
-	break;
+        break;
       if (isspace((unsigned char) *ptr)) {
-	lastspace = ptr;
+        lastspace = ptr;
       }
     }
     skipspace = 0;
     sp = segment;
     if (!*ptr) {
       if (len > 0) {
-	safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
+        safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
       }
       ptrs[i] = ptr;
     } else if (*ptr == '\n') {
       for (tptr = ptr;
-	   *tptr && tptr >= ptrs[i] && isspace((unsigned char) *tptr); tptr--) ;
+           *tptr && tptr >= ptrs[i] && isspace((unsigned char) *tptr); tptr--) ;
       len = (tptr - ptrs[i]) + 1;
       if (len > 0) {
-	safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
+        safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
       }
       ptrs[i] = ptr + 1;
       ptr = tptr;
@@ -1979,15 +1979,15 @@ align_one_line(char *buff, char **bp, int ncols,
       ptr = lastspace;
       skipspace = 1;
       for (tptr = ptr;
-	   *tptr && tptr >= ptrs[i] && isspace((unsigned char) *tptr); tptr--) ;
+           *tptr && tptr >= ptrs[i] && isspace((unsigned char) *tptr); tptr--) ;
       len = (tptr - ptrs[i]) + 1;
       if (len > 0) {
-	safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
+        safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
       }
       ptrs[i] = lastspace;
     } else {
       if (len > 0) {
-	safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
+        safe_ansi_string2(as[i], ptrs[i] - (as[i]->text), len, segment, &sp);
       }
       ptrs[i] = ptr;
     }
@@ -2011,8 +2011,8 @@ align_one_line(char *buff, char **bp, int ncols,
       safe_str(fieldsep, line, &lp);
     if (skipspace)
       for (;
-	   *ptrs[i] && (*ptrs[i] != '\n') && isspace((unsigned char) *ptrs[i]);
-	   ptrs[i]++) ;
+           *ptrs[i] && (*ptrs[i] != '\n') && isspace((unsigned char) *ptrs[i]);
+           ptrs[i]++) ;
   }
   if (cols_done == ncols)
     return 0;
@@ -2126,7 +2126,7 @@ FUNCTION(fun_align)
   nline = 0;
   while (1) {
     if (!align_one_line(buff, bp, ncols, cols, calign, ptrs,
-			as, nline++, fieldsep, fslen, linesep, lslen, filler))
+                        as, nline++, fieldsep, fslen, linesep, lslen, filler))
       break;
   }
   **bp = '\0';
@@ -2213,7 +2213,7 @@ FUNCTION(fun_speak)
     if (*string == ' ') {
       /* semipose it instead */
       while (*string == ' ')
-	string++;
+        string++;
     } else
       safe_chr(' ', buff, bp);
     break;
@@ -2224,7 +2224,7 @@ FUNCTION(fun_speak)
       /* pose it instead */
       safe_chr(' ', buff, bp);
       while (*string == ' ')
-	string++;
+        string++;
     }
     break;
   case '|':
@@ -2242,7 +2242,7 @@ FUNCTION(fun_speak)
     /* nice and easy */
     if (say)
       safe_format(buff, bp, "%s %s \"%s\"", accented_name(speaker),
-		  say_string, string);
+                  say_string, string);
     else
       safe_str(string, buff, bp);
     LEAVE_OOREF;
@@ -2289,48 +2289,48 @@ FUNCTION(fun_speak)
     }
     funccount = pe_info->fun_invocations;
     while (!finished && ((say && fragment == 0 && (speech = string))
-			 || (speech = strstr(string, open)))) {
+                         || (speech = strstr(string, open)))) {
       fragment++;
       indx = string - speech;
       if (indx < 0)
-	indx *= -1;
+        indx *= -1;
       if (string != NULL && strlen(string) > 0 && indx > 0)
-	safe_strl(string, indx, buff, bp);
+        safe_strl(string, indx, buff, bp);
       if (!say || fragment > 1)
-	speech = speech + strlen(open);	/* move past open char */
+        speech = speech + strlen(open); /* move past open char */
       /* find close-char */
       string = strstr(speech, close);
       if (!string || !(string = string + strlen(close))) {
-	/* no close char, or nothing after it; we're at the end! */
-	finished = 1;
+        /* no close char, or nothing after it; we're at the end! */
+        finished = 1;
       }
       delete = (string == NULL ? strlen(speech) : strlen(speech) -
-		(strlen(string) + strlen(close)));
+                (strlen(string) + strlen(close)));
       speech = chopstr(speech, delete);
       wenv[0] = speech;
       wenv[1] = speaker_str;
       wenv[2] = unparse_integer(fragment);
       if (call_ufun(&transufun, wenv, 3, rbuff, executor, enactor, pe_info))
-	break;
+        break;
       if (*bp == (buff + BUFFER_LEN - 1) &&
-	  pe_info->fun_invocations == funccount)
-	break;
+          pe_info->fun_invocations == funccount)
+        break;
       funccount = pe_info->fun_invocations;
       if ((null == 1) && (strlen(rbuff) == 0)) {
-	wenv[0] = speaker_str;
-	wenv[1] = unparse_integer(fragment);
-	if (call_ufun(&nullufun, wenv, 2, rbuff, executor, enactor, pe_info))
-	  break;
+        wenv[0] = speaker_str;
+        wenv[1] = unparse_integer(fragment);
+        if (call_ufun(&nullufun, wenv, 2, rbuff, executor, enactor, pe_info))
+          break;
       }
       if (strlen(rbuff) > 0) {
-	safe_str(rbuff, buff, bp);
+        safe_str(rbuff, buff, bp);
       }
       if (*bp == (buff + BUFFER_LEN - 1) &&
-	  pe_info->fun_invocations == funccount)
-	break;
+          pe_info->fun_invocations == funccount)
+        break;
     }
     if (string != NULL && strlen(string) > 0) {
-      safe_str(string, buff, bp);	/* remaining string (not speech, so not t) */
+      safe_str(string, buff, bp);       /* remaining string (not speech, so not t) */
     }
   }
 

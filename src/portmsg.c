@@ -151,7 +151,7 @@ main(int argc, char **argv)
   }
   if ((msgfd = open(argv[1], O_RDONLY)) < 0) {
     fprintf(stderr, "error: cannot open message file [%s]: %s\n", argv[1],
-	    strerror(errno));
+            strerror(errno));
     return 1;
   }
   /* read the message */

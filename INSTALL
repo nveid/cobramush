@@ -7,33 +7,35 @@ This file explains how to install PennMUSH. It comes in three parts:
   C. Installation of precompiled binaries (only for Windows platforms)
 
 If you are upgrading from a previous PennMUSH release, this is
-probably not the file you want to start with. Read the UPGRADING
-file first.
+probably not the file you want to start with. Read the UPGRADING file
+first.
 
-DISCLAIMER: Before attempting to run a MUD of any sort, you should have
-some reasonable knowledge of UNIX and C.  If you do not, it is _strongly_
-suggested that you learn UNIX and C to some reasonable level of competency
-before attempting to set up a MUSH.  (Note that even people using the
-Windows ports are encouraged to know UNIX, because that's the paradigm
-that PennMUSH was built with, and most resources will be written with
-UNIX is mind.)
+DISCLAIMER: Before attempting to run a MUD of any sort, you should
+have some reasonable knowledge of UNIX and C.  If you do not, it is
+_strongly_ suggested that you learn UNIX and C to some reasonable
+level of competency before attempting to set up a MUSH.  (Note that
+even people using the Windows ports are encouraged to know UNIX,
+because that's the paradigm that PennMUSH was built with, and most
+resources will be written with UNIX is mind.)
 
-You may also want to take a look at Javelin's Guide for PennMUSH Gods,
-at http://pennmush.org/~alansz/guide.html
-or by ftp from pennmush.org, /pub/PennMUSH/Guide
+You may also want to take a look at the Managing PennMUSH book at
+http://community.pennmush.org and at Javelin's Guide for PennMUSH
+Gods, at http://javelin.pennmush.org/~alansz/guide.html or by ftp from
+pennmush.org, /pub/PennMUSH/Guide
 ============================================================================
  
 A. Important background
 
 Here's a quick picture of the organization of the MUSH directory tree.
 The "src" directory contains C source code.  The "hdrs" directory
-contains header files for the source code.  The files used by a running
-MUSH are in the "game" directory, which includes subdirectories "data"
-(current databases), "txt" (text files and directories for building them),
-"log" (log files), and "save" (backup databases).  Finally, the "hints"
-directory is used during the installation process, the "po" directory
-holds translation message files, and the "os2" directory contains files
-of using in building for OS/2.
+contains header files for the source code.  The files used by a
+running MUSH are in the "game" directory, which includes
+subdirectories "data" (current databases), "txt" (text files and
+directories for building them), "log" (log files), and "save" (backup
+databases).  Finally, the "hints" directory is used during the
+installation process, the "po" directory holds translation message
+files, and the "os2" directory contains files of using in building for
+OS/2.
 
  pennmush--+-> src
            +-> hdrs 
@@ -71,14 +73,14 @@ operating systems including at least:
 	Windows 95/NT cygwin and MSVC++
 	OS/2
 
-There's no real reason why PennMUSH shouldn't compile on any 32-bit
-or better BSD, System V, or POSIX operating system.  Javelin does his
+There's no real reason why PennMUSH shouldn't compile on any 32-bit or
+better BSD, System V, or POSIX operating system.  Javelin does his
 development on a Linux PC these days.
 
 If you have serious problems, contact Javelin and he will try to help
-you. Email is the best way to get a fast response; in an emergency, you
-can bother him on a MUD, but for code problems, email will probably get
-you a better response.
+you. Email is the best way to get a fast response; in an emergency,
+you can bother him on a MUD, but for code problems, email will
+probably get you a better response.
 
 ============================================================================
 
@@ -184,13 +186,14 @@ themselves.  This binary distribution may not contain the src, hdrs,
 hints, or os2 directories and may be missing several key files (like
 Configure) from the pennmush directory.  It does include the options.h
 that it was built with, as an aid to those who decide later that they
-want to customize the server; they are useful as a baseline to work from.
+want to customize the server; they are useful as a baseline to work
+from.
 
 Using the pre-built binary is fairly simple; adjust your configuration
 file as in game/README, then go to the game directory and run
 PennMUSH.exe (you may need to use PennMUSH /run or PennMUSH /start).
 Alternately, if you want the MUSH to automatically start each time you
-turn on your machine, you can install it as a system service by running
-'PennMUSH /install'.  PennMUSH can be removed from service status via
-'PennMUSH /remove'.
+turn on your machine, you can install it as a system service by
+running 'PennMUSH /install'.  PennMUSH can be removed from service
+status via 'PennMUSH /remove'.
 

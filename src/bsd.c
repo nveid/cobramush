@@ -27,8 +27,8 @@
 #define EINTR WSAEINTR
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #define MAXHOSTNAMELEN 32
-#pragma warning( disable : 4761)	/* disable warning re conversion */
-#else				/* !WIN32 */
+#pragma warning( disable : 4761)        /* disable warning re conversion */
+#else                           /* !WIN32 */
 #ifdef I_SYS_FILE
 #include <sys/file.h>
 #endif
@@ -52,7 +52,7 @@
 #ifdef I_SYS_STAT
 #include <sys/stat.h>
 #endif
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */
 #include <time.h>
 #ifdef I_SYS_WAIT
 #include <sys/wait.h>
@@ -388,7 +388,7 @@ static void parse_puebloclient(DESC *d, char *command);
 static int dump_messages(DESC *d, dbref player, int new);
 static int check_connect(DESC *d, const char *msg);
 static void parse_connect(const char *msg, char *command, char *user,
-			  char *pass);
+                          char *pass);
 static void close_sockets(void);
 dbref find_player_by_desc(int port);
 static DESC *lookup_desc(dbref executor, const char *name);
@@ -400,7 +400,7 @@ void reaper(int sig);
 sig_atomic_t dump_error = 0;
 WAIT_TYPE dump_status = 0;
 #endif
-extern Pid_t forked_dump_pid;	/**< Process id of forking dump process */
+extern Pid_t forked_dump_pid;   /**< Process id of forking dump process */
 static void dump_users(DESC *call_by, char *match, int doing);
 static const char *time_format_1(long int dt);
 static const char *time_format_2(long int dt);
@@ -464,7 +464,7 @@ mainthread(int argc, char **argv)
  */
 int
 main(int argc, char **argv)
-#endif				/* WIN32SERVICES */
+#endif                          /* WIN32SERVICES */
 {
 #ifdef AUTORESTART
   FILE *id;
@@ -489,10 +489,10 @@ main(int argc, char **argv)
       exit(1);
     }
   }
-#endif				/* WIN32 */
+#endif                          /* WIN32 */
 
 #ifdef HAS_GETRLIMIT
-  init_rlimit();		/* unlimit file descriptors */
+  init_rlimit();                /* unlimit file descriptors */
 #endif
 
   /* These are FreeBSDisms to fix floating point exceptions */
@@ -502,6 +502,8 @@ main(int argc, char **argv)
 #ifdef HAS_FPSETMASK
   fpsetmask(0L);
 #endif
+
+  options.mem_check = 1;
 
   time(&mudtime);
 
@@ -662,7 +664,7 @@ main(int argc, char **argv)
 
 #ifdef HAS_GETRUSAGE
   rusage_stats();
-#endif				/* HAS_RUSAGE */
+#endif                          /* HAS_RUSAGE */
 
   do_rawlog(LT_ERR, T("MUSH shutdown completed."));
 
@@ -673,12 +675,12 @@ main(int argc, char **argv)
 #ifdef WIN32SERVICES
   shutdown_checkpoint();
 #endif
-  WSACleanup();			/* clean up */
+  WSACleanup();                 /* clean up */
 #else
   exit(0);
 #endif
 }
-#endif				/* BOOLEXP_DEBUGGING */
+#endif                          /* BOOLEXP_DEBUGGING */
 
 /** Close and reopen the logfiles - called on SIGHUP */
 void
@@ -690,8 +692,8 @@ reopen_logs(void)
   newerr = fopen(errlog, "a");
   if (!newerr) {
     fprintf(stderr,
-	    T("Unable to open %s. Error output continues to stderr.\n"),
-	    errlog);
+            T("Unable to open %s. Error output continues to stderr.\n"),
+            errlog);
   } else {
     if (!freopen(errlog, "a", stderr)) {
       printf(T("Ack!  Failed reopening stderr!"));
@@ -841,7 +843,7 @@ update_quotas(struct timeval *last, struct timeval *current)
     for (d = descriptor_list; d; d = d->next) {
       d->quota += COMMANDS_PER_TIME * nslices;
       if (d->quota > COMMAND_BURST_SIZE)
-	d->quota = COMMAND_BURST_SIZE;
+        d->quota = COMMAND_BURST_SIZE;
     }
   }
 }
@@ -929,7 +931,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
       sslsock = make_socket(sslport, NULL, NULL, SSL_IP_ADDR);
       ssl_master_socket = ssl_setup_socket(sslsock);
       if (sslsock >= maxd)
-	maxd = sslsock + 1;
+        maxd = sslsock + 1;
     }
 #endif
   }
@@ -939,7 +941,7 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 #ifndef COMPILE_CONSOLE
   avail_descriptors = how_many_fds() - 4;
 #ifdef INFO_SLAVE
-  avail_descriptors -= 2;	/* reserve some more for setting up the slave */
+  avail_descriptors -= 2;       /* reserve some more for setting up the slave */
   FD_ZERO(&info_pending);
 #endif
 
@@ -970,14 +972,14 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 #ifndef WIN32
     if (dump_error) {
       if (WIFSIGNALED(dump_status)) {
-	do_rawlog(LT_ERR, T("ERROR! forking dump exited with signal %d"),
-		  WTERMSIG(dump_status));
-	flag_broadcast("ROYALTY WIZARD", 0,
-		       T("GAME: ERROR! Forking database save failed!"));
+        do_rawlog(LT_ERR, T("ERROR! forking dump exited with signal %d"),
+                  WTERMSIG(dump_status));
+        flag_broadcast("ROYALTY WIZARD", 0,
+                       T("GAME: ERROR! Forking database save failed!"));
       } else if (WIFEXITED(dump_status) && WEXITSTATUS(dump_status) == 0) {
-	time(&globals.last_dump_time);
-	if (DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
-	  flag_broadcast(0, 0, "%s", DUMP_NOFORK_COMPLETE);
+        time(&globals.last_dump_time);
+        if (DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
+          flag_broadcast(0, 0, "%s", DUMP_NOFORK_COMPLETE);
       }
       dump_error = 0;
       dump_status = 0;
@@ -985,11 +987,11 @@ shovechars(Port_t port, Port_t sslport __attribute__ ((__unused__)))
 #if defined(INFO_SLAVE) && !defined(COMPILE_CONSOLE)
     if (slave_error) {
       do_rawlog(LT_ERR, T("info_slave on pid %d exited unexpectedly!"),
-		slave_error);
+                slave_error);
       slave_error = 0;
     }
 #endif
-#endif				/* !WIN32 */
+#endif                          /* !WIN32 */
 
     if (signal_shutdown_flag) {
       flag_broadcast(0, 0, T("GAME: Shutdown by external signal"));
@@ -1284,10 +1286,10 @@ new_connection(int oldsock, int *result, int use_ssl)
   *bp = '\0';
   if (Forbidden_Site(tbuf1) || Forbidden_Site(tbuf2)) {
     if (!Deny_Silent_Site(tbuf1, AMBIGUOUS)
-	|| !Deny_Silent_Site(tbuf2, AMBIGUOUS)) {
+        || !Deny_Silent_Site(tbuf2, AMBIGUOUS)) {
       do_log(LT_CONN, 0, 0, "[%d/%s/%s] %s (%s %s)", newsock, tbuf1, tbuf2,
-	     T("Refused connection"), T("remote port"),
-	     hi ? hi->port : T("(unknown)"));
+             T("Refused connection"), T("remote port"),
+             hi ? hi->port : T("(unknown)"));
     }
     shutdown(newsock, 2);
     closesocket(newsock);
@@ -1297,7 +1299,7 @@ new_connection(int oldsock, int *result, int use_ssl)
     return 0;
   }
   do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Connection opened."), newsock, tbuf1,
-	 tbuf2);
+         tbuf2);
   set_keepalive(newsock);
   return initializesock(newsock, tbuf1, tbuf2, use_ssl);
 }
@@ -1365,7 +1367,7 @@ fcache_read(FBLOCK *fb, const char *filename)
 
 
     if ((fh = CreateFile(filename, GENERIC_READ, 0, NULL,
-			 OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE)
+                         OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE)
       return -1;
 
     if (!GetFileInformationByHandle(fh, &sb)) {
@@ -1407,7 +1409,7 @@ fcache_read(FBLOCK *fb, const char *filename)
 
     if (fstat(fd, &sb) < 0) {
       do_log(LT_ERR, 0, 0, T("Couldn't get the size of text file '%s'"),
-	     filename);
+             filename);
       close(fd);
       reserve_fd();
       return -1;
@@ -1416,7 +1418,7 @@ fcache_read(FBLOCK *fb, const char *filename)
 
     if (!(fb->buff = mush_malloc(sb.st_size, "fcache_data"))) {
       do_log(LT_ERR, 0, 0, T("Couldn't allocate %d bytes of memory for '%s'!"),
-	     (int) sb.st_size, filename);
+             (int) sb.st_size, filename);
       close(fd);
       reserve_fd();
       return -1;
@@ -1435,7 +1437,7 @@ fcache_read(FBLOCK *fb, const char *filename)
     reserve_fd();
     fb->len = sb.st_size;
   }
-#endif				/* Posix read code */
+#endif                          /* Posix read code */
 
   return fb->len;
 }
@@ -1572,7 +1574,7 @@ shutdownsock(DESC *d)
 
   if (d->connected) {
     do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Logout by %s(#%d)"),
-	   d->descriptor, d->addr, d->ip, Name(d->player), d->player);
+           d->descriptor, d->addr, d->ip, Name(d->player), d->player);
     if (d->connected != 2) {
       fcache_dump(d, fcache.quit_fcache, NULL);
       /* Player was not allowed to log in from the connect screen */
@@ -1592,15 +1594,15 @@ shutdownsock(DESC *d)
     if (MAX_LOGINS) {
       login_number--;
       if (!under_limit && (login_number < MAX_LOGINS)) {
-	under_limit = 1;
-	do_log(LT_CONN, 0, 0,
-	       T("Below maximum player limit of %d. Logins enabled."),
-	       MAX_LOGINS);
+        under_limit = 1;
+        do_log(LT_CONN, 0, 0,
+               T("Below maximum player limit of %d. Logins enabled."),
+               MAX_LOGINS);
       }
     }
   } else {
     do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Connection closed, never connected."),
-	   d->descriptor, d->addr, d->ip);
+           d->descriptor, d->addr, d->ip);
   }
   process_output(d);
   clearstrings(d);
@@ -1672,7 +1674,7 @@ shutdownsock(DESC *d)
   closesocket(d->descriptor);
   if (d->prev)
     d->prev->next = d->next;
-  else				/* d was the first one! */
+  else                          /* d was the first one! */
     descriptor_list = d->next;
   if (d->next)
     d->next->prev = d->prev;
@@ -1822,7 +1824,7 @@ make_info_slave(void)
     return;
   }
   if (getnameinfo(&addr.addr, opt, NULL, 0, num, sizeof num,
-		  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
+                  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
     perror("getting address of slave stream socket");
     fflush(stderr);
     closesocket(info_slave);
@@ -1848,20 +1850,20 @@ make_info_slave(void)
     info_slave = socks[0];
     closesocket(socks[1]);
     do_rawlog(LT_ERR,
-	      "Spawning info slave using socketpair, pid %d, ident %d",
-	      child, USE_IDENT);
+              "Spawning info slave using socketpair, pid %d, ident %d",
+              child, USE_IDENT);
 #else
     do_rawlog(LT_ERR, "Spawning info slave on port %s, pid %d, ident %d",
-	      num, child, USE_IDENT);
+              num, child, USE_IDENT);
 #endif
   } else {
     /* Close unneeded fds and sockets */
     for (n = 3; n < maxd; n++) {
       if (n == fileno(stderr))
-	continue;
+        continue;
 #ifdef HAS_SOCKETPAIR
       if (n == socks[1])
-	continue;
+        continue;
 #endif
       close(n);
     }
@@ -1870,10 +1872,10 @@ make_info_slave(void)
 #endif
     if (!USE_IDENT)
       execl("./info_slave", "./info_slave", num, "-1", USE_DNS ? "1" : "0",
-	    (char *) NULL);
+            (char *) NULL);
     else
       execl("./info_slave", "./info_slave", num, tprintf("%d", IDENT_TIMEOUT),
-	    USE_DNS ? "1" : "0", (char *) NULL);
+            USE_DNS ? "1" : "0", (char *) NULL);
     perror("execing info slave");
     exit(1);
   }
@@ -1919,7 +1921,7 @@ promote_info_slave(void)
   do_rawlog(LT_ERR, "Accepted info slave from unix-domain socket");
 #else
   if (getnameinfo(&addr.addr, addr_len, NULL, 0, port, sizeof port,
-		  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
+                  NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
     perror("getting info slave port number");
   } else {
     do_rawlog(LT_ERR, "Accepted info slave from port %s", port);
@@ -1937,7 +1939,7 @@ query_info_slave(int fd)
 {
   int size, slen;
   socklen_t llen, rlen;
-  static char buf[1024];	/* overkill */
+  static char buf[1024];        /* overkill */
   union sockaddr_u laddr, raddr;
   char *bp;
   struct hostname_info *hi;
@@ -1975,12 +1977,12 @@ query_info_slave(int fd)
   if (Forbidden_Site(buf)) {
     char port[NI_MAXSERV];
     if (getnameinfo(&raddr.addr, rlen, NULL, 0, port, sizeof port,
-		    NI_NUMERICHOST | NI_NUMERICSERV) != 0)
+                    NI_NUMERICHOST | NI_NUMERICSERV) != 0)
       perror("getting remote port number");
     else {
       if (!Deny_Silent_Site(buf, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0, T("[%d/%s] Refused connection (remote port %s)"),
-	       fd, buf, port);
+        do_log(LT_CONN, 0, 0, T("[%d/%s] Refused connection (remote port %s)"),
+               fd, buf, port);
       }
     }
     shutdown(fd, 2);
@@ -2030,7 +2032,7 @@ static void
 reap_info_slave(void)
 {
   int fd, len, size;
-  static char buf[10000];	/* overkill */
+  static char buf[10000];       /* overkill */
   char *bp, *bp2;
   struct iovec dat[2];
 
@@ -2104,22 +2106,22 @@ reap_info_slave(void)
       *bp2++ = '\0';
       /* buf is ip addr, bp is local port^ident info */
       if ((bp = strchr(bp2, '^')))
-	*bp++ = '\0';
+        *bp++ = '\0';
     }
     /* Now, either buf = ipaddr, bp2 = port, bp = ident info,
      * or buf = ipaddr, bp2 = port
      */
     if (Forbidden_Site(buf) || (bp && Forbidden_Site(bp))) {
       if (!Deny_Silent_Site(buf, AMBIGUOUS) || !Deny_Silent_Site(bp, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Refused connection."), fd,
-	       bp ? bp : "", buf);
+        do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Refused connection."), fd,
+               bp ? bp : "", buf);
       }
       shutdown(fd, 2);
       closesocket(fd);
       return;
     }
     do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Connection opened."), fd,
-	   bp ? bp : "", buf);
+           bp ? bp : "", buf);
     set_keepalive(fd);
     (void) initializesock(fd, bp ? bp : buf, buf, (atoi(bp2) == SSLPORT));
   }
@@ -2271,13 +2273,13 @@ process_output(DESC *d)
     d->output_chars += cnt;
     if (cnt == cur->nchars) {
       if (!cur->nxt)
-	d->output.tail = qp;
+        d->output.tail = qp;
       *qp = cur->nxt;
 #ifdef DEBUG
       do_rawlog(LT_ERR, "free_text_block(0x%x) at 2.", cur);
-#endif				/* DEBUG */
+#endif                          /* DEBUG */
       free_text_block(cur);
-      continue;			/* do not adv ptr */
+      continue;                 /* do not adv ptr */
     }
     cur->nchars -= cnt;
     cur->start += cnt;
@@ -2328,7 +2330,7 @@ setup_telnet(DESC *d)
     unsigned char extra_options[6] = "\xFF\xFD\x1F" "\xFF\xFD\x18";
     d->conn_flags &= ~CONN_TELNET_QUERY;
     do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Switching to Telnet mode."),
-	   d->descriptor, d->addr, d->ip);
+           d->descriptor, d->addr, d->ip);
     queue_newwrite(d, extra_options, 6);
     process_output(d);
   }
@@ -2493,7 +2495,7 @@ handle_telnet(DESC *d, unsigned char **q, unsigned char *qend)
       queue_newwrite(d, reply, 6);
     } else if (**q == TN_SGA || **q == TN_NAWS) {
       /* This is good to be at. */
-    } else {			/* Refuse options we don't handle */
+    } else {                    /* Refuse options we don't handle */
       unsigned char reply[3];
       reply[0] = IAC;
       reply[1] = DONT;
@@ -2502,7 +2504,7 @@ handle_telnet(DESC *d, unsigned char **q, unsigned char *qend)
       process_output(d);
     }
     break;
-  case DO:			/* Client is asking us to do something */
+  case DO:                     /* Client is asking us to do something */
     setup_telnet(d);
     if (*q >= qend)
       return -1;
@@ -2526,18 +2528,18 @@ handle_telnet(DESC *d, unsigned char **q, unsigned char *qend)
       process_output(d);
     }
     break;
-  case WONT:			/* Client won't do something we want. */
-  case DONT:			/* Client doesn't want us to do something */
+  case WONT:                   /* Client won't do something we want. */
+  case DONT:                   /* Client doesn't want us to do something */
     setup_telnet(d);
 #ifdef DEBUG_TELNET
     fprintf(stderr, "Got IAC %s 0x%x\n", **q == WONT ? "WONT" : "DONT",
-	    *(*q + 1));
+            *(*q + 1));
 #endif
     if (*q + 1 >= qend)
       return -1;
     (*q)++;
     break;
-  default:			/* Also catches IAC IAC for a literal 255 */
+  default:                     /* Also catches IAC IAC for a literal 255 */
     return 0;
   }
   return 1;
@@ -2552,7 +2554,7 @@ process_input_helper(DESC *d, char *tbuf1, int got)
   if (!d->raw_input) {
     d->raw_input =
       (unsigned char *) mush_malloc(sizeof(char) * MAX_COMMAND_LEN,
-				    "descriptor_raw_input");
+                                    "descriptor_raw_input");
     if (!d->raw_input)
       mush_panic("Out of memory");
     d->raw_input_at = d->raw_input;
@@ -2619,34 +2621,34 @@ process_input(DESC *d, int output_ready __attribute__ ((__unused__)))
     if (ssl_need_handshake(d->ssl_state)) {
       d->ssl_state = ssl_handshake(d->ssl);
       if (d->ssl_state < 0) {
-	/* Fatal error */
-	ssl_close_connection(d->ssl);
-	d->ssl = NULL;
-	d->ssl_state = 0;
-	return 0;
+        /* Fatal error */
+        ssl_close_connection(d->ssl);
+        d->ssl = NULL;
+        d->ssl_state = 0;
+        return 0;
       } else if (ssl_need_handshake(d->ssl_state)) {
-	/* We're still not ready to send to this connection. Alas. */
-	return 1;
+        /* We're still not ready to send to this connection. Alas. */
+        return 1;
       }
     }
     /* Insure that we're not in a state where we need an SSL_accept() */
     if (ssl_need_accept(d->ssl_state)) {
       d->ssl_state = ssl_accept(d->ssl);
       if (d->ssl_state < 0) {
-	/* Fatal error */
-	ssl_close_connection(d->ssl);
-	d->ssl = NULL;
-	d->ssl_state = 0;
-	return 0;
+        /* Fatal error */
+        ssl_close_connection(d->ssl);
+        d->ssl = NULL;
+        d->ssl_state = 0;
+        return 0;
       } else if (ssl_need_accept(d->ssl_state)) {
-	/* We're still not ready to send to this connection. Alas. */
-	return 1;
+        /* We're still not ready to send to this connection. Alas. */
+        return 1;
       }
     }
     /* It's an SSL connection, proceed accordingly */
     d->ssl_state =
       ssl_read(d->ssl, d->ssl_state, 1, output_ready, tbuf1, sizeof tbuf1,
-	       &got);
+               &got);
     if (d->ssl_state < 0) {
       /* Fatal error */
       ssl_close_connection(d->ssl);
@@ -2676,9 +2678,9 @@ process_input(DESC *d, int output_ready __attribute__ ((__unused__)))
 #else
       if ((errno == EWOULDBLOCK) || (errno == EINTR))
 #endif
-	return 1;
+        return 1;
       else
-	return 0;
+        return 0;
     }
 #ifndef COMPILE_CONSOLE
 #ifdef HAS_OPENSSL
@@ -2814,16 +2816,16 @@ do_command(DESC *d, char *command)
   } else if (!strncmp(command, "SCREENHEIGHT", 12)) {
     d->height = parse_integer(command + 12);
   } else if (SUPPORT_PUEBLO
-	     && !strncmp(command, PUEBLO_COMMAND, strlen(PUEBLO_COMMAND))) {
+             && !strncmp(command, PUEBLO_COMMAND, strlen(PUEBLO_COMMAND))) {
     parse_puebloclient(d, command);
     if (!(d->conn_flags & CONN_HTML)) {
       queue_newwrite(d, (unsigned char *) PUEBLO_SEND, strlen(PUEBLO_SEND));
       process_output(d);
       do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Switching to Pueblo mode."),
-	     d->descriptor, d->addr, d->ip);
+             d->descriptor, d->addr, d->ip);
       d->conn_flags |= CONN_HTML;
       if (!d->connected)
-	welcome_user(d);
+        welcome_user(d);
     }
   } else {
     if (d->connected) {
@@ -2847,7 +2849,7 @@ do_command(DESC *d, char *command)
       global_eval_context.cplr = NOTHING;
     } else {
       if (!check_connect(d, command))
-	return 0;
+        return 0;
     }
   }
   return 1;
@@ -2862,9 +2864,9 @@ parse_puebloclient(DESC *d, char *command)
     p += 5;
     if ((end = strchr(p, '"'))) {
       if ((end > p) && ((end - p) <= PUEBLO_CHECKSUM_LEN)) {
-	/* Got it! */
-	strncpy(d->checksum, p, end - p);
-	d->checksum[end - p] = '\0';
+        /* Got it! */
+        strncpy(d->checksum, p, end - p);
+        d->checksum[end - p] = '\0';
       }
     }
   }
@@ -2888,8 +2890,8 @@ dump_messages(DESC *d, dbref player, int isnew)
     if (under_limit && (login_number > MAX_LOGINS)) {
       under_limit = 0;
       do_rawlog(LT_CONN,
-		T("Limit of %d players reached. Logins disabled.\n"),
-		MAX_LOGINS);
+                T("Limit of %d players reached. Logins disabled.\n"),
+                MAX_LOGINS);
     }
   }
   /* give players a message on connection */
@@ -2922,7 +2924,7 @@ dump_messages(DESC *d, dbref player, int isnew)
     if (tmpd->player == player) {
       num++;
       if (is_hidden)
-	tmpd->hide = 1;
+        tmpd->hide = 1;
     }
   }
   /* give permanent text messages */
@@ -3054,75 +3056,75 @@ check_connect(DESC *d, const char *msg)
     if (!Site_Can_Create(d->addr) || !Site_Can_Create(d->ip)) {
       fcache_dump(d, fcache.register_fcache, NULL);
       if (!Deny_Silent_Site(d->addr, AMBIGUOUS)
-	  && !Deny_Silent_Site(d->ip, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Refused create for '%s'."),
-	       d->descriptor, d->addr, d->ip, user);
+          && !Deny_Silent_Site(d->ip, AMBIGUOUS)) {
+        do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Refused create for '%s'."),
+               d->descriptor, d->addr, d->ip, user);
       }
       return 0;
     }
     if (!options.login_allow || !options.create_allow) {
       if (!options.login_allow)
-	fcache_dump(d, fcache.down_fcache, NULL);
+        fcache_dump(d, fcache.down_fcache, NULL);
       else
-	fcache_dump(d, fcache.register_fcache, NULL);
+        fcache_dump(d, fcache.register_fcache, NULL);
       do_rawlog(LT_CONN,
-		"REFUSED CREATION for %s from %s on descriptor %d.\n",
-		user, d->addr, d->descriptor);
+                "REFUSED CREATION for %s from %s on descriptor %d.\n",
+                user, d->addr, d->descriptor);
       return 0;
     } else if (MAX_LOGINS && !under_limit) {
       fcache_dump(d, fcache.full_fcache, NULL);
       do_rawlog(LT_CONN,
-		"REFUSED CREATION for %s from %s on descriptor %d.\n",
-		user, d->addr, d->descriptor);
+                "REFUSED CREATION for %s from %s on descriptor %d.\n",
+                user, d->addr, d->descriptor);
       return 0;
     }
     player = create_player(user, password, d->addr, d->ip);
     if (player == NOTHING) {
       queue_string_eol(d, T(create_fail));
       do_log(LT_CONN, 0, 0,
-	     T("[%d/%s/%s] Failed create for '%s' (bad name)."),
-	     d->descriptor, d->addr, d->ip, user);
+             T("[%d/%s/%s] Failed create for '%s' (bad name)."),
+             d->descriptor, d->addr, d->ip, user);
     } else if (player == AMBIGUOUS) {
       queue_string_eol(d, T(password_fail));
       do_log(LT_CONN, 0, 0,
-	     T("[%d/%s/%s] Failed create for '%s' (bad password)."),
-	     d->descriptor, d->addr, d->ip, user);
+             T("[%d/%s/%s] Failed create for '%s' (bad password)."),
+             d->descriptor, d->addr, d->ip, user);
     } else {
       do_log(LT_CONN, 0, 0, "[%d/%s/%s] Created %s(#%d)",
-	     d->descriptor, d->addr, d->ip, Name(player), player);
+             d->descriptor, d->addr, d->ip, Name(player), player);
       if ((dump_messages(d, player, 1)) == 0) {
-	d->connected = 2;
-	return 0;
+        d->connected = 2;
+        return 0;
       }
-    }				/* successful player creation */
+    }                           /* successful player creation */
 
   } else if (string_prefix("register", command)) {
     if (!Site_Can_Register(d->addr) || !Site_Can_Register(d->ip)) {
       fcache_dump(d, fcache.register_fcache, NULL);
       if (!Deny_Silent_Site(d->addr, AMBIGUOUS)
-	  && !Deny_Silent_Site(d->ip, AMBIGUOUS)) {
-	do_log(LT_CONN, 0, 0,
-	       T("[%d/%s/%s] Refused registration (bad site) for '%s'."),
-	       d->descriptor, d->addr, d->ip, user);
+          && !Deny_Silent_Site(d->ip, AMBIGUOUS)) {
+        do_log(LT_CONN, 0, 0,
+               T("[%d/%s/%s] Refused registration (bad site) for '%s'."),
+               d->descriptor, d->addr, d->ip, user);
       }
       return 0;
     }
     if (!options.create_allow) {
       fcache_dump(d, fcache.register_fcache, NULL);
       do_rawlog(LT_CONN,
-		"Refused registration (creation disabled) for %s from %s on descriptor %d.\n",
-		user, d->addr, d->descriptor);
+                "Refused registration (creation disabled) for %s from %s on descriptor %d.\n",
+                user, d->addr, d->descriptor);
       return 0;
     }
     if ((player = email_register_player(user, password, d->addr, d->ip)) ==
-	NOTHING) {
+        NOTHING) {
       queue_string_eol(d, T(register_fail));
       do_log(LT_CONN, 0, 0, T("[%d/%s/%s] Failed registration for '%s'."),
-	     d->descriptor, d->addr, d->ip, user);
+             d->descriptor, d->addr, d->ip, user);
     } else {
       queue_string_eol(d, T(register_success));
       do_log(LT_CONN, 0, 0, "[%d/%s/%s] Registered %s(#%d) to %s",
-	     d->descriptor, d->addr, d->ip, Name(player), player, password);
+             d->descriptor, d->addr, d->ip, Name(player), player, password);
     }
     /* Whether it succeeds or fails, leave them connected */
 
@@ -3159,17 +3161,17 @@ parse_connect(const char *msg1, char *command, char *user, char *pass)
     for (; *msg && ((*msg == '\"') || isspace(*msg)); msg++) ;
     while (*msg && (*msg != '\"')) {
       while (*msg && !isspace(*msg) && (*msg != '\"'))
-	*p++ = *msg++;
+        *p++ = *msg++;
       if (*msg == '\"') {
-	msg++;
-	while (*msg && isspace(*msg))
-	  msg++;
-	break;
+        msg++;
+        while (*msg && isspace(*msg))
+          msg++;
+        break;
       }
       while (*msg && isspace(*msg))
-	msg++;
+        msg++;
       if (*msg && (*msg != '\"'))
-	*p++ = ' ';
+        *p++ = ' ';
     }
   } else
     while (*msg && isprint(*msg) && !isspace(*msg))
@@ -3303,16 +3305,16 @@ do_page_port(dbref player, const char *pc, const char *message)
   switch (key) {
   case 1:
     safe_format(tbuf, &tbp, T("From afar, %s%s%s"), Name(player), gap,
-		message + 1);
+                message + 1);
     notify_format(player, T("Long distance to %s: %s%s%s"),
-		  target != NOTHING ? Name(target) :
-		  T("a connecting player"), Name(player), gap, message + 1);
+                  target != NOTHING ? Name(target) :
+                  T("a connecting player"), Name(player), gap, message + 1);
     break;
   case 3:
     safe_format(tbuf, &tbp, T("%s pages: %s"), Name(player), message);
     notify_format(player, T("You paged %s with '%s'."),
-		  target != NOTHING ? Name(target) :
-		  T("a connecting player"), message);
+                  target != NOTHING ? Name(target) :
+                  T("a connecting player"), message);
     break;
   }
   *tbp = '\0';
@@ -3340,8 +3342,8 @@ inactive_desc(dbref player)
   DESC_ITER_CONN(d) {
     if (d->player == player) {
       numd++;
-      if (now - d->last_time > 60)
-	in = d;
+      if (difftime(now, d->last_time) > 60.0)
+        in = d;
     }
   }
   if (numd > 1)
@@ -3711,7 +3713,7 @@ time_format_1(time_t dt)
   delta = gmtime(&dt);
   if (delta->tm_yday > 0) {
     sprintf(buf, "%dd %02d:%02d",
-	    delta->tm_yday, delta->tm_hour, delta->tm_min);
+            delta->tm_yday, delta->tm_hour, delta->tm_min);
   } else {
     sprintf(buf, "%02d:%02d", delta->tm_hour, delta->tm_min);
   }
@@ -3763,13 +3765,13 @@ announce_connect(dbref player, int isnew, int num)
   /* Redundant, but better for translators */
   if (Dark(player)) {
     sprintf(tbuf1, (num > 1) ? T("%s has DARK-reconnected.") :
-	    T("%s has DARK-connected."), Name(player));
+            T("%s has DARK-connected."), Name(player));
   } else if (hidden(player)) {
     sprintf(tbuf1, (num > 1) ? T("%s has HIDDEN-reconnected.") :
-	    T("%s has HIDDEN-connected."), Name(player));
+            T("%s has HIDDEN-connected."), Name(player));
   } else {
     sprintf(tbuf1, (num > 1) ? T("%s has reconnected.") :
-	    T("%s has connected."), Name(player));
+            T("%s has connected."), Name(player));
   }
 
   /* send out messages */
@@ -3828,13 +3830,13 @@ announce_connect(dbref player, int isnew, int num)
     case TYPE_ROOM:
       /* check every object in the room for a connect action */
       DOLIST(obj, Contents(zone)) {
-	(void) queue_attribute(obj, "ACONNECT", player);
+        (void) queue_attribute(obj, "ACONNECT", player);
       }
       break;
     default:
       do_log(LT_ERR, 0, 0,
-	     T("Invalid zone #%d for %s(#%d) has bad type %d"), zone,
-	     Name(player), player, Typeof(zone));
+             T("Invalid zone #%d for %s(#%d) has bad type %d"), zone,
+             Name(player), player, Typeof(zone));
     }
   }
   /* now try the master room */
@@ -3934,13 +3936,13 @@ announce_disconnect(dbref player)
   /* Redundant, but better for translators */
   if (Dark(player)) {
     sprintf(tbuf1, (num < 2) ? T("%s has DARK-disconnected.") :
-	    T("%s has partially DARK-disconnected."), Name(player));
+            T("%s has partially DARK-disconnected."), Name(player));
   } else if (hidden(player)) {
     sprintf(tbuf1, (num < 2) ? T("%s has HIDDEN-disconnected.") :
-	    T("%s has partially HIDDEN-disconnected."), Name(player));
+            T("%s has partially HIDDEN-disconnected."), Name(player));
   } else {
     sprintf(tbuf1, (num < 2) ? T("%s has disconnected.") :
-	    T("%s has partially disconnected."), Name(player));
+            T("%s has partially disconnected."), Name(player));
   }
   if (!Dark(player))
     flag_broadcast(0, "MONITOR", "%s %s", T("GAME:"), tbuf1);
@@ -3965,8 +3967,8 @@ do_motd(dbref player, enum motd_type key, const char *message)
 
   if (!Site(player) && key != MOTD_LIST) {
     notify(player,
-	   T
-	   ("You may get 15 minutes of fame and glory in life, but not right now."));
+           T
+           ("You may get 15 minutes of fame and glory in life, but not right now."));
     return;
   }
   switch (key) {
@@ -4015,7 +4017,7 @@ do_doing(dbref player, const char *message)
   /* now smash undesirable characters and truncate */
   for (i = 0; i < DOING_LEN; i++) {
     if ((buf[i] == '\r') || (buf[i] == '\n') ||
-	(buf[i] == '\t') || (buf[i] == BEEP_CHAR))
+        (buf[i] == '\t') || (buf[i] == BEEP_CHAR))
       buf[i] = ' ';
   }
   buf[DOING_LEN - 1] = '\0';
@@ -4065,7 +4067,7 @@ do_poll(dbref player, const char *message, int clear)
   strncpy(poll_msg, remove_markup(message, NULL), DOING_LEN - 1);
   for (i = 0; i < DOING_LEN; i++) {
     if ((poll_msg[i] == '\r') || (poll_msg[i] == '\n') ||
-	(poll_msg[i] == '\t') || (poll_msg[i] == BEEP_CHAR))
+        (poll_msg[i] == '\t') || (poll_msg[i] == BEEP_CHAR))
       poll_msg[i] = ' ';
   }
   poll_msg[DOING_LEN - 1] = '\0';
@@ -4095,15 +4097,15 @@ short_page(const char *match)
   for (d = descriptor_list; d; d = d->next) {
     if (d->connected) {
       if (match && !string_prefix(Name(d->player), match))
-	continue;
+        continue;
       if (!strcasecmp(Name(d->player), match)) {
-	count = 1;
-	who1 = d->player;
-	break;
+        count = 1;
+        who1 = d->player;
+        break;
       }
       if (who1 == NOTHING || d->player != who1) {
-	who1 = d->player;
-	count++;
+        who1 = d->player;
+        count++;
       }
     }
   }
@@ -4275,8 +4277,8 @@ most_conn_time(dbref player)
   DESC *d, *match = NULL;
   DESC_ITER_CONN(d) {
     if ((d->player == player) && !Hidden(d) && (!match ||
-						(d->connected_at >
-						 match->connected_at)))
+                                                (d->connected_at >
+                                                 match->connected_at)))
       match = d;
   }
   if (match) {
@@ -4297,7 +4299,7 @@ most_conn_time_priv(dbref player)
   DESC *d, *match = NULL;
   DESC_ITER_CONN(d) {
     if ((d->player == player) && (!match ||
-				  (d->connected_at > match->connected_at)))
+                                  (d->connected_at > match->connected_at)))
       match = d;
   }
   if (match) {
@@ -4318,7 +4320,7 @@ least_idle_time(dbref player)
   DESC *d, *match = NULL;
   DESC_ITER_CONN(d) {
     if ((d->player == player) && !Hidden(d) &&
-	(!match || (d->last_time > match->last_time)))
+        (!match || (d->last_time > match->last_time)))
       match = d;
   }
   if (match) {
@@ -4718,7 +4720,7 @@ FUNCTION(fun_ports)
   target = lookup_player(args[0]);
   if (target == NOTHING) {
     target = match_result(executor, args[0], TYPE_PLAYER,
-			  MAT_ABSOLUTE | MAT_PLAYER | MAT_ME);
+                          MAT_ABSOLUTE | MAT_PLAYER | MAT_ME);
   }
   if (target != executor && !Priv_Who(executor)
 	&& !(Inherit_Powers(executor) && Priv_Who(Owner(executor)))) {
@@ -4734,9 +4736,9 @@ FUNCTION(fun_ports)
   DESC_ITER_CONN(d) {
     if (d->player == target) {
       if (first)
-	first = 0;
+        first = 0;
       else
-	safe_chr(' ', buff, bp);
+        safe_chr(' ', buff, bp);
       safe_integer(d->descriptor, buff, bp);
     }
   }
@@ -4763,7 +4765,7 @@ hide_player(dbref player, int hide)
   if (Can_Hide(player)) {
     DESC_ITER_CONN(d) {
       if (d->player == player)
-	d->hide = hide;
+        d->hide = hide;
     }
   }
   if (hide)
@@ -4781,7 +4783,9 @@ inactivity_check(void)
   DESC *d, *nextd;
   ATTR *a;
   char tbuf[BUFFER_LEN];
-  time_t now, idle, idle_for, unconnected_idle;
+  time_t now;
+  int idle, idle_for, unconnected_idle;
+
   if (!INACTIVITY_LIMIT && !UNCONNECTED_LIMIT)
     return;
   now = mudtime;
@@ -4789,11 +4793,22 @@ inactivity_check(void)
   unconnected_idle = UNCONNECTED_LIMIT ? UNCONNECTED_LIMIT : INT_MAX;
   for (d = descriptor_list; d; d = nextd) {
     nextd = d->next;
-    idle_for = now - d->last_time;
+    idle_for = (int) difftime(now, d->last_time);
     /* If they've been connected for 60 seconds without getting a telnet-option
        back, the client probably doesn't understand them */
-    if ((d->conn_flags & CONN_TELNET_QUERY) && idle_for > 60)
+    if ((d->conn_flags & CONN_TELNET_QUERY) && difftime(now, d->connected_at) > 60)
       d->conn_flags &= ~CONN_TELNET_QUERY;
+#ifndef COMPILE_CONSOLE
+    /* If they've been idle for 60 seconds and are set KEEPALIVE and using
+       a telnet-aware client, send a NOP */
+    if (d->conn_flags & CONN_TELNET && idle_for >= 60
+        && IS(d->player, TYPE_PLAYER, "KEEPALIVE")) {
+      const unsigned char nopmsg[2] = { IAC, NOP };
+      queue_newwrite(d, nopmsg, 2);
+      process_output(d);
+    }
+#endif
+
     if(d->connected && GoodObject(d->player) && ((a = atr_get(d->player, "IDLE_TIMEOUT"))!=NULL)) {
 	    memset(tbuf, '\0', BUFFER_LEN);
 	    strncpy(tbuf, atr_value(a), BUFFER_LEN-1);
@@ -4801,6 +4816,7 @@ inactivity_check(void)
 	    if(idle > 0)
 	      goto after_idle_atr_check;
     } 
+
     idle = INACTIVITY_LIMIT ? INACTIVITY_LIMIT : INT_MAX;
 after_idle_atr_check:
     if ((d->connected) ? (idle_for > idle ) : (idle_for > unconnected_idle)) {
@@ -4840,9 +4856,9 @@ hidden(dbref player)
   DESC_ITER_CONN(d) {
     if (d->player == player) {
       if (Hidden(d))
-	return 1;
+        return 1;
       else
-	return 0;
+        return 0;
     }
   }
   return 0;
@@ -4998,7 +5014,7 @@ f_close(stream)
 }
 
 #define fclose(x) f_close(x)
-#endif				/* SUN_OS */
+#endif                          /* SUN_OS */
 
 #ifdef COMPILE_CONSOLE
 void
@@ -5147,18 +5163,18 @@ dump_reboot_db(void)
       putref(f, d->idle_total);
       putref(f, d->unidle_times);
       if (GoodObject(d->player))
-	putref(f, d->player);
+        putref(f, d->player);
       else
-	putref(f, -1);
+        putref(f, -1);
       putref(f, d->last_time);
       if (d->output_prefix)
-	putstring(f, (char *) d->output_prefix);
+        putstring(f, (char *) d->output_prefix);
       else
-	putstring(f, "__NONE__");
+        putstring(f, "__NONE__");
       if (d->output_suffix)
-	putstring(f, (char *) d->output_suffix);
+        putstring(f, (char *) d->output_suffix);
       else
-	putstring(f, "__NONE__");
+        putstring(f, "__NONE__");
       putstring(f, d->addr);
       putstring(f, d->ip);
       putstring(f, d->doing);
@@ -5207,7 +5223,7 @@ load_reboot_db(void)
    * If not, assume we're using the original format, in which the
    * sock appears first
    * */
-  c = getc(f);			/* Skip the V */
+  c = getc(f);                  /* Skip the V */
   if (c == 'V') {
     flags = getref(f);
   } else {
@@ -5350,6 +5366,7 @@ load_reboot_db(void)
     tbuf1[strlen(tbuf1)+1] = '\0';
     (void) atr_add(closed->player, "LASTACTIVITY", tbuf1, GOD, 0);
     announce_disconnect(closed->player);
+    mush_free(closed->ttype, "terminal description");
     mush_free(closed, "descriptor");
     closed = nextclosed;
   }

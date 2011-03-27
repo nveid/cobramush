@@ -53,22 +53,22 @@
  * Each chat channel maintains a linked list of users.
  */
 struct chanuser {
-  dbref who;			/**< Dbref of joined object */
-  long int type;		/**< Bitflags for this user */
-  char title[CU_TITLE_LEN];	/**< User's channel title */
-  struct chanuser *next;	/**< Pointer to next user in list */
+  dbref who;                    /**< Dbref of joined object */
+  long int type;                /**< Bitflags for this user */
+  char title[CU_TITLE_LEN];     /**< User's channel title */
+  struct chanuser *next;        /**< Pointer to next user in list */
 };
 
 /* Flags and macros for channel users */
-#define CU_QUIET    0x1		/* Do not hear connection messages */
-#define CU_HIDE     0x2		/* Do not appear on the user list */
-#define CU_GAG      0x4		/* Do not hear any messages */
+#define CU_QUIET    0x1         /* Do not hear connection messages */
+#define CU_HIDE     0x2         /* Do not appear on the user list */
+#define CU_GAG      0x4         /* Do not hear any messages */
 #define CU_DEFAULT_FLAGS 0x0
 
 /* channel_broadcast flags */
-#define CB_CHECKQUIET 0x1	/* Check for quiet flag on recipients */
-#define CB_NOSPOOF    0x2	/* Use nospoof emits */
-#define CB_PRESENCE   0x4	/* This is a presence message, not sound */
+#define CB_CHECKQUIET 0x1       /* Check for quiet flag on recipients */
+#define CB_NOSPOOF    0x2       /* Use nospoof emits */
+#define CB_PRESENCE   0x4       /* This is a presence message, not sound */
 
 #define CUdbref(u) ((u)->who)
 #define CUtype(u) ((u)->type)
@@ -110,8 +110,8 @@ struct channel {
  * with each object
  */
 struct chanlist {
-  CHAN *chan;			/**< Channel data */
-  struct chanlist *next;	/**< Next channel in list */
+  CHAN *chan;                   /**< Channel data */
+  struct chanlist *next;        /**< Next channel in list */
 };
 
 #define Chanlist(x) ((struct chanlist *)get_objdata(x, "CHANNELS"))
@@ -236,7 +236,7 @@ extern void do_chan_what(dbref player, const char *partname);
 extern void do_chan_desc(dbref player, const char *name, const char *title);
 extern void do_chan_title(dbref player, const char *name, const char *title);
 extern void do_chan_recall(dbref player, const char *name, char *lineinfo[],
-			   int quiet);
+                           int quiet);
 extern void do_chan_buffer(dbref player, const char *name, const char *lines);
 extern void init_chat(void);
 extern void do_channel
@@ -246,7 +246,7 @@ extern void do_chan_admin
   (dbref player, char *name, const char *perms, int flag);
 extern enum cmatch_type find_channel(const char *p, CHAN **chan, dbref player);
 extern enum cmatch_type find_channel_partial(const char *p, CHAN **chan,
-					     dbref player);
+                                             dbref player);
 extern void do_channel_list(dbref player, const char *partname);
 extern int do_chat_by_name
   (dbref player, const char *name, const char *msg, int source);

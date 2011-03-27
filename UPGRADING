@@ -123,10 +123,11 @@ changes.
 One small exception is upgrading from a version that used the old flag
 system to one that uses the new flag system (post-1.7.7p5), if you've
 added flags or toggles.  You probably had an #define in hdrs/flags.h
-for your flag's bit value.  This now should be moved to hdrs/oldflags.h;
-you should leave in the table entry in src/flags.c. If you set up a macro
-for testing your flag in hdrs/mushdb.h, you'll need to change it to use
-the has_flag_by_name() function - see the many examples in that file.
+for your flag's bit value.  This now should be moved to
+hdrs/oldflags.h; you should leave in the table entry in
+src/flags.c. If you set up a macro for testing your flag in
+hdrs/mushdb.h, you'll need to change it to use the has_flag_by_name()
+function - see the many examples in that file.
 
 If this isn't suitable (you're crossing releases or your hacks are too
 many for this to work cleanly), see below.

@@ -17,7 +17,7 @@
 
 #if defined(COMPRESSION_TYPE) && (COMPRESSION_TYPE == 0)
 /* No compression */
-char ucbuff[BUFFER_LEN];	/**< Dummy buffer for no compression */
+char ucbuff[BUFFER_LEN];        /**< Dummy buffer for no compression */
 
 #elif (COMPRESSION_TYPE == 1) || (COMPRESSION_TYPE == 2)
 /* Huffman compression */
@@ -38,4 +38,4 @@ char ucbuff[BUFFER_LEN];	/**< Dummy buffer for no compression */
  */
 char ucbuff[BUFFER_LEN];
 
-#endif				/* Compression type checks */
+#endif                          /* Compression type checks */
