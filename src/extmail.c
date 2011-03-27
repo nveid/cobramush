@@ -2523,22 +2523,24 @@ status_string(MAIL *mp)
 {
   /* Return a longer description of message flags */
   static char tbuf1[BUFFER_LEN];
+  char *tp;
 
-  tbuf1[0] = '\0';
+  tp = tbuf1;
   if (Read(mp))
-    strcat(tbuf1, T("Read "));
+    safe_str(T("Read "), tbuf1, &tp);
   else
-    strcat(tbuf1, T("Unread "));
+    safe_str(T("Unread "), tbuf1, &tp);
   if (Cleared(mp))
-    strcat(tbuf1, T("Cleared "));
+    safe_str(T("Cleared "), tbuf1, &tp);
   if (Urgent(mp))
-    strcat(tbuf1, T("Urgent "));
+    safe_str(T("Urgent "), tbuf1, &tp);
   if (Mass(mp))
-    strcat(tbuf1, T("Mass "));
+    safe_str(T("Mass "), tbuf1, &tp);
   if (Forward(mp))
-    strcat(tbuf1, T("Fwd "));
+    safe_str(T("Fwd "), tbuf1, &tp);
   if (Tagged(mp))
-    strcat(tbuf1, T("Tagged"));
+    safe_str(T("Tagged"), tbuf1, &tp);
+  *tp = '\0';
   return tbuf1;
 }
 
@@ -2746,18 +2748,19 @@ filter_mail(dbref from, dbref player, char *subject,
     return;
 
   /* Handle this now so it doesn't clutter code */
-  tbuf1[0] = '\0';
+  j = 0;
   if (flags & M_URGENT)
-    strcat(tbuf1, "U");
+    tbuf1[j++] = 'U';
   if (flags & M_FORWARD)
-    strcat(tbuf1, "F");
+    tbuf1[j++] = 'F';
   if (flags & M_REPLY)
-    strcat(tbuf1, "R");
+    tbuf1[j++] = 'R';
+  tbuf1[j] = '\0';
 
-  arg = (char *) mush_malloc(BUFFER_LEN, "string");
-  arg2 = (char *) mush_malloc(BUFFER_LEN, "string");
-  arg3 = (char *) mush_malloc(BUFFER_LEN, "string");
-  arg4 = (char *) mush_malloc(BUFFER_LEN, "string");
+  arg = mush_malloc(BUFFER_LEN, "string");
+  arg2 = mush_malloc(BUFFER_LEN, "string");
+  arg3 = mush_malloc(BUFFER_LEN, "string");
+  arg4 = mush_malloc(BUFFER_LEN, "string");
   if (!arg4)
     mush_panic("Unable to allocate memory in mailfilter");
   save_global_regs("filter_mail", rsave);
@@ -2781,16 +2784,16 @@ filter_mail(dbref from, dbref player, char *subject,
   process_expression(buff, &bp, &ap, player, player, player,
                    PE_DEFAULT, PT_DEFAULT, NULL);
   *bp = '\0';
-  free((Malloc_t) asave);
+  free(asave);
   if (*buff) {
     sprintf(buf, "0:%d", mailnumber);
     do_mail_file(player, buf, buff);
   }
 
-  mush_free((Malloc_t) arg, "string");
-  mush_free((Malloc_t) arg2, "string");
-  mush_free((Malloc_t) arg3, "string");
-  mush_free((Malloc_t) arg4, "string");
+  mush_free(arg, "string");
+  mush_free(arg2, "string");
+  mush_free(arg3, "string");
+  mush_free(arg4, "string");
   restore_global_env("filter_mail", wsave);
   restore_global_regs("filter_mail", rsave);
 }

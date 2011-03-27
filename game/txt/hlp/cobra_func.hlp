@@ -1187,11 +1187,13 @@ See also: decompose(), secure()
   eval(<object>, <attribute>)
   get_eval(<object>/<attribute>)
  
-  Eval() works the same way as xget(), except that it performs %-substitutions
-  and function evaluation on the attribute before returning the value. eval()
-  does not modify the stack (%0-%9), so the attribute being evaled sees the
-  same values for them that the calling code does. Unless you need this behavior,
-  it is better to use u() instead, which hides the caller's stack.
+  Eval() works the same way as xget(), except that it performs
+  %-substitutions and function evaluation on the attribute before
+  returning the value. eval() changes the enactor (%#) to the object
+  executing the eval (%!). It does not modify the stack (%0-%9), so
+  the attribute being evaled sees the same values for them that the
+  calling code does. Unless you need this behavior, it is better to
+  use u() instead, which hides the caller's stack.
 
     Example:
       &TEST me=%B%B%B-[name(me)]
@@ -2729,15 +2731,6 @@ See also: lcon(), lexits(), con(), exit()
   object is @created (or @dug, or @opened, or @pcreated, etc.), it
   will have this dbref.
 
-& NMWHO()
-  nmwho()
-
-  This returns a count of all currently connected, non-hidden players.
-  It's exactly the same as nwho() used by a mortal, and is suitable
-  for use on privileged global objects who need an unprivileged count
-  of who's online.
-
-See also: nwho(), mwho(), xmwho()
 & NOR()
   nor(<boolean>[, ... , <booleanN>])
 
@@ -2806,13 +2799,25 @@ See also: ncon(), nexits(), xplayers(), lplayers(), lvplayers()
   nvthings(<object>) is identical to words(lvthings(<object>))
 
 See also: ncon(), nexits(), xthings(), lthings(), lvthings()
+& NMWHO()
 & NWHO()
   nwho()
+  nwho(<viewer>)
+  nmwho()
 
-  This returns a count of all currently-connected players. When
+  nwho() returns a count of all currently-connected players. When
   mortals use this function, DARK wizards or royalty are NOT counted.
 
-See also: lwho(), nmwho(), xwho()
+  nmwho() returns a count of all currently connected, non-hidden players.
+  It's exactly the same as nwho() used by a mortal, and is suitable
+  for use on privileged global objects that always need an unprivileged
+  count of who is online.
+
+  If nwho() is given an argument, and is used by an object that can see
+  DARK and Hidden players, nwho() returns the count of online players
+  based on what <viewer> can see.
+
+See also: lwho(), mwho(), xwho(), xmwho()
 & OBJ()
   obj(<object>)
 

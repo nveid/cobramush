@@ -1289,7 +1289,7 @@ FUNCTION(fun_sortkey)
   for (i = 0; i < nptrs; i++) {
     /* Build our %0 args */
     wenv[0] = (char *) ptrs[i];
-    call_ufun(&ufun, wenv, 2, result, executor, enactor, pe_info);
+    call_ufun(&ufun, wenv, 1, result, executor, enactor, pe_info);
     keys[i] = mush_strdup(result, "sortkey");
   }
 

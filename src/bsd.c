@@ -4141,15 +4141,34 @@ visible_short_page(dbref player, const char *match)
 /* ARGSUSED */
 FUNCTION(fun_nwho) {
   DESC *d;
+  dbref victim;
   int count = 0;
   int powered = (*(called_as + 1) != 'M') && Priv_Who(executor);
 
-  DESC_ITER_CONN(d) {
-    if (!Hidden(d) || (powered && CanSee(executor, d->player)))
-      count++;
+  if (nargs && args[0] && *args[0]) {
+    /* An argument was given. Find the victim and choose the lowest
+     * perms possible */
+    if (!powered) {
+      safe_str(T(e_perm), buff, bp);
+      return;
+    }
+    if ((victim = noisy_match_result(executor, args[0], NOTYPE,
+                                     MAT_EVERYTHING)) == 0) {
+      safe_str(T(e_notvis), buff, bp);
+      return;
+    }
+    if (!Priv_Who(victim))
+      powered = 0;
   }
+
+  DESC_ITER_CONN(d) {
+    if (!Hidden(d) || powered) {
+      count++;
+    }
+  } 
   safe_integer(count, buff, bp);
 }
+
 
 /* ARGSUSED */
 FUNCTION(fun_lwho)

@@ -527,7 +527,7 @@ void
 hash_stats_header(dbref player)
 {
   notify_format(player,
-                "Table      Buckets Entries LChain  ECh  1Ch  2Ch  3Ch 4+Ch  AvgCh ~Memory");
+                "Table       Buckets Entries LChain  ECh  1Ch  2Ch  3Ch 4+Ch  AvgCh ~Memory");
 }
 
 /** Display stats on a hashtable.
@@ -550,7 +550,6 @@ hash_stats(dbref player, HASHTAB *htab, const char *hname)
   for (n = 0; n < 5; n++)
     lengths[n] = 0;
   bytes += sizeof(HASHTAB);
-  bytes += htab->entry_size * htab->entries;
   if (htab->buckets) {
     bytes += HASHENT_SIZE * htab->hashsize;
     for (n = 0; n < htab->hashsize; n++) {
@@ -572,7 +571,7 @@ hash_stats(dbref player, HASHTAB *htab, const char *hname)
     totchains += lengths[n];
 
   notify_format(player,
-                "%-10s %7d %7d %6d %4d %4d %4d %4d %4d %6.3f %7u", hname,
+                "%-11s %7d %7d %6d %4d %4d %4d %4d %4d %6.3f %7u", hname,
                 htab->hashsize, htab->entries, longest, lengths[0], lengths[1],
                 lengths[2], lengths[3], lengths[4],
                 totchains > 0 ? chainlens / totchains : 0.0, bytes);

@@ -139,7 +139,7 @@ do_malias_create(dbref player, char *alias, char *tolist)
     return;
   }
   if (!alias || !*alias || !tolist || !*tolist) {
-    notify(player, T("MAIL: What alias do you want to create?."));
+    notify(player, T("MAIL: What alias do you want to create?"));
     return;
   }
   if (*alias != MALIAS_TOKEN) {

@@ -49,11 +49,12 @@ Flag  Title           Flag  Title              Flag  Title
   a - Audible           b - Debug               c - Connected
   d - Destroy_Ok        e - Enter_Ok            g - Gagged
   h - Halt              i - Orphan              j - Jury_Ok             
-  l - Light             m - Myopic, Mistrust    n - No_Command          
-  o - On-Vacation       p - Puppet, Paranoid    s - Suspect           
-  t - Transparent       u - Uninspected         v - Verbose   
-  w - No_Warn           x - Terse, Cloudy       ? - Unregistered      
-  ^ - Listen_Parent     ~ - Noaccents           " - NoSpoof
+  k - Keepalive         l - Light               m - Myopic, Mistrust
+  n - No_Command        o - On-Vacation         p - Puppet, Paranoid
+  r - Royalty           s - Suspect             t - Transparent
+  u - Uninspected       v - Verbose             w - No_Warn
+  x - Terse, Cloudy     ? - Unregistered        ^ - Listen_Parent
+  ~ - Noaccents         " - NoSpoof
 
  Additional Flags:
   Auth_Parent           WeirdPrompts

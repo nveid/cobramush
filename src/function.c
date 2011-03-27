@@ -532,7 +532,7 @@ FUNTAB flist[] = {
   {"NSPEMIT", fun_pemit, 2, -2, FN_REG},
   {"NSREMIT", fun_remit, 2, -2, FN_REG},
   {"NSZEMIT", fun_zemit, 2, -2, FN_REG},
-  {"NWHO", fun_nwho, 0, 0, FN_REG},
+  {"NWHO", fun_nwho, 0, 1, FN_REG},
   {"NMWHO", fun_nwho, 0, 0, FN_REG},
   {"NUM", fun_num, 1, 1, FN_REG},
   {"NULL", fun_null, 1, INT_MAX, FN_REG},

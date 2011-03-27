@@ -762,6 +762,8 @@ absolute_room(dbref it)
   if (!GoodObject(room))
     return NOTHING;
   while (!IsRoom(room)) {
+    if (!GoodObject(Location(room)))
+      return room;
     room = Location(room);
     rec++;
     if (rec > 20)

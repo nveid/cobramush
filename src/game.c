@@ -343,6 +343,8 @@ dump_database_internal(void)
     /* The dump failed. Disk might be full or something went bad with the
        compression slave. Boo! */
     do_rawlog(LT_ERR, T("ERROR! Database save failed."));
+    if(f)
+      db_close(f);
 #ifndef PROFILING
 #ifdef HAS_ITIMER
     install_sig_handler(SIGPROF, signal_cpu_limit);
@@ -564,8 +566,8 @@ dump_database(void)
   epoch++;
 
   do_rawlog(LT_ERR, "DUMPING: %s.#%d#", globals.dumpfile, epoch);
-  dump_database_internal();
-  do_rawlog(LT_ERR, "DUMPING: %s.#%d# (done)", globals.dumpfile, epoch);
+  if (!dump_database_internal())
+    do_rawlog(LT_ERR, "DUMPING: %s.#%d# (done)", globals.dumpfile, epoch);
 }
 
 /** Dump a database, possibly by forking the process.
@@ -667,7 +669,7 @@ fork_and_dump(int forking)
       _exit(status);            /* !!! */
     } else {
       reserve_fd();
-      if (DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
+      if (!status && DUMP_NOFORK_COMPLETE && *DUMP_NOFORK_COMPLETE)
         flag_broadcast(0, 0, "%s", DUMP_NOFORK_COMPLETE);
     }
   }

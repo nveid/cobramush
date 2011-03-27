@@ -910,6 +910,7 @@ See also: give, @quota, MONEY
 
 See also: CLIENTS, ATTRIBUTES, WILDCARDS, MUSHCODE
 & @describe
+& @desc
   @describe <object> [=<description>]
 
   This command sets the description of the object, which will be seen 

@@ -65,7 +65,7 @@
  *     when decompressing, and considerably slower when compressing.
  *     (But you decompress a lot more often). Compression ratio
  *     is worse than Huffman for small dbs (<1.5Mb of text), but
- *     better for larger dbs. Win32 systems must use this.
+ *     better for larger dbs. 
  * 4 - Raevnos's almost 8-bit clean version of the word-based algorithm.
  *     Prefer 3 unless you need extended characters. This algorithm
  *     can encode all characters except 0x06.

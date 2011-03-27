@@ -376,9 +376,10 @@ const char *
 unparse_warnings(warn_type warns)
 {
   static char tbuf1[BUFFER_LEN];
+  char *tp;
   int listsize, indexx;
 
-  tbuf1[0] = '\0';
+  tp = tbuf1;
 
   /* Get the # of elements in checklist */
   listsize = sizeof(checklist) / sizeof(tcheck);
@@ -390,8 +391,8 @@ unparse_warnings(warn_type warns)
       /* Which is to say:
        * if the bits set on the_flag is a subset of the bits set on warns
        */
-      strcat(tbuf1, checklist[indexx].name);
-      strcat(tbuf1, " ");
+      safe_str(checklist[indexx].name, tbuf1, &tp);
+      safe_chr(' ', tbuf1, &tp);
       /* If we've got a flag which subsumes smaller ones, don't
        * list the smaller ones
        */
