@@ -28,7 +28,11 @@ int modules_shutdown(void);
 /* Retrieve Module Function */
 #define MODULE_FUNC(h, m, func, ...) \
   if((h = lt_dlsym(m, func))) { \
-    h(__VAR_ARGS__) \
+    h(__VA_ARGS__); \
+  }
+#define MODULE_FUNC_NOARGS(h, m, func) \
+  if((h = lt_dlsym(m, func))) { \
+    h(); \
   }
 
 #define MODULE_FUNCRET(m, func) lt_dlsym(m, func);

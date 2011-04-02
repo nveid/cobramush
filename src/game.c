@@ -42,6 +42,7 @@ void Win32MUSH_setup(void);
 #include <unistd.h>
 #endif
 #include <errno.h>
+#include <ltdl.h>
 
 #include "conf.h"
 #include "externs.h"
@@ -73,6 +74,7 @@ void Win32MUSH_setup(void);
 #include "help.h"
 #include "dbio.h"
 #include "pcre.h"
+#include "modules.h"
 
 #ifdef hpux
 #include <sys/syscall.h>
@@ -100,6 +102,7 @@ static dbref *errdblist = NULL; /**< List of dbrefs to return errors from */
 static dbref *errdbtail;        /**< Pointer to end of errdblist */
 static int errdbsize = 4;       /**< Current size of errdblist array */
 extern int use_flagfile;
+extern struct module_entry_t *module_list;
 
 static void errdb_grow(void);
 
@@ -332,6 +335,9 @@ dump_database_internal(void)
   char realtmpfl[2048];
   char tmpfl[2048];
   FILE *f = NULL;
+  struct module_entry_t *m;
+  void (*handle)();
+
 
 #ifndef PROFILING
 #ifndef WIN32
@@ -351,6 +357,8 @@ dump_database_internal(void)
     return 1;
   } else {
     local_dump_database();
+    MODULE_ITER(m)
+      MODULE_FUNC_NOARGS(handle, m->handle, "module_dump_database");
 
 #ifdef ALWAYS_PARANOID
     paranoid_checkpt = db_top / 5;
@@ -751,6 +759,9 @@ extern struct db_stat_info current_state;
 void
 init_game_config(const char *conf)
 {
+  struct module_entry_t *m;
+  void (*handler)();
+
   int a;
 
   global_eval_context.process_command_port = 0;
@@ -794,6 +805,9 @@ init_game_config(const char *conf)
 
   /* Load all the config file stuff except restrict_* */
   local_configs();
+  MODULE_ITER(m)
+    MODULE_FUNC_NOARGS(handler, m->handle, "module_configs");
+
   conf_default_set();
   config_file_startup(conf, 0);
   start_all_logs();
@@ -817,6 +831,9 @@ init_game_config(const char *conf)
 void
 init_game_postdb(const char *conf)
 {
+  struct module_entry_t *m;
+  void (*handle)();
+
   /* access file stuff */
   read_access_file();
   /* initialize random number generator */
@@ -839,6 +856,10 @@ init_game_postdb(const char *conf)
 #endif /* CRON */
   /* Call Local Startup */
   local_startup();
+  MODULE_ITER(m)
+    MODULE_FUNC_NOARGS(handle, m->handle, "module_startup");
+
+
   /* everything else ok. Restart all objects. */
   do_restart();
 #ifdef HAS_OPENSSL

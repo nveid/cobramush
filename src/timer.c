@@ -25,6 +25,7 @@
 #ifdef I_UNISTD
 #include <unistd.h>
 #endif
+#include <ltdl.h>
 
 #include "conf.h"
 #include "externs.h"
@@ -40,7 +41,10 @@
 #include "help.h"
 #include "parse.h"
 #include "confmagic.h"
+#include "modules.h"
 
+/* Module extern */
+extern struct module_entry_t *module_list;
 
 static sig_atomic_t hup_triggered = 0;
 static sig_atomic_t usr1_triggered = 0;
@@ -205,6 +209,8 @@ void
 dispatch(void)
 {
   static int idle_counter = 0;
+  struct module_entry_t *m;
+  void (*handle)(void);
 
   /* A HUP reloads configuration and reopens logs */
   if (hup_triggered) {
@@ -295,6 +301,9 @@ dispatch(void)
 #endif
 
   local_timer();
+
+  MODULE_ITER(m)
+    MODULE_FUNC_NOARGS(handle, m->handle, "module_timer");
 }
 
 sig_atomic_t cpu_time_limit_hit = 0;  /** Was the cpu time limit hit? */

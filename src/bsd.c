@@ -82,6 +82,7 @@
 #define AUTORESTART
 #endif
 #include <setjmp.h>
+#include <ltdl.h>
 
 #include "conf.h"
 
@@ -128,6 +129,7 @@
 #include "modules.h"
 #include "lua.h"
 #include "mushlua.h"
+#include "modules.h"
 #ifdef HAS_WAITPID
 /** What does wait*() return? */
 #define WAIT_TYPE int
@@ -154,6 +156,8 @@
 #define FD_ISSET(n,p)    (*p & (1<<(n)))
 #endif                          /* defines for BSD 4.2 */
 
+
+extern struct module_entry_t *module_list;
 #ifdef HAS_GETRUSAGE
 void rusage_stats(void);
 #endif
@@ -2857,6 +2861,9 @@ parse_puebloclient(DESC *d, char *command)
 static int
 dump_messages(DESC *d, dbref player, int isnew)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref, int, int);
+
   int is_hidden;
   int num = 0;
   DESC *tmpd;
@@ -2934,6 +2941,9 @@ dump_messages(DESC *d, dbref player, int isnew)
   if (Haven(player))
     notify(player, T("Your HAVEN flag is set. You cannot receive pages."));
   local_connect(player, isnew, num);
+  MODULE_ITER(m)
+    MODULE_FUNC(handle, m->handle, "module_connect", player, isnew, num);
+
   return 1;
 }
 

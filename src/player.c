@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #endif
 #include <fcntl.h>
+#include <ltdl.h>
 
 #include "conf.h"
 #include "externs.h"
@@ -36,6 +37,7 @@
 #include "flags.h"
 #include "lock.h"
 #include "parse.h"
+#include "modules.h"
 
 #ifdef HAS_CRYPT
 #ifdef I_CRYPT
@@ -44,6 +46,7 @@
 extern char *crypt(const char *, const char *);
 #endif
 #endif
+extern struct module_entry_t *module_list;
 
 #include "extmail.h"
 #include "confmagic.h"
@@ -414,6 +417,8 @@ make_player(const char *name, const char *password, const char *host,
   dbref player;
   char temp[SBUF_LEN];
   object_flag_type flags;
+  struct module_entry_t *m;
+  void (*handle)(dbref player);
 
   player = new_object();
 
@@ -460,6 +465,9 @@ make_player(const char *name, const char *password, const char *host,
   current_state.players++;
 
   local_data_create(player);
+  MODULE_ITER(m)
+    MODULE_FUNC(handle, m->handle, "module_data_create", player);
+
 
   return player;
 }

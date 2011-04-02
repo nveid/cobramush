@@ -42,8 +42,11 @@ struct module_entry_t *module_entry_add(char *name) {
 int module_entry_del(struct module_entry_t *entry) {
   struct module_entry_t *m, *e = NULL;
 
-  if(module_list == entry)
+  if(module_list == entry) {
     e = module_list;
+    module_list = NULL;
+  }
+
   else MODULE_ITER(m)
     if(m->next != NULL && m->next == entry) {
       e = m;
