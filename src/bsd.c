@@ -125,6 +125,7 @@
 #include "game.h"
 #include "dbio.h"
 #include "confmagic.h"
+#include "modules.h"
 #include "lua.h"
 #include "mushlua.h"
 #ifdef HAS_WAITPID
@@ -505,6 +506,8 @@ main(int argc, char **argv)
 #endif
 
   time(&mudtime);
+  /* Initialize Module interface */
+  modules_init();
 
   /* If we have setlocale, call it to set locale info
    * from environment variables

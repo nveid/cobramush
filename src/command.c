@@ -191,6 +191,7 @@ COMLIST commands[] = {
 #endif
   {"@MAP", "DELIMIT", cmd_map, CMD_T_ANY | CMD_T_EQSPLIT | CMD_T_RS_NOPARSE,
    NULL},
+  {"@MODULE", "LOAD UNLOAD", cmd_module, CMD_T_ANY, "POWER^SITE"},
   {"@MOTD", "CONNECT LIST DOWN FULL", cmd_motd,
    CMD_T_ANY | CMD_T_NOGAGGED, NULL},
   {"@MVATTR", "CONVERT NOFLAGCOPY", cmd_mvattr,
