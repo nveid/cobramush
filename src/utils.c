@@ -835,7 +835,7 @@ can_interact(dbref from, dbref to, int type)
     return 1;
 
   MODULE_ITER(m) {
-   handle =  MODULE_FUNCRET(m->handle, "module_can_interact_first")
+   handle =  MODULE_FUNCRET(m->handle, "module_can_interact_last")
    if(handle) {
      if((lci = handle(from, to , type)) != NOTHING)
        return lci;
