@@ -1137,8 +1137,7 @@ powc_bcreate(int plev __attribute__ ((__unused__)), dbref who, dbref what)
 
 /* powc_levchk_lte()  {{{3 - FullYes power(like BCreate) but can only be used LTE */
 int
-powc_levchk_lte(int plev
-                __attribute__ ((__unused__)), dbref who, dbref what)
+powc_levchk_lte(int plev, dbref who, dbref what)
 {
   return (LEVEL(who) >= LEVEL(what) || (plev > NO && who == what));
 }
