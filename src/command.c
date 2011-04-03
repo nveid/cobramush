@@ -638,7 +638,7 @@ command_init_preconfig(void)
 
   ptab_init(&ptab_command);
   hashinit(&htab_reserved_aliases, 16, sizeof(COMMAND_INFO));
-  reserve_aliases();
+/*  reserve_aliases();  this can now be handeled in respective modules */
   ptab_start_inserts(&ptab_command);
   for (cmd = commands; cmd->name; cmd++) {
     ptab_insert(&ptab_command, cmd->name,
@@ -653,7 +653,7 @@ command_init_preconfig(void)
     ptab_insert(&ptab_command_perms, c->name, c);
   ptab_end_inserts(&ptab_command_perms);
 
-  local_commands();
+  /* no longer needed with modules. local_commands(); */
 }
 
 /** Initialize commands (after reading config file).

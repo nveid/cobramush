@@ -58,6 +58,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ltdl.h>
 
 #include "copyrite.h"
 #include "conf.h"
@@ -73,8 +74,10 @@
 #include "flags.h"
 #include "lock.h"
 #include "confmagic.h"
+#include "modules.h"
 
 
+extern struct module_entry_t *module_list;
 
 dbref first_free = NOTHING;   /**< Object at top of free list */
 
@@ -607,10 +610,16 @@ undestroy(dbref player, dbref thing)
 void
 free_object(dbref thing)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref);
+
   dbref i, loc;
   if (!GoodObject(thing))
     return;
-  local_data_free(thing);
+
+  /* Replacement for data_free */
+  MODULE_ITER(m)
+    MODULE_FUNC(handle, m->handle, "module_data_free", thing);
 
   switch (Typeof(thing)) {
   case TYPE_DIVISION:
@@ -1027,13 +1036,19 @@ do_purge(dbref player)
 void
 dbck(void)
 {
+  struct module_entry_t *m;
+  void (*handle)();
+
   check_fields();
   check_contents();
   check_locations();
   check_connected_rooms();
   check_zones();
   check_divisions();
-  local_dbck();
+    
+  /* Replacement for local_dbck */
+  MODULE_ITER(m)
+    MODULE_FUNC_NOARGS(handle, m->handle, "module_dbck");
 }
 
 /* Do division integrity checks */

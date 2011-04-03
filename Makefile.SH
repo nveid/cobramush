@@ -52,7 +52,7 @@ $make_set_make
 CC=$cc
 CCFLAGS=$optimize -I.. -I../hdrs -Wall -Wno-comment -Wno-parentheses -Wno-switch -Werror $ccflags $warnings
 LDFLAGS=$ldflags
-CLIBS=-ltdl $libs $cryptlib $libssl $libcrypto $libmysqlclient
+CLIBS=-lltdl $libs $cryptlib $libssl $libcrypto $libmysqlclient
 INSTALL=$install
 INSTALLDIR=$installdir
 CP=$cp

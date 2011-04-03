@@ -29,7 +29,6 @@
 #include "confmagic.h"
 
 static void func_hash_insert(const char *name, FUN *func);
-extern void local_functions(void);
 static int apply_restrictions(unsigned int result, const char *restriction);
 
 USERFN_ENTRY *userfn_tab;   /**< Table of user-defined functions */
@@ -852,7 +851,7 @@ init_func_hashtab(void)
   for (ftp = flist; ftp->name; ftp++) {
     function_add(ftp->name, ftp->fun, ftp->minargs, ftp->maxargs, ftp->flags);
   }
-  local_functions();
+  /* local_functions() no longer needed with modules */
 }
 
 /** Function initization to perform after reading the config file.

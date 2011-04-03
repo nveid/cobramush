@@ -18,6 +18,7 @@
 #include <time.h>
 #endif
 #include <stdlib.h>
+#include <ltdl.h>
 #include "conf.h"
 #include "dbio.h"
 #include "externs.h"
@@ -35,6 +36,9 @@
 #include "htab.h"
 #include "extmail.h"
 #include "confmagic.h"
+#include "modules.h"
+
+extern struct module_entry_t *module_list;
 
 #ifdef WIN32
 #pragma warning( disable : 4761)      /* disable warning re conversion */
@@ -2143,6 +2147,9 @@ clear_objdata(dbref thing)
 void
 create_minimal_db(void)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref);
+
   dbref start_room, god, master_room, master_division;
 
   int desc_flags = AF_VISUAL | AF_NOPROG | AF_PREFIXMATCH;
@@ -2181,7 +2188,10 @@ create_minimal_db(void)
   PUSH(god, Contents(start_room));
   add_player(god);
   s_Pennies(god, START_BONUS);
-  local_data_create(god);
+
+  MODULE_ITER(m)
+    MODULE_FUNC(handle, m->handle, "module_data_create", god);
+
   current_state.players++;
 
   set_name(master_room, "Master Room");

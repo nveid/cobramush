@@ -32,6 +32,7 @@
 #include <wtypes.h>
 #include <winbase.h>            /* For GetCurrentProcessId() */
 #endif
+#include <ltdl.h>
 #include "conf.h"
 
 #include "match.h"
@@ -45,6 +46,10 @@
 #include "parse.h"
 #include "lock.h"
 #include "confmagic.h"
+#include "modules.h"
+
+
+extern struct module_entry_t *module_list;
 
 dbref find_entrance(dbref door);
 void initialize_mt(void);
@@ -791,6 +796,8 @@ int
 can_interact(dbref from, dbref to, int type)
 {
   int lci;
+  struct module_entry_t *m;
+  int (*handle)(dbref, dbref, int);
 
   /* This shouldn't even be checked for rooms and garbage, but we're
    * paranoid. Trying to stop interaction with yourself will not work 99%
@@ -802,9 +809,14 @@ can_interact(dbref from, dbref to, int type)
     return 1;
 
   /* This function can override standard checks! */
-  lci = local_can_interact_first(from, to, type);
-  if (lci != NOTHING)
-    return lci;
+  /* This doohicky is the replacement for local_can_interact_first */
+  MODULE_ITER(m) {
+   handle =  MODULE_FUNCRET(m->handle, "module_can_interact_first")
+   if(handle) {
+     if((lci = handle(from, to , type)) != NOTHING)
+       return lci;
+   }
+  }
 
   /* Standard checks */
 
@@ -822,9 +834,13 @@ can_interact(dbref from, dbref to, int type)
   if ((from == Location(to)) || (to == Location(from)) || controls(to, from))
     return 1;
 
-  lci = local_can_interact_last(from, to, type);
-  if (lci != NOTHING)
-    return lci;
+  MODULE_ITER(m) {
+   handle =  MODULE_FUNCRET(m->handle, "module_can_interact_first")
+   if(handle) {
+     if((lci = handle(from, to , type)) != NOTHING)
+       return lci;
+   }
+  }
 
   return 1;
 }

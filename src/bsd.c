@@ -476,6 +476,10 @@ main(int argc, char **argv)
   FILE *id;
 #endif
   FILE *newerr;
+  struct module_entry_t *m;
+  void (*handle)();
+
+
 
   /* read the configuration file */
   if (argc < 2) {
@@ -647,8 +651,10 @@ main(int argc, char **argv)
 #endif
 
   dump_database();
-
-  local_shutdown();
+    
+  /* Replacement for local_shutdown */
+  MODULE_ITER(m)
+    MODULE_FUNC_NOARGS(handle, m->handle, "module_shutdown");
 
 #ifdef RPMODE_SYS
   rplog_shutdown();
@@ -2940,7 +2946,7 @@ dump_messages(DESC *d, dbref player, int isnew)
   do_look_around(player);
   if (Haven(player))
     notify(player, T("Your HAVEN flag is set. You cannot receive pages."));
-  local_connect(player, isnew, num);
+  /* Replacement for local_connect */
   MODULE_ITER(m)
     MODULE_FUNC(handle, m->handle, "module_connect", player, isnew, num);
 
@@ -3850,6 +3856,10 @@ announce_disconnect(dbref player)
   char tbuf1[BUFFER_LEN];
   dbref zone, obj;
   int j;
+  struct module_entry_t *m;
+  void (*handle)(dbref, int);
+
+
 
   loc = Location(player);
   if (!GoodObject(loc))
@@ -3946,7 +3956,11 @@ announce_disconnect(dbref player)
       set_flag_internal(player, "GOING");
       set_flag_internal(player, "GOING_TWICE");
     }
-  local_disconnect(player, num);
+  /* Replacement for local_disconnect */
+  MODULE_ITER(m)
+    MODULE_FUNC(handle, m->handle, "module_disconnect", player, num);
+
+
 }
 
 /** Set an motd message.
@@ -5759,6 +5773,9 @@ static int do_su_exit(DESC *d) {
 void
 do_reboot(dbref player, int flag)
 {
+  struct module_entry_t *m;
+  void (*handle)();
+
   if (player == NOTHING) {
     flag_broadcast(0, 0,
                    T
@@ -5794,7 +5811,9 @@ do_reboot(dbref player, int flag)
 #if !defined(COMPILE_CONSOLE) && defined(INFO_SLAVE)
   kill_info_slave();
 #endif
-  local_shutdown();
+  /* Replacement for local_shutdown */
+  MODULE_ITER(m)
+    MODULE_FUNC_NOARGS(handle, m->handle, "module_shutdown");
   end_all_logs();
 #ifndef WIN32
   execl("netmush", "netmush", confname, NULL);

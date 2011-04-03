@@ -356,7 +356,7 @@ dump_database_internal(void)
 #endif
     return 1;
   } else {
-    local_dump_database();
+    /* Replacement local_dump_database */
     MODULE_ITER(m)
       MODULE_FUNC_NOARGS(handle, m->handle, "module_dump_database");
 
@@ -804,7 +804,7 @@ init_game_config(const char *conf)
   memset(&current_state, 0, sizeof current_state);
 
   /* Load all the config file stuff except restrict_* */
-  local_configs();
+  /* local_configs() replacement */
   MODULE_ITER(m)
     MODULE_FUNC_NOARGS(handler, m->handle, "module_configs");
 
@@ -855,7 +855,7 @@ init_game_postdb(const char *conf)
   start_cron(); /* Start the MUSH Cron Daemon */
 #endif /* CRON */
   /* Call Local Startup */
-  local_startup();
+  /* local_startup() replacement */
   MODULE_ITER(m)
     MODULE_FUNC_NOARGS(handle, m->handle, "module_startup");
 

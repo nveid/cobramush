@@ -60,11 +60,11 @@ CFLAGS=$(CCFLAGS) $(RDEFS) $(IDEFS)
 
 # List of C files, used for make depend:
 C_FILES=access.c atr_tab.c attrib.c boolexp.c bsd.c bufferq.c \
-	chunk.c cmdlocal.c cmds.c \
+	chunk.c  cmds.c \
 	command.c compress.c conf.c cque.c create.c cron.c db.c destroy.c  division.c extchat.c \
-	extmail.c filecopy.c flaglocal.c flags.c funcrypt.c function.c \
-	fundb.c fundiv.c funlist.c funlocal.c funmath.c funmisc.c funstr.c funtime.c \
-	funufun.c game.c help.c htab.c ident.c local.c lock.c log.c look.c \
+	extmail.c filecopy.c  flags.c funcrypt.c function.c \
+	fundb.c fundiv.c funlist.c funmath.c funmisc.c funstr.c funtime.c \
+	funufun.c game.c help.c htab.c ident.c lock.c log.c look.c \
 	malias.c match.c memcheck.c move.c modules.c mushlua.c mushlua_wrap.c mycrypt.c mymalloc.c mysocket.c \
 	myssl.c notify.c parse.c pcre.c player.c plyrlist.c \
 	predicat.c privtab.c prog.o ptab.c rob.c rplog.c services.c set.c shs.c  \
@@ -86,11 +86,11 @@ H_FILES = ../config.h ../confmagic.h ../hdrs/ansi.h ../hdrs/atr_tab.h \
 
 # .o versions of above - these are used in the build
 COMMON_O_FILES=access.o atr_tab.o attrib.o boolexp.o bufferq.o \
-	chunk.o cmdlocal.o cmds.o \
+	chunk.o  cmds.o \
 	command.o compress.o conf.o cque.o create.o cron.o db.o destroy.o division.o extchat.o \
-	extmail.o filecopy.o flaglocal.o flags.o funcrypt.o function.o \
-	fundb.o funlist.o fundiv.o funlocal.o funmath.o funmisc.o funstr.o funtime.o \
-	funufun.o game.o help.o htab.o ident.o local.o lock.o log.o look.o \
+	extmail.o filecopy.o  flags.o funcrypt.o function.o \
+	fundb.o funlist.o fundiv.o  funmath.o funmisc.o funstr.o funtime.o \
+	funufun.o game.o help.o htab.o ident.o lock.o log.o look.o \
 	malias.o match.o memcheck.o move.o modules.o mushlua.o mushlua_wrap.o mycrypt.o mymalloc.o \
 	mysocket.o myssl.o notify.o parse.o pcre.o player.o plyrlist.o predicat.o privtab.o \
 	prog.o   ptab.o rob.o rplog.o services.o set.o shs.o sig.o speech.o sql.o  strdup.o \
@@ -144,52 +144,10 @@ buildinf:
 	@echo "#define RDEFS \"$(RDEFS)\"" >> ../hdrs/buildinf.h
 	@echo "#define IDEFS \"$(IDEFS)\"" >> ../hdrs/buildinf.h
 
-# If funlocal.c doesn't exist, we want to build it from
-# funlocal.dst. 
-funlocal.c: funlocal.dst
-	@if [ ! -f funlocal.c ]; then \
-	  cp funlocal.dst funlocal.c; \
-	else \
-	  echo "********************************************************"; \
-	  echo "NOTE! funlocal.dst has been changed. You may need to incorporate these" ; \
-	  echo "changes into your funlocal.c. Edit or touch funlocal.c to prevent this message"; \
-	  echo "********************************************************"; \
-	fi
-
-flaglocal.c: flaglocal.dst
-	@if [ ! -f flaglocal.c ]; then \
-	  cp flaglocal.dst flaglocal.c; \
-	else \
-	  echo "********************************************************"; \
-	  echo "NOTE! flaglocal.dst has been changed. You may need to incorporate these" ; \
-	  echo "changes into your flaglocal.c. Edit or touch flaglocal.c to prevent this message"; \
-	  echo "********************************************************"; \
-	fi
-
-cmdlocal.c: cmdlocal.dst
-	@if [ ! -f cmdlocal.c ]; then \
-	  cp cmdlocal.dst cmdlocal.c; \
-	else \
-	  echo "********************************************************"; \
-	  echo "NOTE! cmdlocal.dst has been changed. You may need to incorporate these" ; \
-	  echo "changes into your cmdlocal.c. Edit or touch cmdlocal.c to prevent this message"; \
-	  echo "********************************************************"; \
-	fi
 
 mushlua_wrap.c: mushlua.i
 	@echo "Generating mushlua_wrap.c"
 	swig -o mushlua_wrap.c -lua mushlua.i
-
-local.c: local.dst
-	@if [ ! -f local.c ]; then \
-	  cp local.dst local.c; \
-	else \
-	  echo "********************************************************"; \
-	  echo "NOTE! local.dst has been changed. You may need to incorporate these" ; \
-	  echo "changes into your local.c. Edit or touch local.c to prevent this message"; \
-	  echo "********************************************************"; \
-	fi
-
 
 ../po/pennmush.pot: $(C_FILES) $(H_FILES)
 	xgettext -d pennmush -kT -o ../po/pennmush.pot $(C_FILES) $(H_FILES)
@@ -200,7 +158,7 @@ etags:
 ctags: 
 	ctags *.c 
 
-depend: funlocal.c cmdlocal.c local.c flaglocal.c
+depend: 
 	makedepend -fMakefile.SH -w10 -- -I../hdrs -I.. $(CFLAGS) -- $(C_FILES) $(H_FILES)
 	perl ../utils/fixdepend.pl Makefile.SH
 
@@ -228,7 +186,7 @@ clean:
 	-rm -f a.out core gmon.out $(OUTFILES) 
 
 distclean: clean
-	-rm -f *~ *.orig *.rej *.bak funlocal.c cmdlocal.c flaglocal.c local.c \#*
+	-rm -f *~ *.orig *.rej *.bak  \#*
 
 test_compress: comp_h.c
 	$(CC) $(CFLAGS) -o test_compress -DSTANDALONE comp_h.c
@@ -424,27 +382,6 @@ chunk.o: ../hdrs/switches.h
 chunk.o: ../hdrs/intrface.h
 chunk.o: ../hdrs/log.h
 chunk.o: ../hdrs/mymalloc.h
-cmdlocal.o: ../hdrs/copyrite.h
-cmdlocal.o: ../config.h
-cmdlocal.o: ../hdrs/conf.h
-cmdlocal.o: ../options.h
-cmdlocal.o: ../hdrs/mushtype.h
-cmdlocal.o: ../hdrs/htab.h
-cmdlocal.o: ../hdrs/externs.h
-cmdlocal.o: ../hdrs/compile.h
-cmdlocal.o: ../hdrs/dbdefs.h
-cmdlocal.o: ../hdrs/mushdb.h
-cmdlocal.o: ../hdrs/flags.h
-cmdlocal.o: ../hdrs/ptab.h
-cmdlocal.o: ../hdrs/division.h
-cmdlocal.o: ../hdrs/chunk.h
-cmdlocal.o: ../hdrs/bufferq.h
-cmdlocal.o: ../confmagic.h
-cmdlocal.o: ../hdrs/parse.h
-cmdlocal.o: ../hdrs/command.h
-cmdlocal.o: ../hdrs/boolexp.h
-cmdlocal.o: ../hdrs/switches.h
-cmdlocal.o: ../hdrs/cmds.h
 cmds.o: ../hdrs/copyrite.h
 cmds.o: ../config.h
 cmds.o: ../hdrs/conf.h
@@ -773,22 +710,6 @@ extmail.o: ../hdrs/pueblo.h
 extmail.o: ../hdrs/log.h
 extmail.o: ../hdrs/lock.h
 extmail.o: ../hdrs/dbio.h
-flaglocal.o: ../hdrs/copyrite.h
-flaglocal.o: ../config.h
-flaglocal.o: ../hdrs/conf.h
-flaglocal.o: ../options.h
-flaglocal.o: ../hdrs/mushtype.h
-flaglocal.o: ../hdrs/htab.h
-flaglocal.o: ../hdrs/externs.h
-flaglocal.o: ../hdrs/compile.h
-flaglocal.o: ../hdrs/dbdefs.h
-flaglocal.o: ../hdrs/mushdb.h
-flaglocal.o: ../hdrs/flags.h
-flaglocal.o: ../hdrs/ptab.h
-flaglocal.o: ../hdrs/division.h
-flaglocal.o: ../hdrs/chunk.h
-flaglocal.o: ../hdrs/bufferq.h
-flaglocal.o: ../confmagic.h
 flags.o: ../config.h
 flags.o: ../hdrs/conf.h
 flags.o: ../hdrs/copyrite.h
@@ -955,25 +876,6 @@ funlist.o: ../hdrs/attrib.h
 funlist.o: ../hdrs/command.h
 funlist.o: ../hdrs/switches.h
 funlist.o: ../hdrs/lock.h
-funlocal.o: ../hdrs/copyrite.h
-funlocal.o: ../config.h
-funlocal.o: ../hdrs/conf.h
-funlocal.o: ../options.h
-funlocal.o: ../hdrs/mushtype.h
-funlocal.o: ../hdrs/htab.h
-funlocal.o: ../hdrs/externs.h
-funlocal.o: ../hdrs/compile.h
-funlocal.o: ../hdrs/dbdefs.h
-funlocal.o: ../hdrs/mushdb.h
-funlocal.o: ../hdrs/flags.h
-funlocal.o: ../hdrs/ptab.h
-funlocal.o: ../hdrs/division.h
-funlocal.o: ../hdrs/chunk.h
-funlocal.o: ../hdrs/bufferq.h
-funlocal.o: ../confmagic.h
-funlocal.o: ../hdrs/parse.h
-funlocal.o: ../hdrs/boolexp.h
-funlocal.o: ../hdrs/function.h
 funmath.o: ../hdrs/copyrite.h
 funmath.o: ../config.h
 funmath.o: ../hdrs/conf.h
@@ -1193,27 +1095,6 @@ ident.o: ../hdrs/switches.h
 ident.o: ../hdrs/ident.h
 ident.o: ../hdrs/mysocket.h
 ident.o: ../hdrs/mymalloc.h
-local.o: ../hdrs/copyrite.h
-local.o: ../config.h
-local.o: ../hdrs/conf.h
-local.o: ../options.h
-local.o: ../hdrs/mushtype.h
-local.o: ../hdrs/htab.h
-local.o: ../hdrs/dbio.h
-local.o: ../hdrs/externs.h
-local.o: ../hdrs/compile.h
-local.o: ../hdrs/dbdefs.h
-local.o: ../hdrs/mushdb.h
-local.o: ../hdrs/flags.h
-local.o: ../hdrs/ptab.h
-local.o: ../hdrs/division.h
-local.o: ../hdrs/chunk.h
-local.o: ../hdrs/bufferq.h
-local.o: ../confmagic.h
-local.o: ../hdrs/parse.h
-local.o: ../hdrs/command.h
-local.o: ../hdrs/boolexp.h
-local.o: ../hdrs/switches.h
 lock.o: ../hdrs/copyrite.h
 lock.o: ../config.h
 lock.o: ../hdrs/conf.h

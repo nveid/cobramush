@@ -9,6 +9,7 @@
 #include "copyrite.h"
 #include "config.h"
 #include <string.h>
+#include <ltdl.h>
 #include "conf.h"
 #include "externs.h"
 #include "mushdb.h"
@@ -23,6 +24,9 @@
 #include "game.h"
 #include "command.h"
 #include "confmagic.h"
+#include "modules.h"
+
+extern struct module_entry_t *module_list;
 
 static dbref parse_linkable_room(dbref player, const char *room_name);
 static dbref check_var_link(const char *dest_name);
@@ -92,6 +96,10 @@ dbref
 do_real_open(dbref player, const char *direction, const char *linkto,
              dbref pseudo)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref);
+
+
   dbref loc =
     (pseudo !=
      NOTHING) ? pseudo : (IsExit(player) ? Source(player) : Location(player));
@@ -154,7 +162,10 @@ do_real_open(dbref player, const char *direction, const char *linkto,
       }
     }
     current_state.exits++;
-    local_data_create(new_exit);
+    /* Replacement for local_data_create */
+    MODULE_ITER(m)
+      MODULE_FUNC(handle, m->handle, "module_data_create", new_exit);
+
     return new_exit;
   }
   return NOTHING;
@@ -388,6 +399,8 @@ do_link(dbref player, const char *name, const char *room_name, int preserve)
 dbref
 do_dig(dbref player, const char *name, char **argv, int tport)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref);
   dbref room;
 
   /* we don't need to know player's location!  hooray! */
@@ -418,7 +431,11 @@ do_dig(dbref player, const char *name, char **argv, int tport)
       do_real_open(player, argv[2], "here", room);
     }
     current_state.rooms++;
-    local_data_create(room);
+
+    /* Replacement for local_data_create */
+    MODULE_ITER(m)
+      MODULE_FUNC(handle, m->handle, "module_data_create", room);
+
     if (tport) {
       /* We need to use the full command, because we need NO_TEL
        * and Z_TEL checking */
@@ -443,6 +460,8 @@ do_dig(dbref player, const char *name, char **argv, int tport)
 dbref
 do_create(dbref player, char *name, int cost)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref);
   dbref loc;
   dbref thing;
 
@@ -491,7 +510,10 @@ do_create(dbref player, char *name, int cost)
     /* and we're done */
     notify_format(player, "Created: Object %s.", unparse_dbref(thing));
     current_state.things++;
-    local_data_create(thing);
+    /* Replacement for local_data_create */
+    MODULE_ITER(m)
+      MODULE_FUNC(handle, m->handle, "module_data_create", thing);
+
     return thing;
   }
   return NOTHING;
@@ -556,6 +578,8 @@ clone_object(dbref player, dbref thing, const char *newname, int preserve)
 dbref
 do_clone(dbref player, char *name, char *newname, int preserve)
 {
+  struct module_entry_t *m;
+  void (*handle)(dbref , dbref);
   dbref clone, thing;
   char dbnum[BUFFER_LEN];
 
@@ -595,7 +619,10 @@ do_clone(dbref player, char *name, char *newname, int preserve)
       else
         moveto(clone, Location(player));
       current_state.things++;
-      local_data_clone(clone, thing);
+      /* Replacement for local_data_clone */
+      MODULE_ITER(m)
+	MODULE_FUNC(handle, m->handle, "module_data_clone", clone,thing);
+
       real_did_it(player, clone, NULL, NULL, NULL, NULL, "ACLONE", NOTHING,
                   global_eval_context.wenv, 0);
       return clone;
@@ -608,7 +635,9 @@ do_clone(dbref player, char *name, char *newname, int preserve)
       Exits(clone) = NOTHING;
       notify_format(player, T("Cloned: Room #%d."), clone);
       current_state.rooms++;
-      local_data_clone(clone, thing);
+      /* local_data_clone replacement */
+      MODULE_ITER(m)
+	MODULE_FUNC(handle, m->handle, "module_data_clone", clone,thing);
       real_did_it(player, clone, NULL, NULL, NULL, NULL, "ACLONE", NOTHING,
                   global_eval_context.wenv, 0);
       return clone;
@@ -660,8 +689,10 @@ do_clone(dbref player, char *name, char *newname, int preserve)
       if (Warnings(clone) || DPBITS(clone))
         notify(player, T("Warning: @CLONE/PRESERVE on an exit with powers or warnings."));
       notify_format(player, T("Cloned: Exit #%d."), clone);
-      local_data_clone(clone, thing);
-      return clone;
+      /* Replacement for local_data_clone */
+      MODULE_ITER(m)
+	MODULE_FUNC(handle, m->handle, "module_data_clone", clone,thing);
+     return clone;
     }
   }
   return NOTHING;
@@ -778,6 +809,9 @@ void copy_zone(dbref executor, dbref zmo) {
 
 dbref copy_room(dbref room, dbref newowner) {
   dbref new_room;
+  struct module_entry_t *m;
+  void (*handle)(dbref);
+
   /* Copy room and all its shit but not exits or zone */
 
   new_room = new_object();
@@ -817,7 +851,10 @@ dbref copy_room(dbref room, dbref newowner) {
   /* spruce up more later.. just copying basic room for now */
 
   current_state.rooms++;
-  local_data_create(room);
+  
+  /* Replacement for local_data_create */
+  MODULE_ITER(m)
+    MODULE_FUNC(handle, m->handle, "module_data_create", room);
 
   return new_room;
 }

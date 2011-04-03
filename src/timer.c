@@ -300,8 +300,7 @@ dispatch(void)
   rplog_reset();
 #endif
 
-  local_timer();
-
+  /* Replacement for local_timer */
   MODULE_ITER(m)
     MODULE_FUNC_NOARGS(handle, m->handle, "module_timer");
 }

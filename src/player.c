@@ -464,7 +464,7 @@ make_player(const char *name, const char *password, const char *host,
 
   current_state.players++;
 
-  local_data_create(player);
+  /* Replacement for local_data_create */
   MODULE_ITER(m)
     MODULE_FUNC(handle, m->handle, "module_data_create", player);
 

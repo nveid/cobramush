@@ -788,8 +788,6 @@ flag_add_additional(void)
     flag_add(hashfind("FLAG", &htab_flagspaces), "CHAN_FIRSTMATCH", f);
   if (!match_flag("CHAN_MATCHFIRST"))
     flag_add(hashfind("FLAG", &htab_flagspaces), "CHAN_MATCHFIRST", f);
-
-  local_flags();
 }
 
 /** Extract object type from old-style flag value.
