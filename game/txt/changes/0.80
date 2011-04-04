@@ -4,6 +4,9 @@ CobraMUSH Version 0.80
   interest to the user.
   (See 'changes entries' for a list of all versions.)
 
+ Major Changes:
+   * Implmented CobraMUSH modules
+   * All *local.c files moved over to module hooks.
  Minor Changes:
    * LUA Scripting Engine Embedding.
  Fixes:
